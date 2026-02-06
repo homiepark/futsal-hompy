@@ -306,8 +306,8 @@ export function AdvancedFilterBar({ filters, onFiltersChange }: AdvancedFilterBa
       {/* Level Multi-Select */}
       <div>
         <label className="font-pixel text-[9px] text-muted-foreground mb-1.5 block">🏅 레벨 선택</label>
-        <div className="flex flex-wrap gap-1.5">
-          {levelOptions.map(({ value, icon }) => {
+        <div className="grid grid-cols-2 gap-1.5">
+          {levelOptions.map(({ value, desc, icon }) => {
             const isActive = filters.levels.includes(value);
             const levelColorClass = {
               S: 'bg-accent text-accent-foreground border-accent-dark',
@@ -321,15 +321,23 @@ export function AdvancedFilterBar({ filters, onFiltersChange }: AdvancedFilterBa
                 key={value}
                 onClick={() => toggleArrayFilter('levels', value)}
                 className={cn(
-                  "px-3 py-1.5 font-pixel text-[10px] border-3 transition-all",
+                  "px-2 py-2 border-3 transition-all text-left",
                   isActive
                     ? levelColorClass
                     : "bg-secondary text-secondary-foreground border-border-dark hover:border-primary"
                 )}
                 style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
               >
-                {isActive ? <Check size={10} className="inline mr-1" /> : <span className="mr-1">{icon}</span>}
-                Lv.{value}
+                <div className="flex items-center gap-1">
+                  {isActive ? <Check size={10} /> : <span>{icon}</span>}
+                  <span className="font-pixel text-[10px]">Lv.{value}</span>
+                </div>
+                <p className={cn(
+                  "font-pixel text-[7px] mt-0.5 truncate",
+                  isActive ? "opacity-90" : "text-muted-foreground"
+                )}>
+                  {desc}
+                </p>
               </button>
             );
           })}
