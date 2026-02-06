@@ -100,6 +100,9 @@ export default {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },
+      borderWidth: {
+        '3': '3px',
+      },
       boxShadow: {
         'pixel': '4px 4px 0 hsl(var(--pixel-shadow))',
         'pixel-sm': '2px 2px 0 hsl(var(--pixel-shadow))',
