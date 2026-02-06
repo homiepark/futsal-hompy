@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { SlimHeader } from '@/components/layout/SlimHeader';
-import { CategoryTabs } from '@/components/findteam/CategoryTabs';
+import { StickyNavBar } from '@/components/layout/StickyNavBar';
 import { TeamFilterBar } from '@/components/findteam/TeamFilterBar';
 import { TeamListCard } from '@/components/findteam/TeamListCard';
 import { cn } from '@/lib/utils';
+import topBanner from '@/assets/top-banner.jpg';
 
 interface Team {
   emblem: string;
@@ -42,13 +42,17 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Slim Sticky Header */}
-      <SlimHeader />
-
-      {/* Category Navigation Tabs */}
-      <div className="sticky top-20 z-30">
-        <CategoryTabs />
+      {/* Top Banner - Full Image (scrolls away) */}
+      <div className="w-full">
+        <img 
+          src={topBanner} 
+          alt="우리의풋살 배너"
+          className="w-full h-auto object-cover border-b-4 border-border-dark"
+        />
       </div>
+
+      {/* Sticky Navigation Bar with Tabs */}
+      <StickyNavBar />
 
       {/* Filter Bar */}
       <TeamFilterBar />
