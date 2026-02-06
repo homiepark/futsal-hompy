@@ -32,6 +32,7 @@ const App = () => (
             <main className="pb-16">
               <Routes>
                 <Route path="/" element={<Index />} />
+                <Route path="/my-team" element={<MyTeam />} />
                 <Route path="/team/:teamId" element={<TeamHome />} />
                 <Route path="/archive" element={<TeamArchive />} />
                 <Route path="/matchmaking" element={<Matchmaking />} />
