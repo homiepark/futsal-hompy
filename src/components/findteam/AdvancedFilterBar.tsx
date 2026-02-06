@@ -1,32 +1,14 @@
 import { useState, useCallback } from 'react';
 import { Search, X, Check, ChevronDown, RotateCcw } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
-// Region data with districts
-const regionData: Record<string, string[]> = {
-  '서울': ['강남구', '강동구', '강북구', '강서구', '관악구', '광진구', '구로구', '금천구', '노원구', '도봉구', '동대문구', '동작구', '마포구', '서대문구', '서초구', '성동구', '성북구', '송파구', '양천구', '영등포구', '용산구', '은평구', '종로구', '중구', '중랑구'],
-  '경기': ['고양시', '과천시', '광명시', '광주시', '구리시', '군포시', '김포시', '남양주시', '동두천시', '부천시', '성남시', '수원시', '시흥시', '안산시', '안성시', '안양시', '양주시', '오산시', '용인시', '의왕시', '의정부시', '이천시', '파주시', '평택시', '포천시', '하남시', '화성시'],
-  '부산': ['강서구', '금정구', '기장군', '남구', '동구', '동래구', '부산진구', '북구', '사상구', '사하구', '서구', '수영구', '연제구', '영도구', '중구', '해운대구'],
-  '인천': ['강화군', '계양구', '남동구', '동구', '미추홀구', '부평구', '서구', '연수구', '옹진군', '중구'],
-  '대구': ['남구', '달서구', '달성군', '동구', '북구', '서구', '수성구', '중구'],
-  '대전': ['대덕구', '동구', '서구', '유성구', '중구'],
-  '광주': ['광산구', '남구', '동구', '북구', '서구'],
-  '울산': ['남구', '동구', '북구', '울주군', '중구'],
-  '세종': ['세종시'],
-  '강원': ['강릉시', '동해시', '삼척시', '속초시', '원주시', '춘천시', '태백시', '홍천군'],
-  '충북': ['청주시', '충주시', '제천시', '보은군', '옥천군', '영동군'],
-  '충남': ['천안시', '공주시', '보령시', '아산시', '서산시', '논산시', '계룡시'],
-  '전북': ['전주시', '군산시', '익산시', '정읍시', '남원시', '김제시'],
-  '전남': ['목포시', '여수시', '순천시', '나주시', '광양시'],
-  '경북': ['포항시', '경주시', '김천시', '안동시', '구미시', '영주시', '영천시', '상주시'],
-  '경남': ['창원시', '진주시', '통영시', '사천시', '김해시', '밀양시', '거제시', '양산시'],
-  '제주': ['제주시', '서귀포시'],
-};
-
-const genderOptions = ['남성', '여성', '혼성'];
-const levelOptions = ['S', 'A', 'B', 'C'];
-const dayOptions = ['월', '화', '수', '목', '금', '토', '일'];
-const timeSlotOptions = ['오전 (06-12시)', '오후 (12-18시)', '저녁 (18-24시)'];
+import { 
+  regionData, 
+  genderOptions, 
+  levelOptions, 
+  trainingDays, 
+  timeSlotOptions,
+  getGenderLabel 
+} from '@/lib/teamData';
 
 export interface FilterState {
   teamName: string;
@@ -133,16 +115,16 @@ export function AdvancedFilterBar({ filters, onFiltersChange }: AdvancedFilterBa
         )}
       </div>
 
-      {/* Gender Multi-Select */}
+      {/* Gender Multi-Select - Uses shared genderOptions */}
       <div>
         <label className="font-pixel text-[9px] text-muted-foreground mb-1.5 block">👥 성별</label>
         <div className="flex flex-wrap gap-1.5">
-          {genderOptions.map(gender => {
-            const isActive = filters.genders.includes(gender);
+          {genderOptions.map(({ value, label }) => {
+            const isActive = filters.genders.includes(value);
             return (
               <button
-                key={gender}
-                onClick={() => toggleArrayFilter('genders', gender)}
+                key={value}
+                onClick={() => toggleArrayFilter('genders', value)}
                 className={cn(
                   "px-3 py-1.5 font-body text-xs border-3 transition-all",
                   isActive
@@ -156,14 +138,14 @@ export function AdvancedFilterBar({ filters, onFiltersChange }: AdvancedFilterBa
                 }}
               >
                 {isActive && <Check size={10} className="inline mr-1" />}
-                {gender}
+                {label}
               </button>
             );
           })}
         </div>
       </div>
 
-      {/* Region Hierarchical Dropdown */}
+      {/* Region Hierarchical Dropdown - Uses shared regionData */}
       <div>
         <label className="font-pixel text-[9px] text-muted-foreground mb-1.5 block">📍 지역</label>
         <div className="flex gap-2">
@@ -250,23 +232,23 @@ export function AdvancedFilterBar({ filters, onFiltersChange }: AdvancedFilterBa
         </div>
       </div>
 
-      {/* Level Multi-Select */}
+      {/* Level Multi-Select - Uses shared levelOptions */}
       <div>
         <label className="font-pixel text-[9px] text-muted-foreground mb-1.5 block">⭐ 실력</label>
         <div className="flex flex-wrap gap-1.5">
-          {levelOptions.map(level => {
-            const isActive = filters.levels.includes(level);
+          {levelOptions.map(({ value }) => {
+            const isActive = filters.levels.includes(value);
             const levelColorClass = {
               S: 'bg-accent text-accent-foreground border-accent-dark',
               A: 'bg-primary text-primary-foreground border-primary-dark',
               B: 'bg-primary/70 text-primary-foreground border-primary-dark/70',
               C: 'bg-primary/50 text-primary-foreground border-primary-dark/50',
-            }[level];
+            }[value];
             
             return (
               <button
-                key={level}
-                onClick={() => toggleArrayFilter('levels', level)}
+                key={value}
+                onClick={() => toggleArrayFilter('levels', value)}
                 className={cn(
                   "px-3 py-1.5 font-pixel text-[10px] border-3 transition-all",
                   isActive
@@ -276,23 +258,23 @@ export function AdvancedFilterBar({ filters, onFiltersChange }: AdvancedFilterBa
                 style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
               >
                 {isActive && <Check size={10} className="inline mr-1" />}
-                Lv.{level}
+                Lv.{value}
               </button>
             );
           })}
         </div>
       </div>
 
-      {/* Schedule - Days Multi-Select */}
+      {/* Schedule - Days Multi-Select - Uses shared trainingDays */}
       <div>
         <label className="font-pixel text-[9px] text-muted-foreground mb-1.5 block">📅 훈련 요일</label>
         <div className="flex flex-wrap gap-1">
-          {dayOptions.map(day => {
-            const isActive = filters.days.includes(day);
+          {trainingDays.map(({ value, label }) => {
+            const isActive = filters.days.includes(value);
             return (
               <button
-                key={day}
-                onClick={() => toggleArrayFilter('days', day)}
+                key={value}
+                onClick={() => toggleArrayFilter('days', value)}
                 className={cn(
                   "w-8 h-8 font-body text-xs border-2 transition-all",
                   isActive
@@ -301,14 +283,14 @@ export function AdvancedFilterBar({ filters, onFiltersChange }: AdvancedFilterBa
                 )}
                 style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
               >
-                {day}
+                {label}
               </button>
             );
           })}
         </div>
       </div>
 
-      {/* Time Slot Dropdown */}
+      {/* Time Slot Dropdown - Uses shared timeSlotOptions */}
       <div>
         <label className="font-pixel text-[9px] text-muted-foreground mb-1.5 block">⏰ 훈련 시간대</label>
         <div className="relative">
@@ -326,7 +308,7 @@ export function AdvancedFilterBar({ filters, onFiltersChange }: AdvancedFilterBa
                 : '2px 2px 0 hsl(var(--pixel-shadow))' 
             }}
           >
-            <span>{filters.timeSlot || '시간대 선택'}</span>
+            <span>{timeSlotOptions.find(t => t.value === filters.timeSlot)?.label || '시간대 선택'}</span>
             <div className="flex items-center gap-1">
               {filters.timeSlot && (
                 <span
@@ -349,20 +331,20 @@ export function AdvancedFilterBar({ filters, onFiltersChange }: AdvancedFilterBa
                 className="absolute top-full left-0 mt-1 w-full bg-card border-3 border-border-dark z-50"
                 style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}
               >
-                {timeSlotOptions.map(slot => (
+                {timeSlotOptions.map(({ value, label }) => (
                   <button
-                    key={slot}
+                    key={value}
                     onClick={() => {
-                      onFiltersChange({ ...filters, timeSlot: slot });
+                      onFiltersChange({ ...filters, timeSlot: value });
                       setIsTimeSlotOpen(false);
                     }}
                     className={cn(
                       "w-full px-3 py-2 text-left font-body text-sm hover:bg-muted border-b border-border last:border-b-0",
-                      filters.timeSlot === slot && "bg-accent/10 text-accent"
+                      filters.timeSlot === value && "bg-accent/10 text-accent"
                     )}
                   >
-                    {filters.timeSlot === slot && <Check size={10} className="inline mr-1" />}
-                    {slot}
+                    {filters.timeSlot === value && <Check size={10} className="inline mr-1" />}
+                    {label}
                   </button>
                 ))}
               </div>

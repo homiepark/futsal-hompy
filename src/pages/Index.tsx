@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Bell, Settings, Mail, Plus } from 'lucide-react';
 import { SimpleHeader } from '@/components/findteam/SimpleHeader';
@@ -6,76 +6,117 @@ import { AdvancedFilterBar, FilterState, initialFilterState } from '@/components
 import { TeamListCard } from '@/components/findteam/TeamListCard';
 import { PixelProfileIcon } from '@/components/ui/PixelProfileIcon';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/integrations/supabase/client';
+import { getGenderLabel, timeSlotOptions, getTimeSlot } from '@/lib/teamData';
 import topBanner from '@/assets/top-banner.jpg';
 
 interface Team {
+  id: string;
   emblem: string;
   name: string;
-  region: string;
-  district?: string;
-  gender?: string;
-  level: 'S' | 'A' | 'B' | 'C';
-  trainingTime: string;
-  trainingDays?: string[];
-  memberCount: number;
+  region: string | null;
+  district: string | null;
+  gender: string | null;
+  level: string;
+  training_time: string | null;
+  training_days: string[] | null;
+  training_start_time: string | null;
+  training_end_time: string | null;
+  memberCount?: number;
   isFavorited: boolean;
 }
 
-const initialTeams: Team[] = [
-  { emblem: '⚽', name: 'FC 번개', region: '서울', district: '강남구', gender: '남성', level: 'S', trainingTime: '오전 (06-12시)', trainingDays: ['토', '일'], memberCount: 18, isFavorited: true },
-  { emblem: '🦁', name: '라이언즈 FC', region: '경기', district: '성남시', gender: '남성', level: 'A', trainingTime: '저녁 (18-24시)', trainingDays: ['월', '수', '금'], memberCount: 15, isFavorited: false },
-  { emblem: '🔥', name: '화이터스', region: '서울', district: '마포구', gender: '혼성', level: 'A', trainingTime: '오후 (12-18시)', trainingDays: ['토'], memberCount: 20, isFavorited: true },
-  { emblem: '⭐', name: '스타킥', region: '인천', district: '연수구', gender: '여성', level: 'B', trainingTime: '저녁 (18-24시)', trainingDays: ['화', '목'], memberCount: 12, isFavorited: false },
-  { emblem: '🌊', name: '블루웨이브', region: '부산', district: '해운대구', gender: '남성', level: 'B', trainingTime: '오전 (06-12시)', trainingDays: ['토', '일'], memberCount: 16, isFavorited: false },
-  { emblem: '🦅', name: '이글스 FC', region: '대구', district: '수성구', gender: '혼성', level: 'C', trainingTime: '오후 (12-18시)', trainingDays: ['일'], memberCount: 10, isFavorited: true },
-  { emblem: '🐯', name: '타이거즈', region: '서울', district: '송파구', gender: '남성', level: 'S', trainingTime: '오전 (06-12시)', trainingDays: ['토'], memberCount: 22, isFavorited: false },
-  { emblem: '🌟', name: '스타FC 여성팀', region: '경기', district: '용인시', gender: '여성', level: 'A', trainingTime: '오후 (12-18시)', trainingDays: ['수', '토'], memberCount: 14, isFavorited: false },
-];
-
 const Index = () => {
   const navigate = useNavigate();
-  const [teams, setTeams] = useState<Team[]>(initialTeams);
+  const [teams, setTeams] = useState<Team[]>([]);
+  const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState<FilterState>(initialFilterState);
   const [listView, setListView] = useState<'all' | 'favorites'>('all');
+  const [favorites, setFavorites] = useState<Set<string>>(new Set());
 
-  const handleFavoriteToggle = (teamName: string, isFavorited: boolean) => {
+  // Fetch teams from Supabase
+  useEffect(() => {
+    const fetchTeams = async () => {
+      setLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('teams')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        const teamsWithFavorites = (data || []).map(team => ({
+          ...team,
+          isFavorited: favorites.has(team.id),
+        }));
+
+        setTeams(teamsWithFavorites);
+      } catch (error) {
+        console.error('Error fetching teams:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTeams();
+  }, [favorites]);
+
+  const handleFavoriteToggle = (teamId: string, isFavorited: boolean) => {
+    setFavorites(prev => {
+      const next = new Set(prev);
+      if (isFavorited) {
+        next.add(teamId);
+      } else {
+        next.delete(teamId);
+      }
+      return next;
+    });
     setTeams(prev => prev.map(team => 
-      team.name === teamName ? { ...team, isFavorited } : team
+      team.id === teamId ? { ...team, isFavorited } : team
     ));
   };
 
-  // Real-time filtering
+  // Real-time filtering with Supabase data structure
   const filteredTeams = useMemo(() => {
     return teams.filter(team => {
-      // Team name search
+      // Team name search (case-insensitive)
       if (filters.teamName && !team.name.toLowerCase().includes(filters.teamName.toLowerCase())) {
         return false;
       }
-      // Gender filter
+      
+      // Gender filter - uses DB values: 'male', 'female', 'mixed'
       if (filters.genders.length > 0 && team.gender && !filters.genders.includes(team.gender)) {
         return false;
       }
-      // Region filter
+      
+      // Region filter - exact match
       if (filters.region && team.region !== filters.region) {
         return false;
       }
-      // District filter
+      
+      // District filter - exact match
       if (filters.district && team.district !== filters.district) {
         return false;
       }
-      // Level filter
+      
+      // Level filter - uses IN logic for multi-select
       if (filters.levels.length > 0 && !filters.levels.includes(team.level)) {
         return false;
       }
-      // Days filter
-      if (filters.days.length > 0 && team.trainingDays) {
-        const hasMatchingDay = filters.days.some(day => team.trainingDays?.includes(day));
+      
+      // Days filter - uses ANY logic (team has at least one matching day)
+      if (filters.days.length > 0 && team.training_days) {
+        const hasMatchingDay = filters.days.some(day => team.training_days?.includes(day));
         if (!hasMatchingDay) return false;
       }
-      // Time slot filter
-      if (filters.timeSlot && team.trainingTime !== filters.timeSlot) {
-        return false;
+      
+      // Time slot filter - check if team's start time falls in the selected slot
+      if (filters.timeSlot && team.training_start_time) {
+        const teamTimeSlot = getTimeSlot(team.training_start_time);
+        if (teamTimeSlot !== filters.timeSlot) return false;
       }
+      
       return true;
     });
   }, [teams, filters]);
@@ -85,6 +126,26 @@ const Index = () => {
     : filteredTeams;
 
   const favoriteCount = filteredTeams.filter(t => t.isFavorited).length;
+
+  // Helper to format training time display
+  const formatTrainingTime = (team: Team): string => {
+    if (team.training_days && team.training_days.length > 0) {
+      const daysStr = team.training_days.join(', ');
+      if (team.training_start_time && team.training_end_time) {
+        return `${daysStr} ${team.training_start_time}-${team.training_end_time}`;
+      }
+      return daysStr;
+    }
+    return team.training_time || '미정';
+  };
+
+  // Helper to format region display
+  const formatRegion = (team: Team): string => {
+    if (team.region && team.district) {
+      return `${team.region} ${team.district}`;
+    }
+    return team.region || '미정';
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -132,7 +193,9 @@ const Index = () => {
       <div className="px-4 pt-4 pb-2">
         <h1 className="font-pixel text-lg text-foreground flex items-center gap-2">
           ⚽ 전체 팀 목록
-          <span className="text-sm text-muted-foreground">({filteredTeams.length}개)</span>
+          <span className="text-sm text-muted-foreground">
+            ({loading ? '...' : filteredTeams.length}개)
+          </span>
         </h1>
       </div>
 
@@ -198,15 +261,26 @@ const Index = () => {
           </button>
         </div>
 
-        {/* Teams Grid */}
-        {displayedTeams.length > 0 ? (
+        {/* Loading State */}
+        {loading ? (
+          <div className="bg-card border-4 border-border-dark p-8 text-center shadow-[4px_4px_0_hsl(var(--pixel-shadow))]">
+            <div className="text-4xl mb-3 animate-pulse">⚽</div>
+            <p className="font-body text-muted-foreground">팀 목록을 불러오는 중...</p>
+          </div>
+        ) : displayedTeams.length > 0 ? (
           <div className="grid gap-3">
             {displayedTeams.map((team) => (
               <TeamListCard 
-                key={team.name} 
-                {...team} 
-                region={`${team.region} ${team.district || ''}`}
-                onFavoriteToggle={(isFavorited) => handleFavoriteToggle(team.name, isFavorited)}
+                key={team.id}
+                id={team.id}
+                emblem={team.emblem}
+                name={team.name}
+                region={formatRegion(team)}
+                level={team.level as 'S' | 'A' | 'B' | 'C'}
+                trainingTime={formatTrainingTime(team)}
+                memberCount={team.memberCount || 0}
+                isFavorited={team.isFavorited}
+                onFavoriteToggle={(isFavorited) => handleFavoriteToggle(team.id, isFavorited)}
               />
             ))}
           </div>
