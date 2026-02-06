@@ -152,8 +152,45 @@ export default function ProfileSetup() {
     }
   };
 
+  // Show loading while checking auth
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 mx-auto mb-4 bg-primary border-4 border-primary-dark flex items-center justify-center animate-pixel-pulse"
+            style={{ boxShadow: '4px 4px 0 hsl(var(--pixel-shadow))' }}
+          >
+            <span className="text-2xl">⚽</span>
+          </div>
+          <p className="font-pixel text-xs text-muted-foreground">로딩 중...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background pb-24 px-4 py-6 max-w-lg mx-auto">
+      {/* Step Indicator */}
+      <div className="flex items-center justify-center gap-2 mb-6">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-muted border-3 border-border-dark flex items-center justify-center font-pixel text-[10px] text-muted-foreground"
+            style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
+          >
+            ✓
+          </div>
+          <span className="font-pixel text-[9px] text-muted-foreground">계정 생성</span>
+        </div>
+        <div className="w-8 h-1 bg-primary" />
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-primary border-3 border-primary-dark flex items-center justify-center font-pixel text-[10px] text-primary-foreground"
+            style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
+          >
+            2
+          </div>
+          <span className="font-pixel text-[9px] text-primary">프로필 설정</span>
+        </div>
+      </div>
+
       {/* Title */}
       <div className="text-center mb-6">
         <h1 className="font-pixel text-lg text-primary mb-1">⚽ 프로필 설정</h1>
