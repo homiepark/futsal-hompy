@@ -24,16 +24,9 @@ export function LatestArchive({ teamId, items }: LatestArchiveProps) {
           <span className="text-accent">📸</span>
           최근 아카이브
         </h2>
-        <Link 
-          to={`/archive?team=${teamId}`}
-          className="flex items-center gap-1 text-primary font-body text-xs hover:underline"
-        >
-          더보기
-          <ChevronRight size={14} />
-        </Link>
       </div>
 
-      <div className="grid grid-cols-4 gap-2">
+      <div className="grid grid-cols-4 gap-2 mb-4">
         {displayItems.map((item) => (
           <Link
             key={item.id}
@@ -61,6 +54,14 @@ export function LatestArchive({ teamId, items }: LatestArchiveProps) {
           </div>
         )}
       </div>
+
+      {/* See More Archive Button */}
+      <Link 
+        to={`/archive?team=${teamId}`}
+        className="block w-full py-3 bg-secondary border-4 border-border-dark text-center font-pixel text-[10px] text-foreground hover:bg-muted hover:border-primary transition-all shadow-[3px_3px_0_hsl(var(--pixel-shadow))] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_hsl(var(--pixel-shadow))]"
+      >
+        📷 아카이브 더보기
+      </Link>
     </PixelCard>
   );
 }
