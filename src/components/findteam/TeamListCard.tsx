@@ -42,6 +42,7 @@ export function TeamListCard({ emblem, name, region, level, trainingTime, member
             )}>
               Lv.{level}
             </span>
+            <LevelInfoButton />
           </div>
           
           {/* Region & Training */}
