@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Settings, Crown } from 'lucide-react';
+import { ArrowLeft, Settings, Users } from 'lucide-react';
 import { useTeam } from '@/contexts/TeamContext';
 import { TeamHeader } from '@/components/team/TeamHeader';
 import { TeamSwitcher } from '@/components/team/TeamSwitcher';
@@ -111,13 +111,24 @@ export default function TeamHome() {
           </div>
           <div className="flex items-center gap-2">
             {isAdmin && (
-              <button
-                onClick={() => setShowAdminTransfer(true)}
-                className="w-8 h-8 bg-secondary border-2 border-border-dark flex items-center justify-center hover:bg-muted transition-colors"
-                title="관리자 설정"
-              >
-                <Settings size={14} className="text-foreground" />
-              </button>
+              <>
+                <button
+                  onClick={() => navigate(`/team/${teamId}/requests`)}
+                  className="w-8 h-8 bg-primary border-2 border-border-dark flex items-center justify-center hover:bg-primary/80 transition-colors"
+                  title="입단 신청 관리"
+                  style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
+                >
+                  <Users size={14} className="text-primary-foreground" />
+                </button>
+                <button
+                  onClick={() => setShowAdminTransfer(true)}
+                  className="w-8 h-8 bg-secondary border-2 border-border-dark flex items-center justify-center hover:bg-muted transition-colors"
+                  title="관리자 설정"
+                  style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
+                >
+                  <Settings size={14} className="text-foreground" />
+                </button>
+              </>
             )}
             <TeamSwitcher />
           </div>

@@ -11,6 +11,7 @@ import TeamHome from "./pages/TeamHome";
 import TeamArchive from "./pages/TeamArchive";
 import MyTeam from "./pages/MyTeam";
 import CreateTeam from "./pages/CreateTeam";
+import JoinRequestManagement from "./pages/JoinRequestManagement";
 import Matchmaking from "./pages/Matchmaking";
 import Schedule from "./pages/Schedule";
 import CourtBooking from "./pages/CourtBooking";
@@ -37,6 +38,7 @@ const App = () => (
                 <Route path="/team/:teamId" element={<TeamHome />} />
                 <Route path="/archive" element={<TeamArchive />} />
                 <Route path="/create-team" element={<CreateTeam />} />
+                <Route path="/team/:teamId/requests" element={<JoinRequestManagement />} />
                 <Route path="/matchmaking" element={<Matchmaking />} />
                 <Route path="/schedule" element={<Schedule />} />
                 <Route path="/courts" element={<CourtBooking />} />
