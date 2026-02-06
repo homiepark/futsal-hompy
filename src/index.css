@@ -193,9 +193,9 @@
       inset 4px 4px 0 hsl(var(--pixel-highlight));
   }
 
-  /* Pixel Input */
+  /* Pixel Input - modern font for readability */
   .pixel-input {
-    @apply bg-input border-4 border-border-dark px-3 py-2 font-body;
+    @apply bg-input border-4 border-border-dark px-3 py-2 font-body text-sm;
     @apply focus:outline-none focus:border-primary;
     box-shadow: 
       inset 2px 2px 0 hsl(var(--pixel-shadow) / 0.15);
