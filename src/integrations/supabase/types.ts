@@ -88,6 +88,44 @@ export type Database = {
         }
         Relationships: []
       }
+      team_join_requests: {
+        Row: {
+          created_at: string
+          id: string
+          message: string | null
+          status: string
+          team_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message?: string | null
+          status?: string
+          team_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string | null
+          status?: string
+          team_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_join_requests_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       team_members: {
         Row: {
           id: string
@@ -123,42 +161,54 @@ export type Database = {
       teams: {
         Row: {
           admin_user_id: string | null
+          banner_url: string | null
           created_at: string
           description: string | null
           emblem: string
           id: string
+          instagram_url: string | null
+          introduction: string | null
           level: string
           name: string
           photo_url: string | null
           region: string | null
           training_time: string | null
           updated_at: string
+          youtube_url: string | null
         }
         Insert: {
           admin_user_id?: string | null
+          banner_url?: string | null
           created_at?: string
           description?: string | null
           emblem?: string
           id?: string
+          instagram_url?: string | null
+          introduction?: string | null
           level?: string
           name: string
           photo_url?: string | null
           region?: string | null
           training_time?: string | null
           updated_at?: string
+          youtube_url?: string | null
         }
         Update: {
           admin_user_id?: string | null
+          banner_url?: string | null
           created_at?: string
           description?: string | null
           emblem?: string
           id?: string
+          instagram_url?: string | null
+          introduction?: string | null
           level?: string
           name?: string
           photo_url?: string | null
           region?: string | null
           training_time?: string | null
           updated_at?: string
+          youtube_url?: string | null
         }
         Relationships: []
       }
