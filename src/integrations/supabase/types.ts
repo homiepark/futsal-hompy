@@ -223,6 +223,8 @@ export type Database = {
           district: string | null
           emblem: string
           gender: string | null
+          home_ground_address: string | null
+          home_ground_name: string | null
           id: string
           instagram_url: string | null
           introduction: string | null
@@ -245,6 +247,8 @@ export type Database = {
           district?: string | null
           emblem?: string
           gender?: string | null
+          home_ground_address?: string | null
+          home_ground_name?: string | null
           id?: string
           instagram_url?: string | null
           introduction?: string | null
@@ -267,6 +271,8 @@ export type Database = {
           district?: string | null
           emblem?: string
           gender?: string | null
+          home_ground_address?: string | null
+          home_ground_name?: string | null
           id?: string
           instagram_url?: string | null
           introduction?: string | null
