@@ -272,11 +272,6 @@
   .font-body {
     font-family: 'Noto Sans KR', sans-serif;
   }
-  
-  /* Pixel text shadow */
-  .text-pixel-shadow {
-    text-shadow: 2px 2px 0 hsl(var(--pixel-shadow));
-  }
 
   /* Animation for game-like feedback */
   @keyframes pixel-bounce {
