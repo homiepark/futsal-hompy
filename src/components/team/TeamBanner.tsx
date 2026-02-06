@@ -1,61 +1,40 @@
-import { Star, Camera, Instagram, Youtube } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { useState, useRef } from 'react';
+import { Camera, Instagram, Youtube, ExternalLink } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
-interface TeamHeaderProps {
-  name: string;
-  emblem: string;
-  photoUrl?: string;
+interface TeamBannerProps {
+  teamId: string;
   bannerUrl?: string;
-  level: 'S' | 'A' | 'B' | 'C';
-  favorites: number;
-  region?: string;
-  introduction?: string;
   instagramUrl?: string;
   youtubeUrl?: string;
   isAdmin?: boolean;
-  onPhotoEdit?: () => void;
   onBannerUpdate?: (url: string) => void;
-  onIntroUpdate?: (text: string) => void;
 }
 
-const levelColors = {
-  S: 'bg-[hsl(45,100%,50%)] border-[hsl(45,100%,35%)] text-foreground shadow-[0_0_8px_hsl(45,100%,50%)]',
-  A: 'bg-accent border-accent-dark text-accent-foreground',
-  B: 'bg-primary border-primary-dark text-primary-foreground',
-  C: 'bg-secondary border-border-dark text-foreground',
-};
-
-export function TeamHeader({
-  name,
-  emblem,
-  photoUrl,
+export function TeamBanner({
+  teamId,
   bannerUrl,
-  level,
-  favorites,
-  region,
-  introduction,
   instagramUrl,
   youtubeUrl,
   isAdmin = false,
-  onPhotoEdit,
   onBannerUpdate,
-  onIntroUpdate,
-}: TeamHeaderProps) {
+}: TeamBannerProps) {
   const [uploading, setUploading] = useState(false);
-  const bannerInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleBannerUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // Validate file type
     if (!file.type.startsWith('image/')) {
       toast.error('이미지 파일만 업로드할 수 있습니다');
       return;
     }
 
+    // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
       toast.error('파일 크기는 5MB 이하여야 합니다');
       return;
@@ -64,17 +43,18 @@ export function TeamHeader({
     setUploading(true);
     try {
       const fileExt = file.name.split('.').pop();
-      const fileName = `banner-${Date.now()}.${fileExt}`;
+      const fileName = `${teamId}-banner-${Date.now()}.${fileExt}`;
+      const filePath = `${teamId}/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from('team-banners')
-        .upload(fileName, file);
+        .upload(filePath, file);
 
       if (uploadError) throw uploadError;
 
       const { data: { publicUrl } } = supabase.storage
         .from('team-banners')
-        .getPublicUrl(fileName);
+        .getPublicUrl(filePath);
 
       onBannerUpdate?.(publicUrl);
       toast.success('배너가 업로드되었습니다!');
@@ -88,9 +68,9 @@ export function TeamHeader({
 
   return (
     <div className="relative">
-      {/* Background Banner - Custom or Kairosoft striped pattern */}
+      {/* Banner Image or Pattern */}
       <div 
-        className="h-24 border-b-4 border-border-dark relative overflow-hidden"
+        className="h-24 border-b-4 border-border-dark overflow-hidden relative"
         style={bannerUrl ? {} : {
           background: `
             repeating-linear-gradient(
@@ -104,7 +84,11 @@ export function TeamHeader({
         }}
       >
         {bannerUrl && (
-          <img src={bannerUrl} alt="Team banner" className="w-full h-full object-cover" />
+          <img 
+            src={bannerUrl} 
+            alt="Team banner" 
+            className="w-full h-full object-cover"
+          />
         )}
 
         {/* Social Links - Top Right */}
@@ -141,18 +125,18 @@ export function TeamHeader({
           )}
         </div>
 
-        {/* Admin Banner Upload Button */}
+        {/* Admin Upload Button */}
         {isAdmin && (
           <>
             <input
-              ref={bannerInputRef}
+              ref={fileInputRef}
               type="file"
               accept="image/*"
               onChange={handleBannerUpload}
               className="hidden"
             />
             <button
-              onClick={() => bannerInputRef.current?.click()}
+              onClick={() => fileInputRef.current?.click()}
               disabled={uploading}
               className={cn(
                 'absolute bottom-2 right-2',
@@ -167,58 +151,6 @@ export function TeamHeader({
             </button>
           </>
         )}
-      </div>
-
-      {/* Team Info - Compact */}
-      <div className="px-3 -mt-10">
-        <div className="flex items-end gap-3">
-          {/* Team Photo - Kairosoft frame */}
-          <div className="relative">
-            <div 
-              className="w-20 h-20 bg-muted border-4 border-border-dark overflow-hidden"
-              style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}
-            >
-              {photoUrl ? (
-                <img src={photoUrl} alt={name} className="w-full h-full object-cover" />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center bg-primary/20 text-3xl">
-                  {emblem}
-                </div>
-              )}
-            </div>
-            {isAdmin && (
-              <button 
-                onClick={onPhotoEdit}
-                className="absolute -bottom-1 -right-1 w-6 h-6 bg-accent border-2 border-accent-dark flex items-center justify-center"
-                style={{ boxShadow: '1px 1px 0 hsl(var(--pixel-shadow))' }}
-              >
-                <Camera size={12} className="text-accent-foreground" />
-              </button>
-            )}
-          </div>
-
-          {/* Team Name & Info */}
-          <div className="flex-1 pb-1.5">
-            <div className="flex items-center gap-1.5 mb-0.5">
-              <h1 className="font-pixel text-xs text-foreground leading-tight">{name}</h1>
-              <div className={cn(
-                'px-1.5 py-0.5 border-2 font-pixel text-[8px]',
-                levelColors[level]
-              )}>
-                LV.{level}
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              {region && (
-                <p className="font-pixel text-[8px] text-muted-foreground">{region}</p>
-              )}
-              <div className="flex items-center gap-0.5">
-                <Star size={12} className="text-[hsl(45,100%,50%)] fill-[hsl(45,100%,50%)]" />
-                <span className="font-pixel text-[8px] text-foreground">{favorites}</span>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

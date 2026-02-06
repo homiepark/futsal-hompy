@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Bell, Settings, Mail } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Bell, Settings, Mail, Plus } from 'lucide-react';
 import { StickyNavBar } from '@/components/layout/StickyNavBar';
 import { TeamFilterBar } from '@/components/findteam/TeamFilterBar';
 import { TeamListCard } from '@/components/findteam/TeamListCard';
@@ -28,6 +28,7 @@ const initialTeams: Team[] = [
 ];
 
 const Index = () => {
+  const navigate = useNavigate();
   const [teams, setTeams] = useState<Team[]>(initialTeams);
   const [listView, setListView] = useState<'all' | 'favorites'>('all');
 
@@ -91,6 +92,33 @@ const Index = () => {
 
       {/* Sticky Navigation Bar with Tabs */}
       <StickyNavBar />
+
+      {/* Create Team CTA */}
+      <div className="px-4 pt-4">
+        <button
+          onClick={() => navigate('/create-team')}
+          className={cn(
+            'w-full flex items-center justify-center gap-2',
+            'bg-accent text-accent-foreground',
+            'border-4 border-accent-dark',
+            'font-pixel text-[10px] uppercase tracking-wider',
+            'px-4 py-3',
+            'transition-all duration-100',
+            'hover:brightness-110',
+            'active:translate-x-0.5 active:translate-y-0.5'
+          )}
+          style={{
+            boxShadow: `
+              4px 4px 0 hsl(var(--accent-dark)),
+              inset -2px -2px 0 hsl(var(--accent-dark) / 0.4),
+              inset 2px 2px 0 hsl(0 0% 100% / 0.25)
+            `,
+          }}
+        >
+          <Plus size={16} strokeWidth={3} />
+          <span>🏆 팀 만들기</span>
+        </button>
+      </div>
 
       {/* Filter Bar */}
       <TeamFilterBar />
