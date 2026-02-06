@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { PixelNavIcon } from '@/components/ui/PixelNavIcon';
+import { ColorfulPixelNavIcon } from '@/components/ui/ColorfulPixelNavIcon';
 
 const navItems = [
   { icon: 'home' as const, label: '홈', path: '/' },
