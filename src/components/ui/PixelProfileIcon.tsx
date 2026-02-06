@@ -5,21 +5,23 @@ interface PixelProfileIconProps {
   className?: string;
 }
 
-// 8x8 pixel art profile icon (person silhouette)
+// 10x10 pixel art profile icon (person silhouette with MY text area)
 const profilePattern = [
-  [0,0,1,1,1,1,0,0],
-  [0,1,2,2,2,2,1,0],
-  [0,1,2,2,2,2,1,0],
-  [0,0,1,1,1,1,0,0],
-  [0,0,0,3,3,0,0,0],
-  [0,3,3,3,3,3,3,0],
-  [3,3,3,3,3,3,3,3],
-  [3,3,0,0,0,0,3,3],
+  [0,0,0,1,1,1,1,0,0,0],
+  [0,0,1,2,2,2,2,1,0,0],
+  [0,0,1,2,2,2,2,1,0,0],
+  [0,0,0,1,1,1,1,0,0,0],
+  [0,0,0,0,3,3,0,0,0,0],
+  [0,3,3,3,3,3,3,3,3,0],
+  [3,3,3,3,3,3,3,3,3,3],
+  [3,3,3,3,3,3,3,3,3,3],
+  [3,3,3,3,3,3,3,3,3,3],
+  [0,3,3,0,0,0,0,3,3,0],
 ];
 
 const colors: Record<number, string> = {
-  1: 'hsl(40 60% 70%)',   // Hair outline
-  2: 'hsl(30 50% 65%)',   // Face
+  1: 'hsl(35 60% 55%)',   // Hair/head outline
+  2: 'hsl(30 50% 70%)',   // Face
   3: 'hsl(142 69% 52%)',  // Body (primary green)
 };
 
@@ -27,15 +29,15 @@ export function PixelProfileIcon({ size = 3, className }: PixelProfileIconProps)
   return (
     <div 
       className={cn(
-        'relative rounded-full bg-secondary border-2 border-border-dark p-1.5 shadow-[2px_2px_0_hsl(var(--pixel-shadow))] hover:bg-muted transition-colors cursor-pointer overflow-hidden',
+        'relative rounded-full bg-card/95 backdrop-blur-sm border-3 border-border-dark p-2 shadow-[3px_3px_0_hsl(var(--pixel-shadow))] hover:bg-card transition-colors cursor-pointer',
         className
       )}
     >
       <div 
         className="relative"
         style={{
-          width: size * 8,
-          height: size * 8,
+          width: size * 10,
+          height: size * 10,
         }}
       >
         {profilePattern.map((row, y) =>
@@ -55,6 +57,21 @@ export function PixelProfileIcon({ size = 3, className }: PixelProfileIconProps)
             )
           ))
         )}
+        {/* MY Text Overlay */}
+        <div 
+          className="absolute inset-0 flex items-end justify-center pb-1"
+          style={{ top: size * 5 }}
+        >
+          <span 
+            className="text-primary-foreground font-bold leading-none"
+            style={{ 
+              fontSize: size * 2.5,
+              textShadow: '1px 1px 0 hsl(var(--primary-dark))',
+            }}
+          >
+            MY
+          </span>
+        </div>
       </div>
     </div>
   );
