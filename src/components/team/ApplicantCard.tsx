@@ -34,6 +34,8 @@ const positionColors: Record<string, string> = {
 export function ApplicantCard({
   id,
   nickname,
+  nicknameTag,
+  realName,
   avatarUrl,
   yearsOfExperience,
   preferredPosition,
@@ -44,6 +46,14 @@ export function ApplicantCard({
 }: ApplicantCardProps) {
   const positionLabel = positionLabels[preferredPosition] || preferredPosition;
   const positionColor = positionColors[preferredPosition] || 'bg-muted text-muted-foreground';
+
+  // Format display name for admin view
+  const displayName = nicknameTag 
+    ? `${nickname}#${nicknameTag}` 
+    : nickname;
+  const fullDisplayName = realName 
+    ? `${displayName} (${realName})` 
+    : displayName;
 
   return (
     <div className="kairo-panel p-0 overflow-hidden">
