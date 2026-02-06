@@ -1,7 +1,59 @@
-import TeamHome from './TeamHome';
+import headerBanner from '@/assets/header-banner.jpg';
+import { CategoryTabs } from '@/components/findteam/CategoryTabs';
+import { TeamFilterBar } from '@/components/findteam/TeamFilterBar';
+import { TeamListCard } from '@/components/findteam/TeamListCard';
+
+const sampleTeams = [
+  { emblem: '⚽', name: 'FC 번개', region: '서울 강남', level: 'S' as const, trainingTime: '주말 오전 9시', memberCount: 18 },
+  { emblem: '🦁', name: '라이언즈 FC', region: '경기 성남', level: 'A' as const, trainingTime: '평일 저녁 7시', memberCount: 15 },
+  { emblem: '🔥', name: '화이터스', region: '서울 마포', level: 'A' as const, trainingTime: '주말 오후 2시', memberCount: 20 },
+  { emblem: '⭐', name: '스타킥', region: '인천 연수', level: 'B' as const, trainingTime: '평일 저녁 8시', memberCount: 12 },
+  { emblem: '🌊', name: '블루웨이브', region: '부산 해운대', level: 'B' as const, trainingTime: '주말 오전 10시', memberCount: 16 },
+  { emblem: '🦅', name: '이글스 FC', region: '대구 수성', level: 'C' as const, trainingTime: '주말 오후 4시', memberCount: 10 },
+];
 
 const Index = () => {
-  return <TeamHome />;
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Header Banner */}
+      <div className="w-full">
+        <img 
+          src={headerBanner} 
+          alt="우리의풋살 배너" 
+          className="w-full h-auto object-cover border-b-4 border-border-dark"
+        />
+      </div>
+
+      {/* Category Navigation Tabs */}
+      <CategoryTabs />
+
+      {/* Filter Bar */}
+      <TeamFilterBar />
+
+      {/* Team List */}
+      <div className="p-4">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-body font-bold text-foreground flex items-center gap-2">
+            <span className="text-primary">⚽</span>
+            팀 목록
+            <span className="text-sm text-muted-foreground">({sampleTeams.length}개)</span>
+          </h2>
+          <button className="text-xs font-body text-primary hover:underline">
+            전체보기 →
+          </button>
+        </div>
+
+        <div className="grid gap-3">
+          {sampleTeams.map((team, index) => (
+            <TeamListCard key={index} {...team} />
+          ))}
+        </div>
+      </div>
+
+      {/* Bottom Spacing for Nav */}
+      <div className="h-20" />
+    </div>
+  );
 };
 
 export default Index;
