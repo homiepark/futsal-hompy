@@ -109,11 +109,32 @@
   }
 
   body {
-    @apply bg-background text-foreground font-body antialiased;
+    @apply bg-background text-foreground font-pixel antialiased;
+    font-size: 12px;
+    line-height: 1.8;
+    letter-spacing: 0.02em;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1 {
+    @apply font-pixel text-base;
+  }
+
+  h2 {
+    @apply font-pixel text-sm;
+  }
+
+  h3, h4, h5, h6 {
+    @apply font-pixel text-xs;
+  }
+
+  p, span, div, a, button, input, textarea, label {
     @apply font-pixel;
+  }
+
+  /* Better readability for pixel font */
+  .font-readable {
+    font-family: 'Noto Sans KR', sans-serif;
+    letter-spacing: normal;
   }
 }
 
