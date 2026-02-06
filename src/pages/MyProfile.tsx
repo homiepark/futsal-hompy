@@ -5,6 +5,14 @@ import { PixelButton } from '@/components/ui/PixelButton';
 import { PixelCard } from '@/components/ui/PixelCard';
 import { cn } from '@/lib/utils';
 
+// Futsal positions
+const futsalPositions = [
+  { id: 'pivo', label: '피보', emoji: '⚡', description: 'Pivot / Forward' },
+  { id: 'ala', label: '아라', emoji: '💨', description: 'Winger' },
+  { id: 'fixo', label: '픽소', emoji: '🛡️', description: 'Fixed / Defender' },
+  { id: 'goleiro', label: '고레이로', emoji: '🧤', description: 'Goalkeeper' },
+];
+
 export default function MyProfile() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [profile, setProfile] = useState({
@@ -12,13 +20,18 @@ export default function MyProfile() {
     avatarUrl: '',
     yearsOfExperience: 3,
     isProElite: false,
-    preferredPosition: 'MF',
+    preferredPosition: 'ala',
   });
 
   const [myTeams] = useState([
     { id: '1', name: 'FC 불꽃', emblem: '🔥', role: 'admin' },
     { id: '2', name: '라이언즈 FC', emblem: '🦁', role: 'member' },
   ]);
+
+  const getPositionLabel = (positionId: string) => {
+    const position = futsalPositions.find(p => p.id === positionId);
+    return position ? position.label : positionId;
+  };
 
   const handleAvatarClick = () => {
     fileInputRef.current?.click();
