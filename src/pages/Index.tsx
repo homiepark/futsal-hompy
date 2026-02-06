@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Bell, Settings } from 'lucide-react';
+import { Bell, Settings, Mail } from 'lucide-react';
 import { StickyNavBar } from '@/components/layout/StickyNavBar';
 import { TeamFilterBar } from '@/components/findteam/TeamFilterBar';
 import { TeamListCard } from '@/components/findteam/TeamListCard';
@@ -48,23 +48,37 @@ const Index = () => {
       {/* Top Banner - Full Image with Icons Overlay */}
       <div className="w-full relative">
         {/* Icons on top-right of banner */}
-        <div className="absolute top-3 right-3 z-10 flex items-center gap-3">
+        <div className="absolute top-3 right-3 z-10 flex items-center gap-2">
+          {/* Messages */}
+          <Link 
+            to="/messages"
+            className="relative w-11 h-11 bg-card/95 backdrop-blur-sm border-3 border-border-dark flex items-center justify-center shadow-[3px_3px_0_hsl(var(--pixel-shadow))] hover:bg-card transition-colors"
+          >
+            <Mail size={22} className="text-foreground" />
+            <span className="absolute -top-2 -right-2 w-5 h-5 bg-accent border-2 border-accent-dark text-[10px] text-accent-foreground flex items-center justify-center shadow-[1px_1px_0_hsl(var(--pixel-shadow))]">
+              2
+            </span>
+          </Link>
+
           {/* Notification */}
-          <button className="relative w-12 h-12 bg-card/95 backdrop-blur-sm border-3 border-border-dark flex items-center justify-center shadow-[3px_3px_0_hsl(var(--pixel-shadow))] hover:bg-card transition-colors">
-            <Bell size={24} className="text-foreground" />
-            <span className="absolute -top-2 -right-2 w-6 h-6 bg-accent border-2 border-accent-dark text-[10px] font-pixel text-accent-foreground flex items-center justify-center shadow-[2px_2px_0_hsl(var(--pixel-shadow))]">
+          <button className="relative w-11 h-11 bg-card/95 backdrop-blur-sm border-3 border-border-dark flex items-center justify-center shadow-[3px_3px_0_hsl(var(--pixel-shadow))] hover:bg-card transition-colors">
+            <Bell size={22} className="text-foreground" />
+            <span className="absolute -top-2 -right-2 w-5 h-5 bg-accent border-2 border-accent-dark text-[10px] text-accent-foreground flex items-center justify-center shadow-[1px_1px_0_hsl(var(--pixel-shadow))]">
               3
             </span>
           </button>
 
           {/* Settings */}
-          <button className="w-12 h-12 bg-card/95 backdrop-blur-sm border-3 border-border-dark flex items-center justify-center shadow-[3px_3px_0_hsl(var(--pixel-shadow))] hover:bg-card transition-colors">
-            <Settings size={24} className="text-foreground" />
-          </button>
+          <Link 
+            to="/settings"
+            className="w-11 h-11 bg-card/95 backdrop-blur-sm border-3 border-border-dark flex items-center justify-center shadow-[3px_3px_0_hsl(var(--pixel-shadow))] hover:bg-card transition-colors"
+          >
+            <Settings size={22} className="text-foreground" />
+          </Link>
 
           {/* Profile */}
           <Link to="/profile">
-            <PixelProfileIcon size={4} />
+            <PixelProfileIcon size={3} />
           </Link>
         </div>
 
