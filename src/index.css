@@ -109,39 +109,40 @@
   }
 
   body {
-    @apply bg-background text-foreground font-pixel antialiased;
-    font-size: 12px;
-    line-height: 1.8;
-    letter-spacing: 0.02em;
+    @apply bg-background text-foreground font-body antialiased;
+    font-size: 14px;
+    line-height: 1.6;
   }
 
-  h1 {
-    @apply font-pixel text-base;
-  }
-
-  h2 {
-    @apply font-pixel text-sm;
-  }
-
-  h3, h4, h5, h6 {
-    @apply font-pixel text-xs;
-  }
-
-  p, span, div, a, button, input, textarea, label {
+  /* Pixel font only for main titles */
+  h1, h2 {
     @apply font-pixel;
   }
 
-  /* Better readability for pixel font */
-  .font-readable {
+  /* Modern font for smaller headings */
+  h3, h4, h5, h6 {
+    @apply font-body font-bold;
+  }
+
+  /* Body text uses modern font by default */
+  p, span, label, input, textarea {
+    @apply font-body;
+  }
+
+  /* Pixel font utility for specific elements */
+  .font-pixel {
+    font-family: 'Press Start 2P', cursive;
+  }
+
+  .font-body {
     font-family: 'Noto Sans KR', sans-serif;
-    letter-spacing: normal;
   }
 }
 
 @layer components {
-  /* Pixel Button Base */
+  /* Pixel Button Base - keeps pixel font */
   .pixel-btn {
-    @apply relative font-pixel text-xs uppercase tracking-wider;
+    @apply relative font-pixel text-[10px] uppercase tracking-wider;
     @apply px-4 py-3 transition-all duration-100;
     @apply border-4 border-border-dark;
     box-shadow: 
@@ -192,15 +193,15 @@
       inset 4px 4px 0 hsl(var(--pixel-highlight));
   }
 
-  /* Pixel Input */
+  /* Pixel Input - modern font for readability */
   .pixel-input {
-    @apply bg-input border-4 border-border-dark px-3 py-2 font-body;
+    @apply bg-input border-4 border-border-dark px-3 py-2 font-body text-sm;
     @apply focus:outline-none focus:border-primary;
     box-shadow: 
       inset 2px 2px 0 hsl(var(--pixel-shadow) / 0.15);
   }
 
-  /* Pixel Badge */
+  /* Pixel Badge - keeps pixel font */
   .pixel-badge {
     @apply inline-flex items-center px-2 py-1 font-pixel text-[8px] uppercase;
     @apply border-2 border-border-dark;
