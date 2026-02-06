@@ -58,8 +58,9 @@ const App = () => (
           </div>
         </BrowserRouter>
       </TeamProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
+    </AuthProvider>
+  </TooltipProvider>
+</QueryClientProvider>
 );
 
 export default App;
