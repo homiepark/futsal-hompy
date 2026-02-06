@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Settings, Users } from 'lucide-react';
+import { ArrowLeft, Settings, Users, UserPlus } from 'lucide-react';
 import { useTeam } from '@/contexts/TeamContext';
 import { TeamHeader } from '@/components/team/TeamHeader';
 import { TeamSwitcher } from '@/components/team/TeamSwitcher';
@@ -12,6 +12,7 @@ import { PixelButton } from '@/components/ui/PixelButton';
 import { MessageButton } from '@/components/ui/MessageButton';
 import { JoinRequestButton } from '@/components/team/JoinRequestButton';
 import { AdminTransferModal } from '@/components/team/AdminTransferModal';
+import { PlayerInviteModal } from '@/components/team/PlayerInviteModal';
 import { toast } from 'sonner';
 
 // Mock data - would come from Supabase
@@ -54,6 +55,7 @@ export default function TeamHome() {
   const navigate = useNavigate();
   const { setActiveTeam, clearActiveTeam } = useTeam();
   const [showAdminTransfer, setShowAdminTransfer] = useState(false);
+  const [showInviteModal, setShowInviteModal] = useState(false);
   const [teamData, setTeamData] = useState(mockTeamData);
 
   const isAdmin = true; // Would check user's role in team
@@ -168,20 +170,36 @@ export default function TeamHome() {
             className="w-full"
           />
         ) : (
-          <div className="flex items-center gap-2">
-            <PixelButton
-              variant="primary"
-              size="sm"
-              onClick={() => navigate('/register')}
-              className="flex-1"
-            >
-              ⚽ 선수 등록
-            </PixelButton>
-            <MessageButton 
-              label="쪽지" 
-              variant="admin" 
-              size="sm"
-            />
+          <div className="space-y-2">
+            {/* Admin: Invite Player Button */}
+            {isAdmin && (
+              <PixelButton
+                variant="accent"
+                size="sm"
+                onClick={() => setShowInviteModal(true)}
+                className="w-full flex items-center justify-center gap-2"
+              >
+                <UserPlus size={14} />
+                선수 초대하기
+              </PixelButton>
+            )}
+            
+            {/* Member Actions */}
+            <div className="flex items-center gap-2">
+              <PixelButton
+                variant="primary"
+                size="sm"
+                onClick={() => navigate('/register')}
+                className="flex-1"
+              >
+                ⚽ 입단 신청하기
+              </PixelButton>
+              <MessageButton 
+                label="쪽지" 
+                variant="admin" 
+                size="sm"
+              />
+            </div>
           </div>
         )}
 
@@ -208,6 +226,14 @@ export default function TeamHome() {
         members={mockMembers}
         currentAdminId="1"
         onTransfer={handleAdminTransfer}
+      />
+
+      {/* Player Invite Modal */}
+      <PlayerInviteModal
+        isOpen={showInviteModal}
+        onClose={() => setShowInviteModal(false)}
+        teamId={teamData.id}
+        teamName={teamData.name}
       />
     </div>
   );
