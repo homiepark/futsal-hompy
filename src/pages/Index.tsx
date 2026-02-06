@@ -46,7 +46,7 @@ const Index = () => {
       <SlimHeader />
 
       {/* Category Navigation Tabs */}
-      <div className="sticky top-16 z-30">
+      <div className="sticky top-20 z-30">
         <CategoryTabs />
       </div>
 
