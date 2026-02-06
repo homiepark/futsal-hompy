@@ -1,13 +1,15 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Bell, Settings, Mail, Plus } from 'lucide-react';
+import { Bell, Settings, Mail, Plus, X } from 'lucide-react';
 import { SimpleHeader } from '@/components/findteam/SimpleHeader';
 import { AdvancedFilterBar, FilterState, initialFilterState } from '@/components/findteam/AdvancedFilterBar';
 import { TeamListCard } from '@/components/findteam/TeamListCard';
 import { PixelProfileIcon } from '@/components/ui/PixelProfileIcon';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
-import { getGenderLabel, timeSlotOptions, getTimeSlot } from '@/lib/teamData';
+import { useAuth } from '@/contexts/AuthContext';
+import { getTimeSlot } from '@/lib/teamData';
+import { toast } from 'sonner';
 import topBanner from '@/assets/top-banner.jpg';
 
 interface Team {
@@ -28,11 +30,57 @@ interface Team {
 
 const Index = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [teams, setTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState<FilterState>(initialFilterState);
   const [listView, setListView] = useState<'all' | 'favorites'>('all');
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
+  const [smartFilterApplied, setSmartFilterApplied] = useState(false);
+  const [userDistrict, setUserDistrict] = useState<{ region: string; district: string } | null>(null);
+
+  // Fetch user profile for smart filter
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      if (!user) {
+        setSmartFilterApplied(false);
+        setUserDistrict(null);
+        return;
+      }
+
+      try {
+        const { data: profile, error } = await supabase
+          .from('profiles')
+          .select('region, district')
+          .eq('user_id', user.id)
+          .single();
+
+        if (error) throw error;
+
+        if (profile?.region && profile?.district) {
+          setUserDistrict({ region: profile.region, district: profile.district });
+          // Apply smart filter
+          setFilters(prev => ({
+            ...prev,
+            region: profile.region,
+            district: profile.district,
+          }));
+          setSmartFilterApplied(true);
+          
+          // Show toast notification
+          toast.success(`${profile.district} 팀들을 먼저 보여드려요!`, {
+            icon: '📍',
+            duration: 3000,
+            className: 'font-pixel',
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+      }
+    };
+
+    fetchUserProfile();
+  }, [user]);
 
   // Fetch teams from Supabase
   useEffect(() => {
@@ -76,6 +124,16 @@ const Index = () => {
       team.id === teamId ? { ...team, isFavorited } : team
     ));
   };
+
+  // Clear smart filter and show all teams
+  const handleShowAll = useCallback(() => {
+    setFilters(initialFilterState);
+    setSmartFilterApplied(false);
+    toast.info('전체 팀 목록을 표시합니다', {
+      icon: '⚽',
+      duration: 2000,
+    });
+  }, []);
 
   // Real-time filtering with Supabase data structure
   const filteredTeams = useMemo(() => {
@@ -189,14 +247,39 @@ const Index = () => {
         <SimpleHeader />
       </div>
 
-      {/* Page Title */}
+      {/* Page Title with Smart Filter Notice */}
       <div className="px-4 pt-4 pb-2">
-        <h1 className="font-pixel text-lg text-foreground flex items-center gap-2">
-          ⚽ 전체 팀 목록
-          <span className="text-sm text-muted-foreground">
-            ({loading ? '...' : filteredTeams.length}개)
-          </span>
-        </h1>
+        <div className="flex items-center justify-between">
+          <h1 className="font-pixel text-lg text-foreground flex items-center gap-2">
+            ⚽ 전체 팀 목록
+            <span className="text-sm text-muted-foreground">
+              ({loading ? '...' : filteredTeams.length}개)
+            </span>
+          </h1>
+        </div>
+        
+        {/* Smart Filter Notice */}
+        {smartFilterApplied && userDistrict && (
+          <div 
+            className="mt-2 flex items-center justify-between gap-2 px-3 py-2 bg-primary/10 border-3 border-primary"
+            style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
+          >
+            <div className="flex items-center gap-2">
+              <span className="text-lg">📍</span>
+              <span className="font-pixel text-[10px] text-primary">
+                {userDistrict.district} 팀들을 먼저 보여드려요!
+              </span>
+            </div>
+            <button
+              onClick={handleShowAll}
+              className="flex items-center gap-1 px-2 py-1 text-[9px] font-pixel bg-card text-foreground border-2 border-border-dark hover:bg-muted transition-colors"
+              style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
+            >
+              전체 보기
+              <X size={10} />
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Create Team CTA */}
@@ -227,7 +310,16 @@ const Index = () => {
       </div>
 
       {/* Advanced Filter Bar */}
-      <AdvancedFilterBar filters={filters} onFiltersChange={setFilters} />
+      <AdvancedFilterBar 
+        filters={filters} 
+        onFiltersChange={(newFilters) => {
+          setFilters(newFilters);
+          // If user manually changes region filter, mark smart filter as not applied
+          if (newFilters.region !== userDistrict?.region || newFilters.district !== userDistrict?.district) {
+            setSmartFilterApplied(false);
+          }
+        }} 
+      />
 
       {/* Team List */}
       <div className="p-4">
@@ -293,6 +385,15 @@ const Index = () => {
             <p className="font-body text-sm text-muted-foreground mt-1">
               {listView === 'favorites' ? '팀 카드의 별 아이콘을 눌러 추가해보세요!' : '필터 조건을 변경해보세요'}
             </p>
+            {smartFilterApplied && (
+              <button
+                onClick={handleShowAll}
+                className="mt-3 px-4 py-2 font-pixel text-[10px] bg-primary text-primary-foreground border-3 border-primary-dark"
+                style={{ boxShadow: '3px 3px 0 hsl(var(--primary-dark))' }}
+              >
+                전체 팀 보기
+              </button>
+            )}
           </div>
         )}
       </div>

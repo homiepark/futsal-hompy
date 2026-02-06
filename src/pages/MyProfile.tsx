@@ -1,9 +1,20 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { ArrowLeft, Save, Camera, Mail } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { PixelButton } from '@/components/ui/PixelButton';
 import { PixelCard } from '@/components/ui/PixelCard';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
+import { regionData, regions } from '@/lib/teamData';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 // Futsal positions
 const futsalPositions = [
@@ -14,19 +25,59 @@ const futsalPositions = [
 ];
 
 export default function MyProfile() {
+  const { user } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [profile, setProfile] = useState({
-    nickname: '풋살매니아',
+    nickname: '풋살러',
     avatarUrl: '',
-    yearsOfExperience: 3,
+    yearsOfExperience: 0,
     isProElite: false,
     preferredPosition: 'ala',
+    region: '',
+    district: '',
   });
 
   const [myTeams] = useState([
     { id: '1', name: 'FC 불꽃', emblem: '🔥', role: 'admin' },
     { id: '2', name: '라이언즈 FC', emblem: '🦁', role: 'member' },
   ]);
+
+  // Fetch profile on mount
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (!user) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('user_id', user.id)
+          .single();
+
+        if (error) throw error;
+
+        if (data) {
+          setProfile({
+            nickname: data.nickname || '풋살러',
+            avatarUrl: data.avatar_url || '',
+            yearsOfExperience: data.years_of_experience || 0,
+            isProElite: data.is_pro_elite || false,
+            preferredPosition: data.preferred_position || 'ala',
+            region: data.region || '',
+            district: data.district || '',
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, [user]);
 
   const getPositionLabel = (positionId: string) => {
     const position = futsalPositions.find(p => p.id === positionId);
@@ -44,6 +95,45 @@ export default function MyProfile() {
       setProfile({ ...profile, avatarUrl: url });
     }
   };
+
+  const handleRegionChange = (region: string) => {
+    setProfile({ ...profile, region, district: '' });
+  };
+
+  const handleSave = async () => {
+    if (!user) {
+      toast.error('로그인이 필요합니다');
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          nickname: profile.nickname,
+          years_of_experience: profile.yearsOfExperience,
+          is_pro_elite: profile.isProElite,
+          preferred_position: profile.preferredPosition,
+          region: profile.region || null,
+          district: profile.district || null,
+        })
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      toast.success('프로필이 저장되었습니다!', {
+        icon: '✅',
+      });
+    } catch (error: any) {
+      console.error('Error saving profile:', error);
+      toast.error('저장 중 오류가 발생했습니다');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const districts = profile.region ? regionData[profile.region] || [] : [];
 
   return (
     <div className="pb-24 max-w-lg mx-auto">
@@ -185,6 +275,71 @@ export default function MyProfile() {
           </div>
         </PixelCard>
 
+        {/* Activity Region - for Smart Filter */}
+        <PixelCard>
+          <h2 className="text-foreground mb-4 flex items-center gap-2">
+            <span className="text-primary">📍</span>
+            활동 지역
+            <span className="text-[9px] text-muted-foreground font-pixel">(스마트 필터용)</span>
+          </h2>
+          <p className="text-xs text-muted-foreground mb-3">
+            설정하시면 홈 화면에서 해당 지역 팀을 먼저 보여드려요!
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            <Select value={profile.region} onValueChange={handleRegionChange}>
+              <SelectTrigger className={cn(
+                'bg-input border-3 border-border-dark font-pixel text-[10px] h-10',
+                'focus:border-primary focus:ring-0'
+              )}>
+                <SelectValue placeholder="시/도 선택" />
+              </SelectTrigger>
+              <SelectContent className="bg-card border-3 border-border-dark max-h-60 z-50">
+                {regions.map((r) => (
+                  <SelectItem 
+                    key={r} 
+                    value={r}
+                    className="font-pixel text-[10px] cursor-pointer hover:bg-muted"
+                  >
+                    {r}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select 
+              value={profile.district} 
+              onValueChange={(district) => setProfile({ ...profile, district })} 
+              disabled={!profile.region}
+            >
+              <SelectTrigger className={cn(
+                'bg-input border-3 border-border-dark font-pixel text-[10px] h-10',
+                'focus:border-primary focus:ring-0',
+                !profile.region && 'opacity-50'
+              )}>
+                <SelectValue placeholder="구/군 선택" />
+              </SelectTrigger>
+              <SelectContent className="bg-card border-3 border-border-dark max-h-60 z-50">
+                {districts.map((d) => (
+                  <SelectItem 
+                    key={d} 
+                    value={d}
+                    className="font-pixel text-[10px] cursor-pointer hover:bg-muted"
+                  >
+                    {d}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          {profile.region && profile.district && (
+            <div className="mt-2 px-2 py-1 bg-primary/10 border-2 border-primary inline-block">
+              <span className="font-pixel text-[9px] text-primary">
+                ✓ {profile.region} {profile.district}
+              </span>
+            </div>
+          )}
+        </PixelCard>
+
         {/* My Teams Section */}
         <PixelCard>
           <h2 className="text-foreground mb-4 flex items-center gap-2">
@@ -228,9 +383,14 @@ export default function MyProfile() {
         </PixelCard>
 
         {/* Save Button */}
-        <PixelButton variant="primary" className="w-full flex items-center justify-center gap-2">
+        <PixelButton 
+          variant="primary" 
+          className="w-full flex items-center justify-center gap-2"
+          onClick={handleSave}
+          disabled={saving}
+        >
           <Save size={16} />
-          <span>프로필 저장</span>
+          <span>{saving ? '저장 중...' : '프로필 저장'}</span>
         </PixelButton>
       </div>
     </div>
