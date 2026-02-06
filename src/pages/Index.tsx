@@ -4,6 +4,7 @@ import { Bell, Settings, Mail, Plus, X } from 'lucide-react';
 import { SimpleHeader } from '@/components/findteam/SimpleHeader';
 import { AdvancedFilterBar, FilterState, initialFilterState } from '@/components/findteam/AdvancedFilterBar';
 import { TeamListCard } from '@/components/findteam/TeamListCard';
+import { NeighborhoodNews } from '@/components/home/NeighborhoodNews';
 import { PixelProfileIcon } from '@/components/ui/PixelProfileIcon';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
@@ -332,6 +333,11 @@ const Index = () => {
           <span>🏆 팀 만들기</span>
         </button>
       </div>
+
+      {/* Neighborhood News Section */}
+      {user && userRegions.length > 0 && (
+        <NeighborhoodNews userRegions={userRegions} userId={user.id} />
+      )}
 
       {/* Advanced Filter Bar */}
       <AdvancedFilterBar 
