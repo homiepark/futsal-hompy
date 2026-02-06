@@ -6,6 +6,7 @@ import { PixelBadge } from '@/components/ui/PixelBadge';
 import { PixelButton } from '@/components/ui/PixelButton';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { MatchCelebration } from './MatchCelebration';
 
 interface ChallengeApplication {
   id: string;
@@ -42,6 +43,7 @@ export function ChallengeNotification({
 }: ChallengeNotificationProps) {
   const navigate = useNavigate();
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
   const team = application.applicant_team;
 
   const handleAccept = async () => {
@@ -63,21 +65,25 @@ export function ChallengeNotification({
 
       if (postError) throw postError;
 
-      toast.success('매칭이 성사되었습니다! 🎉', {
-        description: `${team?.name}팀과의 대결이 확정되었습니다.`,
-      });
-
-      onAction();
-      onClose();
-      
-      // Navigate to messages for direct chat
-      navigate('/messages');
+      // Show celebration animation
+      setShowCelebration(true);
     } catch (error) {
       console.error('Error accepting challenge:', error);
       toast.error('처리 중 오류가 발생했습니다');
-    } finally {
       setIsProcessing(false);
     }
+  };
+
+  const handleCelebrationComplete = () => {
+    setShowCelebration(false);
+    toast.success('매칭이 성사되었습니다! 🎉', {
+      description: `${team?.name}팀과의 대결이 확정되었습니다.`,
+    });
+    onAction();
+    onClose();
+    
+    // Navigate to messages for direct chat
+    navigate('/messages');
   };
 
   const handleDecline = async () => {
@@ -112,12 +118,23 @@ export function ChallengeNotification({
   const teamLevel = (team.level || 'C') as 'S' | 'A' | 'B' | 'C';
 
   return (
-    <div 
-      className="fixed bottom-24 right-4 z-50 w-80 animate-in slide-in-from-right-5"
-      style={{ 
-        animation: 'slideInRight 0.3s ease-out',
-      }}
-    >
+    <>
+      {/* Celebration Animation */}
+      <MatchCelebration
+        isVisible={showCelebration}
+        opponentTeamName={team.name}
+        onComplete={handleCelebrationComplete}
+      />
+
+      <div 
+        className={cn(
+          "fixed bottom-24 right-4 z-50 w-80 animate-in slide-in-from-right-5",
+          showCelebration && "hidden"
+        )}
+        style={{ 
+          animation: 'slideInRight 0.3s ease-out',
+        }}
+      >
       <div 
         className="bg-card border-4 border-accent overflow-hidden"
         style={{ boxShadow: '6px 6px 0 hsl(var(--pixel-shadow))' }}
@@ -209,8 +226,9 @@ export function ChallengeNotification({
             팀 프로필 보기
           </PixelButton>
         </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
