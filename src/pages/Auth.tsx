@@ -134,19 +134,27 @@ export default function Auth() {
           >
             우리
           </span>
-          {/* 의 - with soccer ball as ㅇ */}
-          <span className="relative inline-flex flex-col items-center mx-0.5">
-            {/* Soccer ball replacing ㅇ */}
-            <span className="text-xl leading-none" style={{ marginBottom: '-4px' }}>⚽</span>
-            {/* ㅡ and ㅣ parts */}
+          {/* 의 - with soccer ball overlaying ㅇ */}
+          <span className="relative inline-block">
             <span 
-              className="font-pixel text-xl font-bold leading-none"
+              className="font-pixel text-3xl font-bold"
               style={{
                 color: '#FFFFFF',
                 WebkitTextStroke: '1.5px #4A4A4A',
               }}
             >
-              ㅢ
+              의
+            </span>
+            {/* Soccer ball overlay on ㅇ position */}
+            <span 
+              className="absolute text-sm"
+              style={{ 
+                top: '1px', 
+                left: '50%', 
+                transform: 'translateX(-50%)',
+              }}
+            >
+              ⚽
             </span>
           </span>
           {/* 풋살 - Vivid Green */}
