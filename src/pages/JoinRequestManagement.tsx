@@ -52,7 +52,7 @@ export default function JoinRequestManagement() {
         const userIds = requestsData.map(r => r.user_id);
         const { data: profilesData, error: profilesError } = await supabase
           .from('profiles')
-          .select('user_id, nickname, avatar_url, years_of_experience, preferred_position')
+          .select('user_id, nickname, nickname_tag, real_name, avatar_url, years_of_experience, preferred_position')
           .in('user_id', userIds);
 
         if (profilesError) throw profilesError;
