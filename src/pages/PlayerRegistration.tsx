@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { User } from 'lucide-react';
 import { PixelCard } from '@/components/ui/PixelCard';
 import { PixelButton } from '@/components/ui/PixelButton';
+import { MessageButton } from '@/components/ui/MessageButton';
 import { cn } from '@/lib/utils';
 
 const positions = [
