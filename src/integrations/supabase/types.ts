@@ -14,6 +14,113 @@ export type Database = {
   }
   public: {
     Tables: {
+      match_applications: {
+        Row: {
+          applicant_team_id: string
+          applied_by_user_id: string
+          created_at: string
+          id: string
+          match_post_id: string
+          message: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          applicant_team_id: string
+          applied_by_user_id: string
+          created_at?: string
+          id?: string
+          match_post_id: string
+          message?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          applicant_team_id?: string
+          applied_by_user_id?: string
+          created_at?: string
+          id?: string
+          match_post_id?: string
+          message?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "match_applications_applicant_team_id_fkey"
+            columns: ["applicant_team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "match_applications_match_post_id_fkey"
+            columns: ["match_post_id"]
+            isOneToOne: false
+            referencedRelation: "match_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      match_posts: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          location_address: string | null
+          location_name: string
+          location_type: string
+          match_date: string
+          match_time_end: string
+          match_time_start: string
+          posted_by_user_id: string
+          status: string
+          target_levels: string[]
+          team_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          location_address?: string | null
+          location_name: string
+          location_type?: string
+          match_date: string
+          match_time_end: string
+          match_time_start: string
+          posted_by_user_id: string
+          status?: string
+          target_levels?: string[]
+          team_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          location_address?: string | null
+          location_name?: string
+          location_type?: string
+          match_date?: string
+          match_time_end?: string
+          match_time_start?: string
+          posted_by_user_id?: string
+          status?: string
+          target_levels?: string[]
+          team_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "match_posts_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       messages: {
         Row: {
           content: string

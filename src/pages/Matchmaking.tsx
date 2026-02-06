@@ -1,546 +1,347 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, X, Check, ChevronDown, RotateCcw, Plus, Sparkles } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { PixelBadge } from '@/components/ui/PixelBadge';
-import { TeamCard } from '@/components/matchmaking/TeamCard';
-import { MatchTicker } from '@/components/matchmaking/MatchTicker';
-import { RecommendedMatches } from '@/components/matchmaking/RecommendedMatches';
-import { LevelInfoButton } from '@/components/ui/LevelGuideModal';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { 
-  regionData, 
-  genderOptions, 
-  levelOptions,
-} from '@/lib/teamData';
+import { MatchPostCard } from '@/components/matchmaking/MatchPostCard';
+import { MatchBoardFilters } from '@/components/matchmaking/MatchBoardFilters';
+import { CreateMatchPostModal } from '@/components/matchmaking/CreateMatchPostModal';
+import { MatchTicker } from '@/components/matchmaking/MatchTicker';
+import { format, parseISO, isToday, isTomorrow, isThisWeek } from 'date-fns';
 
-interface PreferredRegion {
-  region: string;
-  district: string;
+interface MatchPost {
+  id: string;
+  team_id: string;
+  location_name: string;
+  location_address: string | null;
+  match_date: string;
+  match_time_start: string;
+  match_time_end: string;
+  target_levels: string[];
+  description: string | null;
+  created_at: string;
+  team: {
+    id: string;
+    name: string;
+    emblem: string;
+    level: string;
+  };
 }
 
-interface MatchFilters {
-  teamName: string;
-  genders: string[];
-  selectedRegions: PreferredRegion[];
+interface BoardFilters {
+  region: string;
+  district: string;
+  date: string;
   levels: string[];
 }
 
-const initialFilters: MatchFilters = {
-  teamName: '',
-  genders: [],
-  selectedRegions: [],
+const initialFilters: BoardFilters = {
+  region: '',
+  district: '',
+  date: '',
   levels: [],
 };
 
-const MAX_FILTER_REGIONS = 3;
-
-// Mock teams - will be replaced with real data
-const mockTeams = [
-  { id: '1', name: 'FC 번개', emblem: '⚡', region: '서울', district: '강남구', level: 'S' as const, members: 12, gender: '남성' as const, matchTime: '주말 오후', homeGroundName: '강남 스포츠센터', homeGroundAddress: '서울 강남구 역삼동 456', mannerScore: 4.8 },
-  { id: '2', name: '선데이 풋살', emblem: '☀️', region: '서울', district: '마포구', level: 'A' as const, members: 10, gender: '혼성' as const, matchTime: '일요일 오전', homeGroundName: '상암 풋살장', homeGroundAddress: '서울 마포구 상암동 123', mannerScore: 4.5 },
-  { id: '3', name: '레이디스 FC', emblem: '👑', region: '경기', district: '성남시', level: 'B' as const, members: 15, gender: '여성' as const, matchTime: '토요일 오후', homeGroundName: '판교 풋살파크', homeGroundAddress: '경기 성남시 판교동 789', mannerScore: 4.9 },
-  { id: '4', name: '올드보이즈', emblem: '🦁', region: '서울', district: '송파구', level: 'A' as const, members: 14, gender: '남성' as const, matchTime: '평일 저녁', homeGroundName: '잠실 실내풋살장', homeGroundAddress: '서울 송파구 잠실동 101', mannerScore: 4.7 },
-  { id: '5', name: '위클리 킥', emblem: '🎯', region: '인천', district: '연수구', level: 'C' as const, members: 8, gender: '혼성' as const, matchTime: '주말 오전', homeGroundName: '송도 스포츠파크', homeGroundAddress: '인천 연수구 송도동 555', mannerScore: 4.2 },
-  { id: '6', name: '블루드래곤', emblem: '🐉', region: '서울', district: '동작구', level: 'B' as const, members: 11, gender: '남성' as const, matchTime: '일요일 오후', homeGroundName: '동작 풋살파크', homeGroundAddress: '서울 동작구 사당동 202', mannerScore: 4.6 },
+// Mock data for demonstration - will be replaced with real data
+const mockMatchPosts: MatchPost[] = [
+  {
+    id: '1',
+    team_id: 't1',
+    location_name: '용산 풋살파크',
+    location_address: '서울 용산구 한강대로 123',
+    match_date: format(new Date(), 'yyyy-MM-dd'),
+    match_time_start: '14:00',
+    match_time_end: '16:00',
+    target_levels: ['A', 'B'],
+    description: '정정당당하게 한 판 하실 팀 찾습니다!',
+    created_at: new Date().toISOString(),
+    team: {
+      id: 't1',
+      name: 'FC 번개',
+      emblem: '⚡',
+      level: 'A',
+    },
+  },
+  {
+    id: '2',
+    team_id: 't2',
+    location_name: '상암 월드컵 풋살장',
+    location_address: '서울 마포구 상암동 456',
+    match_date: format(new Date(Date.now() + 86400000), 'yyyy-MM-dd'),
+    match_time_start: '10:00',
+    match_time_end: '12:00',
+    target_levels: ['B', 'C'],
+    description: '주말 오전 친선 경기 원합니다. 초보 팀도 환영!',
+    created_at: new Date().toISOString(),
+    team: {
+      id: 't2',
+      name: '선데이 풋살',
+      emblem: '☀️',
+      level: 'B',
+    },
+  },
+  {
+    id: '3',
+    team_id: 't3',
+    location_name: '강남 스포츠센터',
+    location_address: '서울 강남구 역삼동 789',
+    match_date: format(new Date(Date.now() + 172800000), 'yyyy-MM-dd'),
+    match_time_start: '19:00',
+    match_time_end: '21:00',
+    target_levels: ['S', 'A'],
+    description: '고수 팀만 오세요! 실력으로 승부합니다.',
+    created_at: new Date().toISOString(),
+    team: {
+      id: 't3',
+      name: '올드보이즈',
+      emblem: '🦁',
+      level: 'S',
+    },
+  },
 ];
 
 export default function Matchmaking() {
   const navigate = useNavigate();
-  const [filters, setFilters] = useState<MatchFilters>(initialFilters);
-  const [smartFilterApplied, setSmartFilterApplied] = useState(false);
-  const [isRegionOpen, setIsRegionOpen] = useState(false);
-  const [tempRegion, setTempRegion] = useState('');
-  const [tempDistrict, setTempDistrict] = useState('');
-  const [userLevel, setUserLevel] = useState<string | null>(null);
-  const [userDistricts, setUserDistricts] = useState<string[]>([]);
+  const [filters, setFilters] = useState<BoardFilters>(initialFilters);
+  const [matchPosts, setMatchPosts] = useState<MatchPost[]>(mockMatchPosts);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [userTeam, setUserTeam] = useState<{
+    id: string;
+    name: string;
+    emblem: string;
+    homeGroundName?: string;
+    homeGroundAddress?: string;
+  } | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Load user's preferred regions on mount
+  // Load user's team and check if they're admin
   useEffect(() => {
-    async function loadSmartFilter() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+    async function loadUserTeam() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          setIsLoading(false);
+          return;
+        }
 
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('preferred_regions')
-        .eq('user_id', user.id)
-        .single();
+        // Check if user is admin of any team
+        const { data: teams } = await supabase
+          .from('teams')
+          .select('id, name, emblem, home_ground_name, home_ground_address')
+          .eq('admin_user_id', user.id)
+          .limit(1);
 
-      if (profile?.preferred_regions && Array.isArray(profile.preferred_regions) && profile.preferred_regions.length > 0) {
-        const regions = (profile.preferred_regions as unknown as PreferredRegion[]).filter(
-          r => r && typeof r === 'object' && 'region' in r && 'district' in r
-        );
-        if (regions.length === 0) return;
+        if (teams && teams.length > 0) {
+          setUserTeam({
+            id: teams[0].id,
+            name: teams[0].name,
+            emblem: teams[0].emblem,
+            homeGroundName: teams[0].home_ground_name || undefined,
+            homeGroundAddress: teams[0].home_ground_address || undefined,
+          });
+          setIsAdmin(true);
+        }
+
+        // Load match posts from database
+        await loadMatchPosts();
+      } catch (error) {
+        console.error('Error loading user team:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadUserTeam();
+  }, []);
+
+  const loadMatchPosts = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('match_posts')
+        .select(`
+          id,
+          team_id,
+          location_name,
+          location_address,
+          match_date,
+          match_time_start,
+          match_time_end,
+          target_levels,
+          description,
+          created_at
+        `)
+        .eq('status', 'open')
+        .gte('match_date', format(new Date(), 'yyyy-MM-dd'))
+        .order('match_date', { ascending: true });
+
+      if (error) throw error;
+
+      if (data && data.length > 0) {
+        // Fetch team info for each post
+        const teamIds = [...new Set(data.map(p => p.team_id))];
+        const { data: teamsData } = await supabase
+          .from('teams')
+          .select('id, name, emblem, level')
+          .in('id', teamIds);
+
+        const teamsMap = new Map(teamsData?.map(t => [t.id, t]) || []);
         
-        setFilters(prev => ({
-          ...prev,
-          selectedRegions: regions,
+        const postsWithTeams = data.map(post => ({
+          ...post,
+          team: teamsMap.get(post.team_id) || {
+            id: post.team_id,
+            name: '알 수 없는 팀',
+            emblem: '⚽',
+            level: 'C',
+          },
         }));
-        setUserDistricts(regions.map(r => r.district));
-        setSmartFilterApplied(true);
-        
-        const districtNames = regions.map(r => r.district).join(', ');
-        toast.success(`${districtNames} 팀들을 우선 정렬합니다!`, {
-          icon: '📍',
-          duration: 3000,
-          className: 'font-pixel',
-        });
+
+        setMatchPosts(postsWithTeams);
       }
+    } catch (error) {
+      console.error('Error loading match posts:', error);
+      // Keep using mock data if fetch fails
     }
-    loadSmartFilter();
-  }, []);
-
-  const handleShowAll = useCallback(() => {
-    setFilters(initialFilters);
-    setSmartFilterApplied(false);
-    setTempRegion('');
-    setTempDistrict('');
-    toast.info('전체 팀 목록을 표시합니다', { icon: '🔄', className: 'font-pixel' });
-  }, []);
-
-  const toggleArrayFilter = (key: 'genders' | 'levels', value: string) => {
-    const current = filters[key];
-    const updated = current.includes(value)
-      ? current.filter(v => v !== value)
-      : [...current, value];
-    setFilters({ ...filters, [key]: updated });
   };
 
-  const handleAddRegion = () => {
-    if (!tempRegion || !tempDistrict) return;
-    if (filters.selectedRegions.length >= MAX_FILTER_REGIONS) return;
-    
-    const isDuplicate = filters.selectedRegions.some(
-      r => r.region === tempRegion && r.district === tempDistrict
-    );
-    if (isDuplicate) return;
-    
-    setFilters({
-      ...filters,
-      selectedRegions: [...filters.selectedRegions, { region: tempRegion, district: tempDistrict }],
-    });
-    setTempRegion('');
-    setTempDistrict('');
-    setSmartFilterApplied(false);
+  // Filter match posts
+  const filteredPosts = matchPosts.filter(post => {
+    // Date filter
+    if (filters.date) {
+      const postDate = parseISO(post.match_date);
+      if (filters.date === 'week') {
+        if (!isThisWeek(postDate)) return false;
+      } else {
+        if (post.match_date !== filters.date) return false;
+      }
+    }
+
+    // Level filter
+    if (filters.levels.length > 0) {
+      const hasMatchingLevel = filters.levels.some(level => 
+        post.target_levels.includes(level)
+      );
+      if (!hasMatchingLevel) return false;
+    }
+
+    // Region filter (based on location_address if available)
+    if (filters.region && post.location_address) {
+      if (!post.location_address.includes(filters.region)) return false;
+    }
+    if (filters.district && post.location_address) {
+      if (!post.location_address.includes(filters.district)) return false;
+    }
+
+    return true;
+  });
+
+  const handleChallenge = (postId: string) => {
+    if (!isAdmin) {
+      toast.error('팀 관리자만 도전할 수 있습니다', { icon: '⚠️' });
+      return;
+    }
+    toast.success('도전 신청이 완료되었습니다!', { icon: '⚔️' });
   };
 
-  const handleRemoveRegion = (index: number) => {
-    setFilters({
-      ...filters,
-      selectedRegions: filters.selectedRegions.filter((_, i) => i !== index),
-    });
-    setSmartFilterApplied(false);
+  const handleCreateSuccess = () => {
+    loadMatchPosts();
   };
-
-  const hasActiveFilters = filters.teamName || 
-    filters.genders.length > 0 || 
-    filters.selectedRegions.length > 0 ||
-    filters.levels.length > 0;
-
-  const tempDistricts = tempRegion ? regionData[tempRegion] || [] : [];
-
-  // Generate tags for teams based on user preferences
-  const getTeamTags = (team: typeof mockTeams[0]): string[] => {
-    const tags: string[] = [];
-    
-    // Check if team is in user's district
-    if (userDistricts.includes(team.district)) {
-      tags.push('내 동네 팀');
-    }
-    
-    // Check level similarity (mock - would use actual user team level)
-    if (['A', 'B'].includes(team.level)) {
-      tags.push('실력 비슷');
-    }
-    
-    // Mock "first match" tag
-    if (Math.random() > 0.6) {
-      tags.push('첫 대결');
-    }
-    
-    return tags;
-  };
-
-  // Filter and sort teams based on current filters
-  const filteredTeams = mockTeams
-    .filter(team => {
-      // Team name filter
-      if (filters.teamName && !team.name.toLowerCase().includes(filters.teamName.toLowerCase())) {
-        return false;
-      }
-      
-      // Gender filter (OR logic)
-      if (filters.genders.length > 0) {
-        const genderValue = team.gender === '남성' ? 'male' : team.gender === '여성' ? 'female' : 'mixed';
-        if (!filters.genders.includes(genderValue)) return false;
-      }
-      
-      // Region filter (OR logic - any of selected regions)
-      if (filters.selectedRegions.length > 0) {
-        const matchesAnyRegion = filters.selectedRegions.some(
-          r => team.region === r.region && team.district === r.district
-        );
-        if (!matchesAnyRegion) return false;
-      }
-      
-      // Level filter (OR logic)
-      if (filters.levels.length > 0 && !filters.levels.includes(team.level)) {
-        return false;
-      }
-      
-      return true;
-    })
-    .map(team => ({
-      ...team,
-      tags: getTeamTags(team),
-    }))
-    // Smart sorting: prioritize user's districts
-    .sort((a, b) => {
-      const aInDistrict = userDistricts.includes(a.district) ? 1 : 0;
-      const bInDistrict = userDistricts.includes(b.district) ? 1 : 0;
-      if (bInDistrict !== aInDistrict) return bInDistrict - aInDistrict;
-      
-      // Then by manner score
-      return b.mannerScore - a.mannerScore;
-    });
-
-  // Get recommended matches (teams in user's districts with similar level)
-  const recommendedTeams = mockTeams
-    .filter(team => userDistricts.includes(team.district))
-    .slice(0, 4)
-    .map(team => ({
-      id: team.id,
-      name: team.name,
-      emblem: team.emblem,
-      region: team.region,
-      district: team.district,
-      level: team.level,
-      mannerScore: team.mannerScore,
-      matchTime: team.matchTime,
-      homeGroundName: team.homeGroundName,
-      homeGroundAddress: team.homeGroundAddress,
-      tags: getTeamTags(team),
-    }));
 
   return (
     <div className="pb-20 px-4 py-6 max-w-lg mx-auto">
       {/* Header */}
       <div className="mb-4">
-        <h2 className="font-pixel text-xs text-foreground flex items-center gap-2 mb-4">
+        <h2 className="font-pixel text-xs text-foreground flex items-center gap-2 mb-2">
           <span className="text-primary">⚔️</span>
-          매칭 찾기
+          매칭팀 구해요
         </h2>
+        <p className="font-pixel text-[8px] text-muted-foreground">
+          대결 상대를 찾는 팀들의 공고 게시판
+        </p>
       </div>
 
       {/* Live Ticker */}
       <MatchTicker />
 
-      {/* Smart Filter Notice */}
-      {smartFilterApplied && filters.selectedRegions.length > 0 && (
-        <div className="flex items-center gap-2 mb-4 p-2 bg-accent/20 border-2 border-accent rounded">
-          <Sparkles size={14} className="text-accent" />
-          <span className="font-pixel text-[8px] text-accent flex-1">
-            내 활동 지역 팀 우선 정렬 중
-          </span>
-          <button
-            onClick={handleShowAll}
-            className="px-2 py-1 font-pixel text-[8px] bg-card border-2 border-border-dark hover:bg-muted transition-colors"
-            style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
-          >
-            초기화
-          </button>
-        </div>
-      )}
+      {/* Filters */}
+      <MatchBoardFilters 
+        filters={filters}
+        onFiltersChange={setFilters}
+      />
 
-      {/* Recommended Matches */}
-      {recommendedTeams.length > 0 && (
-        <RecommendedMatches teams={recommendedTeams} userDistricts={userDistricts} />
-      )}
-
-      {/* Search */}
-      <div className="relative mb-4">
-        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-        <input
-          type="text"
-          placeholder="팀 이름 검색..."
-          value={filters.teamName}
-          onChange={(e) => setFilters({ ...filters, teamName: e.target.value })}
-          className={cn(
-            "w-full pl-9 pr-8 py-2 font-pixel text-sm",
-            "bg-input border-3 border-border-dark",
-            "focus:outline-none focus:border-primary transition-colors",
-            filters.teamName && "border-primary bg-primary/5"
-          )}
-          style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
-        />
-        {filters.teamName && (
-          <button
-            onClick={() => setFilters({ ...filters, teamName: '' })}
-            className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-muted rounded"
-          >
-            <X size={12} className="text-muted-foreground" />
-          </button>
-        )}
-      </div>
-
-      {/* Filters Panel */}
-      <div className="bg-card border-3 border-border-dark p-3 space-y-3 mb-6" style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}>
-        {/* Header with Reset */}
-        <div className="flex items-center justify-between">
-          <h3 className="font-pixel text-[9px] text-foreground flex items-center gap-2">
-            🔍 상세 필터
-            {hasActiveFilters && (
-              <span className="px-2 py-0.5 bg-accent text-accent-foreground text-[8px] border-2 border-accent-dark">
-                적용중
-              </span>
-            )}
-          </h3>
-          {hasActiveFilters && (
-            <button
-              onClick={handleShowAll}
-              className="flex items-center gap-1 px-2 py-1 text-[8px] font-pixel text-muted-foreground hover:text-foreground border-2 border-border-dark bg-secondary hover:bg-muted transition-colors"
-              style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
-            >
-              <RotateCcw size={10} />
-              초기화
-            </button>
-          )}
-        </div>
-
-        {/* Gender Filter */}
-        <div>
-          <label className="font-pixel text-[9px] text-muted-foreground mb-1.5 block">👥 성별</label>
-          <div className="flex flex-wrap gap-1.5">
-            {genderOptions.map(({ value, label }) => {
-              const isActive = filters.genders.includes(value);
-              return (
-                <button
-                  key={value}
-                  onClick={() => toggleArrayFilter('genders', value)}
-                  className={cn(
-                    "px-3 py-1.5 font-pixel text-[10px] border-3 transition-all",
-                    isActive
-                      ? "bg-primary text-primary-foreground border-primary-dark"
-                      : "bg-secondary text-secondary-foreground border-border-dark hover:border-primary"
-                  )}
-                  style={{ 
-                    boxShadow: isActive 
-                      ? '2px 2px 0 hsl(var(--primary-dark))' 
-                      : '2px 2px 0 hsl(var(--pixel-shadow))' 
-                  }}
-                >
-                  {isActive && <Check size={10} className="inline mr-1" />}
-                  {label}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Multi-Region Selection */}
-        <div>
-          <label className="font-pixel text-[9px] text-muted-foreground mb-1.5 block">
-            📍 지역 <span className="text-[8px]">(최대 3개)</span>
-          </label>
-          
-          {/* Selected Region Tags */}
-          {filters.selectedRegions.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 mb-2">
-              {filters.selectedRegions.map((r, index) => (
-                <div
-                  key={`${r.region}-${r.district}`}
-                  className="flex items-center gap-1 px-2 py-1 bg-primary text-primary-foreground border-2 border-primary-dark"
-                  style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
-                >
-                  <span className="font-pixel text-[9px]">{r.district}</span>
-                  <button
-                    onClick={() => handleRemoveRegion(index)}
-                    className="w-4 h-4 flex items-center justify-center hover:bg-primary-dark/30 transition-colors"
-                  >
-                    <X size={10} />
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Add Region UI */}
-          {filters.selectedRegions.length < MAX_FILTER_REGIONS && (
-            <div className="flex gap-2">
-              {/* City/Province */}
-              <div className="relative flex-1">
-                <button
-                  onClick={() => setIsRegionOpen(!isRegionOpen)}
-                  className={cn(
-                    "w-full flex items-center justify-between px-3 py-2 font-pixel text-[10px] border-3 transition-all",
-                    tempRegion
-                      ? "bg-primary/20 border-primary"
-                      : "bg-secondary text-secondary-foreground border-border-dark hover:border-primary"
-                  )}
-                  style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
-                >
-                  <span>{tempRegion || '시/도'}</span>
-                  <ChevronDown size={14} className={cn("transition-transform", isRegionOpen && "rotate-180")} />
-                </button>
-                {isRegionOpen && (
-                  <>
-                    <div className="fixed inset-0 z-40" onClick={() => setIsRegionOpen(false)} />
-                    <div 
-                      className="absolute top-full left-0 mt-1 w-full max-h-48 overflow-y-auto bg-card border-3 border-border-dark z-50"
-                      style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}
-                    >
-                      {Object.keys(regionData).map(region => (
-                        <button
-                          key={region}
-                          onClick={() => {
-                            setTempRegion(region);
-                            setTempDistrict('');
-                            setIsRegionOpen(false);
-                          }}
-                          className={cn(
-                            "w-full px-3 py-2 text-left font-pixel text-[10px] hover:bg-muted border-b border-border last:border-b-0",
-                            tempRegion === region && "bg-primary/10 text-primary"
-                          )}
-                        >
-                          {tempRegion === region && <Check size={10} className="inline mr-1" />}
-                          {region}
-                        </button>
-                      ))}
-                    </div>
-                  </>
-                )}
-              </div>
-
-              {/* District */}
-              <div className="relative flex-1">
-                <select
-                  value={tempDistrict}
-                  onChange={(e) => setTempDistrict(e.target.value)}
-                  disabled={!tempRegion}
-                  className={cn(
-                    "w-full px-3 py-2 font-pixel text-[10px] border-3 appearance-none cursor-pointer",
-                    tempDistrict
-                      ? "bg-primary/20 border-primary"
-                      : "bg-secondary text-secondary-foreground border-border-dark",
-                    !tempRegion && "opacity-50"
-                  )}
-                  style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
-                >
-                  <option value="">구/군</option>
-                  {tempDistricts.map(district => (
-                    <option key={district} value={district}>{district}</option>
-                  ))}
-                </select>
-                <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-              </div>
-
-              {/* Add Button */}
-              <button
-                onClick={handleAddRegion}
-                disabled={!tempRegion || !tempDistrict}
-                className={cn(
-                  "w-10 h-10 flex items-center justify-center border-3 transition-all",
-                  tempRegion && tempDistrict
-                    ? "bg-accent text-accent-foreground border-accent-dark hover:brightness-110"
-                    : "bg-muted text-muted-foreground border-border-dark opacity-50"
-                )}
-                style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
-              >
-                <Plus size={14} />
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Level Filter with descriptions */}
-        <div>
-          <div className="flex items-center gap-2 mb-1.5">
-            <label className="font-pixel text-[9px] text-muted-foreground">🏅 레벨 선택</label>
-            <LevelInfoButton />
-          </div>
-          <div className="grid grid-cols-2 gap-1.5">
-            {levelOptions.map(({ value, tier, icon }) => {
-              const isActive = filters.levels.includes(value);
-              const levelColorClass = {
-                S: 'bg-accent text-accent-foreground border-accent-dark',
-                A: 'bg-primary text-primary-foreground border-primary-dark',
-                B: 'bg-primary/70 text-primary-foreground border-primary-dark/70',
-                C: 'bg-primary/50 text-primary-foreground border-primary-dark/50',
-              }[value];
-              
-              return (
-                <button
-                  key={value}
-                  onClick={() => toggleArrayFilter('levels', value)}
-                  className={cn(
-                    "px-2 py-2 border-3 transition-all text-left",
-                    isActive
-                      ? levelColorClass
-                      : "bg-secondary text-secondary-foreground border-border-dark hover:border-primary"
-                  )}
-                  style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
-                >
-                  <div className="flex items-center gap-1">
-                    {isActive ? <Check size={10} /> : <span>{icon}</span>}
-                    <span className="font-pixel text-[9px]">Lv.{value}</span>
-                    <span className={cn(
-                      "font-pixel text-[7px]",
-                      isActive ? "opacity-75" : "text-muted-foreground"
-                    )}>
-                      ({tier})
-                    </span>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
-      {/* Team List */}
+      {/* Match Posts */}
       <div className="space-y-4">
         <h3 className="font-pixel text-[10px] text-foreground flex items-center gap-2">
-          <span className="text-primary">📋</span>
-          전체 팀 목록
-          <span className="text-muted-foreground">({filteredTeams.length})</span>
+          <span className="text-accent">📋</span>
+          매칭 공고
+          <span className="text-muted-foreground">({filteredPosts.length})</span>
         </h3>
-        
-        {filteredTeams.length > 0 ? (
-          filteredTeams.map((team) => (
-            <TeamCard 
-              key={team.id}
-              id={team.id}
-              name={team.name}
-              emblem={team.emblem}
-              region={`${team.region} ${team.district}`}
-              level={team.level}
-              members={team.members}
-              gender={team.gender}
-              matchTime={team.matchTime}
-              homeGroundName={team.homeGroundName}
-              homeGroundAddress={team.homeGroundAddress}
-              mannerScore={team.mannerScore}
-              tags={team.tags}
-              onViewProfile={() => navigate(`/team/${team.id}`)}
+
+        {isLoading ? (
+          <div className="text-center py-8">
+            <p className="font-pixel text-[10px] text-muted-foreground animate-pulse">
+              로딩 중...
+            </p>
+          </div>
+        ) : filteredPosts.length > 0 ? (
+          filteredPosts.map((post) => (
+            <MatchPostCard
+              key={post.id}
+              id={post.id}
+              teamName={post.team.name}
+              teamEmblem={post.team.emblem}
+              teamLevel={post.team.level as 'S' | 'A' | 'B' | 'C'}
+              locationName={post.location_name}
+              locationAddress={post.location_address || undefined}
+              matchDate={parseISO(post.match_date)}
+              matchTimeStart={post.match_time_start}
+              matchTimeEnd={post.match_time_end}
+              targetLevels={post.target_levels}
+              description={post.description || undefined}
+              onChallenge={() => handleChallenge(post.id)}
+              onViewProfile={() => navigate(`/team/${post.team.id}`)}
             />
           ))
         ) : (
-          <div className="text-center py-8">
-            <p className="font-pixel text-[10px] text-muted-foreground">
-              조건에 맞는 팀이 없습니다
+          <div className="text-center py-8 bg-card border-3 border-border-dark" style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}>
+            <p className="font-pixel text-[10px] text-muted-foreground mb-2">
+              조건에 맞는 공고가 없습니다
             </p>
-            <button
-              onClick={handleShowAll}
-              className="mt-3 px-4 py-2 font-pixel text-[9px] bg-primary text-primary-foreground border-3 border-primary-dark hover:brightness-110 transition-all"
-              style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
-            >
-              필터 초기화
-            </button>
+            <p className="font-pixel text-[8px] text-muted-foreground">
+              필터를 조정하거나 새 공고를 기다려주세요
+            </p>
           </div>
         )}
       </div>
+
+      {/* Floating Add Button (Only for team admins) */}
+      {isAdmin && (
+        <button
+          onClick={() => setIsCreateModalOpen(true)}
+          className={cn(
+            "fixed bottom-24 right-4 w-14 h-14",
+            "bg-primary text-primary-foreground",
+            "border-3 border-primary-dark",
+            "flex items-center justify-center",
+            "hover:brightness-110 active:translate-y-0.5 transition-all",
+            "z-40"
+          )}
+          style={{ 
+            boxShadow: '4px 4px 0 hsl(var(--primary-dark))',
+          }}
+        >
+          <Plus size={24} strokeWidth={3} />
+        </button>
+      )}
+
+      {/* Create Match Post Modal */}
+      <CreateMatchPostModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSuccess={handleCreateSuccess}
+        team={userTeam}
+      />
     </div>
   );
 }
