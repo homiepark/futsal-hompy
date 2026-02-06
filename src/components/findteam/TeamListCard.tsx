@@ -19,7 +19,7 @@ const levelColors = {
   C: 'bg-primary/50 text-primary-foreground border-primary-dark/50',
 };
 
-export function TeamListCard({ emblem, name, region, level, trainingTime, memberCount }: TeamListCardProps) {
+export function TeamListCard({ emblem, name, region, level, trainingTime, memberCount, isFavorited, onFavoriteToggle }: TeamListCardProps) {
   return (
     <div className="bg-card border-4 border-border-dark p-3 shadow-[4px_4px_0_hsl(var(--pixel-shadow))] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_hsl(var(--pixel-shadow))] transition-all cursor-pointer">
       <div className="flex items-start gap-3">
@@ -29,11 +29,15 @@ export function TeamListCard({ emblem, name, region, level, trainingTime, member
         </div>
         
         <div className="flex-1 min-w-0">
-          {/* Team Name & Level */}
+          {/* Team Name & Level & Favorite */}
           <div className="flex items-center gap-2">
+            <FavoriteStarButton 
+              initialFavorited={isFavorited} 
+              onToggle={onFavoriteToggle} 
+            />
             <h3 className="font-body font-bold text-foreground truncate">{name}</h3>
             <span className={cn(
-              "px-2 py-0.5 text-[10px] font-pixel border-2",
+              "px-2 py-1 text-[10px] font-pixel border-2 shadow-[2px_2px_0_hsl(var(--pixel-shadow))]",
               levelColors[level]
             )}>
               Lv.{level}

@@ -35,7 +35,7 @@ export function BottomNav() {
                   ? 'bg-primary border-primary-dark text-primary-foreground shadow-pixel-sm' 
                   : 'border-border-dark bg-secondary hover:bg-muted'
               )}>
-                <PixelNavIcon type={icon} isActive={isActive} />
+                <ColorfulPixelNavIcon type={icon} isActive={isActive} />
               </div>
               <span className="font-pixel text-[8px] uppercase tracking-tight">{label}</span>
             </Link>
