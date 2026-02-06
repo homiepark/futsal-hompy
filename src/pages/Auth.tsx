@@ -122,48 +122,57 @@ export default function Auth() {
       {/* Logo Section */}
       <div className="text-center mb-6">
         {/* Logo Text - Pixel style with multiple colors, no shadows */}
-        <div className="flex justify-center items-center gap-0 mb-1">
+        <div className="flex justify-center items-baseline gap-0 mb-1">
           {/* 우리 - Vibrant Orange */}
           <span 
-            className="font-pixel text-3xl font-bold"
+            className="font-pixel text-2xl font-bold"
             style={{
               color: '#FF8C00',
               WebkitTextStroke: '1.5px #8B4513',
-              letterSpacing: '2px',
+              letterSpacing: '1px',
             }}
           >
             우리
           </span>
-          {/* 의 - with soccer ball overlaying ㅇ */}
-          <span className="relative inline-block">
+          {/* 의 - constructed with soccer ball as ㅇ */}
+          <span 
+            className="relative inline-flex flex-col items-center justify-center mx-1"
+            style={{ width: '28px', height: '36px' }}
+          >
+            {/* ⚽ as ㅇ */}
+            <span className="text-lg leading-none">⚽</span>
+            {/* ㅡ horizontal line */}
             <span 
-              className="font-pixel text-3xl font-bold"
+              className="font-pixel text-lg font-bold leading-none"
               style={{
                 color: '#FFFFFF',
-                WebkitTextStroke: '1.5px #4A4A4A',
+                WebkitTextStroke: '1px #4A4A4A',
+                marginTop: '-2px',
               }}
             >
-              의
+              ㅡ
             </span>
-            {/* Soccer ball overlay on ㅇ position */}
+            {/* ㅣ vertical line - positioned to the right */}
             <span 
-              className="absolute text-sm"
-              style={{ 
-                top: '1px', 
-                left: '50%', 
-                transform: 'translateX(-50%)',
+              className="absolute font-pixel text-lg font-bold"
+              style={{
+                color: '#FFFFFF',
+                WebkitTextStroke: '1px #4A4A4A',
+                right: '0px',
+                top: '50%',
+                transform: 'translateY(-50%)',
               }}
             >
-              ⚽
+              ㅣ
             </span>
           </span>
           {/* 풋살 - Vivid Green */}
           <span 
-            className="font-pixel text-3xl font-bold"
+            className="font-pixel text-2xl font-bold"
             style={{
               color: '#22C55E',
               WebkitTextStroke: '1.5px #14532D',
-              letterSpacing: '2px',
+              letterSpacing: '1px',
             }}
           >
             풋살
