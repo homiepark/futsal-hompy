@@ -9,7 +9,7 @@ const positions = [
   { id: 'pivo', label: 'PIVO', emoji: '⚡' },
   { id: 'ala', label: 'ALA', emoji: '💨' },
   { id: 'fixo', label: 'FIXO', emoji: '🛡️' },
-  { id: 'goleiro', label: 'GOLEIRO', emoji: '🧤' },
+  { id: 'goleiro', label: '골레이로', emoji: '🧤' },
 ];
 
 const experienceLevels = [

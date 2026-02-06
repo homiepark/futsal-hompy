@@ -10,7 +10,7 @@ const futsalPositions = [
   { id: 'pivo', label: '피보', emoji: '⚡', description: 'Pivot / Forward' },
   { id: 'ala', label: '아라', emoji: '💨', description: 'Winger' },
   { id: 'fixo', label: '픽소', emoji: '🛡️', description: 'Fixed / Defender' },
-  { id: 'goleiro', label: '고레이로', emoji: '🧤', description: 'Goalkeeper' },
+  { id: 'goleiro', label: '골레이로', emoji: '🧤', description: 'Goalkeeper' },
 ];
 
 export default function MyProfile() {
