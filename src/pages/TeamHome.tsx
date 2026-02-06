@@ -4,15 +4,33 @@ import { WinsCounter } from '@/components/team/WinsCounter';
 import { TeamPolaroid } from '@/components/team/TeamPolaroid';
 import { Guestbook } from '@/components/team/Guestbook';
 import { PixelButton } from '@/components/ui/PixelButton';
+import { MessageButton } from '@/components/ui/MessageButton';
+import { MatchRequestButton } from '@/components/ui/MatchRequestButton';
 
 export default function TeamHome() {
   const navigate = useNavigate();
 
   return (
     <div className="pb-24 px-5 py-8 max-w-lg mx-auto space-y-8">
+      {/* Match Request - Prominent CTA */}
+      <MatchRequestButton />
+
+      {/* Team Info & Admin Message */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="font-pixel text-xs text-foreground">FC 불꽃</h2>
+          <p className="font-body text-sm text-muted-foreground">서울 강남구 · 2020년 창단</p>
+        </div>
+        <MessageButton 
+          label="관리자 쪽지" 
+          variant="admin" 
+          size="md"
+        />
+      </div>
+
       {/* Register Button */}
       <PixelButton
-        variant="accent"
+        variant="primary"
         size="lg"
         onClick={() => navigate('/register')}
         className="w-full"
