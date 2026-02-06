@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
 import { FavoriteStarButton } from '@/components/ui/FavoriteStarButton';
-
+import { LevelInfoButton } from '@/components/ui/LevelGuideModal';
 interface TeamListCardProps {
   emblem: string;
   name: string;
@@ -42,6 +42,7 @@ export function TeamListCard({ emblem, name, region, level, trainingTime, member
             )}>
               Lv.{level}
             </span>
+            <LevelInfoButton />
           </div>
           
           {/* Region & Training */}
