@@ -1,3 +1,4 @@
+import { Bell, Settings } from 'lucide-react';
 import headerBanner from '@/assets/header-banner.jpg';
 import { CategoryTabs } from '@/components/findteam/CategoryTabs';
 import { TeamFilterBar } from '@/components/findteam/TeamFilterBar';
@@ -16,10 +17,22 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header Banner */}
-      <div className="w-full">
+      <div className="w-full relative">
+        {/* Top Icons */}
+        <div className="absolute top-3 right-3 z-10 flex items-center gap-2">
+          <button className="w-9 h-9 bg-card/90 backdrop-blur-sm border-2 border-border-dark flex items-center justify-center shadow-[2px_2px_0_hsl(var(--pixel-shadow))] hover:bg-card transition-colors">
+            <Bell size={18} className="text-foreground" />
+            <span className="absolute -top-1 -right-1 w-4 h-4 bg-accent border border-accent-dark text-[8px] font-pixel text-accent-foreground flex items-center justify-center">
+              3
+            </span>
+          </button>
+          <button className="w-9 h-9 bg-card/90 backdrop-blur-sm border-2 border-border-dark flex items-center justify-center shadow-[2px_2px_0_hsl(var(--pixel-shadow))] hover:bg-card transition-colors">
+            <Settings size={18} className="text-foreground" />
+          </button>
+        </div>
         <img 
           src={headerBanner} 
-          alt="우리의풋살 배너" 
+          alt="우리의풋살 배너"
           className="w-full h-auto object-cover border-b-4 border-border-dark"
         />
       </div>
