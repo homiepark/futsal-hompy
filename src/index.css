@@ -140,9 +140,9 @@
 }
 
 @layer components {
-  /* Pixel Button Base */
+  /* Pixel Button Base - keeps pixel font */
   .pixel-btn {
-    @apply relative font-pixel text-xs uppercase tracking-wider;
+    @apply relative font-pixel text-[10px] uppercase tracking-wider;
     @apply px-4 py-3 transition-all duration-100;
     @apply border-4 border-border-dark;
     box-shadow: 
