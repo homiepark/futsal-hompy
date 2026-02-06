@@ -15,7 +15,7 @@ export default {
     extend: {
       fontFamily: {
         pixel: ['"Press Start 2P"', 'cursive'],
-        body: ['"Noto Sans KR"', 'sans-serif'],
+        body: ['"Galmuri11"', '"Galmuri9"', 'sans-serif'],
       },
       colors: {
         border: {
