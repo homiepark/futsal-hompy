@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Plus, Image, Video } from 'lucide-react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Plus, Image, Video, ArrowLeft } from 'lucide-react';
 import { PixelButton } from '@/components/ui/PixelButton';
 import { TimelinePost } from '@/components/archive/TimelinePost';
 import { PhotoGridItem } from '@/components/archive/PhotoGridItem';
