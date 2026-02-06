@@ -28,6 +28,11 @@ interface Team {
   isFavorited: boolean;
 }
 
+interface PreferredRegion {
+  region: string;
+  district: string;
+}
+
 const Index = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -37,38 +42,40 @@ const Index = () => {
   const [listView, setListView] = useState<'all' | 'favorites'>('all');
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const [smartFilterApplied, setSmartFilterApplied] = useState(false);
-  const [userDistrict, setUserDistrict] = useState<{ region: string; district: string } | null>(null);
+  const [userRegions, setUserRegions] = useState<PreferredRegion[]>([]);
 
-  // Fetch user profile for smart filter
+  // Fetch user profile for smart filter (multi-region)
   useEffect(() => {
     const fetchUserProfile = async () => {
       if (!user) {
         setSmartFilterApplied(false);
-        setUserDistrict(null);
+        setUserRegions([]);
         return;
       }
 
       try {
         const { data: profile, error } = await supabase
           .from('profiles')
-          .select('region, district')
+          .select('preferred_regions')
           .eq('user_id', user.id)
           .single();
 
         if (error) throw error;
 
-        if (profile?.region && profile?.district) {
-          setUserDistrict({ region: profile.region, district: profile.district });
-          // Apply smart filter
+        const savedRegions = profile?.preferred_regions as unknown as PreferredRegion[] | null;
+        if (savedRegions && Array.isArray(savedRegions) && savedRegions.length > 0) {
+          setUserRegions(savedRegions);
+          
+          // Apply smart filter with multiple regions
           setFilters(prev => ({
             ...prev,
-            region: profile.region,
-            district: profile.district,
+            selectedRegions: savedRegions,
           }));
           setSmartFilterApplied(true);
           
-          // Show toast notification
-          toast.success(`${profile.district} 팀들을 먼저 보여드려요!`, {
+          // Show toast with region names
+          const regionNames = savedRegions.map(r => r.district).join(', ');
+          toast.success(`${regionNames}의 팀들을 모아봤어요!`, {
             icon: '📍',
             duration: 3000,
             className: 'font-pixel',
@@ -135,7 +142,7 @@ const Index = () => {
     });
   }, []);
 
-  // Real-time filtering with Supabase data structure
+  // Real-time filtering with multi-region support
   const filteredTeams = useMemo(() => {
     return teams.filter(team => {
       // Team name search (case-insensitive)
@@ -143,33 +150,39 @@ const Index = () => {
         return false;
       }
       
-      // Gender filter - uses DB values: 'male', 'female', 'mixed'
+      // Gender filter
       if (filters.genders.length > 0 && team.gender && !filters.genders.includes(team.gender)) {
         return false;
       }
       
-      // Region filter - exact match
-      if (filters.region && team.region !== filters.region) {
-        return false;
+      // Multi-region filter (OR logic - team matches ANY of the selected regions)
+      if (filters.selectedRegions && filters.selectedRegions.length > 0) {
+        const matchesAnyRegion = filters.selectedRegions.some(
+          r => team.region === r.region && team.district === r.district
+        );
+        if (!matchesAnyRegion) return false;
+      } else {
+        // Fallback to single region/district filter
+        if (filters.region && team.region !== filters.region) {
+          return false;
+        }
+        if (filters.district && team.district !== filters.district) {
+          return false;
+        }
       }
       
-      // District filter - exact match
-      if (filters.district && team.district !== filters.district) {
-        return false;
-      }
-      
-      // Level filter - uses IN logic for multi-select
+      // Level filter - uses IN logic
       if (filters.levels.length > 0 && !filters.levels.includes(team.level)) {
         return false;
       }
       
-      // Days filter - uses ANY logic (team has at least one matching day)
+      // Days filter - uses ANY logic
       if (filters.days.length > 0 && team.training_days) {
         const hasMatchingDay = filters.days.some(day => team.training_days?.includes(day));
         if (!hasMatchingDay) return false;
       }
       
-      // Time slot filter - check if team's start time falls in the selected slot
+      // Time slot filter
       if (filters.timeSlot && team.training_start_time) {
         const teamTimeSlot = getTimeSlot(team.training_start_time);
         if (teamTimeSlot !== filters.timeSlot) return false;
@@ -242,7 +255,7 @@ const Index = () => {
         />
       </div>
 
-      {/* Simple Header - Just auth button */}
+      {/* Simple Header */}
       <div className="sticky top-0 z-40">
         <SimpleHeader />
       </div>
@@ -258,26 +271,37 @@ const Index = () => {
           </h1>
         </div>
         
-        {/* Smart Filter Notice */}
-        {smartFilterApplied && userDistrict && (
+        {/* Smart Filter Notice - Multi-Region */}
+        {smartFilterApplied && userRegions.length > 0 && (
           <div 
-            className="mt-2 flex items-center justify-between gap-2 px-3 py-2 bg-primary/10 border-3 border-primary"
+            className="mt-2 px-3 py-2 bg-primary/10 border-3 border-primary"
             style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
           >
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-between gap-2 mb-2">
               <span className="text-lg">📍</span>
-              <span className="font-pixel text-[10px] text-primary">
-                {userDistrict.district} 팀들을 먼저 보여드려요!
+              <span className="font-pixel text-[10px] text-primary flex-1">
+                {userRegions.map(r => r.district).join(', ')}의 팀들을 모아봤어요!
               </span>
+              <button
+                onClick={handleShowAll}
+                className="flex items-center gap-1 px-2 py-1 text-[9px] font-pixel bg-card text-foreground border-2 border-border-dark hover:bg-muted transition-colors"
+                style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
+              >
+                전체 보기
+                <X size={10} />
+              </button>
             </div>
-            <button
-              onClick={handleShowAll}
-              className="flex items-center gap-1 px-2 py-1 text-[9px] font-pixel bg-card text-foreground border-2 border-border-dark hover:bg-muted transition-colors"
-              style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
-            >
-              전체 보기
-              <X size={10} />
-            </button>
+            {/* Region Tags */}
+            <div className="flex flex-wrap gap-1.5">
+              {userRegions.map((r, i) => (
+                <span 
+                  key={`${r.region}-${r.district}`}
+                  className="px-2 py-0.5 bg-primary text-primary-foreground font-pixel text-[8px] border-2 border-primary-dark"
+                >
+                  {r.district}
+                </span>
+              ))}
+            </div>
           </div>
         )}
       </div>
@@ -315,7 +339,7 @@ const Index = () => {
         onFiltersChange={(newFilters) => {
           setFilters(newFilters);
           // If user manually changes region filter, mark smart filter as not applied
-          if (newFilters.region !== userDistrict?.region || newFilters.district !== userDistrict?.district) {
+          if (newFilters.selectedRegions?.length !== userRegions.length) {
             setSmartFilterApplied(false);
           }
         }} 

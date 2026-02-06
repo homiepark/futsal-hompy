@@ -62,6 +62,7 @@ export type Database = {
           nickname: string
           nickname_tag: string | null
           preferred_position: string | null
+          preferred_regions: Json | null
           real_name: string | null
           region: string | null
           updated_at: string
@@ -77,6 +78,7 @@ export type Database = {
           nickname?: string
           nickname_tag?: string | null
           preferred_position?: string | null
+          preferred_regions?: Json | null
           real_name?: string | null
           region?: string | null
           updated_at?: string
@@ -92,6 +94,7 @@ export type Database = {
           nickname?: string
           nickname_tag?: string | null
           preferred_position?: string | null
+          preferred_regions?: Json | null
           real_name?: string | null
           region?: string | null
           updated_at?: string
