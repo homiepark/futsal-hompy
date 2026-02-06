@@ -43,17 +43,23 @@ export default function PlayerRegistration() {
         <p className="font-body text-xs text-muted-foreground">Player Registration</p>
       </div>
 
-      {/* Character Placeholder */}
-      <PixelCard variant="frame" className="max-w-[160px] mx-auto mb-6">
-        <div className="aspect-square bg-muted flex items-center justify-center border-2 border-border-dark">
-          <div className="text-center">
-            <div className="w-16 h-16 mx-auto bg-secondary border-4 border-border-dark flex items-center justify-center mb-2">
-              <User size={32} className="text-muted-foreground" />
+      {/* Character Placeholder with DM Button */}
+      <div className="max-w-[200px] mx-auto mb-6">
+        <PixelCard variant="frame">
+          <div className="aspect-square bg-muted flex items-center justify-center border-2 border-border-dark">
+            <div className="text-center">
+              <div className="w-16 h-16 mx-auto bg-secondary border-4 border-border-dark flex items-center justify-center mb-2">
+                <User size={32} className="text-muted-foreground" />
+              </div>
+              <p className="font-body text-[10px] text-muted-foreground">탭하여 업로드</p>
             </div>
-            <p className="font-body text-[10px] text-muted-foreground">탭하여 업로드</p>
           </div>
+        </PixelCard>
+        {/* DM Button for player profile */}
+        <div className="flex justify-center mt-3">
+          <MessageButton label="쪽지 보내기" size="md" />
         </div>
-      </PixelCard>
+      </div>
 
       {/* Nickname Input */}
       <section className="mb-6">
