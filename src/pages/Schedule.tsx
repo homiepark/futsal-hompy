@@ -4,6 +4,12 @@ import { PixelButton } from '@/components/ui/PixelButton';
 import { PixelCard } from '@/components/ui/PixelCard';
 import { CalendarDay } from '@/components/schedule/CalendarDay';
 import { EventCard } from '@/components/schedule/EventCard';
+import { TeamSelector } from '@/components/ui/TeamSelector';
+
+const myTeams = [
+  { id: 'fc-bulkkot', name: 'FC 불꽃', emblem: '🔥' },
+  { id: 'lions-fc', name: '라이언즈 FC', emblem: '🦁' },
+];
 
 const daysOfWeek = ['일', '월', '화', '수', '목', '금', '토'];
 
@@ -30,6 +36,7 @@ const mockEvents = [
 
 export default function Schedule() {
   const [selectedDay, setSelectedDay] = useState(25);
+  const [selectedTeam, setSelectedTeam] = useState('all');
   const currentMonth = '2024년 1월';
 
   // Generate calendar days (simplified for demo)
@@ -43,6 +50,15 @@ export default function Schedule() {
 
   return (
     <div className="pb-20 px-4 py-6 max-w-lg mx-auto">
+      {/* Team Selector */}
+      <div className="mb-4">
+        <TeamSelector 
+          teams={myTeams} 
+          selectedTeam={selectedTeam} 
+          onSelect={setSelectedTeam} 
+        />
+      </div>
+
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h2 className="font-pixel text-xs text-foreground flex items-center gap-2">
