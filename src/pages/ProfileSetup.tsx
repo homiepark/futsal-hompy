@@ -33,6 +33,7 @@ const generateTag = () => {
 export default function ProfileSetup() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user, loading: authLoading } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -43,6 +44,13 @@ export default function ProfileSetup() {
   const [selectedPosition, setSelectedPosition] = useState<string | null>(null);
   const [experienceLevel, setExperienceLevel] = useState<number | null>(null);
   const [isElite, setIsElite] = useState<boolean | null>(null);
+
+  // Redirect if not logged in
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate('/auth');
+    }
+  }, [user, authLoading, navigate]);
 
   const handleAvatarClick = () => {
     fileInputRef.current?.click();
