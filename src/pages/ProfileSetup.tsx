@@ -91,11 +91,9 @@ export default function ProfileSetup() {
     setIsSubmitting(true);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
       if (!user) {
         toast({ title: '로그인이 필요합니다', variant: 'destructive' });
-        navigate('/register');
+        navigate('/auth');
         return;
       }
 
