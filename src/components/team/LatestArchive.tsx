@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ChevronRight, Play } from 'lucide-react';
+import { Play } from 'lucide-react';
 import { PixelCard } from '@/components/ui/PixelCard';
 
 interface ArchiveItem {
