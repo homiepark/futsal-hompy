@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { PixelCard } from '@/components/ui/PixelCard';
 import { cn } from '@/lib/utils';
 
 interface Member {
@@ -17,10 +16,10 @@ interface MemberRosterProps {
 }
 
 const positionInfo = {
-  pivo: { label: '피보', emoji: '⚡', color: 'text-accent' },
-  ala: { label: '아라', emoji: '💨', color: 'text-primary' },
-  fixo: { label: '픽소', emoji: '🛡️', color: 'text-blue-400' },
-  goleiro: { label: '골레이로', emoji: '🧤', color: 'text-green-400' },
+  pivo: { label: '피보', emoji: '⚡', color: 'bg-accent/20 border-accent' },
+  ala: { label: '아라', emoji: '💨', color: 'bg-primary/20 border-primary' },
+  fixo: { label: '픽소', emoji: '🛡️', color: 'bg-blue-500/20 border-blue-500' },
+  goleiro: { label: '골레이로', emoji: '🧤', color: 'bg-green-500/20 border-green-500' },
 };
 
 export function MemberRoster({ members, teamId }: MemberRosterProps) {
@@ -36,16 +35,16 @@ export function MemberRoster({ members, teamId }: MemberRosterProps) {
   const positionOrder: Array<'pivo' | 'ala' | 'fixo' | 'goleiro'> = ['goleiro', 'fixo', 'ala', 'pivo'];
 
   return (
-    <PixelCard>
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="font-pixel text-[10px] text-foreground flex items-center gap-2">
-          <span className="text-primary">👥</span>
-          멤버 로스터
-          <span className="font-body text-xs text-muted-foreground">({members.length}명)</span>
-        </h2>
+    <div className="kairo-panel">
+      {/* Panel Header */}
+      <div className="kairo-panel-header">
+        <span className="text-sm">👥</span>
+        <span>팀원 현황</span>
+        <span className="text-muted-foreground ml-1">({members.length})</span>
       </div>
 
-      <div className="space-y-4">
+      {/* Dense Member Grid */}
+      <div className="p-2 space-y-2">
         {positionOrder.map((position) => {
           const positionMembers = groupedMembers[position];
           if (!positionMembers || positionMembers.length === 0) return null;
@@ -54,44 +53,47 @@ export function MemberRoster({ members, teamId }: MemberRosterProps) {
           
           return (
             <div key={position}>
-              {/* Position Header */}
-              <div className="flex items-center gap-2 mb-2">
-                <span className={cn('text-sm', info.color)}>{info.emoji}</span>
-                <span className="font-pixel text-[8px] text-muted-foreground uppercase">{info.label}</span>
-                <div className="flex-1 h-px bg-border-dark" />
+              {/* Position Tag */}
+              <div className={cn(
+                'inline-flex items-center gap-1 px-1.5 py-0.5 mb-1.5',
+                'border-2 text-[8px] font-pixel',
+                info.color
+              )}>
+                <span>{info.emoji}</span>
+                <span>{info.label}</span>
               </div>
 
-              {/* Members Grid */}
-              <div className="grid grid-cols-4 gap-2">
+              {/* Dense Members Row */}
+              <div className="flex flex-wrap gap-1.5">
                 {positionMembers.map((member) => (
                   <Link
                     key={member.id}
                     to={`/player/${member.id}`}
-                    className="flex flex-col items-center p-2 bg-muted border-2 border-border-dark hover:border-primary transition-colors"
+                    className="kairo-member-chip group"
                   >
-                    {/* Avatar */}
-                    <div className="w-10 h-10 rounded-full bg-secondary border-2 border-border-dark overflow-hidden mb-1 relative">
+                    {/* Mini Avatar */}
+                    <div className="w-7 h-7 bg-secondary border-2 border-border-dark overflow-hidden relative flex-shrink-0">
                       {member.avatarUrl ? (
                         <img src={member.avatarUrl} alt={member.nickname} className="w-full h-full object-cover" />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-lg">
+                        <div className="w-full h-full flex items-center justify-center text-xs bg-muted">
                           👤
                         </div>
                       )}
                       {member.isAdmin && (
-                        <div className="absolute -top-1 -right-1 text-xs">👑</div>
+                        <div className="absolute -top-0.5 -right-0.5 text-[8px]">👑</div>
                       )}
                     </div>
                     
-                    {/* Name */}
-                    <span className="font-body text-[10px] text-foreground truncate w-full text-center">
-                      {member.nickname}
-                    </span>
-                    
-                    {/* Experience */}
-                    <span className="font-pixel text-[8px] text-muted-foreground">
-                      {member.yearsOfExperience}년
-                    </span>
+                    {/* Info */}
+                    <div className="flex flex-col min-w-0">
+                      <span className="font-pixel text-[8px] text-foreground truncate leading-tight">
+                        {member.nickname}
+                      </span>
+                      <span className="font-pixel text-[7px] text-muted-foreground leading-tight">
+                        {member.yearsOfExperience}년차
+                      </span>
+                    </div>
                   </Link>
                 ))}
               </div>
@@ -99,6 +101,6 @@ export function MemberRoster({ members, teamId }: MemberRosterProps) {
           );
         })}
       </div>
-    </PixelCard>
+    </div>
   );
 }

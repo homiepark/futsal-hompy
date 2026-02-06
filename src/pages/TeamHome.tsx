@@ -6,8 +6,6 @@ import { TeamHeader } from '@/components/team/TeamHeader';
 import { TeamSwitcher } from '@/components/team/TeamSwitcher';
 import { LatestArchive } from '@/components/team/LatestArchive';
 import { MemberRoster } from '@/components/team/MemberRoster';
-import { MoodDisplay } from '@/components/team/MoodDisplay';
-import { WinsCounter } from '@/components/team/WinsCounter';
 import { Guestbook } from '@/components/team/Guestbook';
 import { PixelButton } from '@/components/ui/PixelButton';
 import { MessageButton } from '@/components/ui/MessageButton';
@@ -97,31 +95,25 @@ export default function TeamHome() {
         onPhotoEdit={() => console.log('Edit team photo')}
       />
 
-      <div className="px-4 py-6 space-y-6">
+      <div className="px-4 py-4 space-y-4">
         {/* Match Request CTA */}
         <MatchRequestButton />
 
         {/* Team Actions Row */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <PixelButton
             variant="primary"
-            size="md"
+            size="sm"
             onClick={() => navigate('/register')}
             className="flex-1"
           >
             ⚽ 선수 등록
           </PixelButton>
           <MessageButton 
-            label="관리자 쪽지" 
+            label="쪽지" 
             variant="admin" 
-            size="md"
+            size="sm"
           />
-        </div>
-
-        {/* Team Stats Row */}
-        <div className="grid grid-cols-2 gap-4">
-          <MoodDisplay mood="🔥" teamName={mockTeamData.name} />
-          <WinsCounter wins={42} />
         </div>
 
         {/* Latest Archive Preview */}
@@ -130,16 +122,14 @@ export default function TeamHome() {
           items={mockArchiveItems} 
         />
 
-        {/* Member Roster */}
+        {/* Member Roster - Now more prominent */}
         <MemberRoster 
           members={mockMembers}
           teamId={mockTeamData.id}
         />
 
         {/* Guestbook */}
-        <section>
-          <Guestbook />
-        </section>
+        <Guestbook />
       </div>
     </div>
   );
