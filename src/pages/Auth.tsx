@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { z } from 'zod';
-import futsalMascot from '@/assets/futsal-mascot-pixel.png';
+import futsalMascot from '@/assets/mascot-pixel-style.png';
 
 // Validation schemas
 const emailSchema = z.string().email('올바른 이메일 형식이 아닙니다');
