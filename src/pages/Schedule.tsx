@@ -4,6 +4,12 @@ import { PixelButton } from '@/components/ui/PixelButton';
 import { PixelCard } from '@/components/ui/PixelCard';
 import { CalendarDay } from '@/components/schedule/CalendarDay';
 import { EventCard } from '@/components/schedule/EventCard';
+import { TeamSelector } from '@/components/ui/TeamSelector';
+
+const myTeams = [
+  { id: 'fc-bulkkot', name: 'FC 불꽃', emblem: '🔥' },
+  { id: 'lions-fc', name: '라이언즈 FC', emblem: '🦁' },
+];
 
 const daysOfWeek = ['일', '월', '화', '수', '목', '금', '토'];
 
