@@ -1,15 +1,29 @@
 import { Bell, Settings } from 'lucide-react';
 import { PixelIcon } from '@/components/ui/PixelIcon';
 
+function GoalIcon() {
+  return (
+    <div className="w-8 h-8 relative flex items-center justify-center">
+      {/* Goal frame */}
+      <div className="absolute inset-0 border-2 border-foreground rounded-t-sm" 
+           style={{ 
+             borderBottom: 'none',
+             background: 'repeating-linear-gradient(90deg, transparent 0px, transparent 3px, hsl(var(--foreground) / 0.15) 3px, hsl(var(--foreground) / 0.15) 4px), repeating-linear-gradient(0deg, transparent 0px, transparent 3px, hsl(var(--foreground) / 0.15) 3px, hsl(var(--foreground) / 0.15) 4px)'
+           }} 
+      />
+      {/* Soccer ball */}
+      <span className="text-lg relative top-0.5">⚽</span>
+    </div>
+  );
+}
+
 export function Header() {
   return (
     <header className="sticky top-0 z-40 bg-card border-b-4 border-border-dark shadow-pixel">
       <div className="flex items-center justify-between px-4 py-3 max-w-lg mx-auto">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-primary border-2 border-primary-dark shadow-pixel-sm flex items-center justify-center">
-            <span className="text-primary-foreground font-pixel text-[10px]">⚽</span>
-          </div>
-          <h1 className="font-pixel text-[10px] text-foreground">
+          <GoalIcon />
+          <h1 className="text-base text-foreground" style={{ fontFamily: 'NeoDunggeunmo, monospace' }}>
             우리의풋살
           </h1>
         </div>
