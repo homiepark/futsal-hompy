@@ -20,7 +20,7 @@ const positionInfo = {
   pivo: { label: '피보', emoji: '⚡', color: 'text-accent' },
   ala: { label: '아라', emoji: '💨', color: 'text-primary' },
   fixo: { label: '픽소', emoji: '🛡️', color: 'text-blue-400' },
-  goleiro: { label: '고레이로', emoji: '🧤', color: 'text-green-400' },
+  goleiro: { label: '골레이로', emoji: '🧤', color: 'text-green-400' },
 };
 
 export function MemberRoster({ members, teamId }: MemberRosterProps) {
