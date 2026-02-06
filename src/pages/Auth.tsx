@@ -385,11 +385,11 @@ export default function Auth() {
           </form>
 
           {/* Toggle Link */}
-          <div className="mt-4 text-center">
+          <div className="mt-4 text-center space-y-2">
             <button
               type="button"
               onClick={toggleMode}
-              className="font-pixel text-[9px] text-[#8b7355]"
+              className="font-pixel text-[9px] text-[#8b7355] block w-full"
             >
               {mode === 'signup' ? (
                 <>이미 계정이 있으신가요? <span className="text-primary hover:underline">로그인</span></>
@@ -397,6 +397,16 @@ export default function Auth() {
                 <>계정이 없으신가요? <span className="text-primary hover:underline">회원가입</span></>
               )}
             </button>
+            
+            {/* Forgot Password Link - only show in login mode */}
+            {mode === 'login' && (
+              <Link
+                to="/forgot-password"
+                className="font-pixel text-[9px] text-accent hover:text-accent-dark transition-colors block"
+              >
+                비밀번호를 잊으셨나요?
+              </Link>
+            )}
           </div>
         </div>
       </div>

@@ -52,6 +52,8 @@ const App = () => (
                 <Route path="/profile" element={<MyProfile />} />
                 <Route path="/profile-setup" element={<ProfileSetup />} />
                 <Route path="/auth" element={<Auth />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/messages" element={<Messages />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
