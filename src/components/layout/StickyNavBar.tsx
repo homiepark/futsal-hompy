@@ -8,14 +8,7 @@ export function StickyNavBar() {
     <div className="sticky top-0 z-40">
       {/* Main Nav Bar with Icons */}
       <div className="h-14 bg-card border-b-2 border-border-dark shadow-[0_2px_0_hsl(var(--pixel-shadow))]">
-        <div className="h-full max-w-lg mx-auto px-4 flex items-center justify-between">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-primary border-2 border-primary-dark flex items-center justify-center shadow-[2px_2px_0_hsl(var(--pixel-shadow))]">
-              <span className="text-lg">⚽</span>
-            </div>
-            <span className="font-pixel text-[8px] text-foreground">우리의풋살</span>
-          </Link>
+        <div className="h-full max-w-lg mx-auto px-4 flex items-center justify-end">
 
           {/* Right Icons */}
           <div className="flex items-center gap-2">
