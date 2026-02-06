@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 import { MatchPostCard } from '@/components/matchmaking/MatchPostCard';
 import { MatchBoardFilters } from '@/components/matchmaking/MatchBoardFilters';
 import { CreateMatchPostModal } from '@/components/matchmaking/CreateMatchPostModal';
-
+import { ChallengeNotification, useChallengeNotifications } from '@/components/matchmaking/ChallengeNotification';
 import { MatchTicker } from '@/components/matchmaking/MatchTicker';
 import { format, parseISO, isToday, isTomorrow, isThisWeek } from 'date-fns';
 
@@ -241,12 +241,52 @@ export default function Matchmaking() {
     return true;
   });
 
-  const handleChallenge = (postId: string) => {
-    if (!isAdmin) {
+  // Real-time challenge notifications
+  const { notifications, dismissNotification } = useChallengeNotifications(userTeam?.id || null);
+
+  const handleChallenge = async (postId: string) => {
+    if (!isAdmin || !userTeam) {
       toast.error('팀 관리자만 도전할 수 있습니다', { icon: '⚠️' });
       return;
     }
-    toast.success('도전 신청이 완료되었습니다!', { icon: '⚔️' });
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error('로그인이 필요합니다');
+        return;
+      }
+
+      // Check if already applied
+      const { data: existingApp } = await supabase
+        .from('match_applications')
+        .select('id')
+        .eq('match_post_id', postId)
+        .eq('applicant_team_id', userTeam.id)
+        .single();
+
+      if (existingApp) {
+        toast.info('이미 도전 신청한 공고입니다', { icon: '📝' });
+        return;
+      }
+
+      // Create application
+      const { error } = await supabase
+        .from('match_applications')
+        .insert({
+          match_post_id: postId,
+          applicant_team_id: userTeam.id,
+          applied_by_user_id: user.id,
+          message: `${userTeam.name}팀이 도전합니다!`,
+        });
+
+      if (error) throw error;
+
+      toast.success('도전 신청이 완료되었습니다!', { icon: '⚔️' });
+    } catch (error) {
+      console.error('Error creating challenge:', error);
+      toast.error('도전 신청에 실패했습니다');
+    }
   };
 
   const handleCreateSuccess = () => {
@@ -364,6 +404,18 @@ export default function Matchmaking() {
         onSuccess={handleCreateSuccess}
         team={userTeam}
       />
+
+      {/* Real-time Challenge Notifications */}
+      {notifications.length > 0 && (
+        <ChallengeNotification
+          application={notifications[0]}
+          onClose={() => dismissNotification(notifications[0].id)}
+          onAction={() => {
+            dismissNotification(notifications[0].id);
+            loadMatchPosts();
+          }}
+        />
+      )}
     </div>
   );
 }

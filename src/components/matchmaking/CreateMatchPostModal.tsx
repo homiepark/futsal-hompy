@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { X, MapPin, Calendar, Clock, Target, Home, Search, Star } from 'lucide-react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { X, MapPin, Calendar, Clock, Target, Home, Search, Star, Save } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PixelButton } from '@/components/ui/PixelButton';
 import { PixelBadge } from '@/components/ui/PixelBadge';
@@ -9,6 +9,8 @@ import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { levelOptions } from '@/lib/teamData';
+import { useMatchPostDraft } from '@/hooks/useMatchPostDraft';
+import { DraftConfirmModal } from './DraftConfirmModal';
 
 interface CreateMatchPostModalProps {
   isOpen: boolean;
@@ -53,10 +55,41 @@ export function CreateMatchPostModal({
   const [targetLevels, setTargetLevels] = useState<string[]>([]);
   const [description, setDescription] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Auto-save state
+  const [showDraftConfirm, setShowDraftConfirm] = useState(false);
+  const [draftSaveStatus, setDraftSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+  const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const hasInitializedRef = useRef(false);
 
+  const { hasDraft, draft, saveDraft, clearDraft, draftSavedAt } = useMatchPostDraft(team?.id || null);
+
+  // Show draft confirm modal when opening with existing draft
   useEffect(() => {
-    if (isOpen) {
-      // Reset form with defaults
+    if (isOpen && hasDraft && !hasInitializedRef.current) {
+      setShowDraftConfirm(true);
+    }
+    if (!isOpen) {
+      hasInitializedRef.current = false;
+    }
+  }, [isOpen, hasDraft]);
+
+  // Initialize form (either fresh or from draft)
+  const initializeForm = useCallback((useDraft: boolean) => {
+    hasInitializedRef.current = true;
+    setShowDraftConfirm(false);
+
+    if (useDraft && draft) {
+      setLocationType(draft.locationType);
+      setCustomLocationName(draft.customLocationName);
+      setCustomLocationAddress(draft.customLocationAddress);
+      setMatchDate(draft.matchDate);
+      setMatchTimeStart(draft.matchTimeStart);
+      setMatchTimeEnd(draft.matchTimeEnd);
+      setTargetLevels(draft.targetLevels);
+      setDescription(draft.description);
+    } else {
+      // Fresh form
       setLocationType(team?.homeGroundName ? 'home_ground' : 'custom');
       setCustomLocationName('');
       setCustomLocationAddress('');
@@ -65,8 +98,52 @@ export function CreateMatchPostModal({
       setMatchTimeEnd('16:00');
       setTargetLevels([]);
       setDescription('');
+      clearDraft();
     }
-  }, [isOpen, team]);
+  }, [draft, team, clearDraft]);
+
+  // Initialize form when modal opens and no draft exists
+  useEffect(() => {
+    if (isOpen && !hasDraft && !hasInitializedRef.current) {
+      initializeForm(false);
+    }
+  }, [isOpen, hasDraft, initializeForm]);
+
+  // Auto-save effect
+  useEffect(() => {
+    if (!isOpen || !hasInitializedRef.current || !team?.id) return;
+
+    // Clear existing timeout
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current);
+    }
+
+    setDraftSaveStatus('saving');
+
+    // Debounce save by 1 second
+    autoSaveTimeoutRef.current = setTimeout(() => {
+      saveDraft({
+        locationType,
+        customLocationName,
+        customLocationAddress,
+        matchDate,
+        matchTimeStart,
+        matchTimeEnd,
+        targetLevels,
+        description,
+      });
+      setDraftSaveStatus('saved');
+
+      // Reset status after 2 seconds
+      setTimeout(() => setDraftSaveStatus('idle'), 2000);
+    }, 1000);
+
+    return () => {
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
+      }
+    };
+  }, [isOpen, locationType, customLocationName, customLocationAddress, matchDate, matchTimeStart, matchTimeEnd, targetLevels, description, saveDraft, team?.id]);
 
   const toggleLevel = (level: string) => {
     setTargetLevels(prev =>
@@ -124,6 +201,9 @@ export function CreateMatchPostModal({
 
       if (error) throw error;
 
+      // Clear draft on successful submit
+      clearDraft();
+      
       toast.success('매칭 공고가 등록되었습니다!', { icon: '⚔️' });
       onSuccess?.();
       onClose();
@@ -136,6 +216,17 @@ export function CreateMatchPostModal({
   };
 
   if (!isOpen) return null;
+
+  // Show draft confirm modal if needed
+  if (showDraftConfirm) {
+    return (
+      <DraftConfirmModal
+        isOpen={showDraftConfirm}
+        onContinue={() => initializeForm(true)}
+        onDiscard={() => initializeForm(false)}
+      />
+    );
+  }
 
   const hasHomeGround = team?.homeGroundName;
   const teamLevel = (team?.level || 'C') as 'S' | 'A' | 'B' | 'C';
@@ -434,7 +525,23 @@ export function CreateMatchPostModal({
         </div>
 
         {/* Footer */}
-        <div className="sticky bottom-0 bg-card border-t-4 border-border-dark p-4">
+        <div className="sticky bottom-0 bg-card border-t-4 border-border-dark p-4 space-y-2">
+          {/* Draft Save Status */}
+          <div className="flex items-center justify-center gap-2">
+            {draftSaveStatus === 'saving' && (
+              <span className="font-pixel text-[8px] text-muted-foreground animate-pulse flex items-center gap-1">
+                <Save size={10} className="animate-spin" />
+                저장 중...
+              </span>
+            )}
+            {draftSaveStatus === 'saved' && (
+              <span className="font-pixel text-[8px] text-primary flex items-center gap-1">
+                <Save size={10} />
+                임시 저장됨
+              </span>
+            )}
+          </div>
+
           <PixelButton
             variant="primary"
             size="lg"
