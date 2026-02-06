@@ -121,58 +121,84 @@ export default function Auth() {
     <div className="min-h-screen bg-[#f8f6f0] flex flex-col items-center px-4 py-6">
       {/* Logo Section */}
       <div className="text-center mb-6">
-        {/* Logo Text - Pixel style with multiple colors, no shadows */}
-        <div className="flex justify-center items-baseline gap-0 mb-1">
-          {/* 우리 - Vibrant Orange */}
+        {/* Logo Text - 3D Pixel style with shadows */}
+        <div className="flex justify-center items-end gap-0 mb-1">
+          {/* 우리 - Orange/Brown 3D Pixel */}
           <span 
-            className="font-pixel text-2xl font-bold"
+            className="font-pixel text-[28px] font-bold leading-none"
             style={{
               color: '#FF8C00',
-              WebkitTextStroke: '1.5px #8B4513',
-              letterSpacing: '1px',
+              WebkitTextStroke: '2px #8B4513',
+              textShadow: '3px 3px 0 #5D3A1A',
+              letterSpacing: '-1px',
             }}
           >
             우리
           </span>
-          {/* 의 - constructed with soccer ball as ㅇ */}
+          
+          {/* 의 - Soccer ball as ㅇ, unified character */}
           <span 
-            className="relative inline-flex flex-col items-center justify-center mx-1"
-            style={{ width: '28px', height: '36px' }}
+            className="relative inline-block"
+            style={{ 
+              width: '32px', 
+              height: '38px',
+              marginLeft: '-2px',
+              marginRight: '-2px',
+            }}
           >
-            {/* ⚽ as ㅇ */}
-            <span className="text-lg leading-none">⚽</span>
-            {/* ㅡ horizontal line */}
+            {/* ⚽ as ㅇ - positioned at top center */}
             <span 
-              className="font-pixel text-lg font-bold leading-none"
+              className="absolute left-1/2 -translate-x-1/2"
+              style={{ 
+                top: '0px',
+                fontSize: '16px',
+                filter: 'drop-shadow(2px 2px 0 #4A4A4A)',
+              }}
+            >
+              ⚽
+            </span>
+            
+            {/* ㅡ horizontal - below the soccer ball */}
+            <span 
+              className="absolute font-pixel font-bold"
               style={{
                 color: '#FFFFFF',
-                WebkitTextStroke: '1px #4A4A4A',
-                marginTop: '-2px',
+                WebkitTextStroke: '1.5px #4A4A4A',
+                textShadow: '2px 2px 0 #2A2A2A',
+                fontSize: '18px',
+                top: '18px',
+                left: '2px',
+                lineHeight: '1',
               }}
             >
               ㅡ
             </span>
-            {/* ㅣ vertical line - positioned to the right */}
+            
+            {/* ㅣ vertical - right side, spanning height */}
             <span 
-              className="absolute font-pixel text-lg font-bold"
+              className="absolute font-pixel font-bold"
               style={{
                 color: '#FFFFFF',
-                WebkitTextStroke: '1px #4A4A4A',
+                WebkitTextStroke: '1.5px #4A4A4A',
+                textShadow: '2px 2px 0 #2A2A2A',
+                fontSize: '28px',
                 right: '0px',
-                top: '50%',
-                transform: 'translateY(-50%)',
+                top: '4px',
+                lineHeight: '1',
               }}
             >
               ㅣ
             </span>
           </span>
-          {/* 풋살 - Vivid Green */}
+          
+          {/* 풋살 - Green 3D Pixel */}
           <span 
-            className="font-pixel text-2xl font-bold"
+            className="font-pixel text-[28px] font-bold leading-none"
             style={{
               color: '#22C55E',
-              WebkitTextStroke: '1.5px #14532D',
-              letterSpacing: '1px',
+              WebkitTextStroke: '2px #14532D',
+              textShadow: '3px 3px 0 #0A2915',
+              letterSpacing: '-1px',
             }}
           >
             풋살
