@@ -56,12 +56,14 @@ export type Database = {
         Row: {
           avatar_url: string | null
           created_at: string
+          district: string | null
           id: string
           is_pro_elite: boolean
           nickname: string
           nickname_tag: string | null
           preferred_position: string | null
           real_name: string | null
+          region: string | null
           updated_at: string
           user_id: string
           years_of_experience: number
@@ -69,12 +71,14 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           created_at?: string
+          district?: string | null
           id?: string
           is_pro_elite?: boolean
           nickname?: string
           nickname_tag?: string | null
           preferred_position?: string | null
           real_name?: string | null
+          region?: string | null
           updated_at?: string
           user_id: string
           years_of_experience?: number
@@ -82,12 +86,14 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           created_at?: string
+          district?: string | null
           id?: string
           is_pro_elite?: boolean
           nickname?: string
           nickname_tag?: string | null
           preferred_position?: string | null
           real_name?: string | null
+          region?: string | null
           updated_at?: string
           user_id?: string
           years_of_experience?: number
