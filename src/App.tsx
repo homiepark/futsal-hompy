@@ -10,6 +10,7 @@ import Index from "./pages/Index";
 import TeamHome from "./pages/TeamHome";
 import TeamArchive from "./pages/TeamArchive";
 import MyTeam from "./pages/MyTeam";
+import CreateTeam from "./pages/CreateTeam";
 import Matchmaking from "./pages/Matchmaking";
 import Schedule from "./pages/Schedule";
 import CourtBooking from "./pages/CourtBooking";
@@ -35,6 +36,7 @@ const App = () => (
                 <Route path="/my-team" element={<MyTeam />} />
                 <Route path="/team/:teamId" element={<TeamHome />} />
                 <Route path="/archive" element={<TeamArchive />} />
+                <Route path="/create-team" element={<CreateTeam />} />
                 <Route path="/matchmaking" element={<Matchmaking />} />
                 <Route path="/schedule" element={<Schedule />} />
                 <Route path="/courts" element={<CourtBooking />} />
