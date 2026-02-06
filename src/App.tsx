@@ -19,6 +19,7 @@ import CourtBooking from "./pages/CourtBooking";
 import PlayerRegistration from "./pages/PlayerRegistration";
 import MyProfile from "./pages/MyProfile";
 import ProfileSetup from "./pages/ProfileSetup";
+import Auth from "./pages/Auth";
 import Messages from "./pages/Messages";
 import NotFound from "./pages/NotFound";
 
