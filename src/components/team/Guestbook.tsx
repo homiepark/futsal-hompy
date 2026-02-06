@@ -1,9 +1,6 @@
 import { useState } from 'react';
 import { Send, Heart } from 'lucide-react';
-import { PixelCard } from '@/components/ui/PixelCard';
 import { PixelButton } from '@/components/ui/PixelButton';
-import { PixelInput } from '@/components/ui/PixelInput';
-import { PixelIcon } from '@/components/ui/PixelIcon';
 
 interface GuestbookEntry {
   id: string;
@@ -24,43 +21,49 @@ export function Guestbook() {
   const [newMessage, setNewMessage] = useState('');
 
   return (
-    <PixelCard>
-      <div className="flex items-center gap-2 mb-4">
-        <span className="text-xl">📝</span>
-        <h3 className="font-pixel text-xs text-foreground">방명록</h3>
+    <div className="kairo-panel">
+      {/* Panel Header */}
+      <div className="kairo-panel-header">
+        <span className="text-sm">📝</span>
+        <span>방명록</span>
       </div>
 
-      {/* Message Input */}
-      <div className="flex gap-2 mb-4">
-        <PixelInput
-          placeholder="메시지를 남겨주세요..."
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-        />
-        <PixelButton variant="primary" size="sm">
-          <Send size={14} />
-        </PixelButton>
-      </div>
+      {/* Content */}
+      <div className="p-2">
+        {/* Message Input */}
+        <div className="flex gap-1.5 mb-2">
+          <input
+            className="flex-1 px-2 py-1.5 bg-input border-2 border-border-dark font-pixel text-[9px] placeholder:text-muted-foreground focus:outline-none focus:border-primary"
+            placeholder="메시지를 남겨주세요..."
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+          />
+          <PixelButton variant="primary" size="sm" className="px-2">
+            <Send size={12} />
+          </PixelButton>
+        </div>
 
-      {/* Entries */}
-      <div className="space-y-3 max-h-64 overflow-y-auto pixel-scrollbar">
-        {entries.map((entry) => (
-          <div 
-            key={entry.id} 
-            className="bg-secondary p-3 border-2 border-border-dark shadow-pixel-sm"
-          >
-            <div className="flex items-center justify-between mb-1">
-              <span className="font-pixel text-[8px] text-primary">{entry.author}</span>
-              <span className="font-body text-xs text-muted-foreground">{entry.date}</span>
+        {/* Entries - Compact */}
+        <div className="space-y-1.5 max-h-48 overflow-y-auto pixel-scrollbar">
+          {entries.map((entry) => (
+            <div 
+              key={entry.id} 
+              className="bg-muted p-2 border-2 border-border-dark"
+              style={{ boxShadow: '1px 1px 0 hsl(var(--pixel-shadow) / 0.4)' }}
+            >
+              <div className="flex items-center justify-between mb-0.5">
+                <span className="font-pixel text-[8px] text-primary">{entry.author}</span>
+                <span className="font-pixel text-[7px] text-muted-foreground">{entry.date}</span>
+              </div>
+              <p className="font-pixel text-[9px] text-foreground mb-1 leading-tight">{entry.message}</p>
+              <button className="flex items-center gap-0.5 text-accent hover:scale-110 transition-transform">
+                <Heart size={10} fill="currentColor" />
+                <span className="font-pixel text-[7px]">{entry.likes}</span>
+              </button>
             </div>
-            <p className="font-body text-sm text-foreground mb-2">{entry.message}</p>
-            <button className="flex items-center gap-1 text-accent hover:scale-110 transition-transform">
-              <Heart size={12} fill="currentColor" />
-              <span className="font-pixel text-[8px]">{entry.likes}</span>
-            </button>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
-    </PixelCard>
+    </div>
   );
 }
