@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils';
+import { FavoriteStarButton } from '@/components/ui/FavoriteStarButton';
 
 interface TeamListCardProps {
   emblem: string;
@@ -7,6 +8,8 @@ interface TeamListCardProps {
   level: 'S' | 'A' | 'B' | 'C';
   trainingTime: string;
   memberCount: number;
+  isFavorited?: boolean;
+  onFavoriteToggle?: (isFavorited: boolean) => void;
 }
 
 const levelColors = {
