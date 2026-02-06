@@ -9,7 +9,7 @@ export function Header() {
           <div className="w-8 h-8 bg-primary border-2 border-primary-dark shadow-pixel-sm flex items-center justify-center">
             <span className="text-primary-foreground font-pixel text-[10px]">⚽</span>
           </div>
-          <h1 className="font-pixel text-sm text-foreground text-pixel-shadow">
+          <h1 className="font-pixel text-[10px] text-foreground">
             우리의풋살
           </h1>
         </div>
