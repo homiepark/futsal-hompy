@@ -1,16 +1,28 @@
+import { useState } from 'react';
 import { Bell, Settings } from 'lucide-react';
 import headerBanner from '@/assets/header-banner.jpg';
 import { CategoryTabs } from '@/components/findteam/CategoryTabs';
 import { TeamFilterBar } from '@/components/findteam/TeamFilterBar';
 import { TeamListCard } from '@/components/findteam/TeamListCard';
+import { cn } from '@/lib/utils';
 
-const sampleTeams = [
-  { emblem: '⚽', name: 'FC 번개', region: '서울 강남', level: 'S' as const, trainingTime: '주말 오전 9시', memberCount: 18 },
-  { emblem: '🦁', name: '라이언즈 FC', region: '경기 성남', level: 'A' as const, trainingTime: '평일 저녁 7시', memberCount: 15 },
-  { emblem: '🔥', name: '화이터스', region: '서울 마포', level: 'A' as const, trainingTime: '주말 오후 2시', memberCount: 20 },
-  { emblem: '⭐', name: '스타킥', region: '인천 연수', level: 'B' as const, trainingTime: '평일 저녁 8시', memberCount: 12 },
-  { emblem: '🌊', name: '블루웨이브', region: '부산 해운대', level: 'B' as const, trainingTime: '주말 오전 10시', memberCount: 16 },
-  { emblem: '🦅', name: '이글스 FC', region: '대구 수성', level: 'C' as const, trainingTime: '주말 오후 4시', memberCount: 10 },
+interface Team {
+  emblem: string;
+  name: string;
+  region: string;
+  level: 'S' | 'A' | 'B' | 'C';
+  trainingTime: string;
+  memberCount: number;
+  isFavorited: boolean;
+}
+
+const initialTeams: Team[] = [
+  { emblem: '⚽', name: 'FC 번개', region: '서울 강남', level: 'S', trainingTime: '주말 오전 9시', memberCount: 18, isFavorited: true },
+  { emblem: '🦁', name: '라이언즈 FC', region: '경기 성남', level: 'A', trainingTime: '평일 저녁 7시', memberCount: 15, isFavorited: false },
+  { emblem: '🔥', name: '화이터스', region: '서울 마포', level: 'A', trainingTime: '주말 오후 2시', memberCount: 20, isFavorited: true },
+  { emblem: '⭐', name: '스타킥', region: '인천 연수', level: 'B', trainingTime: '평일 저녁 8시', memberCount: 12, isFavorited: false },
+  { emblem: '🌊', name: '블루웨이브', region: '부산 해운대', level: 'B', trainingTime: '주말 오전 10시', memberCount: 16, isFavorited: false },
+  { emblem: '🦅', name: '이글스 FC', region: '대구 수성', level: 'C', trainingTime: '주말 오후 4시', memberCount: 10, isFavorited: true },
 ];
 
 const Index = () => {
