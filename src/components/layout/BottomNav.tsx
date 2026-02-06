@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { ColorfulPixelNavIcon } from '@/components/ui/ColorfulPixelNavIcon';
+import { useTeam } from '@/contexts/TeamContext';
 
 const navItems = [
   { icon: 'home' as const, label: '홈', path: '/' },
@@ -12,16 +13,31 @@ const navItems = [
 
 export function BottomNav() {
   const location = useLocation();
+  const { activeTeam } = useTeam();
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t-4 border-border-dark shadow-[0_-4px_0_hsl(var(--pixel-shadow))]">
+      {/* Active Team Indicator */}
+      {activeTeam && (
+        <div className="bg-primary/10 border-b-2 border-primary/30 px-3 py-1.5 flex items-center justify-center gap-2">
+          <span className="text-sm">{activeTeam.emblem}</span>
+          <span className="font-pixel text-[8px] text-primary">{activeTeam.name}</span>
+          <span className="font-body text-[10px] text-muted-foreground">활성 팀</span>
+        </div>
+      )}
+      
       <div className="flex justify-around items-center h-20 max-w-lg mx-auto">
         {navItems.map(({ icon, label, path }) => {
           const isActive = location.pathname === path;
+          // Add team filter to archive/schedule/matching if active team
+          const targetPath = activeTeam && (path === '/archive' || path === '/schedule' || path === '/matchmaking')
+            ? `${path}?team=${activeTeam.id}`
+            : path;
+            
           return (
             <Link
               key={path}
-              to={path}
+              to={targetPath}
               className={cn(
                 'flex flex-col items-center justify-center gap-2 px-3 py-2 transition-colors',
                 isActive 

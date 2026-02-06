@@ -1,7 +1,10 @@
+import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { FavoriteStarButton } from '@/components/ui/FavoriteStarButton';
 import { LevelInfoButton } from '@/components/ui/LevelGuideModal';
+
 interface TeamListCardProps {
+  id?: string;
   emblem: string;
   name: string;
   region: string;
@@ -19,9 +22,25 @@ const levelColors = {
   C: 'bg-primary/50 text-primary-foreground border-primary-dark/50',
 };
 
-export function TeamListCard({ emblem, name, region, level, trainingTime, memberCount, isFavorited, onFavoriteToggle }: TeamListCardProps) {
+export function TeamListCard({ id, emblem, name, region, level, trainingTime, memberCount, isFavorited, onFavoriteToggle }: TeamListCardProps) {
+  const navigate = useNavigate();
+  
+  // Generate ID from name if not provided
+  const teamId = id || name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9가-힣-]/g, '');
+
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Don't navigate if clicking on favorite button or level info
+    if ((e.target as HTMLElement).closest('button')) {
+      return;
+    }
+    navigate(`/team/${teamId}`);
+  };
+
   return (
-    <div className="bg-card border-4 border-border-dark p-3 shadow-[4px_4px_0_hsl(var(--pixel-shadow))] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_hsl(var(--pixel-shadow))] transition-all cursor-pointer">
+    <div 
+      onClick={handleCardClick}
+      className="bg-card border-4 border-border-dark p-3 shadow-[4px_4px_0_hsl(var(--pixel-shadow))] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_hsl(var(--pixel-shadow))] transition-all cursor-pointer"
+    >
       <div className="flex items-start gap-3">
         {/* Pixel Emblem */}
         <div className="w-12 h-12 bg-field-green border-2 border-border-dark flex items-center justify-center text-2xl shadow-[2px_2px_0_hsl(var(--pixel-shadow))]">
