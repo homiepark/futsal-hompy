@@ -59,7 +59,9 @@ export type Database = {
           id: string
           is_pro_elite: boolean
           nickname: string
+          nickname_tag: string | null
           preferred_position: string | null
+          real_name: string | null
           updated_at: string
           user_id: string
           years_of_experience: number
@@ -70,7 +72,9 @@ export type Database = {
           id?: string
           is_pro_elite?: boolean
           nickname?: string
+          nickname_tag?: string | null
           preferred_position?: string | null
+          real_name?: string | null
           updated_at?: string
           user_id: string
           years_of_experience?: number
@@ -81,7 +85,9 @@ export type Database = {
           id?: string
           is_pro_elite?: boolean
           nickname?: string
+          nickname_tag?: string | null
           preferred_position?: string | null
+          real_name?: string | null
           updated_at?: string
           user_id?: string
           years_of_experience?: number
@@ -258,7 +264,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_nickname_tag: { Args: never; Returns: string }
     }
     Enums: {
       [_ in never]: never

@@ -4,6 +4,8 @@ import { cn } from '@/lib/utils';
 interface ApplicantCardProps {
   id: string;
   nickname: string;
+  nicknameTag?: string;
+  realName?: string;
   avatarUrl?: string;
   yearsOfExperience: number;
   preferredPosition: string;
@@ -32,6 +34,8 @@ const positionColors: Record<string, string> = {
 export function ApplicantCard({
   id,
   nickname,
+  nicknameTag,
+  realName,
   avatarUrl,
   yearsOfExperience,
   preferredPosition,
@@ -42,6 +46,14 @@ export function ApplicantCard({
 }: ApplicantCardProps) {
   const positionLabel = positionLabels[preferredPosition] || preferredPosition;
   const positionColor = positionColors[preferredPosition] || 'bg-muted text-muted-foreground';
+
+  // Format display name for admin view
+  const displayName = nicknameTag 
+    ? `${nickname}#${nicknameTag}` 
+    : nickname;
+  const fullDisplayName = realName 
+    ? `${displayName} (${realName})` 
+    : displayName;
 
   return (
     <div className="kairo-panel p-0 overflow-hidden">
@@ -60,7 +72,14 @@ export function ApplicantCard({
 
         {/* Name and position */}
         <div className="flex-1 min-w-0">
-          <h3 className="font-pixel text-sm text-foreground truncate">{nickname}</h3>
+          <h3 className="font-pixel text-sm text-foreground truncate" title={fullDisplayName}>
+            {displayName}
+          </h3>
+          {realName && (
+            <p className="font-pixel text-[9px] text-accent truncate" title={realName}>
+              ({realName})
+            </p>
+          )}
           <div className="flex items-center gap-2 mt-1">
             <span className={cn(
               'font-pixel text-[8px] px-2 py-0.5 border-2 border-border-dark',

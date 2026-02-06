@@ -14,6 +14,8 @@ interface JoinRequest {
   created_at: string;
   profile?: {
     nickname: string;
+    nickname_tag: string | null;
+    real_name: string | null;
     avatar_url: string | null;
     years_of_experience: number;
     preferred_position: string | null;
@@ -50,7 +52,7 @@ export default function JoinRequestManagement() {
         const userIds = requestsData.map(r => r.user_id);
         const { data: profilesData, error: profilesError } = await supabase
           .from('profiles')
-          .select('user_id, nickname, avatar_url, years_of_experience, preferred_position')
+          .select('user_id, nickname, nickname_tag, real_name, avatar_url, years_of_experience, preferred_position')
           .in('user_id', userIds);
 
         if (profilesError) throw profilesError;
@@ -61,6 +63,8 @@ export default function JoinRequestManagement() {
           ...req,
           profile: profileMap.get(req.user_id) || {
             nickname: '알 수 없음',
+            nickname_tag: null,
+            real_name: null,
             avatar_url: null,
             years_of_experience: 0,
             preferred_position: null,
@@ -184,6 +188,8 @@ export default function JoinRequestManagement() {
                 key={request.id}
                 id={request.id}
                 nickname={request.profile?.nickname || '알 수 없음'}
+                nicknameTag={request.profile?.nickname_tag || undefined}
+                realName={request.profile?.real_name || undefined}
                 avatarUrl={request.profile?.avatar_url || undefined}
                 yearsOfExperience={request.profile?.years_of_experience || 0}
                 preferredPosition={request.profile?.preferred_position || 'MF'}
