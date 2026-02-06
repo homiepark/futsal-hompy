@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { z } from 'zod';
+import futsalMascot from '@/assets/futsal-mascot.png';
 
 // Validation schemas
 const emailSchema = z.string().email('올바른 이메일 형식이 아닙니다');
@@ -117,99 +118,120 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4 py-8">
-      {/* Mascot Logo */}
-      <div className="text-center mb-6">
-        {/* Pixel Character */}
-        <div className="relative w-24 h-24 mx-auto mb-4">
-          <div className="w-full h-full bg-primary border-4 border-primary-dark rounded-lg flex items-center justify-center"
-            style={{ boxShadow: '4px 4px 0 hsl(var(--pixel-shadow))' }}
-          >
-            <span className="text-5xl animate-pixel-bounce">⚽</span>
-          </div>
-          {/* Decorative Ball */}
-          <div className="absolute -right-2 -bottom-2 w-8 h-8 bg-accent border-2 border-accent-dark rounded-full flex items-center justify-center"
-            style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
-          >
-            <span className="text-sm">🏃</span>
-          </div>
+    <div className="min-h-screen bg-[#f8f6f0] flex flex-col items-center px-4 py-6">
+      {/* Mascot and Logo Section */}
+      <div className="text-center mb-4">
+        {/* Mascot Character */}
+        <div className="relative w-28 h-28 mx-auto mb-2">
+          <img 
+            src={futsalMascot} 
+            alt="풋살 마스코트"
+            className="w-full h-full object-contain drop-shadow-lg"
+          />
         </div>
         
-        {/* Title with 3D Effect */}
-        <h1 className="font-pixel text-2xl text-primary mb-1 relative"
+        {/* 3D Logo Text */}
+        <h1 
+          className="font-pixel text-3xl font-bold text-primary relative inline-block"
           style={{
-            textShadow: '2px 2px 0 hsl(var(--primary-dark)), 3px 3px 0 hsl(var(--pixel-shadow))'
+            WebkitTextStroke: '2px hsl(30, 50%, 35%)',
+            textShadow: `
+              3px 3px 0 hsl(30, 60%, 45%),
+              4px 4px 0 hsl(30, 50%, 35%),
+              5px 5px 0 hsl(var(--pixel-shadow))
+            `,
+            color: 'hsl(142, 69%, 52%)',
           }}
         >
           우리의풋살
         </h1>
-        <p className="font-pixel text-xs text-muted-foreground tracking-wider">Our Futsal</p>
+        <p className="font-pixel text-xs text-[hsl(30,40%,50%)] mt-1 tracking-[0.2em]">Our Futsal</p>
       </div>
 
-      {/* Auth Card - Rounded with Thick Borders */}
-      <div className="w-full max-w-sm bg-card border-4 border-border-dark rounded-2xl overflow-hidden"
+      {/* Auth Card - Matching the exact design */}
+      <div 
+        className="w-full max-w-sm bg-[#fdfcf8] overflow-hidden"
         style={{ 
-          boxShadow: '6px 6px 0 hsl(var(--pixel-shadow) / 0.3)',
+          border: '4px solid hsl(30, 45%, 65%)',
+          borderRadius: '16px',
+          boxShadow: `
+            6px 6px 0 hsl(30, 35%, 55%),
+            inset 0 0 0 2px hsl(40, 50%, 92%)
+          `,
         }}
       >
-        {/* Tab Switch */}
+        {/* Tab Switch - Exact match */}
         <div className="flex">
           <button
             type="button"
             onClick={() => setMode('signup')}
             className={cn(
-              'flex-1 py-4 font-pixel text-[11px] transition-colors flex items-center justify-center gap-2',
+              'flex-1 py-3.5 font-pixel text-[11px] transition-all flex items-center justify-center gap-2',
               mode === 'signup'
                 ? 'bg-primary text-primary-foreground'
-                : 'bg-secondary text-muted-foreground hover:bg-muted'
+                : 'bg-[#f0ebe0] text-[#8b7355] hover:bg-[#e8e3d8]'
             )}
+            style={{
+              borderBottom: mode === 'signup' ? 'none' : '2px solid hsl(30, 30%, 75%)',
+            }}
           >
-            <UserPlus size={16} />
+            <UserPlus size={14} />
             <span>회원가입</span>
           </button>
           <button
             type="button"
             onClick={() => setMode('login')}
             className={cn(
-              'flex-1 py-4 font-pixel text-[11px] transition-colors flex items-center justify-center gap-2',
+              'flex-1 py-3.5 font-pixel text-[11px] transition-all flex items-center justify-center gap-2',
               mode === 'login'
                 ? 'bg-primary text-primary-foreground'
-                : 'bg-secondary text-muted-foreground hover:bg-muted'
+                : 'bg-[#f0ebe0] text-[#8b7355] hover:bg-[#e8e3d8]'
             )}
+            style={{
+              borderBottom: mode === 'login' ? 'none' : '2px solid hsl(30, 30%, 75%)',
+            }}
           >
-            <LogIn size={16} />
+            <LogIn size={14} />
             <span>로그인</span>
           </button>
         </div>
 
-        <div className="p-6">
-          {/* Step Indicator (only for signup) */}
+        <div className="p-5 pt-4">
+          {/* Step Indicator (only for signup) - Exact match */}
           {mode === 'signup' && (
-            <div className="flex items-center justify-center gap-3 mb-6">
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 bg-primary border-2 border-primary-dark flex items-center justify-center font-pixel text-[10px] text-primary-foreground"
-                  style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
+            <div className="flex items-center justify-center gap-2 mb-5">
+              <div className="flex items-center gap-1.5">
+                <div 
+                  className="w-7 h-7 bg-primary flex items-center justify-center font-pixel text-[10px] text-primary-foreground"
+                  style={{ 
+                    border: '2px solid hsl(142, 65%, 40%)',
+                    boxShadow: '2px 2px 0 hsl(var(--pixel-shadow) / 0.5)'
+                  }}
                 >
                   1
                 </div>
                 <span className="font-pixel text-[9px] text-primary">계정 생성</span>
               </div>
-              <div className="w-6 h-0.5 bg-border-dark" />
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 bg-muted border-2 border-border-dark flex items-center justify-center font-pixel text-[10px] text-muted-foreground"
-                  style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
+              <div className="w-8 h-[2px] bg-[#c4b8a4]" />
+              <div className="flex items-center gap-1.5">
+                <div 
+                  className="w-7 h-7 bg-[#f0ebe0] flex items-center justify-center font-pixel text-[10px] text-[#8b7355]"
+                  style={{ 
+                    border: '2px solid hsl(30, 30%, 70%)',
+                    boxShadow: '2px 2px 0 hsl(var(--pixel-shadow) / 0.3)'
+                  }}
                 >
                   2
                 </div>
-                <span className="font-pixel text-[9px] text-muted-foreground">프로필 설정</span>
+                <span className="font-pixel text-[9px] text-[#8b7355]">프로필 설정</span>
               </div>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-4">
             {/* Email Input */}
             <div>
-              <label className="flex items-center gap-1.5 font-pixel text-[10px] text-foreground mb-2">
+              <label className="flex items-center gap-1.5 font-pixel text-[10px] text-[#5a4a3a] mb-2">
                 <Mail size={12} />
                 <span>이메일</span>
               </label>
@@ -219,12 +241,15 @@ export default function Auth() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="your@email.com"
                 className={cn(
-                  'w-full px-4 py-3 bg-muted border-2 border-border-dark rounded-xl font-body text-sm',
-                  'focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20',
-                  'placeholder:text-muted-foreground/60',
-                  errors.email && 'border-destructive focus:border-destructive'
+                  'w-full px-4 py-3 bg-[#f5f2ea] text-[#5a4a3a] font-body text-sm',
+                  'placeholder:text-[#a89880]',
+                  'focus:outline-none focus:bg-[#f0ebe0]',
+                  errors.email && 'border-destructive'
                 )}
-                style={{ boxShadow: 'inset 2px 2px 4px hsl(var(--pixel-shadow) / 0.1)' }}
+                style={{
+                  border: '2px solid #d4c8b8',
+                  borderRadius: '10px',
+                }}
                 autoComplete="email"
               />
               {errors.email && (
@@ -234,7 +259,7 @@ export default function Auth() {
 
             {/* Password Input */}
             <div>
-              <label className="flex items-center gap-1.5 font-pixel text-[10px] text-foreground mb-2">
+              <label className="flex items-center gap-1.5 font-pixel text-[10px] text-[#5a4a3a] mb-2">
                 <Lock size={12} />
                 <span>비밀번호</span>
               </label>
@@ -245,18 +270,21 @@ export default function Auth() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   className={cn(
-                    'w-full px-4 py-3 pr-12 bg-muted border-2 border-border-dark rounded-xl font-body text-sm',
-                    'focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20',
-                    'placeholder:text-muted-foreground/60',
-                    errors.password && 'border-destructive focus:border-destructive'
+                    'w-full px-4 py-3 pr-12 bg-[#f5f2ea] text-[#5a4a3a] font-body text-sm',
+                    'placeholder:text-[#a89880]',
+                    'focus:outline-none focus:bg-[#f0ebe0]',
+                    errors.password && 'border-destructive'
                   )}
-                  style={{ boxShadow: 'inset 2px 2px 4px hsl(var(--pixel-shadow) / 0.1)' }}
+                  style={{
+                    border: '2px solid #d4c8b8',
+                    borderRadius: '10px',
+                  }}
                   autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-[#a89880] hover:text-[#5a4a3a] transition-colors"
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
@@ -269,7 +297,7 @@ export default function Auth() {
             {/* Confirm Password (signup only) */}
             {mode === 'signup' && (
               <div>
-                <label className="flex items-center gap-1.5 font-pixel text-[10px] text-foreground mb-2">
+                <label className="flex items-center gap-1.5 font-pixel text-[10px] text-[#5a4a3a] mb-2">
                   <Lock size={12} />
                   <span>비밀번호 확인</span>
                 </label>
@@ -279,12 +307,15 @@ export default function Auth() {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="••••••••"
                   className={cn(
-                    'w-full px-4 py-3 bg-muted border-2 border-border-dark rounded-xl font-body text-sm',
-                    'focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20',
-                    'placeholder:text-muted-foreground/60',
-                    errors.confirmPassword && 'border-destructive focus:border-destructive'
+                    'w-full px-4 py-3 bg-[#f5f2ea] text-[#5a4a3a] font-body text-sm',
+                    'placeholder:text-[#a89880]',
+                    'focus:outline-none focus:bg-[#f0ebe0]',
+                    errors.confirmPassword && 'border-destructive'
                   )}
-                  style={{ boxShadow: 'inset 2px 2px 4px hsl(var(--pixel-shadow) / 0.1)' }}
+                  style={{
+                    border: '2px solid #d4c8b8',
+                    borderRadius: '10px',
+                  }}
                   autoComplete="new-password"
                 />
                 {errors.confirmPassword && (
@@ -293,69 +324,71 @@ export default function Auth() {
               </div>
             )}
 
-            {/* Submit Button */}
+            {/* Submit Button - Exact match */}
             <button
               type="submit"
               disabled={isLoading}
               className={cn(
-                'w-full py-4 font-pixel text-[11px] text-primary-foreground',
-                'bg-primary border-3 border-primary-dark rounded-xl',
+                'w-full py-3.5 font-pixel text-[12px] text-white',
                 'flex items-center justify-center gap-2',
                 'transition-all duration-100',
                 'hover:brightness-110',
-                'active:translate-x-0.5 active:translate-y-0.5',
+                'active:translate-y-0.5',
                 'disabled:opacity-60 disabled:cursor-not-allowed'
               )}
               style={{
-                boxShadow: '4px 4px 0 hsl(var(--primary-dark)), inset 0 2px 0 hsl(0 0% 100% / 0.2)'
+                background: 'linear-gradient(180deg, hsl(142, 69%, 55%) 0%, hsl(142, 69%, 45%) 100%)',
+                border: '3px solid hsl(142, 65%, 35%)',
+                borderRadius: '10px',
+                boxShadow: '0 4px 0 hsl(142, 60%, 30%), inset 0 1px 0 hsl(142, 70%, 65%)',
               }}
             >
               {isLoading ? (
                 <span className="animate-pulse">처리 중...</span>
               ) : mode === 'signup' ? (
                 <>
-                  <UserPlus size={16} />
+                  <UserPlus size={15} />
                   <span>회원가입</span>
-                  <ArrowRight size={16} />
+                  <ArrowRight size={15} />
                 </>
               ) : (
                 <>
-                  <LogIn size={16} />
+                  <LogIn size={15} />
                   <span>로그인</span>
-                  <ArrowRight size={16} />
+                  <ArrowRight size={15} />
                 </>
               )}
             </button>
           </form>
 
           {/* Toggle Link */}
-          <div className="mt-5 text-center">
+          <div className="mt-4 text-center">
             <button
               type="button"
               onClick={toggleMode}
-              className="font-pixel text-[9px] text-muted-foreground hover:text-primary transition-colors"
+              className="font-pixel text-[9px] text-[#8b7355]"
             >
               {mode === 'signup' ? (
-                <>이미 계정이 있으신가요? <span className="text-primary underline">로그인</span></>
+                <>이미 계정이 있으신가요? <span className="text-primary hover:underline">로그인</span></>
               ) : (
-                <>계정이 없으신가요? <span className="text-primary underline">회원가입</span></>
+                <>계정이 없으신가요? <span className="text-primary hover:underline">회원가입</span></>
               )}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Decorative Diamonds */}
-      <div className="flex justify-center gap-3 mt-6">
-        <span className="text-primary animate-pixel-pulse text-lg">◆</span>
-        <span className="text-accent animate-pixel-pulse text-lg" style={{ animationDelay: '0.3s' }}>◆</span>
-        <span className="text-primary animate-pixel-pulse text-lg" style={{ animationDelay: '0.6s' }}>◆</span>
+      {/* Decorative Diamonds - Exact match */}
+      <div className="flex justify-center items-center gap-4 mt-8">
+        <span className="text-primary text-lg">◆</span>
+        <span className="text-accent text-lg">◆</span>
+        <span className="text-primary text-lg">◆</span>
       </div>
 
-      {/* Back Link */}
+      {/* Back Link - Exact match */}
       <Link 
         to="/" 
-        className="mt-5 flex items-center gap-2 font-pixel text-[10px] text-muted-foreground hover:text-foreground transition-colors"
+        className="mt-6 flex items-center gap-2 font-pixel text-[10px] text-[#8b7355] hover:text-primary transition-colors"
       >
         <ArrowLeft size={14} />
         <span>홈으로 돌아가기</span>
