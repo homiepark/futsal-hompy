@@ -69,16 +69,19 @@ export default function TeamHome() {
 
   return (
     <div className="pb-24 max-w-lg mx-auto">
-      {/* Back Button */}
+      {/* Sticky Header with Team Switcher */}
       <div className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b-2 border-border-dark">
-        <div className="px-4 py-3 flex items-center gap-3">
-          <button 
-            onClick={handleBack}
-            className="w-8 h-8 bg-secondary border-2 border-border-dark flex items-center justify-center hover:bg-muted transition-colors"
-          >
-            <ArrowLeft size={16} className="text-foreground" />
-          </button>
-          <span className="font-pixel text-[10px] text-muted-foreground">팀 홈으로</span>
+        <div className="px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={handleBack}
+              className="w-8 h-8 bg-secondary border-2 border-border-dark flex items-center justify-center hover:bg-muted transition-colors"
+            >
+              <ArrowLeft size={16} className="text-foreground" />
+            </button>
+            <span className="font-pixel text-[10px] text-muted-foreground">MY TEAM</span>
+          </div>
+          <TeamSwitcher />
         </div>
       </div>
 
