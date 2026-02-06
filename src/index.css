@@ -118,13 +118,13 @@
     line-height: 1.6;
   }
 
-  /* Pixel font only for main titles */
-  h1, h2 {
+  /* Pixel font only for main app title */
+  h1 {
     @apply font-pixel;
   }
 
-  /* Modern font for smaller headings */
-  h3, h4, h5, h6 {
+  /* Galmuri font for all other headings */
+  h2, h3, h4, h5, h6 {
     @apply font-body font-bold;
   }
 
