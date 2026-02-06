@@ -1,16 +1,24 @@
-import { MapPin, Users, Star } from 'lucide-react';
+import { MapPin, Users, Star, Clock, Building2 } from 'lucide-react';
 import { PixelCard } from '@/components/ui/PixelCard';
 import { PixelBadge } from '@/components/ui/PixelBadge';
 import { PixelButton } from '@/components/ui/PixelButton';
+import { cn } from '@/lib/utils';
 
 interface TeamCardProps {
+  id?: string;
   name: string;
+  emblem?: string;
   region: string;
   level: 'S' | 'A' | 'B' | 'C';
   members: number;
   gender: '남성' | '여성' | '혼성';
-  avgExperience: number;
-  hasProPlayer: boolean;
+  matchTime?: string;
+  fieldType?: string;
+  mannerScore?: number;
+  hasProPlayer?: boolean;
+  tags?: string[];
+  onMatchRequest?: () => void;
+  onViewProfile?: () => void;
 }
 
 const levelVariants = {
@@ -21,33 +29,66 @@ const levelVariants = {
 } as const;
 
 export function TeamCard({
+  id,
   name,
+  emblem = '⚽',
   region,
   level,
   members,
   gender,
-  avgExperience,
-  hasProPlayer,
+  matchTime = '주말 오후',
+  fieldType = '실내',
+  mannerScore = 4.5,
+  hasProPlayer = false,
+  tags = [],
+  onMatchRequest,
+  onViewProfile,
 }: TeamCardProps) {
   return (
     <PixelCard className="space-y-3">
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 bg-field-green border-2 border-primary-dark flex items-center justify-center shadow-pixel-sm">
-            <span className="font-pixel text-xs text-primary-foreground">⚽</span>
+            <span className="text-lg">{emblem}</span>
           </div>
           <div>
             <h3 className="font-pixel text-[10px] text-foreground">{name}</h3>
             <div className="flex items-center gap-1 text-muted-foreground">
               <MapPin size={10} />
-              <span className="font-body text-xs">{region}</span>
+              <span className="font-pixel text-[9px]">{region}</span>
             </div>
           </div>
         </div>
-        <PixelBadge variant={levelVariants[level]}>
-          Lv.{level}
-        </PixelBadge>
+        <div className="flex flex-col items-end gap-1">
+          <PixelBadge variant={levelVariants[level]}>
+            Lv.{level}
+          </PixelBadge>
+          {/* Manner Score */}
+          <div className="flex items-center gap-1">
+            <Star size={10} className="text-accent fill-accent" />
+            <span className="font-pixel text-[8px] text-accent">{mannerScore.toFixed(1)}</span>
+          </div>
+        </div>
       </div>
+
+      {/* Tags */}
+      {tags.length > 0 && (
+        <div className="flex flex-wrap gap-1">
+          {tags.map((tag, idx) => (
+            <span 
+              key={idx}
+              className={cn(
+                "px-1.5 py-0.5 font-pixel text-[7px] border",
+                tag === '내 동네 팀' && "bg-primary/20 text-primary border-primary/50",
+                tag === '실력 비슷' && "bg-accent/20 text-accent border-accent/50",
+                tag === '첫 대결' && "bg-secondary text-secondary-foreground border-border"
+              )}
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
 
       <div className="flex flex-wrap gap-2">
         <PixelBadge variant="default">
@@ -55,7 +96,14 @@ export function TeamCard({
           {members}명
         </PixelBadge>
         <PixelBadge variant="default">{gender}</PixelBadge>
-        <PixelBadge variant="default">경력 {avgExperience}년</PixelBadge>
+        <PixelBadge variant="default">
+          <Clock size={10} className="mr-1" />
+          {matchTime}
+        </PixelBadge>
+        <PixelBadge variant="default">
+          <Building2 size={10} className="mr-1" />
+          {fieldType}
+        </PixelBadge>
         {hasProPlayer && (
           <PixelBadge variant="accent">
             <Star size={10} className="mr-1" />
@@ -65,10 +113,10 @@ export function TeamCard({
       </div>
 
       <div className="flex gap-2">
-        <PixelButton variant="primary" size="sm" className="flex-1">
+        <PixelButton variant="primary" size="sm" className="flex-1" onClick={onMatchRequest}>
           매칭 신청
         </PixelButton>
-        <PixelButton variant="default" size="sm">
+        <PixelButton variant="default" size="sm" onClick={onViewProfile}>
           프로필
         </PixelButton>
       </div>
