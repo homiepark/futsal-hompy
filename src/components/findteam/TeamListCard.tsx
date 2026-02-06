@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
 import { FavoriteStarButton } from '@/components/ui/FavoriteStarButton';
-
+import { LevelInfoButton } from '@/components/ui/LevelGuideModal';
 interface TeamListCardProps {
   emblem: string;
   name: string;
