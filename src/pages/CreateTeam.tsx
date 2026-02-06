@@ -1,27 +1,31 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Camera, Instagram, Youtube } from 'lucide-react';
+import { ArrowLeft, Instagram, Youtube } from 'lucide-react';
 import { PixelButton } from '@/components/ui/PixelButton';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-
-const levelOptions = [
-  { value: 'S', label: 'S급', desc: '프로/세미프로 수준' },
-  { value: 'A', label: 'A급', desc: '고급 아마추어' },
-  { value: 'B', label: 'B급', desc: '중급 수준' },
-  { value: 'C', label: 'C급', desc: '입문/초급 수준' },
-];
-
-const emblemOptions = ['⚽', '🔥', '⭐', '🦁', '🦅', '🐉', '💎', '⚡', '🌊', '🏆'];
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import { EmblemSelector } from '@/components/team/create/EmblemSelector';
+import { LevelSelector } from '@/components/team/create/LevelSelector';
+import { RegionSelector } from '@/components/team/create/RegionSelector';
+import { TrainingTimeSelector } from '@/components/team/create/TrainingTimeSelector';
 
 export default function CreateTeam() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
   const [formData, setFormData] = useState({
     name: '',
     emblem: '⚽',
+    customLogoUrl: null as string | null,
     level: 'B',
     region: '',
-    trainingTime: '',
+    district: '',
+    trainingDays: [] as string[],
+    trainingStartTime: '',
+    trainingEndTime: '',
     introduction: '',
     instagramUrl: '',
     youtubeUrl: '',
@@ -35,11 +39,64 @@ export default function CreateTeam() {
       return;
     }
 
-    // TODO: Integrate with Supabase when auth is ready
-    toast.success('팀이 생성되었습니다!', {
-      description: `${formData.name} 팀의 관리자가 되셨습니다.`,
-    });
-    navigate('/my-team');
+    if (!user) {
+      toast.error('로그인이 필요합니다');
+      navigate('/auth');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      // Create the team
+      const { data: team, error: teamError } = await supabase
+        .from('teams')
+        .insert({
+          name: formData.name.trim(),
+          emblem: formData.emblem || '⚽',
+          photo_url: formData.customLogoUrl,
+          level: formData.level,
+          region: formData.region || null,
+          district: formData.district || null,
+          training_days: formData.trainingDays,
+          training_start_time: formData.trainingStartTime || null,
+          training_end_time: formData.trainingEndTime || null,
+          training_time: formData.trainingDays.length > 0 
+            ? `${formData.trainingStartTime} - ${formData.trainingEndTime}` 
+            : null,
+          introduction: formData.introduction || null,
+          instagram_url: formData.instagramUrl || null,
+          youtube_url: formData.youtubeUrl || null,
+          admin_user_id: user.id,
+        })
+        .select()
+        .single();
+
+      if (teamError) throw teamError;
+
+      // Add the creator as admin member
+      const { error: memberError } = await supabase
+        .from('team_members')
+        .insert({
+          team_id: team.id,
+          user_id: user.id,
+          role: 'admin',
+        });
+
+      if (memberError) throw memberError;
+
+      toast.success('팀이 생성되었습니다!', {
+        description: `${formData.name} 팀의 관리자가 되셨습니다.`,
+      });
+      navigate('/my-team');
+    } catch (error: any) {
+      console.error('Team creation error:', error);
+      toast.error('팀 생성 중 오류가 발생했습니다', {
+        description: error.message,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -59,33 +116,12 @@ export default function CreateTeam() {
 
       <form onSubmit={handleSubmit} className="p-4 max-w-lg mx-auto space-y-4">
         {/* Team Emblem Selection */}
-        <div className="kairo-panel">
-          <div className="kairo-panel-header">
-            <span className="text-sm">🎨</span>
-            <span>팀 엠블럼</span>
-          </div>
-          <div className="p-3">
-            <div className="flex flex-wrap gap-2 justify-center">
-              {emblemOptions.map((emblem) => (
-                <button
-                  key={emblem}
-                  type="button"
-                  onClick={() => setFormData(prev => ({ ...prev, emblem }))}
-                  className={cn(
-                    'w-12 h-12 text-2xl flex items-center justify-center',
-                    'border-3 transition-all',
-                    formData.emblem === emblem
-                      ? 'bg-primary/20 border-primary scale-110'
-                      : 'bg-muted border-border-dark hover:bg-muted/70'
-                  )}
-                  style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
-                >
-                  {emblem}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
+        <EmblemSelector
+          value={formData.emblem}
+          customLogoUrl={formData.customLogoUrl}
+          onChange={(emblem) => setFormData(prev => ({ ...prev, emblem }))}
+          onCustomLogoChange={(url) => setFormData(prev => ({ ...prev, customLogoUrl: url }))}
+        />
 
         {/* Team Name */}
         <div className="kairo-panel">
@@ -111,64 +147,32 @@ export default function CreateTeam() {
         </div>
 
         {/* Team Level */}
-        <div className="kairo-panel">
-          <div className="kairo-panel-header">
-            <span className="text-sm">🏅</span>
-            <span>팀 레벨</span>
-          </div>
-          <div className="p-3">
-            <div className="grid grid-cols-2 gap-2">
-              {levelOptions.map((option) => (
-                <button
-                  key={option.value}
-                  type="button"
-                  onClick={() => setFormData(prev => ({ ...prev, level: option.value }))}
-                  className={cn(
-                    'p-2 text-left border-3 transition-all',
-                    formData.level === option.value
-                      ? 'bg-primary/20 border-primary'
-                      : 'bg-muted border-border-dark hover:bg-muted/70'
-                  )}
-                  style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
-                >
-                  <span className="font-pixel text-[10px] text-foreground block">{option.label}</span>
-                  <span className="font-pixel text-[7px] text-muted-foreground">{option.desc}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
+        <LevelSelector
+          value={formData.level}
+          onChange={(level) => setFormData(prev => ({ ...prev, level }))}
+        />
 
-        {/* Region & Training Time */}
+        {/* Activity Info */}
         <div className="kairo-panel">
           <div className="kairo-panel-header">
             <span className="text-sm">📍</span>
             <span>활동 정보</span>
           </div>
-          <div className="p-3 space-y-2">
-            <input
-              type="text"
-              value={formData.region}
-              onChange={(e) => setFormData(prev => ({ ...prev, region: e.target.value }))}
-              placeholder="활동 지역 (예: 서울 강남구)"
-              className={cn(
-                'w-full px-3 py-2',
-                'bg-input border-3 border-border-dark',
-                'font-pixel text-[10px] placeholder:text-muted-foreground',
-                'focus:outline-none focus:border-primary'
-              )}
+          <div className="p-3 space-y-4">
+            <RegionSelector
+              region={formData.region}
+              district={formData.district}
+              onRegionChange={(region) => setFormData(prev => ({ ...prev, region }))}
+              onDistrictChange={(district) => setFormData(prev => ({ ...prev, district }))}
             />
-            <input
-              type="text"
-              value={formData.trainingTime}
-              onChange={(e) => setFormData(prev => ({ ...prev, trainingTime: e.target.value }))}
-              placeholder="훈련 시간 (예: 주말 오전 9시)"
-              className={cn(
-                'w-full px-3 py-2',
-                'bg-input border-3 border-border-dark',
-                'font-pixel text-[10px] placeholder:text-muted-foreground',
-                'focus:outline-none focus:border-primary'
-              )}
+
+            <TrainingTimeSelector
+              selectedDays={formData.trainingDays}
+              startTime={formData.trainingStartTime}
+              endTime={formData.trainingEndTime}
+              onDaysChange={(days) => setFormData(prev => ({ ...prev, trainingDays: days }))}
+              onStartTimeChange={(time) => setFormData(prev => ({ ...prev, trainingStartTime: time }))}
+              onEndTimeChange={(time) => setFormData(prev => ({ ...prev, trainingEndTime: time }))}
             />
           </div>
         </div>
@@ -248,8 +252,9 @@ export default function CreateTeam() {
           variant="accent"
           size="lg"
           className="w-full"
+          disabled={isSubmitting}
         >
-          🏆 팀 만들기
+          {isSubmitting ? '생성 중...' : '🏆 팀 만들기'}
         </PixelButton>
       </form>
     </div>

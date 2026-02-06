@@ -211,6 +211,7 @@ export type Database = {
           banner_url: string | null
           created_at: string
           description: string | null
+          district: string | null
           emblem: string
           id: string
           instagram_url: string | null
@@ -219,6 +220,9 @@ export type Database = {
           name: string
           photo_url: string | null
           region: string | null
+          training_days: string[] | null
+          training_end_time: string | null
+          training_start_time: string | null
           training_time: string | null
           updated_at: string
           youtube_url: string | null
@@ -228,6 +232,7 @@ export type Database = {
           banner_url?: string | null
           created_at?: string
           description?: string | null
+          district?: string | null
           emblem?: string
           id?: string
           instagram_url?: string | null
@@ -236,6 +241,9 @@ export type Database = {
           name: string
           photo_url?: string | null
           region?: string | null
+          training_days?: string[] | null
+          training_end_time?: string | null
+          training_start_time?: string | null
           training_time?: string | null
           updated_at?: string
           youtube_url?: string | null
@@ -245,6 +253,7 @@ export type Database = {
           banner_url?: string | null
           created_at?: string
           description?: string | null
+          district?: string | null
           emblem?: string
           id?: string
           instagram_url?: string | null
@@ -253,6 +262,9 @@ export type Database = {
           name?: string
           photo_url?: string | null
           region?: string | null
+          training_days?: string[] | null
+          training_end_time?: string | null
+          training_start_time?: string | null
           training_time?: string | null
           updated_at?: string
           youtube_url?: string | null
