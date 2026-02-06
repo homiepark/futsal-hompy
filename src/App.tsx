@@ -9,6 +9,7 @@ import { BottomNav } from "@/components/layout/BottomNav";
 import Index from "./pages/Index";
 import TeamHome from "./pages/TeamHome";
 import TeamArchive from "./pages/TeamArchive";
+import MyTeam from "./pages/MyTeam";
 import Matchmaking from "./pages/Matchmaking";
 import Schedule from "./pages/Schedule";
 import CourtBooking from "./pages/CourtBooking";
@@ -31,6 +32,7 @@ const App = () => (
             <main className="pb-16">
               <Routes>
                 <Route path="/" element={<Index />} />
+                <Route path="/my-team" element={<MyTeam />} />
                 <Route path="/team/:teamId" element={<TeamHome />} />
                 <Route path="/archive" element={<TeamArchive />} />
                 <Route path="/matchmaking" element={<Matchmaking />} />
