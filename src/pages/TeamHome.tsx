@@ -1,11 +1,25 @@
+import { useNavigate } from 'react-router-dom';
 import { MoodDisplay } from '@/components/team/MoodDisplay';
 import { WinsCounter } from '@/components/team/WinsCounter';
 import { TeamPolaroid } from '@/components/team/TeamPolaroid';
 import { Guestbook } from '@/components/team/Guestbook';
+import { PixelButton } from '@/components/ui/PixelButton';
 
 export default function TeamHome() {
+  const navigate = useNavigate();
+
   return (
     <div className="pb-20 px-4 py-6 max-w-lg mx-auto space-y-6">
+      {/* Register Button */}
+      <PixelButton
+        variant="accent"
+        size="lg"
+        onClick={() => navigate('/register')}
+        className="w-full"
+      >
+        ⚽ 선수 등록하기
+      </PixelButton>
+
       {/* Team Stats Row */}
       <div className="grid grid-cols-2 gap-4">
         <MoodDisplay mood="🔥" teamName="FC 불꽃" />
@@ -14,7 +28,7 @@ export default function TeamHome() {
 
       {/* Team Polaroid */}
       <section>
-        <h2 className="font-pixel text-[10px] text-muted-foreground mb-3 flex items-center gap-2">
+        <h2 className="text-[10px] text-muted-foreground mb-3 flex items-center gap-2">
           <span className="text-accent">✦</span>
           우리팀 갤러리
           <span className="text-primary">✦</span>
