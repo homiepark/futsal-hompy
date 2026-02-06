@@ -48,6 +48,7 @@ const App = () => (
                 <Route path="/register" element={<PlayerRegistration />} />
                 <Route path="/profile" element={<MyProfile />} />
                 <Route path="/profile-setup" element={<ProfileSetup />} />
+                <Route path="/auth" element={<Auth />} />
                 <Route path="/messages" element={<Messages />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
