@@ -14,7 +14,154 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          is_read: boolean
+          receiver_id: string
+          sender_id: string
+          team_id: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          receiver_id: string
+          sender_id: string
+          team_id?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          receiver_id?: string
+          sender_id?: string
+          team_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          id: string
+          is_pro_elite: boolean
+          nickname: string
+          preferred_position: string | null
+          updated_at: string
+          user_id: string
+          years_of_experience: number
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          id?: string
+          is_pro_elite?: boolean
+          nickname?: string
+          preferred_position?: string | null
+          updated_at?: string
+          user_id: string
+          years_of_experience?: number
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          id?: string
+          is_pro_elite?: boolean
+          nickname?: string
+          preferred_position?: string | null
+          updated_at?: string
+          user_id?: string
+          years_of_experience?: number
+        }
+        Relationships: []
+      }
+      team_members: {
+        Row: {
+          id: string
+          joined_at: string
+          role: string
+          team_id: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          joined_at?: string
+          role?: string
+          team_id: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          joined_at?: string
+          role?: string
+          team_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_members_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teams: {
+        Row: {
+          admin_user_id: string | null
+          created_at: string
+          description: string | null
+          emblem: string
+          id: string
+          level: string
+          name: string
+          photo_url: string | null
+          region: string | null
+          training_time: string | null
+          updated_at: string
+        }
+        Insert: {
+          admin_user_id?: string | null
+          created_at?: string
+          description?: string | null
+          emblem?: string
+          id?: string
+          level?: string
+          name: string
+          photo_url?: string | null
+          region?: string | null
+          training_time?: string | null
+          updated_at?: string
+        }
+        Update: {
+          admin_user_id?: string | null
+          created_at?: string
+          description?: string | null
+          emblem?: string
+          id?: string
+          level?: string
+          name?: string
+          photo_url?: string | null
+          region?: string | null
+          training_time?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
