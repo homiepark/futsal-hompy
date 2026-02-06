@@ -5,6 +5,14 @@ import { PixelButton } from '@/components/ui/PixelButton';
 import { PixelCard } from '@/components/ui/PixelCard';
 import { cn } from '@/lib/utils';
 
+// Futsal positions
+const futsalPositions = [
+  { id: 'pivo', label: '피보', emoji: '⚡', description: 'Pivot / Forward' },
+  { id: 'ala', label: '아라', emoji: '💨', description: 'Winger' },
+  { id: 'fixo', label: '픽소', emoji: '🛡️', description: 'Fixed / Defender' },
+  { id: 'goleiro', label: '고레이로', emoji: '🧤', description: 'Goalkeeper' },
+];
+
 export default function MyProfile() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [profile, setProfile] = useState({
@@ -12,13 +20,18 @@ export default function MyProfile() {
     avatarUrl: '',
     yearsOfExperience: 3,
     isProElite: false,
-    preferredPosition: 'MF',
+    preferredPosition: 'ala',
   });
 
   const [myTeams] = useState([
     { id: '1', name: 'FC 불꽃', emblem: '🔥', role: 'admin' },
     { id: '2', name: '라이언즈 FC', emblem: '🦁', role: 'member' },
   ]);
+
+  const getPositionLabel = (positionId: string) => {
+    const position = futsalPositions.find(p => p.id === positionId);
+    return position ? position.label : positionId;
+  };
 
   const handleAvatarClick = () => {
     fileInputRef.current?.click();
@@ -91,15 +104,41 @@ export default function MyProfile() {
               className="text-lg text-foreground bg-transparent border-b-2 border-border focus:border-primary outline-none text-center w-full max-w-[200px]"
             />
             <p className="text-sm text-muted-foreground mt-1">
-              경력 {profile.yearsOfExperience}년 • {profile.preferredPosition}
+              경력 {profile.yearsOfExperience}년 · {getPositionLabel(profile.preferredPosition)}
             </p>
+          </div>
+        </PixelCard>
+
+        {/* Position Selection */}
+        <PixelCard>
+          <h2 className="text-foreground mb-4 flex items-center gap-2">
+            <span className="text-primary">⚽</span>
+            포지션 선택
+          </h2>
+          <div className="grid grid-cols-2 gap-3">
+            {futsalPositions.map((pos) => (
+              <button
+                key={pos.id}
+                onClick={() => setProfile({ ...profile, preferredPosition: pos.id })}
+                className={cn(
+                  'p-3 border-4 transition-all text-center',
+                  profile.preferredPosition === pos.id
+                    ? 'bg-primary border-primary-dark text-primary-foreground shadow-[0_0_12px_hsl(var(--primary))]'
+                    : 'bg-secondary border-border-dark hover:border-primary'
+                )}
+              >
+                <span className="text-xl block mb-1">{pos.emoji}</span>
+                <span className="font-pixel text-[10px] block">{pos.label}</span>
+                <span className="font-body text-[9px] text-muted-foreground block">{pos.description}</span>
+              </button>
+            ))}
           </div>
         </PixelCard>
 
         {/* Experience & Status */}
         <PixelCard>
           <h2 className="text-foreground mb-4 flex items-center gap-2">
-            <span className="text-primary">⚽</span>
+            <span className="text-accent">📊</span>
             풋살 경력 정보
           </h2>
 
