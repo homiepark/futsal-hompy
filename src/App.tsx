@@ -11,6 +11,7 @@ import TeamHome from "./pages/TeamHome";
 import TeamArchive from "./pages/TeamArchive";
 import MyTeam from "./pages/MyTeam";
 import CreateTeam from "./pages/CreateTeam";
+import JoinRequestManagement from "./pages/JoinRequestManagement";
 import Matchmaking from "./pages/Matchmaking";
 import Schedule from "./pages/Schedule";
 import CourtBooking from "./pages/CourtBooking";
