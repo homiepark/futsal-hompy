@@ -4,6 +4,8 @@ import { cn } from '@/lib/utils';
 interface ApplicantCardProps {
   id: string;
   nickname: string;
+  nicknameTag?: string;
+  realName?: string;
   avatarUrl?: string;
   yearsOfExperience: number;
   preferredPosition: string;
