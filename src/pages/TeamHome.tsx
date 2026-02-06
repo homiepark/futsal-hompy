@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { useTeam } from '@/contexts/TeamContext';
 import { TeamHeader } from '@/components/team/TeamHeader';
+import { TeamSwitcher } from '@/components/team/TeamSwitcher';
 import { LatestArchive } from '@/components/team/LatestArchive';
 import { MemberRoster } from '@/components/team/MemberRoster';
 import { MoodDisplay } from '@/components/team/MoodDisplay';
