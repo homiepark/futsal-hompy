@@ -5,6 +5,7 @@ import { SimpleHeader } from '@/components/findteam/SimpleHeader';
 import { TeamListCard } from '@/components/findteam/TeamListCard';
 import { NeighborhoodNews } from '@/components/home/NeighborhoodNews';
 import { TeamMiniRoom } from '@/components/home/TeamMiniRoom';
+import { DemoMiniRoom } from '@/components/home/DemoMiniRoom';
 import { CompactFilterBar } from '@/components/home/CompactFilterBar';
 import { PixelProfileIcon } from '@/components/ui/PixelProfileIcon';
 import { cn } from '@/lib/utils';
@@ -269,9 +270,11 @@ const Index = () => {
         <SimpleHeader />
       </div>
 
-      {/* Section 1: My Team Mini-Room */}
-      {user && (
+      {/* Section 1: My Team Mini-Room or Demo for guests */}
+      {user ? (
         <TeamMiniRoom userId={user.id} />
+      ) : (
+        <DemoMiniRoom />
       )}
 
       {/* Section 2: Neighborhood News Feed */}
