@@ -62,7 +62,7 @@ export default function TeamHome() {
 
   const handleBack = () => {
     clearActiveTeam();
-    navigate('/');
+    navigate('/my-team');
   };
 
   const isAdmin = true; // Would check user's role in team
