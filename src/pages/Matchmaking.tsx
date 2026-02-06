@@ -390,7 +390,7 @@ export default function Matchmaking() {
               <LevelInfoButton />
             </div>
             <div className="grid grid-cols-2 gap-1.5">
-              {levelOptions.map(({ value, desc, icon }) => {
+              {levelOptions.map(({ value, desc, tier, icon }) => {
                 const isActive = filters.levels.includes(value);
                 const levelColorClass = {
                   S: 'bg-accent text-accent-foreground border-accent-dark',
@@ -410,10 +410,17 @@ export default function Matchmaking() {
                         : "bg-secondary text-secondary-foreground border-border-dark hover:border-primary"
                     )}
                     style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
+                    title={`${tier}: ${desc}`}
                   >
                     <div className="flex items-center gap-1">
                       {isActive ? <Check size={10} /> : <span>{icon}</span>}
                       <span className="font-pixel text-[10px]">Lv.{value}</span>
+                      <span className={cn(
+                        "font-body text-[7px]",
+                        isActive ? "opacity-75" : "text-muted-foreground"
+                      )}>
+                        ({tier})
+                      </span>
                     </div>
                     <p className={cn(
                       "font-pixel text-[7px] mt-0.5 truncate",

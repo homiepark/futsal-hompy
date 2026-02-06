@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils';
 import { levelOptions } from '@/lib/teamData';
+import { LevelInfoButton } from '@/components/ui/LevelGuideModal';
 
 interface LevelSelectorProps {
   value: string;
@@ -34,6 +35,7 @@ export function LevelSelector({ value, onChange }: LevelSelectorProps) {
       <div className="kairo-panel-header">
         <span className="text-sm">🏅</span>
         <span>팀 레벨</span>
+        <LevelInfoButton className="ml-auto" />
       </div>
       <div className="p-3">
         <div className="grid grid-cols-1 gap-2">
@@ -50,7 +52,8 @@ export function LevelSelector({ value, onChange }: LevelSelectorProps) {
                 )}
                 style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
               >
-                <div className="flex items-center gap-2">
+                {/* Header with Badge and Tier */}
+                <div className="flex items-center gap-2 mb-1">
                   <span className="text-base">{option.icon}</span>
                   <span className={cn(
                     'font-pixel text-sm px-2 py-0.5 border-2',
@@ -58,10 +61,22 @@ export function LevelSelector({ value, onChange }: LevelSelectorProps) {
                   )}>
                     {option.label}
                   </span>
-                  <span className="font-pixel text-[10px] text-foreground">{option.desc}</span>
+                  <span className="font-body text-[10px] text-muted-foreground">({option.tier})</span>
                 </div>
-                <p className="font-pixel text-[8px] text-muted-foreground mt-1 ml-7">
-                  {option.detail}
+                
+                {/* Title */}
+                <p className="font-pixel text-[10px] text-foreground ml-7 mb-1">
+                  "{option.desc}"
+                </p>
+                
+                {/* Characteristic */}
+                <p className="font-body text-[9px] text-muted-foreground ml-7">
+                  {option.characteristic}
+                </p>
+                
+                {/* Operating Style */}
+                <p className="font-body text-[8px] text-muted-foreground/80 ml-7 mt-0.5">
+                  → {option.operatingStyle}
                 </p>
               </button>
             );

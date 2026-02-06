@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { levelOptions } from '@/lib/teamData';
 
 interface LevelGuideModalProps {
   isOpen: boolean;
@@ -84,15 +85,22 @@ const WhistleIcon = ({ size = 2 }: { size?: number }) => {
   );
 };
 
-const levelData = [
-  { level: 'S', range: '90 - 100', color: 'bg-accent text-accent-foreground border-accent-dark', description: '압도적 전력의 군단', icon: '🏆' },
-  { level: 'A', range: '70 - 89', color: 'bg-primary text-primary-foreground border-primary-dark', description: '지역구 강호', icon: '⭐' },
-  { level: 'B', range: '50 - 69', color: 'bg-primary/70 text-primary-foreground border-primary-dark/70', description: '안정적인 베테랑', icon: '💪' },
-  { level: 'C', range: '0 - 49', color: 'bg-primary/50 text-primary-foreground border-primary-dark/50', description: '성장하는 도전자', icon: '🌟' },
-];
+const levelColorMap: Record<string, string> = {
+  S: 'bg-accent text-accent-foreground border-accent-dark',
+  A: 'bg-primary text-primary-foreground border-primary-dark',
+  B: 'bg-primary/70 text-primary-foreground border-primary-dark/70',
+  C: 'bg-primary/50 text-primary-foreground border-primary-dark/50',
+};
 
 export function LevelGuideModal({ isOpen, onClose }: LevelGuideModalProps) {
   if (!isOpen) return null;
+
+  const levelRanges: Record<string, string> = {
+    S: '90 - 100',
+    A: '70 - 89',
+    B: '50 - 69',
+    C: '0 - 49',
+  };
 
   return (
     <>
@@ -112,7 +120,7 @@ export function LevelGuideModal({ isOpen, onClose }: LevelGuideModalProps) {
           <div className="flex items-center justify-between p-4 border-b-4 border-border-dark bg-primary">
             <div className="flex items-center gap-2">
               <QuestionMarkIcon size={2} className="text-primary-foreground" />
-              <h2 className="font-pixel text-[10px] text-primary-foreground">팀 레벨 계산법</h2>
+              <h2 className="font-pixel text-[10px] text-primary-foreground">팀 레벨 가이드</h2>
             </div>
             <button 
               onClick={onClose}
@@ -143,47 +151,50 @@ Top5평균 = 상위 5명 평균 점수
               </div>
             </div>
 
-            {/* Level Table */}
+            {/* Level Cards with Detailed Descriptions */}
             <div>
               <h3 className="font-body font-bold text-foreground mb-2 flex items-center gap-2">
                 <span className="text-primary">🏆</span>
-                레벨 등급표
+                레벨별 상세 안내
               </h3>
-              <div className="border-2 border-border-dark overflow-hidden">
-                <table className="w-full">
-                  <thead>
-                    <tr className="bg-muted border-b-2 border-border-dark">
-                      <th className="font-pixel text-[8px] p-2 text-left text-foreground">레벨</th>
-                      <th className="font-pixel text-[8px] p-2 text-left text-foreground">점수</th>
-                      <th className="font-pixel text-[8px] p-2 text-left text-foreground">설명</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {levelData.map((item, idx) => (
-                      <tr 
-                        key={item.level} 
-                        className={cn(
-                          'border-b border-border last:border-b-0',
-                          idx % 2 === 0 ? 'bg-card' : 'bg-muted/30'
-                        )}
-                      >
-                        <td className="p-2">
-                          <div className="flex items-center gap-1">
-                            <span>{item.icon}</span>
-                            <span className={cn(
-                              'px-2 py-1 font-pixel text-[10px] border-2 shadow-[2px_2px_0_hsl(var(--pixel-shadow))]',
-                              item.color
-                            )}>
-                              Lv.{item.level}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="p-2 font-mono text-xs text-foreground">{item.range}</td>
-                        <td className="p-2 font-pixel text-[8px] text-foreground">{item.description}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className="space-y-2">
+                {levelOptions.map((level) => (
+                  <div 
+                    key={level.value}
+                    className={cn(
+                      'p-3 border-3',
+                      levelColorMap[level.value]
+                    )}
+                    style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}
+                  >
+                    {/* Header Row */}
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-lg">{level.icon}</span>
+                      <span className="font-pixel text-[11px]">{level.label}</span>
+                      <span className="font-body text-[10px] opacity-80">({level.tier})</span>
+                    </div>
+                    
+                    {/* Title */}
+                    <p className="font-pixel text-[9px] mb-1">"{level.desc}"</p>
+                    
+                    {/* Characteristic */}
+                    <p className="font-body text-[10px] opacity-90 mb-1">
+                      <span className="font-bold">특징:</span> {level.characteristic}
+                    </p>
+                    
+                    {/* Operating Style */}
+                    <p className="font-body text-[10px] opacity-90">
+                      <span className="font-bold">운영:</span> {level.operatingStyle}
+                    </p>
+                    
+                    {/* Score Range */}
+                    <div className="mt-2 pt-2 border-t border-current/20">
+                      <span className="font-mono text-[9px] opacity-75">
+                        점수: {levelRanges[level.value]}
+                      </span>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
 
