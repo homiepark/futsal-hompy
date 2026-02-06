@@ -36,14 +36,26 @@ export function TimelinePost({
       {/* Content */}
       <p className="font-body text-sm text-foreground">{content}</p>
 
-      {/* Image */}
+      {/* Image with Instagram Button */}
       {imageUrl && (
-        <div className="border-4 border-border-dark shadow-pixel overflow-hidden">
+        <div className="relative border-4 border-border-dark shadow-pixel overflow-hidden rounded-lg">
           <img 
             src={imageUrl} 
             alt="게시물 이미지" 
             className="w-full aspect-video object-cover"
           />
+          {/* Instagram Share Button */}
+          <button 
+            onClick={() => {
+              toast.success('인스타그램 공유 준비 중...', {
+                description: '곧 연동 기능이 추가됩니다!',
+              });
+            }}
+            className="absolute top-2 right-2 w-8 h-8 bg-accent border-2 border-accent-dark shadow-pixel-sm flex items-center justify-center hover:scale-110 transition-transform"
+            aria-label="인스타그램 공유"
+          >
+            <Instagram size={16} className="text-accent-foreground" />
+          </button>
         </div>
       )}
 
