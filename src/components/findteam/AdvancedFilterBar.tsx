@@ -305,9 +305,9 @@ export function AdvancedFilterBar({ filters, onFiltersChange }: AdvancedFilterBa
 
       {/* Level Multi-Select */}
       <div>
-        <label className="font-pixel text-[9px] text-muted-foreground mb-1.5 block">⭐ 실력</label>
+        <label className="font-pixel text-[9px] text-muted-foreground mb-1.5 block">🏅 레벨 선택</label>
         <div className="flex flex-wrap gap-1.5">
-          {levelOptions.map(({ value }) => {
+          {levelOptions.map(({ value, icon }) => {
             const isActive = filters.levels.includes(value);
             const levelColorClass = {
               S: 'bg-accent text-accent-foreground border-accent-dark',
@@ -328,7 +328,7 @@ export function AdvancedFilterBar({ filters, onFiltersChange }: AdvancedFilterBa
                 )}
                 style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
               >
-                {isActive && <Check size={10} className="inline mr-1" />}
+                {isActive ? <Check size={10} className="inline mr-1" /> : <span className="mr-1">{icon}</span>}
                 Lv.{value}
               </button>
             );

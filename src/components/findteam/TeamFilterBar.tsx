@@ -40,7 +40,7 @@ export function TeamFilterBar() {
       <div className="flex flex-wrap gap-2">
         <FilterDropdown label="성별" options={genderOptions} />
         <FilterDropdown label="지역" options={regionOptions} />
-        <FilterDropdown label="실력" options={levelOptions} />
+        <FilterDropdown label="레벨" options={levelOptions} />
       </div>
       <div className="flex flex-wrap gap-2 mt-2">
         <span className="font-body text-sm text-muted-foreground flex items-center">⏰ 훈련 일정:</span>

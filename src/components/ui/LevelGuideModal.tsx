@@ -85,10 +85,10 @@ const WhistleIcon = ({ size = 2 }: { size?: number }) => {
 };
 
 const levelData = [
-  { level: 'S', range: '90 - 100', color: 'bg-accent text-accent-foreground border-accent-dark', description: '프로/엘리트 출신 다수' },
-  { level: 'A', range: '70 - 89', color: 'bg-primary text-primary-foreground border-primary-dark', description: '경력 5년 이상 다수' },
-  { level: 'B', range: '50 - 69', color: 'bg-primary/70 text-primary-foreground border-primary-dark/70', description: '경력 2-5년' },
-  { level: 'C', range: '0 - 49', color: 'bg-primary/50 text-primary-foreground border-primary-dark/50', description: '초보자 환영' },
+  { level: 'S', range: '90 - 100', color: 'bg-accent text-accent-foreground border-accent-dark', description: '공만 잡으면 화보!', icon: '🏆' },
+  { level: 'A', range: '70 - 89', color: 'bg-primary text-primary-foreground border-primary-dark', description: '필드의 지배자!', icon: '⭐' },
+  { level: 'B', range: '50 - 69', color: 'bg-primary/70 text-primary-foreground border-primary-dark/70', description: '든든한 실력파!', icon: '💪' },
+  { level: 'C', range: '0 - 49', color: 'bg-primary/50 text-primary-foreground border-primary-dark/50', description: '열정 유망주!', icon: '🌟' },
 ];
 
 export function LevelGuideModal({ isOpen, onClose }: LevelGuideModalProps) {
@@ -167,15 +167,18 @@ export function LevelGuideModal({ isOpen, onClose }: LevelGuideModalProps) {
                         )}
                       >
                         <td className="p-2">
-                          <span className={cn(
-                            'px-2 py-1 font-pixel text-[10px] border-2 shadow-[2px_2px_0_hsl(var(--pixel-shadow))]',
-                            item.color
-                          )}>
-                            Lv.{item.level}
-                          </span>
+                          <div className="flex items-center gap-1">
+                            <span>{item.icon}</span>
+                            <span className={cn(
+                              'px-2 py-1 font-pixel text-[10px] border-2 shadow-[2px_2px_0_hsl(var(--pixel-shadow))]',
+                              item.color
+                            )}>
+                              Lv.{item.level}
+                            </span>
+                          </div>
                         </td>
                         <td className="p-2 font-mono text-xs text-foreground">{item.range}</td>
-                        <td className="p-2 font-body text-xs text-muted-foreground">{item.description}</td>
+                        <td className="p-2 font-pixel text-[8px] text-foreground">{item.description}</td>
                       </tr>
                     ))}
                   </tbody>
