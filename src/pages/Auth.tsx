@@ -134,15 +134,20 @@ export default function Auth() {
           >
             우리
           </span>
-          {/* 의 - Bright White */}
-          <span 
-            className="font-pixel text-3xl font-bold"
-            style={{
-              color: '#FFFFFF',
-              WebkitTextStroke: '1.5px #4A4A4A',
-            }}
-          >
-            의
+          {/* 의 - with soccer ball as ㅇ */}
+          <span className="relative inline-flex flex-col items-center mx-0.5">
+            {/* Soccer ball replacing ㅇ */}
+            <span className="text-xl leading-none" style={{ marginBottom: '-4px' }}>⚽</span>
+            {/* ㅡ and ㅣ parts */}
+            <span 
+              className="font-pixel text-xl font-bold leading-none"
+              style={{
+                color: '#FFFFFF',
+                WebkitTextStroke: '1.5px #4A4A4A',
+              }}
+            >
+              ㅢ
+            </span>
           </span>
           {/* 풋살 - Vivid Green */}
           <span 
