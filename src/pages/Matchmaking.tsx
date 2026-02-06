@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 import { MatchPostCard } from '@/components/matchmaking/MatchPostCard';
 import { MatchBoardFilters } from '@/components/matchmaking/MatchBoardFilters';
 import { CreateMatchPostModal } from '@/components/matchmaking/CreateMatchPostModal';
-import { LevelInfoButton } from '@/components/ui/LevelGuideModal';
+
 import { MatchTicker } from '@/components/matchmaking/MatchTicker';
 import { format, parseISO, isToday, isTomorrow, isThisWeek } from 'date-fns';
 
@@ -253,13 +253,10 @@ export default function Matchmaking() {
     <div className="pb-20 px-4 py-6 max-w-lg mx-auto">
       {/* Header */}
       <div className="mb-4">
-        <div className="flex items-center justify-between mb-2">
-          <h2 className="font-pixel text-xs text-foreground flex items-center gap-2">
-            <span className="text-primary">⚔️</span>
-            매칭팀 구해요
-          </h2>
-          <LevelInfoButton />
-        </div>
+        <h2 className="font-pixel text-xs text-foreground flex items-center gap-2 mb-2">
+          <span className="text-primary">⚔️</span>
+          매칭팀 구해요
+        </h2>
         <p className="font-pixel text-[8px] text-muted-foreground">
           대결 상대를 찾는 팀들의 공고 게시판
         </p>

@@ -3,6 +3,7 @@ import { Search, ChevronDown, X, Check, RotateCcw, Calendar, Target } from 'luci
 import { cn } from '@/lib/utils';
 import { regionData, levelOptions } from '@/lib/teamData';
 import { format, addDays } from 'date-fns';
+import { LevelInfoButton } from '@/components/ui/LevelGuideModal';
 
 interface MatchBoardFiltersProps {
   filters: {
@@ -181,11 +182,13 @@ export function MatchBoardFilters({ filters, onFiltersChange }: MatchBoardFilter
 
       {/* Level Filter */}
       <div className="space-y-1.5">
-        <label className="font-pixel text-[9px] text-muted-foreground flex items-center gap-1">
-          <Target size={10} />
-          희망 팀 레벨
-          
-        </label>
+        <div className="flex items-center justify-between">
+          <label className="font-pixel text-[9px] text-muted-foreground flex items-center gap-1">
+            <Target size={10} />
+            희망 팀 레벨
+          </label>
+          <LevelInfoButton />
+        </div>
         <div className="flex gap-1.5">
           {levelOptions.map(({ value, icon }) => {
             const isActive = filters.levels.includes(value);
