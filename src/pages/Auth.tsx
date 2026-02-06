@@ -119,26 +119,16 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen bg-[#f8f6f0] flex flex-col items-center px-4 py-6">
-      {/* Mascot and Logo Section */}
-      <div className="text-center mb-4">
-        {/* Mascot Character */}
-        <div className="relative w-32 h-32 mx-auto mb-2">
-          <img 
-            src={futsalMascot} 
-            alt="풋살 마스코트"
-            className="w-full h-full object-contain"
-          />
-        </div>
-        
-        {/* Logo Text - Pixel style with multiple colors */}
+      {/* Logo Section */}
+      <div className="text-center mb-6">
+        {/* Logo Text - Pixel style with multiple colors, no shadows */}
         <div className="flex justify-center items-center gap-0 mb-1">
           {/* 우리 - Vibrant Orange */}
           <span 
             className="font-pixel text-3xl font-bold"
             style={{
               color: '#FF8C00',
-              WebkitTextStroke: '2px #8B4513',
-              textShadow: '3px 3px 0 #8B4513',
+              WebkitTextStroke: '1.5px #8B4513',
               letterSpacing: '2px',
             }}
           >
@@ -149,8 +139,7 @@ export default function Auth() {
             className="font-pixel text-3xl font-bold"
             style={{
               color: '#FFFFFF',
-              WebkitTextStroke: '2px #4A4A4A',
-              textShadow: '3px 3px 0 #4A4A4A',
+              WebkitTextStroke: '1.5px #4A4A4A',
             }}
           >
             의
@@ -160,8 +149,7 @@ export default function Auth() {
             className="font-pixel text-3xl font-bold"
             style={{
               color: '#22C55E',
-              WebkitTextStroke: '2px #14532D',
-              textShadow: '3px 3px 0 #14532D',
+              WebkitTextStroke: '1.5px #14532D',
               letterSpacing: '2px',
             }}
           >
