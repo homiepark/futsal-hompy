@@ -71,6 +71,7 @@ const mockPosts = [
 export default function TeamArchive() {
   const [view, setView] = useState<'grid' | 'single'>('single');
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
+  const [selectedTeam, setSelectedTeam] = useState('all');
 
   const postsWithImages = mockPosts.filter(post => post.imageUrl);
 
@@ -81,6 +82,15 @@ export default function TeamArchive() {
 
   return (
     <div className="pb-20 px-4 py-6 max-w-lg mx-auto">
+      {/* Team Selector */}
+      <div className="mb-4">
+        <TeamSelector 
+          teams={myTeams} 
+          selectedTeam={selectedTeam} 
+          onSelect={setSelectedTeam} 
+        />
+      </div>
+
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h2 className="font-pixel text-xs text-foreground flex items-center gap-2">
