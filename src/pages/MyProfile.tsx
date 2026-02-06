@@ -109,10 +109,36 @@ export default function MyProfile() {
           </div>
         </PixelCard>
 
-        {/* Experience & Status */}
+        {/* Position Selection */}
         <PixelCard>
           <h2 className="text-foreground mb-4 flex items-center gap-2">
             <span className="text-primary">⚽</span>
+            포지션 선택
+          </h2>
+          <div className="grid grid-cols-2 gap-3">
+            {futsalPositions.map((pos) => (
+              <button
+                key={pos.id}
+                onClick={() => setProfile({ ...profile, preferredPosition: pos.id })}
+                className={cn(
+                  'p-3 border-4 transition-all text-center',
+                  profile.preferredPosition === pos.id
+                    ? 'bg-primary border-primary-dark text-primary-foreground shadow-[0_0_12px_hsl(var(--primary))]'
+                    : 'bg-secondary border-border-dark hover:border-primary'
+                )}
+              >
+                <span className="text-xl block mb-1">{pos.emoji}</span>
+                <span className="font-pixel text-[10px] block">{pos.label}</span>
+                <span className="font-body text-[9px] text-muted-foreground block">{pos.description}</span>
+              </button>
+            ))}
+          </div>
+        </PixelCard>
+
+        {/* Experience & Status */}
+        <PixelCard>
+          <h2 className="text-foreground mb-4 flex items-center gap-2">
+            <span className="text-accent">📊</span>
             풋살 경력 정보
           </h2>
 
