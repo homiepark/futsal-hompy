@@ -38,29 +38,29 @@ export const levelOptions = [
   { 
     value: 'S', 
     label: 'S급', 
-    desc: '공만 잡으면 화보!',
-    detail: '선수급 기술과 완벽한 전술',
+    desc: '압도적 전력의 군단',
+    detail: '선수급 기술과 완벽한 전술을 갖춘 프로 지향 팀',
     icon: '🏆'
   },
   { 
     value: 'A', 
     label: 'A급', 
-    desc: '필드의 지배자!',
-    detail: '팽팽하고 짜릿한 승부를 즐기는 베테랑',
+    desc: '지역구 강호',
+    detail: '수준 높은 경기와 팽팽한 승부를 즐기는 베테랑 팀',
     icon: '⭐'
   },
   { 
     value: 'B', 
     label: 'B급', 
-    desc: '든든한 실력파!',
-    detail: '탄탄한 기본기와 매너가 가득한 즐거움',
+    desc: '안정적인 베테랑',
+    detail: '탄탄한 기본기와 매너를 겸비한 실력파 팀',
     icon: '💪'
   },
   { 
     value: 'C', 
     label: 'C급', 
-    desc: '열정 유망주!',
-    detail: '함께 배우며 성장하는 활기찬 시작',
+    desc: '성장하는 도전자',
+    detail: '함께 배우며 성장하는 활기찬 루키 팀',
     icon: '🌟'
   },
 ] as const;

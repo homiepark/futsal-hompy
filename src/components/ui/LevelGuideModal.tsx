@@ -85,10 +85,10 @@ const WhistleIcon = ({ size = 2 }: { size?: number }) => {
 };
 
 const levelData = [
-  { level: 'S', range: '90 - 100', color: 'bg-accent text-accent-foreground border-accent-dark', description: '공만 잡으면 화보!', icon: '🏆' },
-  { level: 'A', range: '70 - 89', color: 'bg-primary text-primary-foreground border-primary-dark', description: '필드의 지배자!', icon: '⭐' },
-  { level: 'B', range: '50 - 69', color: 'bg-primary/70 text-primary-foreground border-primary-dark/70', description: '든든한 실력파!', icon: '💪' },
-  { level: 'C', range: '0 - 49', color: 'bg-primary/50 text-primary-foreground border-primary-dark/50', description: '열정 유망주!', icon: '🌟' },
+  { level: 'S', range: '90 - 100', color: 'bg-accent text-accent-foreground border-accent-dark', description: '압도적 전력의 군단', icon: '🏆' },
+  { level: 'A', range: '70 - 89', color: 'bg-primary text-primary-foreground border-primary-dark', description: '지역구 강호', icon: '⭐' },
+  { level: 'B', range: '50 - 69', color: 'bg-primary/70 text-primary-foreground border-primary-dark/70', description: '안정적인 베테랑', icon: '💪' },
+  { level: 'C', range: '0 - 49', color: 'bg-primary/50 text-primary-foreground border-primary-dark/50', description: '성장하는 도전자', icon: '🌟' },
 ];
 
 export function LevelGuideModal({ isOpen, onClose }: LevelGuideModalProps) {
@@ -128,15 +128,16 @@ export function LevelGuideModal({ isOpen, onClose }: LevelGuideModalProps) {
             <div className="bg-muted border-2 border-border-dark p-3">
               <h3 className="font-body font-bold text-foreground mb-2 flex items-center gap-2">
                 <span className="text-accent">📊</span>
-                점수 계산 공식
+                팀 레벨 산정 공식
               </h3>
               <div className="bg-background border-2 border-border p-3 font-mono text-xs text-foreground overflow-x-auto">
                 <code className="whitespace-pre">
-{`Score = Σ(경력점수 × 가중치)
-        ──────────────────
-             팀원 수
+{`팀 레벨 = 0.4 × 전체평균 + 0.6 × Top5평균
 
-경력점수 = 경력년수 × 10
+전체평균 = Σ(개인점수) / 팀원수
+Top5평균 = 상위 5명 평균 점수
+
+개인점수 = 경력년수 × 10
 가중치   = 프로출신(×2) + 엘리트(×1.5)`}
                 </code>
               </div>
@@ -188,8 +189,8 @@ export function LevelGuideModal({ isOpen, onClose }: LevelGuideModalProps) {
 
             {/* Factors */}
             <div className="bg-secondary/50 border-2 border-border p-3 rounded-lg">
-              <h4 className="font-body font-bold text-foreground text-sm mb-2">점수 반영 요소:</h4>
-              <ul className="space-y-1 text-xs font-body text-muted-foreground">
+              <h4 className="font-body font-bold text-foreground text-sm mb-2">레벨 산정 요소:</h4>
+              <ul className="space-y-1.5 text-xs font-body text-muted-foreground">
                 <li className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 bg-primary" />
                   개인 풋살/축구 경력 연수
@@ -197,6 +198,10 @@ export function LevelGuideModal({ isOpen, onClose }: LevelGuideModalProps) {
                 <li className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 bg-accent" />
                   프로/엘리트 선수 출신 여부
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 bg-primary" />
+                  상위 5명 가중 반영 (60%)
                 </li>
               </ul>
             </div>
