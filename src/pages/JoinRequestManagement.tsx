@@ -188,6 +188,8 @@ export default function JoinRequestManagement() {
                 key={request.id}
                 id={request.id}
                 nickname={request.profile?.nickname || '알 수 없음'}
+                nicknameTag={request.profile?.nickname_tag || undefined}
+                realName={request.profile?.real_name || undefined}
                 avatarUrl={request.profile?.avatar_url || undefined}
                 yearsOfExperience={request.profile?.years_of_experience || 0}
                 preferredPosition={request.profile?.preferred_position || 'MF'}

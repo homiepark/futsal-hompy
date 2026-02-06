@@ -72,7 +72,14 @@ export function ApplicantCard({
 
         {/* Name and position */}
         <div className="flex-1 min-w-0">
-          <h3 className="font-pixel text-sm text-foreground truncate">{nickname}</h3>
+          <h3 className="font-pixel text-sm text-foreground truncate" title={fullDisplayName}>
+            {displayName}
+          </h3>
+          {realName && (
+            <p className="font-pixel text-[9px] text-accent truncate" title={realName}>
+              ({realName})
+            </p>
+          )}
           <div className="flex items-center gap-2 mt-1">
             <span className={cn(
               'font-pixel text-[8px] px-2 py-0.5 border-2 border-border-dark',
