@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { Search, X, Check, ChevronDown, RotateCcw, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { LevelInfoButton } from '@/components/ui/LevelGuideModal';
 import { 
   regionData, 
   genderOptions, 
@@ -305,9 +306,12 @@ export function AdvancedFilterBar({ filters, onFiltersChange }: AdvancedFilterBa
 
       {/* Level Multi-Select */}
       <div>
-        <label className="font-pixel text-[9px] text-muted-foreground mb-1.5 block">🏅 레벨 선택</label>
+        <div className="flex items-center gap-2 mb-1.5">
+          <label className="font-pixel text-[9px] text-muted-foreground">🏅 레벨 선택</label>
+          <LevelInfoButton />
+        </div>
         <div className="grid grid-cols-2 gap-1.5">
-          {levelOptions.map(({ value, desc, icon }) => {
+          {levelOptions.map(({ value, desc, tier, icon }) => {
             const isActive = filters.levels.includes(value);
             const levelColorClass = {
               S: 'bg-accent text-accent-foreground border-accent-dark',
@@ -327,10 +331,17 @@ export function AdvancedFilterBar({ filters, onFiltersChange }: AdvancedFilterBa
                     : "bg-secondary text-secondary-foreground border-border-dark hover:border-primary"
                 )}
                 style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
+                title={`${tier}: ${desc}`}
               >
                 <div className="flex items-center gap-1">
                   {isActive ? <Check size={10} /> : <span>{icon}</span>}
                   <span className="font-pixel text-[10px]">Lv.{value}</span>
+                  <span className={cn(
+                    "font-body text-[7px]",
+                    isActive ? "opacity-75" : "text-muted-foreground"
+                  )}>
+                    ({tier})
+                  </span>
                 </div>
                 <p className={cn(
                   "font-pixel text-[7px] mt-0.5 truncate",
