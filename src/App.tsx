@@ -11,6 +11,7 @@ import Matchmaking from "./pages/Matchmaking";
 import Schedule from "./pages/Schedule";
 import CourtBooking from "./pages/CourtBooking";
 import PlayerRegistration from "./pages/PlayerRegistration";
+import MyProfile from "./pages/MyProfile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
