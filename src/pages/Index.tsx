@@ -1,7 +1,10 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Bell, Settings } from 'lucide-react';
 import { StickyNavBar } from '@/components/layout/StickyNavBar';
 import { TeamFilterBar } from '@/components/findteam/TeamFilterBar';
 import { TeamListCard } from '@/components/findteam/TeamListCard';
+import { PixelProfileIcon } from '@/components/ui/PixelProfileIcon';
 import { cn } from '@/lib/utils';
 import topBanner from '@/assets/top-banner.jpg';
 
@@ -42,8 +45,29 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Top Banner - Full Image (scrolls away) */}
-      <div className="w-full">
+      {/* Top Banner - Full Image with Icons Overlay */}
+      <div className="w-full relative">
+        {/* Icons on top-right of banner */}
+        <div className="absolute top-3 right-3 z-10 flex items-center gap-3">
+          {/* Notification */}
+          <button className="relative w-12 h-12 bg-card/95 backdrop-blur-sm border-3 border-border-dark flex items-center justify-center shadow-[3px_3px_0_hsl(var(--pixel-shadow))] hover:bg-card transition-colors">
+            <Bell size={24} className="text-foreground" />
+            <span className="absolute -top-2 -right-2 w-6 h-6 bg-accent border-2 border-accent-dark text-[10px] font-pixel text-accent-foreground flex items-center justify-center shadow-[2px_2px_0_hsl(var(--pixel-shadow))]">
+              3
+            </span>
+          </button>
+
+          {/* Settings */}
+          <button className="w-12 h-12 bg-card/95 backdrop-blur-sm border-3 border-border-dark flex items-center justify-center shadow-[3px_3px_0_hsl(var(--pixel-shadow))] hover:bg-card transition-colors">
+            <Settings size={24} className="text-foreground" />
+          </button>
+
+          {/* Profile */}
+          <Link to="/profile">
+            <PixelProfileIcon size={4} />
+          </Link>
+        </div>
+
         <img 
           src={topBanner} 
           alt="우리의풋살 배너"
