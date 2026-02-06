@@ -8,8 +8,7 @@ import { PixelButton } from '@/components/ui/PixelButton';
 export default function TeamHome() {
   const navigate = useNavigate();
 
-  return (
-    <div className="pb-20 px-4 py-6 max-w-lg mx-auto space-y-6">
+    <div className="pb-24 px-5 py-8 max-w-lg mx-auto space-y-8">
       {/* Register Button */}
       <PixelButton
         variant="accent"
