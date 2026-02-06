@@ -436,33 +436,6 @@ export default function Matchmaking() {
         </div>
       </div>
 
-      {/* Level Legend */}
-      <div className="bg-secondary p-3 border-3 border-border-dark mb-6" style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}>
-        <div className="flex items-center justify-between mb-2">
-          <p className="font-pixel text-[9px] text-foreground">📊 레벨 가이드</p>
-          <LevelInfoButton />
-        </div>
-        <div className="grid grid-cols-2 gap-2">
-          {levelOptions.map(({ value, desc, icon }) => {
-            const levelColorClass = {
-              S: 'level-s',
-              A: 'level-a',
-              B: 'level-b',
-              C: 'level-c',
-            }[value];
-            return (
-              <div key={value} className="flex items-center gap-2">
-                <PixelBadge variant={levelColorClass as any}>
-                  <span className="mr-1">{icon}</span>
-                  Lv.{value}
-                </PixelBadge>
-                <span className="font-pixel text-[7px] text-muted-foreground truncate">{desc}</span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
       {/* Team List */}
       <div className="space-y-4">
         {filteredTeams.length > 0 ? (
