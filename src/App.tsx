@@ -9,6 +9,7 @@ import { BottomNav } from "@/components/layout/BottomNav";
 import Index from "./pages/Index";
 import TeamHome from "./pages/TeamHome";
 import TeamArchive from "./pages/TeamArchive";
+import MyTeam from "./pages/MyTeam";
 import Matchmaking from "./pages/Matchmaking";
 import Schedule from "./pages/Schedule";
 import CourtBooking from "./pages/CourtBooking";
