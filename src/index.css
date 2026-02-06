@@ -6,54 +6,56 @@
 
 @layer base {
   :root {
-    /* Kairosoft Pixel Art + Cyworld Mini-hompy Palette */
-    --background: 45 30% 96%;
-    --foreground: 30 20% 20%;
+    /* Clean Cream/Off-White Background */
+    --background: 40 40% 97%;
+    --foreground: 30 25% 18%;
 
-    --card: 45 40% 98%;
-    --card-foreground: 30 20% 20%;
+    --card: 40 50% 99%;
+    --card-foreground: 30 25% 18%;
 
-    --popover: 45 40% 98%;
-    --popover-foreground: 30 20% 20%;
+    --popover: 40 50% 99%;
+    --popover-foreground: 30 25% 18%;
 
     /* Grass Green Primary */
-    --primary: 142 69% 58%;
+    --primary: 142 69% 52%;
     --primary-foreground: 0 0% 100%;
-    --primary-dark: 142 60% 45%;
+    --primary-dark: 142 65% 40%;
 
     /* Vibrant Orange Accent */
-    --accent: 27 97% 61%;
+    --accent: 27 97% 58%;
     --accent-foreground: 0 0% 100%;
-    --accent-dark: 27 90% 50%;
+    --accent-dark: 27 90% 48%;
 
-    --secondary: 45 60% 90%;
-    --secondary-foreground: 30 20% 25%;
+    /* Secondary uses warm cream tones */
+    --secondary: 40 50% 94%;
+    --secondary-foreground: 30 25% 22%;
 
-    --muted: 45 30% 92%;
-    --muted-foreground: 30 15% 50%;
+    /* Muted uses warm tones */
+    --muted: 40 35% 92%;
+    --muted-foreground: 30 20% 45%;
 
     --destructive: 0 72% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    /* Pixel borders */
-    --border: 30 20% 75%;
-    --border-dark: 30 25% 55%;
-    --input: 45 30% 92%;
-    --ring: 142 69% 58%;
+    /* Warm borders */
+    --border: 35 25% 82%;
+    --border-dark: 30 30% 50%;
+    --input: 40 40% 95%;
+    --ring: 142 69% 52%;
 
     --radius: 12px;
 
-    /* Game UI Colors */
-    --pixel-shadow: 30 25% 40%;
-    --pixel-highlight: 45 50% 95%;
-    --field-green: 142 50% 45%;
+    /* Game UI Colors - warm tones */
+    --pixel-shadow: 30 30% 35%;
+    --pixel-highlight: 40 60% 98%;
+    --field-green: 142 55% 42%;
     --court-line: 0 0% 100%;
     
-    /* Level Badge Colors */
-    --level-s: 45 100% 50%;
-    --level-a: 280 60% 55%;
-    --level-b: 210 80% 55%;
-    --level-c: 142 50% 50%;
+    /* Level Badge Colors - Green & Orange only */
+    --level-s: 27 97% 58%;
+    --level-a: 142 69% 45%;
+    --level-b: 142 55% 55%;
+    --level-c: 142 45% 65%;
 
     --sidebar-background: 45 30% 96%;
     --sidebar-foreground: 30 20% 20%;
@@ -175,20 +177,20 @@
       inset 2px 2px 0 hsl(0 0% 100% / 0.3);
   }
 
-  /* Modern Card - rounded with soft shadow */
+  /* Modern Card - rounded with soft shadow, generous spacing */
   .pixel-card {
-    @apply bg-card p-4 rounded-xl border border-border/50;
+    @apply bg-card p-5 rounded-xl border border-border/40;
     box-shadow: 
-      0 4px 20px -4px hsl(var(--pixel-shadow) / 0.15),
-      0 2px 8px -2px hsl(var(--pixel-shadow) / 0.1);
+      0 4px 24px -6px hsl(var(--pixel-shadow) / 0.12),
+      0 2px 8px -2px hsl(var(--pixel-shadow) / 0.08);
   }
 
   /* Modern Frame (for photos) - rounded with soft shadow */
   .pixel-frame {
-    @apply relative bg-card p-3 rounded-xl border border-border/50;
+    @apply relative bg-card p-4 rounded-xl border border-border/40;
     box-shadow: 
-      0 8px 30px -8px hsl(var(--pixel-shadow) / 0.2),
-      0 4px 12px -4px hsl(var(--pixel-shadow) / 0.1);
+      0 8px 32px -8px hsl(var(--pixel-shadow) / 0.15),
+      0 4px 12px -4px hsl(var(--pixel-shadow) / 0.08);
   }
 
   /* Pixel Input - rounded for modern look */
@@ -205,18 +207,18 @@
     box-shadow: 2px 2px 0 hsl(var(--pixel-shadow));
   }
 
-  /* Level Badges */
+  /* Level Badges - Green & Orange only */
   .level-s {
-    @apply bg-[hsl(45,100%,50%)] text-foreground;
+    @apply bg-accent text-accent-foreground;
   }
   .level-a {
-    @apply bg-[hsl(280,60%,55%)] text-white;
+    @apply bg-primary text-primary-foreground;
   }
   .level-b {
-    @apply bg-[hsl(210,80%,55%)] text-white;
+    @apply bg-primary/70 text-primary-foreground;
   }
   .level-c {
-    @apply bg-primary text-primary-foreground;
+    @apply bg-primary/50 text-primary-foreground;
   }
 
   /* Pixel Icon Wrapper */
