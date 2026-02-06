@@ -6,8 +6,6 @@ import { TeamHeader } from '@/components/team/TeamHeader';
 import { TeamSwitcher } from '@/components/team/TeamSwitcher';
 import { LatestArchive } from '@/components/team/LatestArchive';
 import { MemberRoster } from '@/components/team/MemberRoster';
-import { MoodDisplay } from '@/components/team/MoodDisplay';
-import { WinsCounter } from '@/components/team/WinsCounter';
 import { Guestbook } from '@/components/team/Guestbook';
 import { PixelButton } from '@/components/ui/PixelButton';
 import { MessageButton } from '@/components/ui/MessageButton';
