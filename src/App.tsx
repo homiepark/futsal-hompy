@@ -20,6 +20,8 @@ import PlayerRegistration from "./pages/PlayerRegistration";
 import MyProfile from "./pages/MyProfile";
 import ProfileSetup from "./pages/ProfileSetup";
 import Auth from "./pages/Auth";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import Messages from "./pages/Messages";
 import NotFound from "./pages/NotFound";
 
