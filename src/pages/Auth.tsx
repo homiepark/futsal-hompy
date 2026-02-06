@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { z } from 'zod';
-import futsalMascot from '@/assets/futsal-mascot.png';
+import futsalMascot from '@/assets/futsal-mascot-pixel.png';
 
 // Validation schemas
 const emailSchema = z.string().email('올바른 이메일 형식이 아닙니다');
@@ -122,30 +122,26 @@ export default function Auth() {
       {/* Mascot and Logo Section */}
       <div className="text-center mb-4">
         {/* Mascot Character */}
-        <div className="relative w-28 h-28 mx-auto mb-2">
+        <div className="relative w-32 h-32 mx-auto mb-2">
           <img 
             src={futsalMascot} 
             alt="풋살 마스코트"
-            className="w-full h-full object-contain drop-shadow-lg"
+            className="w-full h-full object-contain"
           />
         </div>
         
-        {/* 3D Logo Text */}
+        {/* Logo Text - Same green as signup button */}
         <h1 
-          className="font-pixel text-3xl font-bold text-primary relative inline-block"
+          className="font-pixel text-3xl font-bold relative inline-block"
           style={{
-            WebkitTextStroke: '2px hsl(30, 50%, 35%)',
-            textShadow: `
-              3px 3px 0 hsl(30, 60%, 45%),
-              4px 4px 0 hsl(30, 50%, 35%),
-              5px 5px 0 hsl(var(--pixel-shadow))
-            `,
-            color: 'hsl(142, 69%, 52%)',
+            color: 'hsl(142, 69%, 50%)',
+            WebkitTextStroke: '1.5px hsl(142, 60%, 30%)',
+            textShadow: '3px 3px 0 hsl(142, 60%, 30%)',
           }}
         >
           우리의풋살
         </h1>
-        <p className="font-pixel text-xs text-[hsl(30,40%,50%)] mt-1 tracking-[0.2em]">Our Futsal</p>
+        <p className="font-pixel text-xs text-[hsl(142,50%,40%)] mt-1 tracking-[0.2em]">Our Futsal</p>
       </div>
 
       {/* Auth Card - Matching the exact design */}
