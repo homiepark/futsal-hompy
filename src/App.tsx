@@ -38,6 +38,7 @@ const App = () => (
                 <Route path="/team/:teamId" element={<TeamHome />} />
                 <Route path="/archive" element={<TeamArchive />} />
                 <Route path="/create-team" element={<CreateTeam />} />
+                <Route path="/team/:teamId/requests" element={<JoinRequestManagement />} />
                 <Route path="/matchmaking" element={<Matchmaking />} />
                 <Route path="/schedule" element={<Schedule />} />
                 <Route path="/courts" element={<CourtBooking />} />
