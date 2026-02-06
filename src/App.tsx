@@ -3,7 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Header } from "@/components/layout/Header";
+
 import { BottomNav } from "@/components/layout/BottomNav";
 import Index from "./pages/Index";
 import TeamArchive from "./pages/TeamArchive";
@@ -22,7 +22,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <div className="min-h-screen bg-background">
-          <Header />
+          
           <main className="pb-16">
             <Routes>
               <Route path="/" element={<Index />} />
