@@ -38,12 +38,12 @@ const MAX_FILTER_REGIONS = 3;
 
 // Mock teams - will be replaced with real data
 const mockTeams = [
-  { id: '1', name: 'FC 번개', emblem: '⚡', region: '서울', district: '강남구', level: 'S' as const, members: 12, gender: '남성' as const, matchTime: '주말 오후', fieldType: '실내', mannerScore: 4.8, hasProPlayer: true },
-  { id: '2', name: '선데이 풋살', emblem: '☀️', region: '서울', district: '마포구', level: 'A' as const, members: 10, gender: '혼성' as const, matchTime: '일요일 오전', fieldType: '실외', mannerScore: 4.5, hasProPlayer: false },
-  { id: '3', name: '레이디스 FC', emblem: '👑', region: '경기', district: '성남시', level: 'B' as const, members: 15, gender: '여성' as const, matchTime: '토요일 오후', fieldType: '실내', mannerScore: 4.9, hasProPlayer: false },
-  { id: '4', name: '올드보이즈', emblem: '🦁', region: '서울', district: '송파구', level: 'A' as const, members: 14, gender: '남성' as const, matchTime: '평일 저녁', fieldType: '실내', mannerScore: 4.7, hasProPlayer: true },
-  { id: '5', name: '위클리 킥', emblem: '🎯', region: '인천', district: '연수구', level: 'C' as const, members: 8, gender: '혼성' as const, matchTime: '주말 오전', fieldType: '실외', mannerScore: 4.2, hasProPlayer: false },
-  { id: '6', name: '블루드래곤', emblem: '🐉', region: '서울', district: '동작구', level: 'B' as const, members: 11, gender: '남성' as const, matchTime: '일요일 오후', fieldType: '실내', mannerScore: 4.6, hasProPlayer: false },
+  { id: '1', name: 'FC 번개', emblem: '⚡', region: '서울', district: '강남구', level: 'S' as const, members: 12, gender: '남성' as const, matchTime: '주말 오후', homeGroundName: '강남 스포츠센터', homeGroundAddress: '서울 강남구 역삼동 456', mannerScore: 4.8 },
+  { id: '2', name: '선데이 풋살', emblem: '☀️', region: '서울', district: '마포구', level: 'A' as const, members: 10, gender: '혼성' as const, matchTime: '일요일 오전', homeGroundName: '상암 풋살장', homeGroundAddress: '서울 마포구 상암동 123', mannerScore: 4.5 },
+  { id: '3', name: '레이디스 FC', emblem: '👑', region: '경기', district: '성남시', level: 'B' as const, members: 15, gender: '여성' as const, matchTime: '토요일 오후', homeGroundName: '판교 풋살파크', homeGroundAddress: '경기 성남시 판교동 789', mannerScore: 4.9 },
+  { id: '4', name: '올드보이즈', emblem: '🦁', region: '서울', district: '송파구', level: 'A' as const, members: 14, gender: '남성' as const, matchTime: '평일 저녁', homeGroundName: '잠실 실내풋살장', homeGroundAddress: '서울 송파구 잠실동 101', mannerScore: 4.7 },
+  { id: '5', name: '위클리 킥', emblem: '🎯', region: '인천', district: '연수구', level: 'C' as const, members: 8, gender: '혼성' as const, matchTime: '주말 오전', homeGroundName: '송도 스포츠파크', homeGroundAddress: '인천 연수구 송도동 555', mannerScore: 4.2 },
+  { id: '6', name: '블루드래곤', emblem: '🐉', region: '서울', district: '동작구', level: 'B' as const, members: 11, gender: '남성' as const, matchTime: '일요일 오후', homeGroundName: '동작 풋살파크', homeGroundAddress: '서울 동작구 사당동 202', mannerScore: 4.6 },
 ];
 
 export default function Matchmaking() {
@@ -219,6 +219,8 @@ export default function Matchmaking() {
       level: team.level,
       mannerScore: team.mannerScore,
       matchTime: team.matchTime,
+      homeGroundName: team.homeGroundName,
+      homeGroundAddress: team.homeGroundAddress,
       tags: getTeamTags(team),
     }));
 
@@ -517,9 +519,9 @@ export default function Matchmaking() {
               members={team.members}
               gender={team.gender}
               matchTime={team.matchTime}
-              fieldType={team.fieldType}
+              homeGroundName={team.homeGroundName}
+              homeGroundAddress={team.homeGroundAddress}
               mannerScore={team.mannerScore}
-              hasProPlayer={team.hasProPlayer}
               tags={team.tags}
               onViewProfile={() => navigate(`/team/${team.id}`)}
             />

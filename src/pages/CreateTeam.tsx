@@ -11,6 +11,7 @@ import { LevelSelector } from '@/components/team/create/LevelSelector';
 import { RegionSelector } from '@/components/team/create/RegionSelector';
 import { TrainingTimeSelector } from '@/components/team/create/TrainingTimeSelector';
 import { GenderSelector } from '@/components/team/create/GenderSelector';
+import { HomeGroundSelector } from '@/components/team/create/HomeGroundSelector';
 import { GenderValue } from '@/lib/teamData';
 
 export default function CreateTeam() {
@@ -29,6 +30,8 @@ export default function CreateTeam() {
     trainingDays: [] as string[],
     trainingStartTime: '',
     trainingEndTime: '',
+    homeGroundName: '',
+    homeGroundAddress: '',
     introduction: '',
     instagramUrl: '',
     youtubeUrl: '',
@@ -68,6 +71,8 @@ export default function CreateTeam() {
           training_time: formData.trainingDays.length > 0 
             ? `${formData.trainingStartTime} - ${formData.trainingEndTime}` 
             : null,
+          home_ground_name: formData.homeGroundName || null,
+          home_ground_address: formData.homeGroundAddress || null,
           introduction: formData.introduction || null,
           instagram_url: formData.instagramUrl || null,
           youtube_url: formData.youtubeUrl || null,
@@ -183,6 +188,14 @@ export default function CreateTeam() {
               onDaysChange={(days) => setFormData(prev => ({ ...prev, trainingDays: days }))}
               onStartTimeChange={(time) => setFormData(prev => ({ ...prev, trainingStartTime: time }))}
               onEndTimeChange={(time) => setFormData(prev => ({ ...prev, trainingEndTime: time }))}
+            />
+
+            {/* Home Ground */}
+            <HomeGroundSelector
+              groundName={formData.homeGroundName}
+              groundAddress={formData.homeGroundAddress}
+              onGroundNameChange={(name) => setFormData(prev => ({ ...prev, homeGroundName: name }))}
+              onGroundAddressChange={(address) => setFormData(prev => ({ ...prev, homeGroundAddress: address }))}
             />
           </div>
         </div>
