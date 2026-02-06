@@ -1,6 +1,6 @@
-import { Heart, MessageCircle, Share2 } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Instagram } from 'lucide-react';
 import { PixelCard } from '@/components/ui/PixelCard';
-import { PixelIcon } from '@/components/ui/PixelIcon';
+import { toast } from 'sonner';
 
 interface TimelinePostProps {
   id: string;
