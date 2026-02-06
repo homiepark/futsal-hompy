@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
+import { AuthProvider } from "@/contexts/AuthContext";
 import { TeamProvider } from "@/contexts/TeamContext";
 import { BottomNav } from "@/components/layout/BottomNav";
 import Index from "./pages/Index";
@@ -18,6 +19,7 @@ import CourtBooking from "./pages/CourtBooking";
 import PlayerRegistration from "./pages/PlayerRegistration";
 import MyProfile from "./pages/MyProfile";
 import ProfileSetup from "./pages/ProfileSetup";
+import Auth from "./pages/Auth";
 import Messages from "./pages/Messages";
 import NotFound from "./pages/NotFound";
 
@@ -26,7 +28,8 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <TeamProvider>
+      <AuthProvider>
+        <TeamProvider>
         <Toaster />
         <Sonner />
         <BrowserRouter>
@@ -46,6 +49,7 @@ const App = () => (
                 <Route path="/register" element={<PlayerRegistration />} />
                 <Route path="/profile" element={<MyProfile />} />
                 <Route path="/profile-setup" element={<ProfileSetup />} />
+                <Route path="/auth" element={<Auth />} />
                 <Route path="/messages" element={<Messages />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
@@ -55,8 +59,9 @@ const App = () => (
           </div>
         </BrowserRouter>
       </TeamProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
+    </AuthProvider>
+  </TooltipProvider>
+</QueryClientProvider>
 );
 
 export default App;
