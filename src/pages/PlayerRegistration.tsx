@@ -36,10 +36,10 @@ export default function PlayerRegistration() {
 
   return (
     <div className="min-h-screen bg-background pb-24 px-4 py-6 max-w-lg mx-auto">
-      {/* Title */}
+      {/* Title - Pixel Font */}
       <div className="text-center mb-6">
-        <h1 className="text-sm mb-2">⚽️ 선수 등록소</h1>
-        <p className="text-[8px] text-muted-foreground">Player Registration</p>
+        <h1 className="font-pixel text-sm mb-2">⚽️ 선수 등록소</h1>
+        <p className="font-body text-xs text-muted-foreground">Player Registration</p>
       </div>
 
       {/* Character Placeholder */}
@@ -49,33 +49,33 @@ export default function PlayerRegistration() {
             <div className="w-16 h-16 mx-auto bg-secondary border-4 border-border-dark flex items-center justify-center mb-2">
               <User size={32} className="text-muted-foreground" />
             </div>
-            <p className="text-[6px] text-muted-foreground">TAP TO UPLOAD</p>
+            <p className="font-body text-[10px] text-muted-foreground">탭하여 업로드</p>
           </div>
         </div>
       </PixelCard>
 
       {/* Nickname Input */}
       <section className="mb-6">
-        <label className="block text-[8px] text-muted-foreground mb-2">
-          ▶ 닉네임 (Nickname)
+        <label className="block font-body text-sm font-medium text-foreground mb-2">
+          닉네임
         </label>
         <input
           type="text"
           value={nickname}
           onChange={(e) => setNickname(e.target.value)}
-          placeholder="선수 이름 입력..."
-          className="w-full pixel-input text-[10px] placeholder:text-muted-foreground"
+          placeholder="선수 이름을 입력하세요..."
+          className="w-full pixel-input placeholder:text-muted-foreground"
           maxLength={12}
         />
-        <p className="text-[6px] text-muted-foreground mt-1 text-right">
+        <p className="font-body text-xs text-muted-foreground mt-1 text-right">
           {nickname.length}/12
         </p>
       </section>
 
       {/* Position Selection */}
       <section className="mb-6">
-        <label className="block text-[8px] text-muted-foreground mb-3">
-          ▶ 포지션 선택 (Position)
+        <label className="block font-body text-sm font-medium text-foreground mb-3">
+          포지션 선택
         </label>
         <div className="grid grid-cols-2 gap-3">
           {positions.map((pos) => (
@@ -89,8 +89,8 @@ export default function PlayerRegistration() {
                   : 'bg-secondary border-border-dark hover:border-primary'
               )}
             >
-              <span className="text-xl block mb-1">{pos.emoji}</span>
-              <span className="text-[10px] block">{pos.label}</span>
+              <span className="text-2xl block mb-1">{pos.emoji}</span>
+              <span className="font-pixel text-[10px] block">{pos.label}</span>
             </button>
           ))}
         </div>
@@ -98,8 +98,8 @@ export default function PlayerRegistration() {
 
       {/* Experience Level */}
       <section className="mb-6">
-        <label className="block text-[8px] text-muted-foreground mb-3">
-          ▶ 경력 레벨 (Experience)
+        <label className="block font-body text-sm font-medium text-foreground mb-3">
+          경력 레벨
         </label>
         <div className="flex gap-1">
           {experienceLevels.map((level) => (
@@ -113,11 +113,11 @@ export default function PlayerRegistration() {
                   : 'bg-secondary border-border-dark hover:border-accent'
               )}
             >
-              <div className="text-[8px] mb-1">
+              <div className="font-pixel text-[8px] mb-1">
                 {'★'.repeat(level.stars)}
               </div>
-              <p className="text-[6px] leading-tight">{level.label}</p>
-              <p className="text-[5px] text-muted-foreground">{level.sublabel}</p>
+              <p className="font-body text-[10px] font-medium leading-tight">{level.label}</p>
+              <p className="font-body text-[9px] text-muted-foreground">{level.sublabel}</p>
             </button>
           ))}
         </div>
@@ -136,15 +136,15 @@ export default function PlayerRegistration() {
           ))}
         </div>
         <div className="flex justify-between mt-1">
-          <span className="text-[6px] text-muted-foreground">LV.1</span>
-          <span className="text-[6px] text-muted-foreground">LV.MAX</span>
+          <span className="font-pixel text-[8px] text-muted-foreground">LV.1</span>
+          <span className="font-pixel text-[8px] text-muted-foreground">LV.MAX</span>
         </div>
       </section>
 
       {/* Elite Status */}
       <section className="mb-8">
-        <label className="block text-[8px] text-muted-foreground mb-3">
-          ▶ 엘리트 선수인가요? (Elite Status)
+        <label className="block font-body text-sm font-medium text-foreground mb-3">
+          엘리트 선수인가요?
         </label>
         <div className="grid grid-cols-2 gap-4">
           <button
@@ -157,8 +157,8 @@ export default function PlayerRegistration() {
             )}
           >
             <span className="text-2xl block mb-2">🏆</span>
-            <span className="text-[8px] block">Yes, Elite</span>
-            <span className="text-[6px] text-muted-foreground block mt-1">프로/엘리트 경험</span>
+            <span className="font-pixel text-[8px] block">ELITE</span>
+            <span className="font-body text-xs text-muted-foreground block mt-1">프로/엘리트 경험</span>
           </button>
           <button
             onClick={() => setIsElite(false)}
@@ -170,8 +170,8 @@ export default function PlayerRegistration() {
             )}
           >
             <span className="text-2xl block mb-2">⚽️</span>
-            <span className="text-[8px] block">No, Amateur</span>
-            <span className="text-[6px] text-muted-foreground block mt-1">동호회 플레이어</span>
+            <span className="font-pixel text-[8px] block">AMATEUR</span>
+            <span className="font-body text-xs text-muted-foreground block mt-1">동호회 플레이어</span>
           </button>
         </div>
       </section>
@@ -181,11 +181,11 @@ export default function PlayerRegistration() {
         variant="accent"
         size="lg"
         onClick={handleSubmit}
-        className="w-full py-4 text-[10px]"
+        className="w-full py-4"
       >
         🚀 그라운드 입장하기!
       </PixelButton>
-      <p className="text-center text-[6px] text-muted-foreground mt-2">
+      <p className="text-center font-body text-xs text-muted-foreground mt-2">
         Enter the Ground!
       </p>
 
