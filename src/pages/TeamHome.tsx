@@ -8,6 +8,7 @@ import { PixelButton } from '@/components/ui/PixelButton';
 export default function TeamHome() {
   const navigate = useNavigate();
 
+  return (
     <div className="pb-24 px-5 py-8 max-w-lg mx-auto space-y-8">
       {/* Register Button */}
       <PixelButton
@@ -20,14 +21,14 @@ export default function TeamHome() {
       </PixelButton>
 
       {/* Team Stats Row */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-5">
         <MoodDisplay mood="🔥" teamName="FC 불꽃" />
         <WinsCounter wins={42} />
       </div>
 
       {/* Team Polaroid */}
       <section>
-        <h2 className="text-[10px] text-muted-foreground mb-3 flex items-center gap-2">
+        <h2 className="font-pixel text-[10px] text-muted-foreground mb-4 flex items-center gap-2">
           <span className="text-accent">✦</span>
           우리팀 갤러리
           <span className="text-primary">✦</span>
