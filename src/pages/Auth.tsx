@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { z } from 'zod';
-
+import logoMain from '@/assets/logo-main.png';
 
 // Validation schemas
 const emailSchema = z.string().email('올바른 이메일 형식이 아닙니다');
@@ -121,90 +121,11 @@ export default function Auth() {
     <div className="min-h-screen bg-[#f8f6f0] flex flex-col items-center px-4 py-6">
       {/* Logo Section */}
       <div className="text-center mb-6">
-        {/* Logo Text - 3D Pixel style with shadows */}
-        <div className="flex justify-center items-end gap-0 mb-1">
-          {/* 우리 - Orange/Brown 3D Pixel */}
-          <span 
-            className="font-pixel text-[28px] font-bold leading-none"
-            style={{
-              color: '#FF8C00',
-              WebkitTextStroke: '2px #8B4513',
-              textShadow: '3px 3px 0 #5D3A1A',
-              letterSpacing: '-1px',
-            }}
-          >
-            우리
-          </span>
-          
-          {/* 의 - Soccer ball as ㅇ, unified character */}
-          <span 
-            className="relative inline-block"
-            style={{ 
-              width: '32px', 
-              height: '38px',
-              marginLeft: '-2px',
-              marginRight: '-2px',
-            }}
-          >
-            {/* ⚽ as ㅇ - positioned at top center */}
-            <span 
-              className="absolute left-1/2 -translate-x-1/2"
-              style={{ 
-                top: '0px',
-                fontSize: '16px',
-                filter: 'drop-shadow(2px 2px 0 #4A4A4A)',
-              }}
-            >
-              ⚽
-            </span>
-            
-            {/* ㅡ horizontal - below the soccer ball */}
-            <span 
-              className="absolute font-pixel font-bold"
-              style={{
-                color: '#FFFFFF',
-                WebkitTextStroke: '1.5px #4A4A4A',
-                textShadow: '2px 2px 0 #2A2A2A',
-                fontSize: '18px',
-                top: '18px',
-                left: '2px',
-                lineHeight: '1',
-              }}
-            >
-              ㅡ
-            </span>
-            
-            {/* ㅣ vertical - right side, spanning height */}
-            <span 
-              className="absolute font-pixel font-bold"
-              style={{
-                color: '#FFFFFF',
-                WebkitTextStroke: '1.5px #4A4A4A',
-                textShadow: '2px 2px 0 #2A2A2A',
-                fontSize: '28px',
-                right: '0px',
-                top: '4px',
-                lineHeight: '1',
-              }}
-            >
-              ㅣ
-            </span>
-          </span>
-          
-          {/* 풋살 - Green 3D Pixel */}
-          <span 
-            className="font-pixel text-[28px] font-bold leading-none"
-            style={{
-              color: '#22C55E',
-              WebkitTextStroke: '2px #14532D',
-              textShadow: '3px 3px 0 #0A2915',
-              letterSpacing: '-1px',
-            }}
-          >
-            풋살
-          </span>
-        </div>
-        <p className="font-pixel text-xs text-[#22C55E] tracking-[0.3em]">Our Futsal</p>
+        <img 
+          src={logoMain} 
+          alt="우리의 풋살 - Our Futsal" 
+          className="h-20 mx-auto"
+        />
       </div>
 
       {/* Auth Card - Matching the exact design */}
