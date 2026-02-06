@@ -41,7 +41,7 @@
     --input: 45 30% 92%;
     --ring: 142 69% 58%;
 
-    --radius: 0px;
+    --radius: 12px;
 
     /* Game UI Colors */
     --pixel-shadow: 30 25% 40%;
@@ -175,30 +175,27 @@
       inset 2px 2px 0 hsl(0 0% 100% / 0.3);
   }
 
-  /* Pixel Card */
+  /* Modern Card - rounded with soft shadow */
   .pixel-card {
-    @apply bg-card border-4 border-border-dark p-4;
+    @apply bg-card p-4 rounded-xl border border-border/50;
     box-shadow: 
-      4px 4px 0 hsl(var(--pixel-shadow)),
-      inset -2px -2px 0 hsl(var(--pixel-shadow) / 0.1),
-      inset 2px 2px 0 hsl(var(--pixel-highlight));
+      0 4px 20px -4px hsl(var(--pixel-shadow) / 0.15),
+      0 2px 8px -2px hsl(var(--pixel-shadow) / 0.1);
   }
 
-  /* Pixel Frame (for photos) */
+  /* Modern Frame (for photos) - rounded with soft shadow */
   .pixel-frame {
-    @apply relative bg-card border-8 border-border-dark p-2;
+    @apply relative bg-card p-3 rounded-xl border border-border/50;
     box-shadow: 
-      6px 6px 0 hsl(var(--pixel-shadow)),
-      inset -4px -4px 0 hsl(var(--pixel-shadow) / 0.2),
-      inset 4px 4px 0 hsl(var(--pixel-highlight));
+      0 8px 30px -8px hsl(var(--pixel-shadow) / 0.2),
+      0 4px 12px -4px hsl(var(--pixel-shadow) / 0.1);
   }
 
-  /* Pixel Input - modern font for readability */
+  /* Pixel Input - rounded for modern look */
   .pixel-input {
-    @apply bg-input border-4 border-border-dark px-3 py-2 font-body text-sm;
-    @apply focus:outline-none focus:border-primary;
-    box-shadow: 
-      inset 2px 2px 0 hsl(var(--pixel-shadow) / 0.15);
+    @apply bg-input border border-border px-4 py-3 font-body text-sm rounded-lg;
+    @apply focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20;
+    box-shadow: 0 2px 4px -1px hsl(var(--pixel-shadow) / 0.08);
   }
 
   /* Pixel Badge - keeps pixel font */
