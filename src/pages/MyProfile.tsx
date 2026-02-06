@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { ArrowLeft, Save, Camera, Mail } from 'lucide-react';
+import { ArrowLeft, Save, Camera, Mail, X, Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { PixelButton } from '@/components/ui/PixelButton';
 import { PixelCard } from '@/components/ui/PixelCard';
@@ -24,6 +24,13 @@ const futsalPositions = [
   { id: 'goleiro', label: '골레이로', emoji: '🧤', description: 'Goalkeeper' },
 ];
 
+interface PreferredRegion {
+  region: string;
+  district: string;
+}
+
+const MAX_REGIONS = 3;
+
 export default function MyProfile() {
   const { user } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -35,9 +42,12 @@ export default function MyProfile() {
     yearsOfExperience: 0,
     isProElite: false,
     preferredPosition: 'ala',
-    region: '',
-    district: '',
   });
+  
+  // Multi-region state
+  const [preferredRegions, setPreferredRegions] = useState<PreferredRegion[]>([]);
+  const [tempRegion, setTempRegion] = useState('');
+  const [tempDistrict, setTempDistrict] = useState('');
 
   const [myTeams] = useState([
     { id: '1', name: 'FC 불꽃', emblem: '🔥', role: 'admin' },
@@ -65,9 +75,13 @@ export default function MyProfile() {
             yearsOfExperience: data.years_of_experience || 0,
             isProElite: data.is_pro_elite || false,
             preferredPosition: data.preferred_position || 'ala',
-            region: data.region || '',
-            district: data.district || '',
           });
+          
+          // Load preferred regions from JSONB
+          const savedRegions = data.preferred_regions as unknown as PreferredRegion[] | null;
+          if (savedRegions && Array.isArray(savedRegions)) {
+            setPreferredRegions(savedRegions);
+          }
         }
       } catch (error) {
         console.error('Error fetching profile:', error);
@@ -96,8 +110,35 @@ export default function MyProfile() {
     }
   };
 
-  const handleRegionChange = (region: string) => {
-    setProfile({ ...profile, region, district: '' });
+  // Add a region tag
+  const handleAddRegion = () => {
+    if (!tempRegion || !tempDistrict) {
+      toast.error('시/도와 구/군을 모두 선택해주세요');
+      return;
+    }
+    
+    if (preferredRegions.length >= MAX_REGIONS) {
+      toast.error(`최대 ${MAX_REGIONS}개까지만 추가할 수 있습니다`);
+      return;
+    }
+    
+    // Check for duplicates
+    const isDuplicate = preferredRegions.some(
+      r => r.region === tempRegion && r.district === tempDistrict
+    );
+    if (isDuplicate) {
+      toast.error('이미 추가된 지역입니다');
+      return;
+    }
+    
+    setPreferredRegions([...preferredRegions, { region: tempRegion, district: tempDistrict }]);
+    setTempRegion('');
+    setTempDistrict('');
+  };
+
+  // Remove a region tag
+  const handleRemoveRegion = (index: number) => {
+    setPreferredRegions(preferredRegions.filter((_, i) => i !== index));
   };
 
   const handleSave = async () => {
@@ -115,8 +156,7 @@ export default function MyProfile() {
           years_of_experience: profile.yearsOfExperience,
           is_pro_elite: profile.isProElite,
           preferred_position: profile.preferredPosition,
-          region: profile.region || null,
-          district: profile.district || null,
+          preferred_regions: JSON.parse(JSON.stringify(preferredRegions)),
         })
         .eq('user_id', user.id);
 
@@ -133,7 +173,7 @@ export default function MyProfile() {
     }
   };
 
-  const districts = profile.region ? regionData[profile.region] || [] : [];
+  const tempDistricts = tempRegion ? regionData[tempRegion] || [] : [];
 
   return (
     <div className="pb-24 max-w-lg mx-auto">
@@ -197,6 +237,95 @@ export default function MyProfile() {
               경력 {profile.yearsOfExperience}년 · {getPositionLabel(profile.preferredPosition)}
             </p>
           </div>
+        </PixelCard>
+
+        {/* Activity Regions - Multi-select with Tags */}
+        <PixelCard>
+          <h2 className="text-foreground mb-2 flex items-center gap-2">
+            <span className="text-primary">📍</span>
+            활동 지역
+            <span className="text-[9px] text-muted-foreground font-pixel">(최대 3개)</span>
+          </h2>
+          <p className="text-xs text-muted-foreground mb-3">
+            설정하시면 홈 화면에서 해당 지역 팀들을 먼저 보여드려요!
+          </p>
+
+          {/* Region Tags */}
+          {preferredRegions.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-3">
+              {preferredRegions.map((r, index) => (
+                <div
+                  key={`${r.region}-${r.district}`}
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 bg-primary text-primary-foreground border-3 border-primary-dark"
+                  style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
+                >
+                  <span className="font-pixel text-[9px]">📍 {r.district}</span>
+                  <button
+                    onClick={() => handleRemoveRegion(index)}
+                    className="w-4 h-4 flex items-center justify-center bg-primary-dark/30 hover:bg-destructive hover:text-destructive-foreground transition-colors"
+                  >
+                    <X size={10} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Add Region Selector */}
+          {preferredRegions.length < MAX_REGIONS && (
+            <div className="flex gap-2">
+              <Select value={tempRegion} onValueChange={(v) => { setTempRegion(v); setTempDistrict(''); }}>
+                <SelectTrigger className={cn(
+                  'flex-1 bg-input border-3 border-border-dark font-pixel text-[10px] h-10',
+                  'focus:border-primary focus:ring-0'
+                )}>
+                  <SelectValue placeholder="시/도" />
+                </SelectTrigger>
+                <SelectContent className="bg-card border-3 border-border-dark max-h-48 z-50">
+                  {regions.map((r) => (
+                    <SelectItem key={r} value={r} className="font-pixel text-[10px] cursor-pointer hover:bg-muted">
+                      {r}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Select value={tempDistrict} onValueChange={setTempDistrict} disabled={!tempRegion}>
+                <SelectTrigger className={cn(
+                  'flex-1 bg-input border-3 border-border-dark font-pixel text-[10px] h-10',
+                  'focus:border-primary focus:ring-0',
+                  !tempRegion && 'opacity-50'
+                )}>
+                  <SelectValue placeholder="구/군" />
+                </SelectTrigger>
+                <SelectContent className="bg-card border-3 border-border-dark max-h-48 z-50">
+                  {tempDistricts.map((d) => (
+                    <SelectItem key={d} value={d} className="font-pixel text-[10px] cursor-pointer hover:bg-muted">
+                      {d}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <button
+                onClick={handleAddRegion}
+                disabled={!tempRegion || !tempDistrict}
+                className={cn(
+                  'w-10 h-10 flex items-center justify-center border-3 transition-all',
+                  tempRegion && tempDistrict
+                    ? 'bg-accent text-accent-foreground border-accent-dark hover:brightness-110'
+                    : 'bg-muted text-muted-foreground border-border-dark opacity-50'
+                )}
+                style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
+              >
+                <Plus size={16} />
+              </button>
+            </div>
+          )}
+
+          {preferredRegions.length >= MAX_REGIONS && (
+            <p className="text-xs text-accent font-pixel mt-2">✓ 최대 {MAX_REGIONS}개 지역이 설정되었습니다</p>
+          )}
         </PixelCard>
 
         {/* Position Selection */}
@@ -273,71 +402,6 @@ export default function MyProfile() {
               {profile.isProElite ? '✓ 프로/엘리트 출신입니다' : '해당 없음'}
             </button>
           </div>
-        </PixelCard>
-
-        {/* Activity Region - for Smart Filter */}
-        <PixelCard>
-          <h2 className="text-foreground mb-4 flex items-center gap-2">
-            <span className="text-primary">📍</span>
-            활동 지역
-            <span className="text-[9px] text-muted-foreground font-pixel">(스마트 필터용)</span>
-          </h2>
-          <p className="text-xs text-muted-foreground mb-3">
-            설정하시면 홈 화면에서 해당 지역 팀을 먼저 보여드려요!
-          </p>
-          <div className="grid grid-cols-2 gap-2">
-            <Select value={profile.region} onValueChange={handleRegionChange}>
-              <SelectTrigger className={cn(
-                'bg-input border-3 border-border-dark font-pixel text-[10px] h-10',
-                'focus:border-primary focus:ring-0'
-              )}>
-                <SelectValue placeholder="시/도 선택" />
-              </SelectTrigger>
-              <SelectContent className="bg-card border-3 border-border-dark max-h-60 z-50">
-                {regions.map((r) => (
-                  <SelectItem 
-                    key={r} 
-                    value={r}
-                    className="font-pixel text-[10px] cursor-pointer hover:bg-muted"
-                  >
-                    {r}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Select 
-              value={profile.district} 
-              onValueChange={(district) => setProfile({ ...profile, district })} 
-              disabled={!profile.region}
-            >
-              <SelectTrigger className={cn(
-                'bg-input border-3 border-border-dark font-pixel text-[10px] h-10',
-                'focus:border-primary focus:ring-0',
-                !profile.region && 'opacity-50'
-              )}>
-                <SelectValue placeholder="구/군 선택" />
-              </SelectTrigger>
-              <SelectContent className="bg-card border-3 border-border-dark max-h-60 z-50">
-                {districts.map((d) => (
-                  <SelectItem 
-                    key={d} 
-                    value={d}
-                    className="font-pixel text-[10px] cursor-pointer hover:bg-muted"
-                  >
-                    {d}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          {profile.region && profile.district && (
-            <div className="mt-2 px-2 py-1 bg-primary/10 border-2 border-primary inline-block">
-              <span className="font-pixel text-[9px] text-primary">
-                ✓ {profile.region} {profile.district}
-              </span>
-            </div>
-          )}
         </PixelCard>
 
         {/* My Teams Section */}

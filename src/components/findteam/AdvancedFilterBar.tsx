@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { Search, X, Check, ChevronDown, RotateCcw } from 'lucide-react';
+import { Search, X, Check, ChevronDown, RotateCcw, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { 
   regionData, 
@@ -7,14 +7,19 @@ import {
   levelOptions, 
   trainingDays, 
   timeSlotOptions,
-  getGenderLabel 
 } from '@/lib/teamData';
+
+interface PreferredRegion {
+  region: string;
+  district: string;
+}
 
 export interface FilterState {
   teamName: string;
   genders: string[];
   region: string;
   district: string;
+  selectedRegions: PreferredRegion[];
   levels: string[];
   days: string[];
   timeSlot: string;
@@ -25,12 +30,17 @@ interface AdvancedFilterBarProps {
   onFiltersChange: (filters: FilterState) => void;
 }
 
+const MAX_FILTER_REGIONS = 3;
+
 export function AdvancedFilterBar({ filters, onFiltersChange }: AdvancedFilterBarProps) {
   const [isRegionOpen, setIsRegionOpen] = useState(false);
   const [isTimeSlotOpen, setIsTimeSlotOpen] = useState(false);
+  const [tempRegion, setTempRegion] = useState('');
+  const [tempDistrict, setTempDistrict] = useState('');
 
   const hasActiveFilters = filters.teamName || 
     filters.genders.length > 0 || 
+    filters.selectedRegions.length > 0 ||
     filters.region || 
     filters.levels.length > 0 || 
     filters.days.length > 0 || 
@@ -42,10 +52,13 @@ export function AdvancedFilterBar({ filters, onFiltersChange }: AdvancedFilterBa
       genders: [],
       region: '',
       district: '',
+      selectedRegions: [],
       levels: [],
       days: [],
       timeSlot: '',
     });
+    setTempRegion('');
+    setTempDistrict('');
   }, [onFiltersChange]);
 
   const toggleArrayFilter = (key: 'genders' | 'levels' | 'days', value: string) => {
@@ -56,14 +69,44 @@ export function AdvancedFilterBar({ filters, onFiltersChange }: AdvancedFilterBa
     onFiltersChange({ ...filters, [key]: updated });
   };
 
+  // Add region to multi-select
+  const handleAddRegion = () => {
+    if (!tempRegion || !tempDistrict) return;
+    if (filters.selectedRegions.length >= MAX_FILTER_REGIONS) return;
+    
+    const isDuplicate = filters.selectedRegions.some(
+      r => r.region === tempRegion && r.district === tempDistrict
+    );
+    if (isDuplicate) return;
+    
+    onFiltersChange({
+      ...filters,
+      selectedRegions: [...filters.selectedRegions, { region: tempRegion, district: tempDistrict }],
+      region: '',
+      district: '',
+    });
+    setTempRegion('');
+    setTempDistrict('');
+  };
+
+  // Remove region from multi-select
+  const handleRemoveRegion = (index: number) => {
+    onFiltersChange({
+      ...filters,
+      selectedRegions: filters.selectedRegions.filter((_, i) => i !== index),
+    });
+  };
+
   const activeCount = [
     filters.teamName ? 1 : 0,
     filters.genders.length,
-    filters.region ? 1 : 0,
+    filters.selectedRegions.length || (filters.region ? 1 : 0),
     filters.levels.length,
     filters.days.length,
     filters.timeSlot ? 1 : 0,
   ].reduce((a, b) => a + b, 0);
+
+  const tempDistricts = tempRegion ? regionData[tempRegion] || [] : [];
 
   return (
     <div className="bg-card border-y-4 border-border-dark p-3 space-y-3">
@@ -115,7 +158,7 @@ export function AdvancedFilterBar({ filters, onFiltersChange }: AdvancedFilterBa
         )}
       </div>
 
-      {/* Gender Multi-Select - Uses shared genderOptions */}
+      {/* Gender Multi-Select */}
       <div>
         <label className="font-pixel text-[9px] text-muted-foreground mb-1.5 block">👥 성별</label>
         <div className="flex flex-wrap gap-1.5">
@@ -145,94 +188,122 @@ export function AdvancedFilterBar({ filters, onFiltersChange }: AdvancedFilterBa
         </div>
       </div>
 
-      {/* Region Hierarchical Dropdown - Uses shared regionData */}
+      {/* Multi-Region Selection */}
       <div>
-        <label className="font-pixel text-[9px] text-muted-foreground mb-1.5 block">📍 지역</label>
-        <div className="flex gap-2">
-          {/* City/Province */}
-          <div className="relative flex-1">
-            <button
-              onClick={() => setIsRegionOpen(!isRegionOpen)}
-              className={cn(
-                "w-full flex items-center justify-between px-3 py-2 font-body text-sm border-3 transition-all",
-                filters.region
-                  ? "bg-primary text-primary-foreground border-primary-dark"
-                  : "bg-secondary text-secondary-foreground border-border-dark hover:border-primary"
-              )}
-              style={{ 
-                boxShadow: filters.region 
-                  ? '2px 2px 0 hsl(var(--primary-dark))' 
-                  : '2px 2px 0 hsl(var(--pixel-shadow))' 
-              }}
-            >
-              <span>{filters.region || '시/도'}</span>
-              <ChevronDown size={14} className={cn("transition-transform", isRegionOpen && "rotate-180")} />
-            </button>
-            {isRegionOpen && (
-              <>
-                <div className="fixed inset-0 z-40" onClick={() => setIsRegionOpen(false)} />
-                <div 
-                  className="absolute top-full left-0 mt-1 w-full max-h-48 overflow-y-auto bg-card border-3 border-border-dark z-50"
-                  style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}
+        <label className="font-pixel text-[9px] text-muted-foreground mb-1.5 block">
+          📍 지역 <span className="text-[8px]">(최대 3개)</span>
+        </label>
+        
+        {/* Selected Region Tags */}
+        {filters.selectedRegions.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 mb-2">
+            {filters.selectedRegions.map((r, index) => (
+              <div
+                key={`${r.region}-${r.district}`}
+                className="flex items-center gap-1 px-2 py-1 bg-primary text-primary-foreground border-2 border-primary-dark"
+                style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
+              >
+                <span className="font-pixel text-[9px]">{r.district}</span>
+                <button
+                  onClick={() => handleRemoveRegion(index)}
+                  className="w-4 h-4 flex items-center justify-center hover:bg-primary-dark/30 transition-colors"
                 >
-                  {Object.keys(regionData).map(region => (
-                    <button
-                      key={region}
-                      onClick={() => {
-                        onFiltersChange({ ...filters, region, district: '' });
-                        setIsRegionOpen(false);
-                      }}
-                      className={cn(
-                        "w-full px-3 py-2 text-left font-body text-sm hover:bg-muted border-b border-border last:border-b-0",
-                        filters.region === region && "bg-primary/10 text-primary"
-                      )}
-                    >
-                      {filters.region === region && <Check size={10} className="inline mr-1" />}
-                      {region}
-                    </button>
-                  ))}
-                </div>
-              </>
-            )}
+                  <X size={10} />
+                </button>
+              </div>
+            ))}
           </div>
+        )}
 
-          {/* District (only show if region selected) */}
-          {filters.region && (
+        {/* Add Region UI */}
+        {filters.selectedRegions.length < MAX_FILTER_REGIONS && (
+          <div className="flex gap-2">
+            {/* City/Province */}
+            <div className="relative flex-1">
+              <button
+                onClick={() => setIsRegionOpen(!isRegionOpen)}
+                className={cn(
+                  "w-full flex items-center justify-between px-3 py-2 font-body text-sm border-3 transition-all",
+                  tempRegion
+                    ? "bg-primary/20 border-primary"
+                    : "bg-secondary text-secondary-foreground border-border-dark hover:border-primary"
+                )}
+                style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
+              >
+                <span>{tempRegion || '시/도'}</span>
+                <ChevronDown size={14} className={cn("transition-transform", isRegionOpen && "rotate-180")} />
+              </button>
+              {isRegionOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setIsRegionOpen(false)} />
+                  <div 
+                    className="absolute top-full left-0 mt-1 w-full max-h-48 overflow-y-auto bg-card border-3 border-border-dark z-50"
+                    style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}
+                  >
+                    {Object.keys(regionData).map(region => (
+                      <button
+                        key={region}
+                        onClick={() => {
+                          setTempRegion(region);
+                          setTempDistrict('');
+                          setIsRegionOpen(false);
+                        }}
+                        className={cn(
+                          "w-full px-3 py-2 text-left font-body text-sm hover:bg-muted border-b border-border last:border-b-0",
+                          tempRegion === region && "bg-primary/10 text-primary"
+                        )}
+                      >
+                        {tempRegion === region && <Check size={10} className="inline mr-1" />}
+                        {region}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* District */}
             <div className="relative flex-1">
               <select
-                value={filters.district}
-                onChange={(e) => onFiltersChange({ ...filters, district: e.target.value })}
+                value={tempDistrict}
+                onChange={(e) => setTempDistrict(e.target.value)}
+                disabled={!tempRegion}
                 className={cn(
                   "w-full px-3 py-2 font-body text-sm border-3 appearance-none cursor-pointer",
-                  filters.district
-                    ? "bg-primary text-primary-foreground border-primary-dark"
-                    : "bg-secondary text-secondary-foreground border-border-dark"
+                  tempDistrict
+                    ? "bg-primary/20 border-primary"
+                    : "bg-secondary text-secondary-foreground border-border-dark",
+                  !tempRegion && "opacity-50"
                 )}
                 style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
               >
                 <option value="">구/군</option>
-                {regionData[filters.region]?.map(district => (
+                {tempDistricts.map(district => (
                   <option key={district} value={district}>{district}</option>
                 ))}
               </select>
               <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
-          )}
 
-          {/* Clear Region */}
-          {filters.region && (
+            {/* Add Button */}
             <button
-              onClick={() => onFiltersChange({ ...filters, region: '', district: '' })}
-              className="p-2 bg-secondary border-2 border-border-dark hover:bg-muted"
+              onClick={handleAddRegion}
+              disabled={!tempRegion || !tempDistrict}
+              className={cn(
+                "w-10 h-10 flex items-center justify-center border-3 transition-all",
+                tempRegion && tempDistrict
+                  ? "bg-accent text-accent-foreground border-accent-dark hover:brightness-110"
+                  : "bg-muted text-muted-foreground border-border-dark opacity-50"
+              )}
               style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
             >
-              <X size={14} />
+              <Plus size={14} />
             </button>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
-      {/* Level Multi-Select - Uses shared levelOptions */}
+      {/* Level Multi-Select */}
       <div>
         <label className="font-pixel text-[9px] text-muted-foreground mb-1.5 block">⭐ 실력</label>
         <div className="flex flex-wrap gap-1.5">
@@ -265,7 +336,7 @@ export function AdvancedFilterBar({ filters, onFiltersChange }: AdvancedFilterBa
         </div>
       </div>
 
-      {/* Schedule - Days Multi-Select - Uses shared trainingDays */}
+      {/* Schedule - Days Multi-Select */}
       <div>
         <label className="font-pixel text-[9px] text-muted-foreground mb-1.5 block">📅 훈련 요일</label>
         <div className="flex flex-wrap gap-1">
@@ -290,7 +361,7 @@ export function AdvancedFilterBar({ filters, onFiltersChange }: AdvancedFilterBa
         </div>
       </div>
 
-      {/* Time Slot Dropdown - Uses shared timeSlotOptions */}
+      {/* Time Slot Dropdown */}
       <div>
         <label className="font-pixel text-[9px] text-muted-foreground mb-1.5 block">⏰ 훈련 시간대</label>
         <div className="relative">
@@ -361,6 +432,7 @@ export const initialFilterState: FilterState = {
   genders: [],
   region: '',
   district: '',
+  selectedRegions: [],
   levels: [],
   days: [],
   timeSlot: '',
