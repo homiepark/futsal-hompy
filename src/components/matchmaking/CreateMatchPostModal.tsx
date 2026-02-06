@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, MapPin, Calendar, Clock, Target, Home, Search } from 'lucide-react';
+import { X, MapPin, Calendar, Clock, Target, Home, Search, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PixelButton } from '@/components/ui/PixelButton';
 import { PixelBadge } from '@/components/ui/PixelBadge';
@@ -7,6 +7,7 @@ import { LevelInfoButton } from '@/components/ui/LevelGuideModal';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
+import { ko } from 'date-fns/locale';
 import { levelOptions } from '@/lib/teamData';
 
 interface CreateMatchPostModalProps {
@@ -17,10 +18,25 @@ interface CreateMatchPostModalProps {
     id: string;
     name: string;
     emblem: string;
+    level?: string;
+    mannerScore?: number;
     homeGroundName?: string;
     homeGroundAddress?: string;
   } | null;
 }
+
+const levelVariants = {
+  'S': 'level-s',
+  'A': 'level-a',
+  'B': 'level-b',
+  'C': 'level-c',
+} as const;
+
+const timeSlots = [
+  '06:00', '07:00', '08:00', '09:00', '10:00', '11:00',
+  '12:00', '13:00', '14:00', '15:00', '16:00', '17:00',
+  '18:00', '19:00', '20:00', '21:00', '22:00', '23:00',
+];
 
 export function CreateMatchPostModal({
   isOpen,
@@ -32,25 +48,25 @@ export function CreateMatchPostModal({
   const [customLocationName, setCustomLocationName] = useState('');
   const [customLocationAddress, setCustomLocationAddress] = useState('');
   const [matchDate, setMatchDate] = useState('');
-  const [matchTimeStart, setMatchTimeStart] = useState('');
-  const [matchTimeEnd, setMatchTimeEnd] = useState('');
+  const [matchTimeStart, setMatchTimeStart] = useState('14:00');
+  const [matchTimeEnd, setMatchTimeEnd] = useState('16:00');
   const [targetLevels, setTargetLevels] = useState<string[]>([]);
   const [description, setDescription] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
-      // Reset form
-      setLocationType('home_ground');
+      // Reset form with defaults
+      setLocationType(team?.homeGroundName ? 'home_ground' : 'custom');
       setCustomLocationName('');
       setCustomLocationAddress('');
-      setMatchDate('');
-      setMatchTimeStart('');
-      setMatchTimeEnd('');
+      setMatchDate(format(new Date(), 'yyyy-MM-dd'));
+      setMatchTimeStart('14:00');
+      setMatchTimeEnd('16:00');
       setTargetLevels([]);
       setDescription('');
     }
-  }, [isOpen]);
+  }, [isOpen, team]);
 
   const toggleLevel = (level: string) => {
     setTargetLevels(prev =>
@@ -64,7 +80,6 @@ export function CreateMatchPostModal({
       return;
     }
 
-    // Validation
     const locationName = locationType === 'home_ground' ? team.homeGroundName : customLocationName;
     const locationAddress = locationType === 'home_ground' ? team.homeGroundAddress : customLocationAddress;
 
@@ -81,7 +96,7 @@ export function CreateMatchPostModal({
       return;
     }
     if (targetLevels.length === 0) {
-      toast.error('희망 레벨을 선택해주세요');
+      toast.error('희망 팀 레벨을 선택해주세요');
       return;
     }
 
@@ -123,28 +138,37 @@ export function CreateMatchPostModal({
   if (!isOpen) return null;
 
   const hasHomeGround = team?.homeGroundName;
+  const teamLevel = (team?.level || 'C') as 'S' | 'A' | 'B' | 'C';
+  const mannerScore = team?.mannerScore || 4.5;
+
+  // Format selected date for display
+  const formattedDate = matchDate 
+    ? format(new Date(matchDate), 'M월 d일 (EEE)', { locale: ko })
+    : '';
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div 
-        className="absolute inset-0 bg-black/60"
+        className="absolute inset-0 bg-black/70"
         onClick={onClose}
       />
 
       {/* Modal */}
       <div 
         className="relative w-full max-w-md max-h-[90vh] overflow-y-auto bg-card border-4 border-border-dark"
-        style={{ boxShadow: '6px 6px 0 hsl(var(--pixel-shadow))' }}
+        style={{ boxShadow: '8px 8px 0 hsl(var(--pixel-shadow))' }}
       >
         {/* Header */}
-        <div className="sticky top-0 bg-primary border-b-4 border-primary-dark p-3 flex items-center justify-between">
-          <h2 className="font-pixel text-[11px] text-primary-foreground">
-            ⚔️ 매칭 공고 올리기
+        <div className="sticky top-0 z-10 bg-gradient-to-r from-primary to-primary/80 border-b-4 border-primary-dark p-4 flex items-center justify-between">
+          <h2 className="font-pixel text-xs text-primary-foreground flex items-center gap-2">
+            <span className="text-lg">⚔️</span>
+            매칭 공고 올리기
           </h2>
           <button
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center bg-primary-dark/30 hover:bg-primary-dark/50 transition-colors"
+            className="w-8 h-8 flex items-center justify-center bg-primary-dark/30 hover:bg-primary-dark/50 transition-colors border-2 border-primary-dark"
+            style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
           >
             <X size={16} className="text-primary-foreground" />
           </button>
@@ -152,25 +176,109 @@ export function CreateMatchPostModal({
 
         {/* Content */}
         <div className="p-4 space-y-4">
-          {/* Team Info */}
+          {/* Team Info Header - Enhanced */}
           {team && (
-            <div className="flex items-center gap-3 p-3 bg-secondary border-2 border-border-dark">
-              <div className="w-10 h-10 bg-field-green border-2 border-primary-dark flex items-center justify-center">
-                <span className="text-lg">{team.emblem}</span>
+            <div 
+              className="flex items-center gap-3 p-4 bg-gradient-to-r from-secondary to-secondary/50 border-3 border-border-dark"
+              style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}
+            >
+              <div 
+                className="w-14 h-14 bg-field-green border-3 border-primary-dark flex items-center justify-center"
+                style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
+              >
+                <span className="text-2xl">{team.emblem}</span>
               </div>
-              <div>
-                <p className="font-pixel text-[10px] text-foreground">{team.name}</p>
-                <p className="font-pixel text-[8px] text-muted-foreground">팀 관리자</p>
+              <div className="flex-1">
+                <p className="font-pixel text-[11px] text-foreground font-bold">{team.name}</p>
+                <div className="flex items-center gap-2 mt-1">
+                  <PixelBadge variant={levelVariants[teamLevel]} className="text-[8px]">
+                    Lv.{teamLevel}
+                  </PixelBadge>
+                  <div className="flex items-center gap-1">
+                    <Star size={12} className="text-accent fill-accent" />
+                    <span className="font-pixel text-[9px] text-accent font-bold">{mannerScore.toFixed(1)}</span>
+                  </div>
+                </div>
+              </div>
+              <div className="text-right">
+                <span className="font-pixel text-[7px] text-muted-foreground block">공고 작성</span>
+                <span className="font-pixel text-[8px] text-primary">팀 관리자</span>
               </div>
             </div>
           )}
 
-          {/* Location Selection */}
-          <div className="space-y-2">
-            <label className="font-pixel text-[9px] text-muted-foreground flex items-center gap-1">
-              <MapPin size={10} />
-              장소
-            </label>
+          {/* Schedule Section */}
+          <div 
+            className="bg-secondary/30 border-3 border-border-dark p-3 space-y-3"
+            style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}
+          >
+            <h3 className="font-pixel text-[10px] text-foreground flex items-center gap-2 border-b-2 border-dashed border-border pb-2">
+              <Calendar size={12} className="text-primary" />
+              경기 일정
+            </h3>
+
+            {/* Date Picker */}
+            <div className="space-y-2">
+              <label className="font-pixel text-[9px] text-muted-foreground">날짜 선택</label>
+              <input
+                type="date"
+                value={matchDate}
+                onChange={(e) => setMatchDate(e.target.value)}
+                min={format(new Date(), 'yyyy-MM-dd')}
+                className="w-full px-3 py-2.5 font-pixel text-[10px] bg-input border-3 border-border-dark focus:border-primary outline-none"
+                style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
+              />
+              {formattedDate && (
+                <p className="font-pixel text-[9px] text-primary">📅 {formattedDate}</p>
+              )}
+            </div>
+
+            {/* Time Selection */}
+            <div className="space-y-2">
+              <label className="font-pixel text-[9px] text-muted-foreground flex items-center gap-1">
+                <Clock size={10} />
+                시간 선택
+              </label>
+              <div className="flex items-center gap-2">
+                <select
+                  value={matchTimeStart}
+                  onChange={(e) => setMatchTimeStart(e.target.value)}
+                  className="flex-1 px-3 py-2.5 font-pixel text-[10px] bg-input border-3 border-border-dark focus:border-primary outline-none appearance-none cursor-pointer"
+                  style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
+                >
+                  {timeSlots.map(time => (
+                    <option key={time} value={time}>{time}</option>
+                  ))}
+                </select>
+                <span className="font-pixel text-[12px] text-primary font-bold">~</span>
+                <select
+                  value={matchTimeEnd}
+                  onChange={(e) => setMatchTimeEnd(e.target.value)}
+                  className="flex-1 px-3 py-2.5 font-pixel text-[10px] bg-input border-3 border-border-dark focus:border-primary outline-none appearance-none cursor-pointer"
+                  style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
+                >
+                  {timeSlots.map(time => (
+                    <option key={time} value={time}>{time}</option>
+                  ))}
+                </select>
+              </div>
+              <p className="font-pixel text-[8px] text-muted-foreground">
+                ⏰ {matchTimeStart} ~ {matchTimeEnd} (총 {
+                  Math.abs(parseInt(matchTimeEnd) - parseInt(matchTimeStart))
+                }시간)
+              </p>
+            </div>
+          </div>
+
+          {/* Location Section */}
+          <div 
+            className="bg-secondary/30 border-3 border-border-dark p-3 space-y-3"
+            style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}
+          >
+            <h3 className="font-pixel text-[10px] text-foreground flex items-center gap-2 border-b-2 border-dashed border-border pb-2">
+              <MapPin size={12} className="text-primary" />
+              장소 선택
+            </h3>
             
             {/* Location Type Toggle */}
             <div className="flex gap-2">
@@ -178,7 +286,7 @@ export function CreateMatchPostModal({
                 onClick={() => setLocationType('home_ground')}
                 disabled={!hasHomeGround}
                 className={cn(
-                  "flex-1 px-3 py-2 font-pixel text-[9px] border-2 transition-all",
+                  "flex-1 px-3 py-2.5 font-pixel text-[9px] border-3 transition-all",
                   locationType === 'home_ground'
                     ? "bg-primary text-primary-foreground border-primary-dark"
                     : "bg-secondary text-secondary-foreground border-border-dark hover:border-primary",
@@ -186,30 +294,35 @@ export function CreateMatchPostModal({
                 )}
                 style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
               >
-                <Home size={10} className="inline mr-1" />
+                <Home size={12} className="inline mr-1" />
                 홈 구장
               </button>
               <button
                 onClick={() => setLocationType('custom')}
                 className={cn(
-                  "flex-1 px-3 py-2 font-pixel text-[9px] border-2 transition-all",
+                  "flex-1 px-3 py-2.5 font-pixel text-[9px] border-3 transition-all",
                   locationType === 'custom'
                     ? "bg-primary text-primary-foreground border-primary-dark"
                     : "bg-secondary text-secondary-foreground border-border-dark hover:border-primary"
                 )}
                 style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
               >
-                <Search size={10} className="inline mr-1" />
+                <Search size={12} className="inline mr-1" />
                 다른 장소
               </button>
             </div>
 
             {/* Home Ground Display */}
             {locationType === 'home_ground' && hasHomeGround && (
-              <div className="px-3 py-2 bg-primary/10 border-2 border-primary/30">
-                <p className="font-pixel text-[9px] text-foreground">{team?.homeGroundName}</p>
+              <div 
+                className="px-3 py-3 bg-primary/10 border-3 border-primary/50"
+                style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
+              >
+                <p className="font-pixel text-[10px] text-foreground flex items-center gap-1">
+                  📍 {team?.homeGroundName}
+                </p>
                 {team?.homeGroundAddress && (
-                  <p className="font-pixel text-[7px] text-muted-foreground mt-0.5">
+                  <p className="font-pixel text-[8px] text-muted-foreground mt-1">
                     {team.homeGroundAddress}
                   </p>
                 )}
@@ -219,76 +332,42 @@ export function CreateMatchPostModal({
             {/* Custom Location Input */}
             {locationType === 'custom' && (
               <div className="space-y-2">
+                <div className="relative">
+                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                  <input
+                    type="text"
+                    placeholder="구장 이름 검색 (예: 용산 풋살파크)"
+                    value={customLocationName}
+                    onChange={(e) => setCustomLocationName(e.target.value)}
+                    className="w-full pl-9 pr-3 py-2.5 font-pixel text-[9px] bg-input border-3 border-border-dark focus:border-primary outline-none"
+                    style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
+                  />
+                </div>
                 <input
                   type="text"
-                  placeholder="장소 이름 (예: 용산 풋살장)"
-                  value={customLocationName}
-                  onChange={(e) => setCustomLocationName(e.target.value)}
-                  className="w-full px-3 py-2 font-pixel text-[9px] bg-input border-2 border-border-dark focus:border-primary outline-none"
-                  style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
-                />
-                <input
-                  type="text"
-                  placeholder="주소 (선택)"
+                  placeholder="주소 입력 (선택)"
                   value={customLocationAddress}
                   onChange={(e) => setCustomLocationAddress(e.target.value)}
-                  className="w-full px-3 py-2 font-pixel text-[9px] bg-input border-2 border-border-dark focus:border-primary outline-none"
+                  className="w-full px-3 py-2.5 font-pixel text-[9px] bg-input border-3 border-border-dark focus:border-primary outline-none"
                   style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
                 />
               </div>
             )}
           </div>
 
-          {/* Date */}
-          <div className="space-y-2">
-            <label className="font-pixel text-[9px] text-muted-foreground flex items-center gap-1">
-              <Calendar size={10} />
-              날짜
-            </label>
-            <input
-              type="date"
-              value={matchDate}
-              onChange={(e) => setMatchDate(e.target.value)}
-              min={format(new Date(), 'yyyy-MM-dd')}
-              className="w-full px-3 py-2 font-pixel text-[9px] bg-input border-2 border-border-dark focus:border-primary outline-none"
-              style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
-            />
-          </div>
-
-          {/* Time Range */}
-          <div className="space-y-2">
-            <label className="font-pixel text-[9px] text-muted-foreground flex items-center gap-1">
-              <Clock size={10} />
-              시간
-            </label>
-            <div className="flex items-center gap-2">
-              <input
-                type="time"
-                value={matchTimeStart}
-                onChange={(e) => setMatchTimeStart(e.target.value)}
-                className="flex-1 px-3 py-2 font-pixel text-[9px] bg-input border-2 border-border-dark focus:border-primary outline-none"
-                style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
-              />
-              <span className="font-pixel text-[10px] text-muted-foreground">~</span>
-              <input
-                type="time"
-                value={matchTimeEnd}
-                onChange={(e) => setMatchTimeEnd(e.target.value)}
-                className="flex-1 px-3 py-2 font-pixel text-[9px] bg-input border-2 border-border-dark focus:border-primary outline-none"
-                style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
-              />
-            </div>
-          </div>
-
           {/* Target Levels */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <label className="font-pixel text-[9px] text-muted-foreground flex items-center gap-1">
-                <Target size={10} />
-                희망 팀 레벨 (복수 선택 가능)
-              </label>
+          <div 
+            className="bg-secondary/30 border-3 border-border-dark p-3 space-y-3"
+            style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}
+          >
+            <div className="flex items-center justify-between border-b-2 border-dashed border-border pb-2">
+              <h3 className="font-pixel text-[10px] text-foreground flex items-center gap-2">
+                <Target size={12} className="text-accent" />
+                희망 팀 레벨
+              </h3>
               <LevelInfoButton />
             </div>
+            <p className="font-pixel text-[8px] text-muted-foreground">복수 선택 가능</p>
             <div className="grid grid-cols-2 gap-2">
               {levelOptions.map(({ value, tier, icon }) => {
                 const isSelected = targetLevels.includes(value);
@@ -304,22 +383,29 @@ export function CreateMatchPostModal({
                     key={value}
                     onClick={() => toggleLevel(value)}
                     className={cn(
-                      "px-3 py-2 border-2 transition-all text-left",
+                      "px-3 py-3 border-3 transition-all text-left relative overflow-hidden",
                       isSelected
                         ? levelColorClass
                         : "bg-secondary text-secondary-foreground border-border-dark hover:border-primary"
                     )}
-                    style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
+                    style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}
                   >
-                    <div className="flex items-center gap-1">
-                      <span>{icon}</span>
-                      <span className="font-pixel text-[9px]">Lv.{value}</span>
-                      <span className={cn(
-                        "font-pixel text-[7px]",
-                        isSelected ? "opacity-75" : "text-muted-foreground"
-                      )}>
-                        ({tier})
-                      </span>
+                    {isSelected && (
+                      <div className="absolute top-1 right-1 w-4 h-4 bg-white/30 flex items-center justify-center">
+                        <span className="text-[8px]">✓</span>
+                      </div>
+                    )}
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">{icon}</span>
+                      <div>
+                        <span className="font-pixel text-[10px] font-bold block">Lv.{value}</span>
+                        <span className={cn(
+                          "font-pixel text-[7px]",
+                          isSelected ? "opacity-75" : "text-muted-foreground"
+                        )}>
+                          {tier}
+                        </span>
+                      </div>
                     </div>
                   </button>
                 );
@@ -328,30 +414,37 @@ export function CreateMatchPostModal({
           </div>
 
           {/* Description */}
-          <div className="space-y-2">
-            <label className="font-pixel text-[9px] text-muted-foreground">
-              📝 추가 메시지 (선택)
+          <div 
+            className="bg-secondary/30 border-3 border-border-dark p-3 space-y-2"
+            style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}
+          >
+            <label className="font-pixel text-[10px] text-foreground flex items-center gap-2">
+              📝 한마디 메시지
+              <span className="text-[8px] text-muted-foreground">(선택)</span>
             </label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="상대 팀에게 전할 메시지가 있다면 적어주세요..."
+              placeholder="정정당당하게 한 판 하실 팀 찾습니다!"
               rows={3}
-              className="w-full px-3 py-2 font-pixel text-[9px] bg-input border-2 border-border-dark focus:border-primary outline-none resize-none"
+              className="w-full px-3 py-2.5 font-pixel text-[9px] bg-input border-3 border-border-dark focus:border-primary outline-none resize-none"
               style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
             />
           </div>
         </div>
 
         {/* Footer */}
-        <div className="sticky bottom-0 bg-card border-t-2 border-border-dark p-4">
+        <div className="sticky bottom-0 bg-card border-t-4 border-border-dark p-4">
           <PixelButton
             variant="primary"
             size="lg"
-            className="w-full font-bold"
+            className="w-full font-bold text-[11px]"
             onClick={handleSubmit}
             disabled={isSubmitting}
-            style={{ boxShadow: '3px 3px 0 hsl(var(--primary-dark))' }}
+            style={{ 
+              boxShadow: '4px 4px 0 hsl(var(--primary-dark))',
+              transform: 'translateY(-2px)'
+            }}
           >
             {isSubmitting ? '등록 중...' : '⚔️ 공고 등록하기'}
           </PixelButton>
