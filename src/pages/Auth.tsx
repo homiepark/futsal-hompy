@@ -130,18 +130,45 @@ export default function Auth() {
           />
         </div>
         
-        {/* Logo Text - Same green as signup button */}
-        <h1 
-          className="font-pixel text-3xl font-bold relative inline-block"
-          style={{
-            color: 'hsl(142, 69%, 50%)',
-            WebkitTextStroke: '1.5px hsl(142, 60%, 30%)',
-            textShadow: '3px 3px 0 hsl(142, 60%, 30%)',
-          }}
-        >
-          우리의풋살
-        </h1>
-        <p className="font-pixel text-xs text-[hsl(142,50%,40%)] mt-1 tracking-[0.2em]">Our Futsal</p>
+        {/* Logo Text - Pixel style with multiple colors */}
+        <div className="flex justify-center items-center gap-0 mb-1">
+          {/* 우리 - Orange */}
+          <span 
+            className="font-pixel text-3xl font-bold"
+            style={{
+              color: '#f5a623',
+              WebkitTextStroke: '2px #5a3d1a',
+              textShadow: '3px 3px 0 #5a3d1a',
+              letterSpacing: '2px',
+            }}
+          >
+            우리
+          </span>
+          {/* 의 - White/Cream */}
+          <span 
+            className="font-pixel text-3xl font-bold"
+            style={{
+              color: '#ffffff',
+              WebkitTextStroke: '2px #5a5a5a',
+              textShadow: '3px 3px 0 #5a5a5a',
+            }}
+          >
+            의
+          </span>
+          {/* 풋살 - Green */}
+          <span 
+            className="font-pixel text-3xl font-bold"
+            style={{
+              color: '#4ade80',
+              WebkitTextStroke: '2px #166534',
+              textShadow: '3px 3px 0 #166534',
+              letterSpacing: '2px',
+            }}
+          >
+            풋살
+          </span>
+        </div>
+        <p className="font-pixel text-xs text-[#6b8e5a] tracking-[0.3em]">Our Futsal</p>
       </div>
 
       {/* Auth Card - Matching the exact design */}
