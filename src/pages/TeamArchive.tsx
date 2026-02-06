@@ -70,9 +70,13 @@ const mockPosts = [
 ];
 
 export default function TeamArchive() {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const teamParam = searchParams.get('team');
+  
   const [view, setView] = useState<'grid' | 'single'>('single');
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
-  const [selectedTeam, setSelectedTeam] = useState('all');
+  const [selectedTeam, setSelectedTeam] = useState(teamParam || 'all');
 
   const postsWithImages = mockPosts.filter(post => post.imageUrl);
 
@@ -81,45 +85,63 @@ export default function TeamArchive() {
     setView('single');
   };
 
+  const handleBack = () => {
+    if (teamParam) {
+      navigate(`/team/${teamParam}`);
+    } else {
+      navigate('/my-team');
+    }
+  };
+
+  // Find current team info
+  const currentTeam = myTeams.find(t => t.id === selectedTeam);
+
   return (
-    <div className="pb-20 px-4 py-6 max-w-lg mx-auto">
-      {/* Team Selector */}
-      <div className="mb-4">
-        <TeamSelector 
-          teams={myTeams} 
-          selectedTeam={selectedTeam} 
-          onSelect={setSelectedTeam} 
-        />
+    <div className="pb-20 max-w-lg mx-auto">
+      {/* Sticky Header with Back Button */}
+      <div className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b-3 border-border-dark">
+        <div className="px-3 py-2 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={handleBack}
+              className="pixel-back-btn"
+            >
+              <ArrowLeft size={16} strokeWidth={3} />
+            </button>
+            <div className="flex items-center gap-1.5">
+              {currentTeam && <span className="text-lg">{currentTeam.emblem}</span>}
+              <h1 className="font-pixel text-[10px] text-foreground">아카이브</h1>
+            </div>
+          </div>
+          <PixelButton variant="accent" size="sm" className="flex items-center gap-1 text-[8px] px-2 py-1">
+            <Plus size={12} />
+            <span>업로드</span>
+          </PixelButton>
+        </div>
       </div>
 
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="font-pixel text-xs text-foreground flex items-center gap-2">
-          <span className="text-accent">✦</span>
-          팀 아카이브
-        </h2>
-        <PixelButton variant="accent" size="sm" className="flex items-center gap-1">
-          <Plus size={14} />
-          <span>업로드</span>
-        </PixelButton>
-      </div>
+      <div className="px-3 py-3">
+        {/* Team Selector */}
+        <div className="mb-3">
+          <TeamSelector 
+            teams={myTeams} 
+            selectedTeam={selectedTeam} 
+            onSelect={setSelectedTeam} 
+          />
+        </div>
 
-      {/* View Toggle */}
-      <div className="flex items-center justify-center mb-6">
-        <ViewToggle view={view} onViewChange={setView} />
-      </div>
-
-      {/* Upload Buttons */}
-      <div className="grid grid-cols-2 gap-3 mb-6">
-        <PixelButton variant="default" className="flex items-center justify-center gap-2 py-4">
-          <Image size={18} />
-          <span className="text-[8px]">사진 올리기</span>
-        </PixelButton>
-        <PixelButton variant="default" className="flex items-center justify-center gap-2 py-4">
-          <Video size={18} />
-          <span className="text-[8px]">영상 올리기</span>
-        </PixelButton>
-      </div>
+        {/* View Toggle & Upload Row */}
+        <div className="flex items-center justify-between gap-2 mb-3">
+          <ViewToggle view={view} onViewChange={setView} />
+          <div className="flex gap-1.5">
+            <button className="pixel-mini-btn">
+              <Image size={14} />
+            </button>
+            <button className="pixel-mini-btn">
+              <Video size={14} />
+            </button>
+          </div>
+        </div>
 
       {/* Content based on view */}
       <div 
