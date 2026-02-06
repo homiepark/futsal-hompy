@@ -1,5 +1,4 @@
 import { cn } from '@/lib/utils';
-import { Link } from 'react-router-dom';
 
 interface PixelProfileIconProps {
   size?: number;
@@ -8,24 +7,27 @@ interface PixelProfileIconProps {
 
 export function PixelProfileIcon({ size = 4, className }: PixelProfileIconProps) {
   return (
-    <Link 
-      to="/profile"
+    <div 
       className={cn(
-        'relative flex items-center justify-center bg-red-500 border-3 border-red-700 shadow-[3px_3px_0_hsl(var(--pixel-shadow))] hover:bg-red-400 transition-colors cursor-pointer',
+        'relative flex items-center justify-center shadow-[3px_3px_0_hsl(var(--pixel-shadow))] hover:opacity-90 transition-opacity cursor-pointer',
         className
       )}
       style={{
         width: size * 12,
         height: size * 11,
+        backgroundColor: 'hsl(0 72% 50%)',
+        border: '3px solid hsl(0 72% 35%)',
         clipPath: 'polygon(15% 0%, 85% 0%, 100% 15%, 100% 100%, 75% 100%, 75% 85%, 25% 85%, 25% 100%, 0% 100%, 0% 15%)',
       }}
     >
       {/* Collar */}
       <div 
-        className="absolute top-0 left-1/2 -translate-x-1/2 bg-white border-b-2 border-red-700"
+        className="absolute top-0 left-1/2 -translate-x-1/2"
         style={{
           width: size * 4,
           height: size * 2,
+          backgroundColor: 'white',
+          borderBottom: '2px solid hsl(0 72% 35%)',
           clipPath: 'polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%)',
         }}
       />
@@ -42,6 +44,6 @@ export function PixelProfileIcon({ size = 4, className }: PixelProfileIconProps)
       >
         MY
       </span>
-    </Link>
+    </div>
   );
 }
