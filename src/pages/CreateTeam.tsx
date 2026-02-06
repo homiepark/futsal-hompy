@@ -10,6 +10,8 @@ import { EmblemSelector } from '@/components/team/create/EmblemSelector';
 import { LevelSelector } from '@/components/team/create/LevelSelector';
 import { RegionSelector } from '@/components/team/create/RegionSelector';
 import { TrainingTimeSelector } from '@/components/team/create/TrainingTimeSelector';
+import { GenderSelector } from '@/components/team/create/GenderSelector';
+import { GenderValue } from '@/lib/teamData';
 
 export default function CreateTeam() {
   const navigate = useNavigate();
@@ -20,6 +22,7 @@ export default function CreateTeam() {
     name: '',
     emblem: '⚽',
     customLogoUrl: null as string | null,
+    gender: 'mixed' as GenderValue,
     level: 'B',
     region: '',
     district: '',
@@ -55,6 +58,7 @@ export default function CreateTeam() {
           name: formData.name.trim(),
           emblem: formData.emblem || '⚽',
           photo_url: formData.customLogoUrl,
+          gender: formData.gender,
           level: formData.level,
           region: formData.region || null,
           district: formData.district || null,
@@ -145,6 +149,12 @@ export default function CreateTeam() {
             />
           </div>
         </div>
+
+        {/* Team Gender */}
+        <GenderSelector
+          value={formData.gender}
+          onChange={(gender) => setFormData(prev => ({ ...prev, gender }))}
+        />
 
         {/* Team Level */}
         <LevelSelector

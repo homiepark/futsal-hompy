@@ -1,31 +1,5 @@
 import { cn } from '@/lib/utils';
-
-const levelOptions = [
-  { 
-    value: 'S', 
-    label: 'S급', 
-    desc: '선수/세미프로 수준',
-    detail: '엘리트 퍼포먼스 & 전술'
-  },
-  { 
-    value: 'A', 
-    label: 'A급', 
-    desc: '고급 아마추어 수준',
-    detail: '경험 많은 선수들, 경쟁적 플레이'
-  },
-  { 
-    value: 'B', 
-    label: 'B급', 
-    desc: '중급 아마추어 수준',
-    detail: '탄탄한 기본기, 페어플레이 중시'
-  },
-  { 
-    value: 'C', 
-    label: 'C급', 
-    desc: '입문/초급 수준',
-    detail: '배움과 즐거움에 초점'
-  },
-];
+import { levelOptions } from '@/lib/teamData';
 
 interface LevelSelectorProps {
   value: string;

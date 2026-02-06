@@ -6,21 +6,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-
-const days = [
-  { value: 'mon', label: '월' },
-  { value: 'tue', label: '화' },
-  { value: 'wed', label: '수' },
-  { value: 'thu', label: '목' },
-  { value: 'fri', label: '금' },
-  { value: 'sat', label: '토' },
-  { value: 'sun', label: '일' },
-];
-
-const timeOptions = Array.from({ length: 24 }, (_, i) => {
-  const hour = i.toString().padStart(2, '0');
-  return { value: `${hour}:00`, label: `${hour}:00` };
-});
+import { trainingDays, timeOptions } from '@/lib/teamData';
 
 interface TrainingTimeSelectorProps {
   selectedDays: string[];
@@ -53,7 +39,7 @@ export function TrainingTimeSelector({
       <div>
         <label className="font-pixel text-[9px] text-foreground block mb-2">📅 훈련 요일 (다중 선택)</label>
         <div className="flex gap-1 flex-wrap">
-          {days.map((day) => (
+          {trainingDays.map((day) => (
             <button
               key={day.value}
               type="button"
