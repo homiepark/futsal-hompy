@@ -4,6 +4,12 @@ import { PixelButton } from '@/components/ui/PixelButton';
 import { TimelinePost } from '@/components/archive/TimelinePost';
 import { PhotoGridItem } from '@/components/archive/PhotoGridItem';
 import { ViewToggle } from '@/components/archive/ViewToggle';
+import { TeamSelector } from '@/components/ui/TeamSelector';
+
+const myTeams = [
+  { id: 'fc-bulkkot', name: 'FC 불꽃', emblem: '🔥' },
+  { id: 'lions-fc', name: '라이언즈 FC', emblem: '🦁' },
+];
 
 const mockPosts = [
   {
