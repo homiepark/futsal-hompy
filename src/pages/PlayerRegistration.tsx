@@ -1,0 +1,200 @@
+import { useState } from 'react';
+import { User } from 'lucide-react';
+import { PixelCard } from '@/components/ui/PixelCard';
+import { PixelButton } from '@/components/ui/PixelButton';
+import { cn } from '@/lib/utils';
+
+const positions = [
+  { id: 'pivo', label: 'PIVO', emoji: '⚡' },
+  { id: 'ala', label: 'ALA', emoji: '💨' },
+  { id: 'fixo', label: 'FIXO', emoji: '🛡️' },
+  { id: 'goleiro', label: 'GOLEIRO', emoji: '🧤' },
+];
+
+const experienceLevels = [
+  { id: 1, label: 'Newbie', sublabel: '<1년', stars: 1 },
+  { id: 2, label: 'Rookie', sublabel: '1-3년', stars: 2 },
+  { id: 3, label: 'Regular', sublabel: '3-5년', stars: 3 },
+  { id: 4, label: 'Veteran', sublabel: '5-10년', stars: 4 },
+  { id: 5, label: 'Legend', sublabel: '10년+', stars: 5 },
+];
+
+export default function PlayerRegistration() {
+  const [nickname, setNickname] = useState('');
+  const [selectedPosition, setSelectedPosition] = useState<string | null>(null);
+  const [experienceLevel, setExperienceLevel] = useState<number | null>(null);
+  const [isElite, setIsElite] = useState<boolean | null>(null);
+
+  const handleSubmit = () => {
+    if (!nickname || !selectedPosition || !experienceLevel || isElite === null) {
+      alert('모든 항목을 입력해주세요!');
+      return;
+    }
+    console.log({ nickname, selectedPosition, experienceLevel, isElite });
+    // TODO: Handle registration logic
+  };
+
+  return (
+    <div className="min-h-screen bg-background pb-24 px-4 py-6 max-w-lg mx-auto">
+      {/* Title */}
+      <div className="text-center mb-6">
+        <h1 className="text-sm mb-2">⚽️ 선수 등록소</h1>
+        <p className="text-[8px] text-muted-foreground">Player Registration</p>
+      </div>
+
+      {/* Character Placeholder */}
+      <PixelCard variant="frame" className="max-w-[160px] mx-auto mb-6">
+        <div className="aspect-square bg-muted flex items-center justify-center border-2 border-border-dark">
+          <div className="text-center">
+            <div className="w-16 h-16 mx-auto bg-secondary border-4 border-border-dark flex items-center justify-center mb-2">
+              <User size={32} className="text-muted-foreground" />
+            </div>
+            <p className="text-[6px] text-muted-foreground">TAP TO UPLOAD</p>
+          </div>
+        </div>
+      </PixelCard>
+
+      {/* Nickname Input */}
+      <section className="mb-6">
+        <label className="block text-[8px] text-muted-foreground mb-2">
+          ▶ 닉네임 (Nickname)
+        </label>
+        <input
+          type="text"
+          value={nickname}
+          onChange={(e) => setNickname(e.target.value)}
+          placeholder="선수 이름 입력..."
+          className="w-full pixel-input text-[10px] placeholder:text-muted-foreground"
+          maxLength={12}
+        />
+        <p className="text-[6px] text-muted-foreground mt-1 text-right">
+          {nickname.length}/12
+        </p>
+      </section>
+
+      {/* Position Selection */}
+      <section className="mb-6">
+        <label className="block text-[8px] text-muted-foreground mb-3">
+          ▶ 포지션 선택 (Position)
+        </label>
+        <div className="grid grid-cols-2 gap-3">
+          {positions.map((pos) => (
+            <button
+              key={pos.id}
+              onClick={() => setSelectedPosition(pos.id)}
+              className={cn(
+                'p-4 border-4 transition-all text-center',
+                selectedPosition === pos.id
+                  ? 'bg-primary border-primary-dark text-primary-foreground shadow-[0_0_12px_hsl(var(--primary))]'
+                  : 'bg-secondary border-border-dark hover:border-primary'
+              )}
+            >
+              <span className="text-xl block mb-1">{pos.emoji}</span>
+              <span className="text-[10px] block">{pos.label}</span>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      {/* Experience Level */}
+      <section className="mb-6">
+        <label className="block text-[8px] text-muted-foreground mb-3">
+          ▶ 경력 레벨 (Experience)
+        </label>
+        <div className="flex gap-1">
+          {experienceLevels.map((level) => (
+            <button
+              key={level.id}
+              onClick={() => setExperienceLevel(level.id)}
+              className={cn(
+                'flex-1 p-2 border-4 transition-all text-center',
+                experienceLevel === level.id
+                  ? 'bg-accent border-accent-dark text-accent-foreground shadow-[0_0_12px_hsl(var(--accent))]'
+                  : 'bg-secondary border-border-dark hover:border-accent'
+              )}
+            >
+              <div className="text-[8px] mb-1">
+                {'★'.repeat(level.stars)}
+              </div>
+              <p className="text-[6px] leading-tight">{level.label}</p>
+              <p className="text-[5px] text-muted-foreground">{level.sublabel}</p>
+            </button>
+          ))}
+        </div>
+        {/* Experience Bar Visual */}
+        <div className="mt-3 h-4 bg-muted border-4 border-border-dark flex">
+          {experienceLevels.map((level) => (
+            <div
+              key={level.id}
+              className={cn(
+                'flex-1 transition-all',
+                experienceLevel && level.id <= experienceLevel
+                  ? 'bg-accent'
+                  : 'bg-transparent'
+              )}
+            />
+          ))}
+        </div>
+        <div className="flex justify-between mt-1">
+          <span className="text-[6px] text-muted-foreground">LV.1</span>
+          <span className="text-[6px] text-muted-foreground">LV.MAX</span>
+        </div>
+      </section>
+
+      {/* Elite Status */}
+      <section className="mb-8">
+        <label className="block text-[8px] text-muted-foreground mb-3">
+          ▶ 엘리트 선수인가요? (Elite Status)
+        </label>
+        <div className="grid grid-cols-2 gap-4">
+          <button
+            onClick={() => setIsElite(true)}
+            className={cn(
+              'p-4 border-4 transition-all text-center',
+              isElite === true
+                ? 'bg-[hsl(45,100%,50%)] border-[hsl(45,100%,35%)] text-foreground shadow-[0_0_16px_hsl(45,100%,50%)]'
+                : 'bg-secondary border-border-dark hover:border-[hsl(45,100%,50%)]'
+            )}
+          >
+            <span className="text-2xl block mb-2">🏆</span>
+            <span className="text-[8px] block">Yes, Elite</span>
+            <span className="text-[6px] text-muted-foreground block mt-1">프로/엘리트 경험</span>
+          </button>
+          <button
+            onClick={() => setIsElite(false)}
+            className={cn(
+              'p-4 border-4 transition-all text-center',
+              isElite === false
+                ? 'bg-primary border-primary-dark text-primary-foreground shadow-[0_0_16px_hsl(var(--primary))]'
+                : 'bg-secondary border-border-dark hover:border-primary'
+            )}
+          >
+            <span className="text-2xl block mb-2">⚽️</span>
+            <span className="text-[8px] block">No, Amateur</span>
+            <span className="text-[6px] text-muted-foreground block mt-1">동호회 플레이어</span>
+          </button>
+        </div>
+      </section>
+
+      {/* Submit Button */}
+      <PixelButton
+        variant="accent"
+        size="lg"
+        onClick={handleSubmit}
+        className="w-full py-4 text-[10px]"
+      >
+        🚀 그라운드 입장하기!
+      </PixelButton>
+      <p className="text-center text-[6px] text-muted-foreground mt-2">
+        Enter the Ground!
+      </p>
+
+      {/* Decorative Elements */}
+      <div className="flex justify-center gap-2 mt-6">
+        <span className="text-primary animate-pixel-pulse">◆</span>
+        <span className="text-accent animate-pixel-pulse" style={{ animationDelay: '0.3s' }}>◆</span>
+        <span className="text-primary animate-pixel-pulse" style={{ animationDelay: '0.6s' }}>◆</span>
+      </div>
+    </div>
+  );
+}
