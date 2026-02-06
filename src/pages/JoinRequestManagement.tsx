@@ -63,6 +63,8 @@ export default function JoinRequestManagement() {
           ...req,
           profile: profileMap.get(req.user_id) || {
             nickname: '알 수 없음',
+            nickname_tag: null,
+            real_name: null,
             avatar_url: null,
             years_of_experience: 0,
             preferred_position: null,
