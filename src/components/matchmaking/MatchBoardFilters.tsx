@@ -183,7 +183,8 @@ export function MatchBoardFilters({ filters, onFiltersChange }: MatchBoardFilter
       <div className="space-y-1.5">
         <label className="font-pixel text-[9px] text-muted-foreground flex items-center gap-1">
           <Target size={10} />
-          희망 레벨
+          희망 팀 레벨
+          
         </label>
         <div className="flex gap-1.5">
           {levelOptions.map(({ value, icon }) => {

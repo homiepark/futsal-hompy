@@ -3,6 +3,7 @@ import { X, MapPin, Calendar, Clock, Target, Home, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PixelButton } from '@/components/ui/PixelButton';
 import { PixelBadge } from '@/components/ui/PixelBadge';
+import { LevelInfoButton } from '@/components/ui/LevelGuideModal';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
@@ -281,10 +282,13 @@ export function CreateMatchPostModal({
 
           {/* Target Levels */}
           <div className="space-y-2">
-            <label className="font-pixel text-[9px] text-muted-foreground flex items-center gap-1">
-              <Target size={10} />
-              희망 상대 레벨 (복수 선택 가능)
-            </label>
+            <div className="flex items-center justify-between">
+              <label className="font-pixel text-[9px] text-muted-foreground flex items-center gap-1">
+                <Target size={10} />
+                희망 팀 레벨 (복수 선택 가능)
+              </label>
+              <LevelInfoButton />
+            </div>
             <div className="grid grid-cols-2 gap-2">
               {levelOptions.map(({ value, tier, icon }) => {
                 const isSelected = targetLevels.includes(value);
