@@ -38,26 +38,30 @@ export const levelOptions = [
   { 
     value: 'S', 
     label: 'S급', 
-    desc: '선수/세미프로 수준',
-    detail: '엘리트 퍼포먼스 & 전술'
+    desc: '공만 잡으면 화보!',
+    detail: '선수급 기술과 완벽한 전술',
+    icon: '🏆'
   },
   { 
     value: 'A', 
     label: 'A급', 
-    desc: '고급 아마추어 수준',
-    detail: '경험 많은 선수들, 경쟁적 플레이'
+    desc: '필드의 지배자!',
+    detail: '팽팽하고 짜릿한 승부를 즐기는 베테랑',
+    icon: '⭐'
   },
   { 
     value: 'B', 
     label: 'B급', 
-    desc: '중급 아마추어 수준',
-    detail: '탄탄한 기본기, 페어플레이 중시'
+    desc: '든든한 실력파!',
+    detail: '탄탄한 기본기와 매너가 가득한 즐거움',
+    icon: '💪'
   },
   { 
     value: 'C', 
     label: 'C급', 
-    desc: '입문/초급 수준',
-    detail: '배움과 즐거움에 초점'
+    desc: '열정 유망주!',
+    detail: '함께 배우며 성장하는 활기찬 시작',
+    icon: '🌟'
   },
 ] as const;
 
