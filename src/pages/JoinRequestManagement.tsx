@@ -14,6 +14,8 @@ interface JoinRequest {
   created_at: string;
   profile?: {
     nickname: string;
+    nickname_tag: string | null;
+    real_name: string | null;
     avatar_url: string | null;
     years_of_experience: number;
     preferred_position: string | null;
