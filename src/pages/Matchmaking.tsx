@@ -111,6 +111,8 @@ export default function Matchmaking() {
     id: string;
     name: string;
     emblem: string;
+    level?: string;
+    mannerScore?: number;
     homeGroundName?: string;
     homeGroundAddress?: string;
   } | null>(null);
@@ -130,7 +132,7 @@ export default function Matchmaking() {
         // Check if user is admin of any team
         const { data: teams } = await supabase
           .from('teams')
-          .select('id, name, emblem, home_ground_name, home_ground_address')
+          .select('id, name, emblem, level, home_ground_name, home_ground_address')
           .eq('admin_user_id', user.id)
           .limit(1);
 
@@ -139,6 +141,8 @@ export default function Matchmaking() {
             id: teams[0].id,
             name: teams[0].name,
             emblem: teams[0].emblem,
+            level: teams[0].level,
+            mannerScore: 4.5, // Default score for now
             homeGroundName: teams[0].home_ground_name || undefined,
             homeGroundAddress: teams[0].home_ground_address || undefined,
           });
