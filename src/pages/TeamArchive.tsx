@@ -143,32 +143,33 @@ export default function TeamArchive() {
           </div>
         </div>
 
-      {/* Content based on view */}
-      <div 
-        className="transition-opacity duration-300 ease-in-out"
-        key={view}
-      >
-        {view === 'grid' ? (
-          /* Grid View */
-          <div className="grid grid-cols-3 gap-2">
-            {postsWithImages.map((post) => (
-              <PhotoGridItem 
-                key={post.id}
-                id={post.id}
-                imageUrl={post.imageUrl!}
-                likes={post.likes}
-                onClick={() => handleGridItemClick(post.id)}
-              />
-            ))}
-          </div>
-        ) : (
-          /* Single View (Timeline) */
-          <div className="space-y-4">
-            {mockPosts.map((post) => (
-              <TimelinePost key={post.id} {...post} />
-            ))}
-          </div>
-        )}
+        {/* Content based on view */}
+        <div 
+          className="transition-opacity duration-300 ease-in-out"
+          key={view}
+        >
+          {view === 'grid' ? (
+            /* Grid View - Denser */
+            <div className="grid grid-cols-3 gap-1.5">
+              {postsWithImages.map((post) => (
+                <PhotoGridItem 
+                  key={post.id}
+                  id={post.id}
+                  imageUrl={post.imageUrl!}
+                  likes={post.likes}
+                  onClick={() => handleGridItemClick(post.id)}
+                />
+              ))}
+            </div>
+          ) : (
+            /* Single View (Timeline) - Denser */
+            <div className="space-y-3">
+              {mockPosts.map((post) => (
+                <TimelinePost key={post.id} {...post} />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

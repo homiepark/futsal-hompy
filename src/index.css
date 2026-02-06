@@ -263,6 +263,83 @@
     content: '✦';
     @apply absolute -bottom-2 -right-2 text-primary text-xs;
   }
+
+  /* ===== KAIROSOFT STYLE COMPONENTS ===== */
+  
+  /* Kairosoft Panel - Main container with thick borders */
+  .kairo-panel {
+    @apply bg-card border-4 border-border-dark;
+    box-shadow: 
+      3px 3px 0 hsl(var(--pixel-shadow)),
+      inset -2px -2px 0 hsl(var(--pixel-shadow) / 0.2),
+      inset 2px 2px 0 hsl(0 0% 100% / 0.4);
+  }
+
+  /* Kairosoft Panel Header - Title bar */
+  .kairo-panel-header {
+    @apply flex items-center gap-1.5 px-2 py-1.5;
+    @apply bg-primary text-primary-foreground;
+    @apply font-pixel text-[9px] uppercase tracking-wide;
+    @apply border-b-3 border-primary-dark;
+  }
+
+  /* Kairosoft Member Chip - Dense member display */
+  .kairo-member-chip {
+    @apply flex items-center gap-1.5 p-1 pr-2;
+    @apply bg-muted border-2 border-border-dark;
+    @apply hover:border-primary hover:bg-secondary transition-colors;
+    box-shadow: 2px 2px 0 hsl(var(--pixel-shadow) / 0.5);
+  }
+
+  .kairo-member-chip:active {
+    box-shadow: 1px 1px 0 hsl(var(--pixel-shadow) / 0.5);
+    transform: translate(1px, 1px);
+  }
+
+  /* Pixel Back Button */
+  .pixel-back-btn {
+    @apply w-8 h-8 flex items-center justify-center;
+    @apply bg-secondary text-foreground;
+    @apply border-3 border-border-dark;
+    @apply hover:bg-muted transition-colors;
+    box-shadow: 2px 2px 0 hsl(var(--pixel-shadow));
+  }
+
+  .pixel-back-btn:active {
+    box-shadow: 1px 1px 0 hsl(var(--pixel-shadow));
+    transform: translate(1px, 1px);
+  }
+
+  /* Pixel Mini Button */
+  .pixel-mini-btn {
+    @apply w-8 h-8 flex items-center justify-center;
+    @apply bg-secondary text-foreground;
+    @apply border-2 border-border-dark;
+    @apply hover:bg-primary hover:text-primary-foreground transition-colors;
+    box-shadow: 2px 2px 0 hsl(var(--pixel-shadow) / 0.6);
+  }
+
+  .pixel-mini-btn:active {
+    box-shadow: 1px 1px 0 hsl(var(--pixel-shadow) / 0.6);
+    transform: translate(1px, 1px);
+  }
+
+  /* Kairosoft Section - For content sections */
+  .kairo-section {
+    @apply bg-card border-3 border-border-dark p-3;
+    box-shadow: 2px 2px 0 hsl(var(--pixel-shadow) / 0.7);
+  }
+
+  /* Kairosoft Grid Item - For photos/thumbnails */
+  .kairo-grid-item {
+    @apply relative overflow-hidden;
+    @apply border-2 border-border-dark;
+    box-shadow: 2px 2px 0 hsl(var(--pixel-shadow) / 0.5);
+  }
+
+  .kairo-grid-item:hover {
+    @apply border-primary;
+  }
 }
 
 @layer utilities {
