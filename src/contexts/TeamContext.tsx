@@ -5,10 +5,14 @@ export interface Team {
   name: string;
   emblem: string;
   photoUrl?: string;
+  bannerUrl?: string;
   level: 'S' | 'A' | 'B' | 'C';
   favorites: number;
   region?: string;
   description?: string;
+  introduction?: string;
+  instagramUrl?: string;
+  youtubeUrl?: string;
   foundedYear?: number;
 }
 
