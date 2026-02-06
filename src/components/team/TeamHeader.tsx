@@ -1,15 +1,24 @@
-import { Star, Camera } from 'lucide-react';
+import { Star, Camera, Instagram, Youtube } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useState, useRef } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface TeamHeaderProps {
   name: string;
   emblem: string;
   photoUrl?: string;
+  bannerUrl?: string;
   level: 'S' | 'A' | 'B' | 'C';
   favorites: number;
   region?: string;
+  introduction?: string;
+  instagramUrl?: string;
+  youtubeUrl?: string;
   isAdmin?: boolean;
   onPhotoEdit?: () => void;
+  onBannerUpdate?: (url: string) => void;
+  onIntroUpdate?: (text: string) => void;
 }
 
 const levelColors = {
@@ -23,18 +32,66 @@ export function TeamHeader({
   name,
   emblem,
   photoUrl,
+  bannerUrl,
   level,
   favorites,
   region,
+  introduction,
+  instagramUrl,
+  youtubeUrl,
   isAdmin = false,
   onPhotoEdit,
+  onBannerUpdate,
+  onIntroUpdate,
 }: TeamHeaderProps) {
+  const [uploading, setUploading] = useState(false);
+  const bannerInputRef = useRef<HTMLInputElement>(null);
+
+  const handleBannerUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('이미지 파일만 업로드할 수 있습니다');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('파일 크기는 5MB 이하여야 합니다');
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `banner-${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('team-banners')
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('team-banners')
+        .getPublicUrl(fileName);
+
+      onBannerUpdate?.(publicUrl);
+      toast.success('배너가 업로드되었습니다!');
+    } catch (error) {
+      console.error('Banner upload error:', error);
+      toast.error('배너 업로드에 실패했습니다');
+    } finally {
+      setUploading(false);
+    }
+  };
+
   return (
     <div className="relative">
-      {/* Background Banner - Kairosoft striped pattern */}
+      {/* Background Banner - Custom or Kairosoft striped pattern */}
       <div 
-        className="h-20 border-b-4 border-border-dark"
-        style={{
+        className="h-24 border-b-4 border-border-dark relative overflow-hidden"
+        style={bannerUrl ? {} : {
           background: `
             repeating-linear-gradient(
               45deg,
@@ -45,7 +102,72 @@ export function TeamHeader({
             )
           `
         }}
-      />
+      >
+        {bannerUrl && (
+          <img src={bannerUrl} alt="Team banner" className="w-full h-full object-cover" />
+        )}
+
+        {/* Social Links - Top Right */}
+        <div className="absolute top-2 right-2 flex gap-1.5">
+          {instagramUrl && (
+            <a
+              href={instagramUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cn(
+                'w-8 h-8 flex items-center justify-center',
+                'bg-card/95 border-2 border-border-dark',
+                'hover:bg-accent hover:border-accent-dark transition-colors'
+              )}
+              style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
+            >
+              <Instagram size={14} className="text-foreground" />
+            </a>
+          )}
+          {youtubeUrl && (
+            <a
+              href={youtubeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cn(
+                'w-8 h-8 flex items-center justify-center',
+                'bg-card/95 border-2 border-border-dark',
+                'hover:bg-accent hover:border-accent-dark transition-colors'
+              )}
+              style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
+            >
+              <Youtube size={14} className="text-foreground" />
+            </a>
+          )}
+        </div>
+
+        {/* Admin Banner Upload Button */}
+        {isAdmin && (
+          <>
+            <input
+              ref={bannerInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleBannerUpload}
+              className="hidden"
+            />
+            <button
+              onClick={() => bannerInputRef.current?.click()}
+              disabled={uploading}
+              className={cn(
+                'absolute bottom-2 right-2',
+                'w-8 h-8 flex items-center justify-center',
+                'bg-accent border-2 border-accent-dark',
+                'hover:brightness-110 transition-all',
+                'disabled:opacity-50'
+              )}
+              style={{ boxShadow: '2px 2px 0 hsl(var(--accent-dark))' }}
+            >
+              <Camera size={14} className="text-accent-foreground" />
+            </button>
+          </>
+        )}
+      </div>
 
       {/* Team Info - Compact */}
       <div className="px-3 -mt-10">

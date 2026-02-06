@@ -1,15 +1,18 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Settings, Crown } from 'lucide-react';
 import { useTeam } from '@/contexts/TeamContext';
 import { TeamHeader } from '@/components/team/TeamHeader';
 import { TeamSwitcher } from '@/components/team/TeamSwitcher';
+import { TeamIntro } from '@/components/team/TeamIntro';
 import { LatestArchive } from '@/components/team/LatestArchive';
 import { MemberRoster } from '@/components/team/MemberRoster';
 import { Guestbook } from '@/components/team/Guestbook';
 import { PixelButton } from '@/components/ui/PixelButton';
 import { MessageButton } from '@/components/ui/MessageButton';
-import { MatchRequestButton } from '@/components/ui/MatchRequestButton';
+import { JoinRequestButton } from '@/components/team/JoinRequestButton';
+import { AdminTransferModal } from '@/components/team/AdminTransferModal';
+import { toast } from 'sonner';
 
 // Mock data - would come from Supabase
 const mockTeamData = {
@@ -17,10 +20,14 @@ const mockTeamData = {
   name: 'FC 불꽃',
   emblem: '🔥',
   photoUrl: '',
+  bannerUrl: '',
   level: 'A' as const,
   favorites: 128,
   region: '서울 강남구',
   description: '열정 가득한 풋살 팀입니다!',
+  introduction: '2020년 창단된 열정 가득한 풋살 팀입니다! 매주 주말 강남에서 활동하며, 실력보다 즐거움을 추구합니다. 새로운 팀원을 환영합니다! 🔥⚽',
+  instagramUrl: 'https://instagram.com/fc_bulkkot',
+  youtubeUrl: '',
   foundedYear: 2020,
 };
 
@@ -46,15 +53,18 @@ export default function TeamHome() {
   const { teamId } = useParams<{ teamId: string }>();
   const navigate = useNavigate();
   const { setActiveTeam, clearActiveTeam } = useTeam();
+  const [showAdminTransfer, setShowAdminTransfer] = useState(false);
+  const [teamData, setTeamData] = useState(mockTeamData);
+
+  const isAdmin = true; // Would check user's role in team
+  const isMember = true; // Would check if user is a team member
 
   // Set this team as active when entering
   useEffect(() => {
-    // In real app, fetch team data by teamId
     setActiveTeam(mockTeamData);
     
     return () => {
-      // Optional: clear on unmount if you want
-      // clearActiveTeam();
+      // Optional: clear on unmount
     };
   }, [teamId, setActiveTeam]);
 
@@ -63,7 +73,27 @@ export default function TeamHome() {
     navigate('/my-team');
   };
 
-  const isAdmin = true; // Would check user's role in team
+  const handleBannerUpdate = (url: string) => {
+    setTeamData(prev => ({ ...prev, bannerUrl: url }));
+    // TODO: Update in Supabase
+  };
+
+  const handleIntroUpdate = (text: string) => {
+    setTeamData(prev => ({ ...prev, introduction: text }));
+    toast.success('팀 소개가 저장되었습니다');
+    // TODO: Update in Supabase
+  };
+
+  const handleAdminTransfer = (newAdminId: string) => {
+    const member = mockMembers.find(m => m.id === newAdminId);
+    toast.success(`${member?.nickname}님에게 관리자 권한이 이전되었습니다`);
+    // TODO: Update in Supabase
+  };
+
+  const handleJoinRequest = async () => {
+    // TODO: Integrate with Supabase
+    console.log('Join request sent');
+  };
 
   return (
     <div className="pb-24 max-w-lg mx-auto">
@@ -79,58 +109,95 @@ export default function TeamHome() {
             </button>
             <span className="font-pixel text-[10px] text-muted-foreground">MY TEAM</span>
           </div>
-          <TeamSwitcher />
+          <div className="flex items-center gap-2">
+            {isAdmin && (
+              <button
+                onClick={() => setShowAdminTransfer(true)}
+                className="w-8 h-8 bg-secondary border-2 border-border-dark flex items-center justify-center hover:bg-muted transition-colors"
+                title="관리자 설정"
+              >
+                <Settings size={14} className="text-foreground" />
+              </button>
+            )}
+            <TeamSwitcher />
+          </div>
         </div>
       </div>
 
-      {/* Team Header */}
+      {/* Team Header with Banner */}
       <TeamHeader
-        name={mockTeamData.name}
-        emblem={mockTeamData.emblem}
-        photoUrl={mockTeamData.photoUrl}
-        level={mockTeamData.level}
-        favorites={mockTeamData.favorites}
-        region={mockTeamData.region}
+        name={teamData.name}
+        emblem={teamData.emblem}
+        photoUrl={teamData.photoUrl}
+        bannerUrl={teamData.bannerUrl}
+        level={teamData.level}
+        favorites={teamData.favorites}
+        region={teamData.region}
+        instagramUrl={teamData.instagramUrl}
+        youtubeUrl={teamData.youtubeUrl}
         isAdmin={isAdmin}
         onPhotoEdit={() => console.log('Edit team photo')}
+        onBannerUpdate={handleBannerUpdate}
       />
 
       <div className="px-4 py-4 space-y-4">
-        {/* Match Request CTA */}
-        <MatchRequestButton />
+        {/* Team Introduction */}
+        <TeamIntro
+          introduction={teamData.introduction}
+          isAdmin={isAdmin}
+          onSave={handleIntroUpdate}
+        />
 
-        {/* Team Actions Row */}
-        <div className="flex items-center gap-2">
-          <PixelButton
-            variant="primary"
-            size="sm"
-            onClick={() => navigate('/register')}
-            className="flex-1"
-          >
-            ⚽ 선수 등록
-          </PixelButton>
-          <MessageButton 
-            label="쪽지" 
-            variant="admin" 
-            size="sm"
+        {/* Join Request or Team Actions */}
+        {!isMember ? (
+          <JoinRequestButton
+            teamId={teamData.id}
+            teamName={teamData.name}
+            onRequest={handleJoinRequest}
+            className="w-full"
           />
-        </div>
+        ) : (
+          <div className="flex items-center gap-2">
+            <PixelButton
+              variant="primary"
+              size="sm"
+              onClick={() => navigate('/register')}
+              className="flex-1"
+            >
+              ⚽ 선수 등록
+            </PixelButton>
+            <MessageButton 
+              label="쪽지" 
+              variant="admin" 
+              size="sm"
+            />
+          </div>
+        )}
 
         {/* Latest Archive Preview */}
         <LatestArchive 
-          teamId={mockTeamData.id} 
+          teamId={teamData.id} 
           items={mockArchiveItems} 
         />
 
-        {/* Member Roster - Now more prominent */}
+        {/* Member Roster */}
         <MemberRoster 
           members={mockMembers}
-          teamId={mockTeamData.id}
+          teamId={teamData.id}
         />
 
         {/* Guestbook */}
         <Guestbook />
       </div>
+
+      {/* Admin Transfer Modal */}
+      <AdminTransferModal
+        isOpen={showAdminTransfer}
+        onClose={() => setShowAdminTransfer(false)}
+        members={mockMembers}
+        currentAdminId="1"
+        onTransfer={handleAdminTransfer}
+      />
     </div>
   );
 }
