@@ -14,8 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        pixel: ['"Press Start 2P"', 'cursive'],
-        body: ['"Galmuri11"', '"Galmuri9"', 'sans-serif'],
+        pixel: ['"DNFBitBitv2"', '"NeoDunggeunmo"', '"Galmuri11"', 'sans-serif'],
+        body: ['"DNFBitBitv2"', '"NeoDunggeunmo"', '"Galmuri11"', 'sans-serif'],
       },
       colors: {
         border: {
