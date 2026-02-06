@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus } from 'lucide-react';
+import { Plus, PenSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { MatchPostCard } from '@/components/matchmaking/MatchPostCard';
 import { MatchBoardFilters } from '@/components/matchmaking/MatchBoardFilters';
 import { CreateMatchPostModal } from '@/components/matchmaking/CreateMatchPostModal';
+import { LevelInfoButton } from '@/components/ui/LevelGuideModal';
 import { MatchTicker } from '@/components/matchmaking/MatchTicker';
 import { format, parseISO, isToday, isTomorrow, isThisWeek } from 'date-fns';
 
@@ -252,14 +253,34 @@ export default function Matchmaking() {
     <div className="pb-20 px-4 py-6 max-w-lg mx-auto">
       {/* Header */}
       <div className="mb-4">
-        <h2 className="font-pixel text-xs text-foreground flex items-center gap-2 mb-2">
-          <span className="text-primary">⚔️</span>
-          매칭팀 구해요
-        </h2>
+        <div className="flex items-center justify-between mb-2">
+          <h2 className="font-pixel text-xs text-foreground flex items-center gap-2">
+            <span className="text-primary">⚔️</span>
+            매칭팀 구해요
+          </h2>
+          <LevelInfoButton />
+        </div>
         <p className="font-pixel text-[8px] text-muted-foreground">
           대결 상대를 찾는 팀들의 공고 게시판
         </p>
       </div>
+
+      {/* Write Post Button */}
+      {isAdmin && (
+        <button
+          onClick={() => setIsCreateModalOpen(true)}
+          className={cn(
+            "w-full flex items-center justify-center gap-2 px-4 py-3 mb-4",
+            "bg-primary text-primary-foreground font-pixel text-[10px]",
+            "border-3 border-primary-dark",
+            "hover:brightness-110 active:translate-y-0.5 transition-all"
+          )}
+          style={{ boxShadow: '3px 3px 0 hsl(var(--primary-dark))' }}
+        >
+          <PenSquare size={14} />
+          매칭공고 글쓰기
+        </button>
+      )}
 
       {/* Live Ticker */}
       <MatchTicker />

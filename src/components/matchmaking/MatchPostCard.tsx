@@ -135,9 +135,9 @@ export function MatchPostCard({
           </div>
 
           {/* Target Level - Bold Display */}
-          <div className="flex items-center gap-2 px-3 py-2 bg-accent/10 border-2 border-accent/30">
-            <Target size={12} className="text-accent" />
-            <span className="font-pixel text-[9px] text-foreground">희망 레벨:</span>
+          <div className="flex items-center gap-2 px-3 py-2 bg-accent/10 border-2 border-accent/30 flex-wrap">
+            <Target size={12} className="text-accent flex-shrink-0" />
+            <span className="font-pixel text-[9px] text-foreground">희망 팀 레벨:</span>
             <div className="flex gap-1">
               {targetLevels.map((level) => (
                 <PixelBadge 
