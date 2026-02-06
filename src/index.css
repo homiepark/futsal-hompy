@@ -201,7 +201,7 @@
       inset 2px 2px 0 hsl(var(--pixel-shadow) / 0.15);
   }
 
-  /* Pixel Badge */
+  /* Pixel Badge - keeps pixel font */
   .pixel-badge {
     @apply inline-flex items-center px-2 py-1 font-pixel text-[8px] uppercase;
     @apply border-2 border-border-dark;
