@@ -1,4 +1,4 @@
-import { Star, Camera, Youtube } from 'lucide-react';
+import { Star, Camera } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
@@ -107,24 +107,6 @@ export function TeamHeader({
           <img src={bannerUrl} alt="Team banner" className="w-full h-full object-cover" />
         )}
 
-        {/* Social Links - Top Right */}
-        <div className="absolute top-2 right-2 flex gap-1.5">
-          {youtubeUrl && (
-            <a
-              href={youtubeUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={cn(
-                'w-8 h-8 flex items-center justify-center',
-                'bg-card/95 border-2 border-border-dark',
-                'hover:bg-accent hover:border-accent-dark transition-colors'
-              )}
-              style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
-            >
-              <Youtube size={14} className="text-foreground" />
-            </a>
-          )}
-        </div>
 
         {/* Admin Banner Upload Button */}
         {isAdmin && (
@@ -184,7 +166,7 @@ export function TeamHeader({
 
           {/* Team Name & Info */}
           <div className="flex-1 pb-1.5">
-            <div className="flex items-center gap-1.5 mb-0.5">
+            <div className="flex items-center flex-wrap gap-1.5 mb-0.5">
               <h1 className="font-pixel text-xs text-foreground leading-tight">{name}</h1>
               <div className={cn(
                 'px-1.5 py-0.5 border-2 font-pixel text-[8px]',
@@ -192,6 +174,44 @@ export function TeamHeader({
               )}>
                 LV.{level}
               </div>
+              
+              {/* Social Media Buttons - Next to Level Badge */}
+              {(youtubeUrl || instagramUrl) && (
+                <div className="flex items-center gap-[5px] ml-2">
+                  {youtubeUrl && (
+                    <a
+                      href={youtubeUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={cn(
+                        'flex items-center gap-1 px-2 py-0.5',
+                        'bg-card border-2 border-border-dark',
+                        'hover:bg-secondary transition-colors'
+                      )}
+                      style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
+                    >
+                      <span className="text-[10px]">▶️</span>
+                      <span className="font-pixel text-[7px] text-foreground">유튜브</span>
+                    </a>
+                  )}
+                  {instagramUrl && (
+                    <a
+                      href={instagramUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={cn(
+                        'flex items-center gap-1 px-2 py-0.5',
+                        'bg-card border-2 border-border-dark',
+                        'hover:bg-secondary transition-colors'
+                      )}
+                      style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
+                    >
+                      <span className="text-[10px]">📸</span>
+                      <span className="font-pixel text-[7px] text-foreground">인스타</span>
+                    </a>
+                  )}
+                </div>
+              )}
             </div>
             <div className="flex items-center gap-2">
               {region && (
