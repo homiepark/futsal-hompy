@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Settings, Users, UserPlus, Megaphone } from 'lucide-react';
+import { Settings, UserPlus } from 'lucide-react';
 import { useTeam } from '@/contexts/TeamContext';
 import { useDev } from '@/contexts/DevContext';
 import { TeamHeader } from '@/components/team/TeamHeader';
@@ -218,9 +218,8 @@ export default function TeamHome() {
               variant="default"
               size="sm"
               onClick={() => setShowBroadcast(true)}
-              className="w-full flex items-center justify-center gap-2"
+              className="w-full flex items-center justify-center"
             >
-              <Megaphone size={14} />
               📢 팀원 전체 메시지
             </PixelButton>
           )}
@@ -244,9 +243,8 @@ export default function TeamHome() {
               variant="default"
               size="sm"
               onClick={() => navigate('/messages', { state: { tab: 'join-requests' } })}
-              className="w-full flex items-center justify-center gap-2"
+              className="w-full flex items-center justify-center"
             >
-              <Users size={14} />
               📋 입단 신청 관리
             </PixelButton>
           ) : !isMember ? (

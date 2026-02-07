@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UserPlus, Check } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -153,7 +153,6 @@ export function JoinRequestButton({
         )}
         style={{ boxShadow: '3px 3px 0 hsl(var(--primary-dark))' }}
       >
-        <UserPlus size={14} />
         <span>⚽ 입단 신청하기</span>
       </button>
 
