@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Pencil, Clock, Megaphone } from 'lucide-react';
+import { Pencil, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AnnouncementHistoryModal } from './AnnouncementHistoryModal';
 import { AnnouncementEditModal } from './AnnouncementEditModal';
@@ -80,10 +80,7 @@ export function TeamAnnouncement({
 
         {/* Header */}
         <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-1.5">
-            <Megaphone size={14} className="text-amber-700" />
-            <span className="font-pixel text-[10px] text-amber-800 uppercase">📢 공지</span>
-          </div>
+          <span className="font-pixel text-[10px] text-amber-800 uppercase">📢 공지</span>
           <div className="flex items-center gap-1">
             {/* History button */}
             <button
