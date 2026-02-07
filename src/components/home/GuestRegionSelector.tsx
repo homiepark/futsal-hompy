@@ -251,7 +251,7 @@ export function GuestRegionPrompt({ onSelectClick }: GuestRegionPromptProps) {
         <div className="bg-gradient-to-r from-accent to-accent/80 border-b-3 border-accent-dark px-3 py-2">
           <div className="flex items-center gap-2">
             <span className="text-base">📰</span>
-            <h2 className="font-pixel text-[10px] text-accent-foreground">우리 동네 소식</h2>
+            <h2 className="font-pixel text-[10px] text-accent-foreground">우리동네 풋살팀 소식</h2>
           </div>
         </div>
 

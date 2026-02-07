@@ -194,7 +194,7 @@ export function NeighborhoodNews({ userRegions, userId, isGuest = false, onGuest
         >
           <div className="flex items-center gap-2 mb-3">
             <span className="text-lg">📰</span>
-            <h2 className="font-pixel text-[11px] text-foreground">우리 동네 소식</h2>
+            <h2 className="font-pixel text-[11px] text-foreground">우리동네 풋살팀 소식</h2>
           </div>
           <div className="flex gap-3 overflow-hidden">
             {[1, 2, 3].map(i => (
@@ -218,7 +218,7 @@ export function NeighborhoodNews({ userRegions, userId, isGuest = false, onGuest
         >
           <div className="flex items-center gap-2 mb-3">
             <span className="text-lg">📰</span>
-            <h2 className="font-pixel text-[11px] text-foreground">우리 동네 소식</h2>
+            <h2 className="font-pixel text-[11px] text-foreground">우리동네 풋살팀 소식</h2>
           </div>
           <div className="text-center py-6">
             <p className="font-pixel text-[10px] text-muted-foreground">
@@ -243,7 +243,7 @@ export function NeighborhoodNews({ userRegions, userId, isGuest = false, onGuest
         <div className="bg-gradient-to-r from-accent to-accent/80 border-b-3 border-accent-dark px-3 py-2 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-base">📰</span>
-            <h2 className="font-pixel text-[10px] text-accent-foreground">우리 동네 소식</h2>
+            <h2 className="font-pixel text-[10px] text-accent-foreground">우리동네 풋살팀 소식</h2>
             <span className="px-2 py-0.5 bg-accent-foreground/20 text-accent-foreground font-pixel text-[7px] animate-pulse">
               LIVE
             </span>
