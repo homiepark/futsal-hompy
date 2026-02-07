@@ -77,7 +77,7 @@ export default function TeamHome() {
 
   const handleBack = () => {
     clearActiveTeam();
-    navigate('/my-team');
+    navigate(-1); // Go back to previous page (could be Matchmaking, MyTeam, etc.)
   };
 
   const handleBannerUpdate = (url: string) => {
