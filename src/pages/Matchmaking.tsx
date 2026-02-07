@@ -9,6 +9,7 @@ import { MatchBoardFilters } from '@/components/matchmaking/MatchBoardFilters';
 import { CreateMatchPostModal } from '@/components/matchmaking/CreateMatchPostModal';
 import { ChallengeNotification, useChallengeNotifications } from '@/components/matchmaking/ChallengeNotification';
 import { MatchTicker } from '@/components/matchmaking/MatchTicker';
+import { useDev } from '@/contexts/DevContext';
 import { format, parseISO, isToday, isTomorrow, isThisWeek } from 'date-fns';
 
 interface MatchPost {
@@ -104,6 +105,7 @@ const mockMatchPosts: MatchPost[] = [
 
 export default function Matchmaking() {
   const navigate = useNavigate();
+  const { isDevAdmin } = useDev();
   const [filters, setFilters] = useState<BoardFilters>(initialFilters);
   const [matchPosts, setMatchPosts] = useState<MatchPost[]>(mockMatchPosts);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -118,6 +120,9 @@ export default function Matchmaking() {
   } | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Combine real admin status with dev admin toggle
+  const canCreatePost = isAdmin || isDevAdmin;
 
   // Load user's team and check if they're admin
   useEffect(() => {
@@ -307,7 +312,7 @@ export default function Matchmaking() {
       </div>
 
       {/* Write Post Button */}
-      {isAdmin && (
+      {canCreatePost && (
         <button
           onClick={() => setIsCreateModalOpen(true)}
           className={cn(
@@ -377,8 +382,8 @@ export default function Matchmaking() {
         )}
       </div>
 
-      {/* Floating Add Button (Only for team admins) */}
-      {isAdmin && (
+      {/* Floating Add Button (Only for team admins or dev admin) */}
+      {canCreatePost && (
         <button
           onClick={() => setIsCreateModalOpen(true)}
           className={cn(
