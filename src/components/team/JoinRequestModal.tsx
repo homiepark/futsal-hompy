@@ -104,7 +104,7 @@ export function JoinRequestModal({
       }
 
       // Create join request
-      const { error } = await supabase
+      const { error: joinError } = await supabase
         .from('team_join_requests')
         .insert({
           team_id: teamId,
@@ -113,7 +113,24 @@ export function JoinRequestModal({
           status: 'pending',
         });
 
-      if (error) throw error;
+      if (joinError) throw joinError;
+
+      // Send notification message to team admin
+      const { data: teamData } = await supabase
+        .from('teams')
+        .select('admin_user_id')
+        .eq('id', teamId)
+        .single();
+
+      if (teamData?.admin_user_id) {
+        await supabase.from('messages').insert({
+          sender_id: user.id,
+          receiver_id: teamData.admin_user_id,
+          team_id: teamId,
+          content: `새로운 입단 신청이 도착했습니다! ✉️\n\n신청자: ${profile.nickname}\n포지션: ${profile.preferred_position || '미설정'}\n경력: ${profile.years_of_experience}년\n\n"${message.trim()}"`,
+          is_read: false,
+        });
+      }
 
       toast.success('가입 신청 완료!', {
         description: `${teamName} 팀에 가입 신청을 보냈습니다.`,

@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { JoinRequestModal } from './JoinRequestModal';
+import { AuthRequiredModal } from '@/components/ui/AuthRequiredModal';
 
 interface JoinRequestButtonProps {
   teamId: string;
@@ -22,6 +23,7 @@ export function JoinRequestButton({
 }: JoinRequestButtonProps) {
   const { user } = useAuth();
   const [showModal, setShowModal] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const [hasRequested, setHasRequested] = useState(false);
   const [checking, setChecking] = useState(true);
 
@@ -53,6 +55,15 @@ export function JoinRequestButton({
     } finally {
       setChecking(false);
     }
+  };
+
+  const handleClick = () => {
+    // Auth guard - show popup if not logged in
+    if (!user) {
+      setShowAuthModal(true);
+      return;
+    }
+    setShowModal(true);
   };
 
   const handleSuccess = () => {
@@ -104,7 +115,7 @@ export function JoinRequestButton({
   return (
     <>
       <button
-        onClick={() => setShowModal(true)}
+        onClick={handleClick}
         disabled={checking}
         className={cn(
           'flex items-center justify-center gap-2',
@@ -124,6 +135,7 @@ export function JoinRequestButton({
         <span>⚽ 입단 신청하기</span>
       </button>
 
+      {/* Join Request Modal */}
       <JoinRequestModal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
@@ -131,6 +143,13 @@ export function JoinRequestButton({
         teamName={teamName}
         teamEmblem={teamEmblem}
         onSuccess={handleSuccess}
+      />
+
+      {/* Auth Required Modal */}
+      <AuthRequiredModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        message="먼저 로그인을 해주세요!"
       />
     </>
   );

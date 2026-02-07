@@ -2,6 +2,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { ColorfulPixelNavIcon } from '@/components/ui/ColorfulPixelNavIcon';
 import { useTeam } from '@/contexts/TeamContext';
+import { usePendingJoinRequests } from '@/hooks/usePendingJoinRequests';
 
 const navItems = [
   { icon: 'home' as const, label: '홈', path: '/' },
@@ -14,6 +15,7 @@ const navItems = [
 export function BottomNav() {
   const location = useLocation();
   const { activeTeam } = useTeam();
+  const { pendingCount } = usePendingJoinRequests();
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t-4 border-border-dark shadow-[0_-4px_0_hsl(var(--pixel-shadow))]">
@@ -33,25 +35,38 @@ export function BottomNav() {
           const targetPath = activeTeam && (path === '/archive' || path === '/schedule' || path === '/matchmaking')
             ? `${path}?team=${activeTeam.id}`
             : path;
+
+          // Show badge only on MY TEAM tab
+          const showBadge = path === '/my-team' && pendingCount > 0;
             
           return (
             <Link
               key={path}
               to={targetPath}
               className={cn(
-                'flex flex-col items-center justify-center gap-2 px-3 py-2 transition-colors',
+                'flex flex-col items-center justify-center gap-2 px-3 py-2 transition-colors relative',
                 isActive 
                   ? 'text-primary' 
                   : 'text-muted-foreground hover:text-foreground'
               )}
             >
               <div className={cn(
-                'p-2 border-4 transition-all',
+                'p-2 border-4 transition-all relative',
                 isActive 
                   ? 'bg-primary border-primary-dark text-primary-foreground shadow-pixel-sm' 
                   : 'border-border-dark bg-secondary hover:bg-muted'
               )}>
                 <ColorfulPixelNavIcon type={icon} isActive={isActive} />
+                
+                {/* Notification Badge */}
+                {showBadge && (
+                  <span 
+                    className="absolute -top-2 -right-2 min-w-[18px] h-[18px] flex items-center justify-center bg-accent border-2 border-accent-dark text-accent-foreground font-pixel text-[8px] px-1"
+                    style={{ boxShadow: '1px 1px 0 hsl(var(--accent-dark))' }}
+                  >
+                    {pendingCount > 9 ? '9+' : pendingCount}
+                  </span>
+                )}
               </div>
               <span className="font-pixel text-[8px] uppercase tracking-tight">{label}</span>
             </Link>
