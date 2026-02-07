@@ -66,25 +66,25 @@ export function JoinRequestButton({
       return;
     }
 
-    // Check if user has a complete profile
+    // Check if user has a profile (basic check, not strict)
     try {
       const { data: profile, error } = await supabase
         .from('profiles')
-        .select('nickname, preferred_position, years_of_experience')
+        .select('id, nickname')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
-      // If no profile or profile is incomplete, redirect to register
-      if (error || !profile || !profile.preferred_position) {
+      // If no profile exists at all, redirect to register
+      if (error || !profile) {
         navigate('/register', { state: { returnTo: window.location.pathname } });
         return;
       }
 
-      // Profile exists and is complete, show the modal
+      // Profile exists, show the simplified modal
       setShowModal(true);
     } catch {
-      // On any error, redirect to register
-      navigate('/register', { state: { returnTo: window.location.pathname } });
+      // On any error, still try to show modal (fail gracefully)
+      setShowModal(true);
     }
   };
 
