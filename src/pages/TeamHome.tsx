@@ -113,26 +113,16 @@ export default function TeamHome() {
             <PixelBackButton onClick={handleBack} variant="green" />
             <span className="font-pixel text-[10px] text-muted-foreground">MY TEAM</span>
           </div>
-          <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2">
             {isAdmin && (
-              <>
-                <button
-                  onClick={() => navigate(`/team/${teamId}/requests`)}
-                  className="w-8 h-8 bg-primary border-2 border-border-dark flex items-center justify-center hover:bg-primary/80 transition-colors"
-                  title="입단 신청 관리"
-                  style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
-                >
-                  <Users size={14} className="text-primary-foreground" />
-                </button>
-                <button
-                  onClick={() => setShowAdminTransfer(true)}
-                  className="w-8 h-8 bg-secondary border-2 border-border-dark flex items-center justify-center hover:bg-muted transition-colors"
-                  title="관리자 설정"
-                  style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
-                >
-                  <Settings size={14} className="text-foreground" />
-                </button>
-              </>
+              <button
+                onClick={() => setShowAdminTransfer(true)}
+                className="w-8 h-8 bg-secondary border-2 border-border-dark flex items-center justify-center hover:bg-muted transition-colors"
+                title="관리자 설정"
+                style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
+              >
+                <Settings size={14} className="text-foreground" />
+              </button>
             )}
             <TeamSwitcher />
           </div>
@@ -191,8 +181,18 @@ export default function TeamHome() {
             </PixelButton>
           )}
           
-          {/* Join Request or Member Status */}
-          {!isMember ? (
+          {/* Join Request or Member Status or Admin Management */}
+          {isAdmin ? (
+            <PixelButton
+              variant="default"
+              size="sm"
+              onClick={() => navigate('/messages', { state: { tab: 'join-requests' } })}
+              className="w-full flex items-center justify-center gap-2"
+            >
+              <Users size={14} />
+              📋 입단 신청 관리
+            </PixelButton>
+          ) : !isMember ? (
             <JoinRequestButton
               teamId={teamData.id}
               teamName={teamData.name}
