@@ -5,6 +5,7 @@ import { useTeam } from '@/contexts/TeamContext';
 import { useDev } from '@/contexts/DevContext';
 import { TeamHeader } from '@/components/team/TeamHeader';
 import { TeamSwitcher } from '@/components/team/TeamSwitcher';
+import { TeamAnnouncement } from '@/components/team/TeamAnnouncement';
 import { TeamIntro } from '@/components/team/TeamIntro';
 import { LatestArchive } from '@/components/team/LatestArchive';
 import { MemberRoster } from '@/components/team/MemberRoster';
@@ -16,6 +17,7 @@ import { AdminTransferModal } from '@/components/team/AdminTransferModal';
 import { PlayerInviteModal } from '@/components/team/PlayerInviteModal';
 import { DirectMessageModal } from '@/components/messages/DirectMessageModal';
 import { BroadcastModal } from '@/components/messages/BroadcastModal';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 // Mock data - would come from Supabase
@@ -63,6 +65,7 @@ export default function TeamHome() {
   const [showDirectMessage, setShowDirectMessage] = useState(false);
   const [showBroadcast, setShowBroadcast] = useState(false);
   const [teamData, setTeamData] = useState(mockTeamData);
+  const [notices, setNotices] = useState<Array<{ id: string; content: string; created_at: string }>>([]);
 
   // Use dev toggle for admin status
   const isAdmin = isDevAdmin;
@@ -72,9 +75,27 @@ export default function TeamHome() {
   // Mock admin user ID for direct messaging
   const adminUserId = 'admin-user-id-mock';
 
-  // Set this team as active when entering
+  // Fetch notices for the team
+  const fetchNotices = async () => {
+    if (!teamId) return;
+    
+    const { data, error } = await supabase
+      .from('team_notices')
+      .select('id, content, created_at')
+      .eq('team_id', teamId)
+      .eq('is_active', true)
+      .order('created_at', { ascending: false })
+      .limit(20);
+
+    if (!error && data) {
+      setNotices(data);
+    }
+  };
+
+  // Set this team as active when entering and fetch notices
   useEffect(() => {
     setActiveTeam(mockTeamData);
+    fetchNotices();
     
     return () => {
       // Optional: clear on unmount
@@ -101,6 +122,33 @@ export default function TeamHome() {
     const member = mockMembers.find(m => m.id === newAdminId);
     toast.success(`${member?.nickname}님에게 관리자 권한이 이전되었습니다`);
     // TODO: Update in Supabase
+  };
+
+  // Create a new notice
+  const handleCreateNotice = async (content: string) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error('로그인이 필요합니다');
+        return;
+      }
+
+      const { error } = await supabase
+        .from('team_notices')
+        .insert({
+          team_id: teamId,
+          content,
+          created_by: user.id,
+        });
+
+      if (error) throw error;
+
+      toast.success('공지사항이 등록되었습니다! 📢');
+      fetchNotices();
+    } catch (error) {
+      console.error('Notice creation error:', error);
+      toast.error('공지 등록에 실패했습니다');
+    }
   };
 
 
@@ -146,6 +194,15 @@ export default function TeamHome() {
       />
 
       <div className="px-4 py-4 space-y-4">
+        {/* Team Announcement Section */}
+        <TeamAnnouncement
+          teamId={teamId || ''}
+          notices={notices}
+          isAdmin={isAdmin}
+          onCreateNotice={handleCreateNotice}
+          onRefresh={fetchNotices}
+        />
+
         {/* Team Introduction */}
         <TeamIntro
           introduction={teamData.introduction}
