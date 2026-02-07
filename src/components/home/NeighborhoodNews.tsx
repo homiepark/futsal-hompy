@@ -25,6 +25,8 @@ interface NewsItem {
 interface NeighborhoodNewsProps {
   userRegions: PreferredRegion[];
   userId?: string;
+  isGuest?: boolean;
+  onGuestClick?: (teamName: string) => void;
 }
 
 const levelColors: Record<string, string> = {
@@ -34,7 +36,7 @@ const levelColors: Record<string, string> = {
   'C': 'bg-primary/50 text-primary-foreground border-primary-dark/50',
 };
 
-export function NeighborhoodNews({ userRegions, userId }: NeighborhoodNewsProps) {
+export function NeighborhoodNews({ userRegions, userId, isGuest = false, onGuestClick }: NeighborhoodNewsProps) {
   const navigate = useNavigate();
   const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -153,7 +155,11 @@ export function NeighborhoodNews({ userRegions, userId }: NeighborhoodNewsProps)
     setScrollPosition(newPosition);
   };
 
-  const handleCardClick = (teamId: string) => {
+  const handleCardClick = (teamId: string, teamName: string) => {
+    if (isGuest && onGuestClick) {
+      onGuestClick(teamName);
+      return;
+    }
     navigate(`/team/${teamId}`);
   };
 
@@ -271,7 +277,7 @@ export function NeighborhoodNews({ userRegions, userId }: NeighborhoodNewsProps)
             {newsItems.map((item) => (
               <button
                 key={item.id}
-                onClick={() => handleCardClick(item.teamId)}
+                onClick={() => handleCardClick(item.teamId, item.teamName)}
                 className={cn(
                   'flex-shrink-0 w-40 border-4 border-border-dark bg-secondary transition-all',
                   'hover:border-primary hover:scale-[1.02] hover:-translate-y-1',

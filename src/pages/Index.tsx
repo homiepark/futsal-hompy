@@ -1,11 +1,13 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Bell, Settings, Mail, Plus } from 'lucide-react';
+import { Bell, Settings, Mail, Plus, MapPin } from 'lucide-react';
 import { SimpleHeader } from '@/components/findteam/SimpleHeader';
 import { TeamListCard } from '@/components/findteam/TeamListCard';
 import { NeighborhoodNews } from '@/components/home/NeighborhoodNews';
 import { TeamMiniRoom } from '@/components/home/TeamMiniRoom';
 import { CompactFilterBar } from '@/components/home/CompactFilterBar';
+import { GuestRegionSelector, GuestRegionPrompt, getGuestRegions } from '@/components/home/GuestRegionSelector';
+import { GuestLoginPrompt } from '@/components/home/GuestLoginPrompt';
 import { PixelProfileIcon } from '@/components/ui/PixelProfileIcon';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
@@ -62,6 +64,20 @@ const Index = () => {
   const [listView, setListView] = useState<'all' | 'favorites'>('all');
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const [userRegions, setUserRegions] = useState<PreferredRegion[]>([]);
+  
+  // Guest-specific state
+  const [guestRegions, setGuestRegions] = useState<PreferredRegion[]>([]);
+  const [showRegionSelector, setShowRegionSelector] = useState(false);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [loginPromptTeamName, setLoginPromptTeamName] = useState<string>('');
+
+  // Load guest regions from localStorage on mount
+  useEffect(() => {
+    if (!user) {
+      const storedGuestRegions = getGuestRegions();
+      setGuestRegions(storedGuestRegions);
+    }
+  }, [user]);
 
   // Fetch user profile for smart filter (multi-region)
   useEffect(() => {
@@ -95,6 +111,17 @@ const Index = () => {
 
     fetchUserProfile();
   }, [user]);
+
+  // Handle guest clicking on team post - show login prompt
+  const handleGuestTeamClick = useCallback((teamName: string) => {
+    setLoginPromptTeamName(teamName);
+    setShowLoginPrompt(true);
+  }, []);
+
+  // Handle guest region selection
+  const handleGuestRegionsChange = useCallback((regions: PreferredRegion[]) => {
+    setGuestRegions(regions);
+  }, []);
 
   // Fetch teams from Supabase
   useEffect(() => {
@@ -269,15 +296,60 @@ const Index = () => {
         <SimpleHeader />
       </div>
 
-      {/* Section 1: My Team Mini-Room */}
+      {/* Section 1: My Team Mini-Room (logged-in users only) */}
       {user && (
         <TeamMiniRoom userId={user.id} />
       )}
 
       {/* Section 2: Neighborhood News Feed */}
+      {/* For logged-in users: show if they have regions set */}
       {user && userRegions.length > 0 && (
         <NeighborhoodNews userRegions={userRegions} userId={user.id} />
       )}
+      
+      {/* For guests: show feed or region prompt */}
+      {!user && (
+        guestRegions.length > 0 ? (
+          <>
+            <NeighborhoodNews 
+              userRegions={guestRegions} 
+              isGuest={true}
+              onGuestClick={handleGuestTeamClick}
+            />
+            {/* Edit regions button for guests */}
+            <div className="px-4 pb-2">
+              <button
+                onClick={() => setShowRegionSelector(true)}
+                className={cn(
+                  'w-full flex items-center justify-center gap-2 py-2',
+                  'bg-secondary border-3 border-border-dark',
+                  'font-pixel text-[9px] text-muted-foreground',
+                  'hover:bg-muted transition-colors'
+                )}
+                style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}
+              >
+                <MapPin size={12} />
+                동네 변경하기
+              </button>
+            </div>
+          </>
+        ) : (
+          <GuestRegionPrompt onSelectClick={() => setShowRegionSelector(true)} />
+        )
+      )}
+
+      {/* Guest Modals */}
+      <GuestRegionSelector 
+        open={showRegionSelector}
+        onOpenChange={setShowRegionSelector}
+        onRegionsChange={handleGuestRegionsChange}
+        currentRegions={guestRegions}
+      />
+      <GuestLoginPrompt 
+        open={showLoginPrompt}
+        onOpenChange={setShowLoginPrompt}
+        teamName={loginPromptTeamName}
+      />
 
       {/* Create Team CTA */}
       <div className="px-4 py-2">
