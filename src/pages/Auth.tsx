@@ -125,6 +125,9 @@ export default function Auth() {
           src={logoMain} 
           alt="우리의 풋살 - Our Futsal" 
           className="h-20 mx-auto"
+          style={{
+            filter: 'brightness(1.15) saturate(0.85) contrast(0.95)',
+          }}
         />
       </div>
 
