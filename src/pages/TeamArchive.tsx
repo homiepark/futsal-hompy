@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Plus, Image, Video, ArrowLeft } from 'lucide-react';
+import { Plus, Image, Video } from 'lucide-react';
 import { PixelButton } from '@/components/ui/PixelButton';
+import { PixelBackButton } from '@/components/ui/PixelBackButton';
 import { TimelinePost } from '@/components/archive/TimelinePost';
 import { PhotoGridItem } from '@/components/archive/PhotoGridItem';
 import { ViewToggle } from '@/components/archive/ViewToggle';
@@ -139,12 +140,7 @@ export default function TeamArchive() {
       <div className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b-3 border-border-dark">
         <div className="px-3 py-2 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <button 
-              onClick={handleBack}
-              className="pixel-back-btn"
-            >
-              <ArrowLeft size={16} strokeWidth={3} />
-            </button>
+            <PixelBackButton onClick={handleBack} />
             <div className="flex items-center gap-1.5">
               {currentTeam && <span className="text-lg">{currentTeam.emblem}</span>}
               <h1 className="font-pixel text-[10px] text-foreground">아카이브</h1>

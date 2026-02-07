@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Instagram, Youtube } from 'lucide-react';
+import { Instagram, Youtube } from 'lucide-react';
 import { PixelButton } from '@/components/ui/PixelButton';
+import { PixelBackButton } from '@/components/ui/PixelBackButton';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -113,12 +114,7 @@ export default function CreateTeam() {
       {/* Header */}
       <div className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b-4 border-border-dark">
         <div className="px-4 py-3 flex items-center gap-3">
-          <button 
-            onClick={() => navigate(-1)}
-            className="w-8 h-8 bg-secondary border-2 border-border-dark flex items-center justify-center hover:bg-muted transition-colors"
-          >
-            <ArrowLeft size={16} className="text-foreground" />
-          </button>
+          <PixelBackButton variant="green" />
           <span className="font-pixel text-xs text-foreground">팀 만들기</span>
         </div>
       </div>
