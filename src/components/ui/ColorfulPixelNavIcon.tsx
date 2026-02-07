@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
 
-type IconType = 'home' | 'archive' | 'matching' | 'calendar' | 'map';
+type IconType = 'home' | 'archive' | 'matching' | 'calendar' | 'map' | 'mail';
 
 interface ColorfulPixelNavIconProps {
   type: IconType;
@@ -107,6 +107,24 @@ const iconData: Record<IconType, { pattern: number[][]; colors: Record<number, s
       2: 'hsl(142 65% 50%)', // Light green
       3: 'hsl(0 0% 100%)',   // White lines (goal)
       4: 'hsl(0 0% 100%)',   // White center circle
+    }
+  },
+  // Mail envelope
+  mail: {
+    pattern: [
+      [0,0,0,0,0,0,0,0],
+      [1,1,1,1,1,1,1,1],
+      [1,2,2,2,2,2,2,1],
+      [1,3,2,2,2,2,3,1],
+      [1,2,3,2,2,3,2,1],
+      [1,2,2,3,3,2,2,1],
+      [1,2,2,2,2,2,2,1],
+      [1,1,1,1,1,1,1,1],
+    ],
+    colors: {
+      1: 'hsl(30 60% 45%)',  // Brown border
+      2: 'hsl(45 80% 85%)',  // Cream paper
+      3: 'hsl(0 70% 55%)',   // Red accent (seal/fold)
     }
   },
 };
