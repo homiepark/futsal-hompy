@@ -377,9 +377,12 @@ export default function Messages() {
     <div className="pb-24 max-w-lg mx-auto">
       {/* Header */}
       <div className="sticky top-0 z-40 bg-primary border-b-4 border-primary-dark p-4 flex items-center gap-3">
-        <Link to="/profile" className="w-8 h-8 bg-primary-foreground/20 border-2 border-primary-dark flex items-center justify-center">
+        <button 
+          onClick={() => navigate(-1)} 
+          className="w-8 h-8 bg-primary-foreground/20 border-2 border-primary-dark flex items-center justify-center"
+        >
           <ArrowLeft size={18} className="text-primary-foreground" />
-        </Link>
+        </button>
         <h1 className="text-sm text-primary-foreground flex items-center gap-2">
           📬 쪽지함
           {unreadCount > 0 && (
