@@ -172,26 +172,44 @@ export default function TeamHome() {
             </PixelButton>
           )}
           
-          {/* Join Request or Member Actions */}
-          <div className="flex items-center gap-2">
-            {!isMember ? (
-              <JoinRequestButton
-                teamId={teamData.id}
-                teamName={teamData.name}
-                teamEmblem={teamData.emblem}
-                className="flex-1"
-              />
-            ) : (
-              <div className="flex-1 text-center py-2 bg-muted border-2 border-border-dark font-pixel text-[9px] text-muted-foreground">
-                ✅ 팀원입니다
-              </div>
-            )}
-            <MessageButton 
-              label="쪽지" 
-              variant="admin" 
-              size="sm"
+          {/* Join Request or Member Status */}
+          {!isMember ? (
+            <JoinRequestButton
+              teamId={teamData.id}
+              teamName={teamData.name}
+              teamEmblem={teamData.emblem}
+              className="w-full"
             />
-          </div>
+          ) : (
+            <div className="w-full text-center py-2.5 bg-muted border-2 border-border-dark font-pixel text-[9px] text-muted-foreground"
+              style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
+            >
+              ✅ 팀원입니다
+            </div>
+          )}
+
+          {/* Message Button - Different for Admin vs Non-Admin */}
+          {isAdmin ? (
+            <PixelButton
+              variant="default"
+              size="sm"
+              onClick={() => navigate('/messages')}
+              className="w-full flex items-center justify-center gap-2"
+            >
+              📬 쪽지 확인하기
+            </PixelButton>
+          ) : (
+            <button
+              onClick={() => {
+                toast.info('팀 관리자에게 쪽지를 보냅니다', { icon: '✉️' });
+                navigate('/messages');
+              }}
+              className="w-full py-2.5 bg-secondary border-3 border-border-dark font-pixel text-[9px] text-foreground hover:bg-muted transition-colors flex items-center justify-center gap-2"
+              style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
+            >
+              ✉️ 팀 관리자에게 쪽지보내기
+            </button>
+          )}
         </div>
 
         {/* Latest Archive Preview */}
