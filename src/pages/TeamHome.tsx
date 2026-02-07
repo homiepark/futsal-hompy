@@ -93,10 +93,6 @@ export default function TeamHome() {
     // TODO: Update in Supabase
   };
 
-  const handleJoinRequest = async () => {
-    // TODO: Integrate with Supabase
-    console.log('Join request sent');
-  };
 
   return (
     <div className="pb-24 max-w-lg mx-auto">
@@ -162,7 +158,7 @@ export default function TeamHome() {
           <JoinRequestButton
             teamId={teamData.id}
             teamName={teamData.name}
-            onRequest={handleJoinRequest}
+            teamEmblem={teamData.emblem}
             className="w-full"
           />
         ) : (

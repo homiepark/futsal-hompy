@@ -1,47 +1,62 @@
-import { useState } from 'react';
-import { UserPlus, Loader2, Check } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { UserPlus, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import { JoinRequestModal } from './JoinRequestModal';
 
 interface JoinRequestButtonProps {
   teamId: string;
   teamName: string;
-  hasRequested?: boolean;
+  teamEmblem?: string;
   isMember?: boolean;
-  onRequest?: () => Promise<void>;
   className?: string;
 }
 
 export function JoinRequestButton({
   teamId,
   teamName,
-  hasRequested = false,
+  teamEmblem,
   isMember = false,
-  onRequest,
   className,
 }: JoinRequestButtonProps) {
-  const [loading, setLoading] = useState(false);
-  const [requested, setRequested] = useState(hasRequested);
+  const { user } = useAuth();
+  const [showModal, setShowModal] = useState(false);
+  const [hasRequested, setHasRequested] = useState(false);
+  const [checking, setChecking] = useState(true);
 
-  const handleRequest = async () => {
-    if (requested || isMember) return;
-    
-    setLoading(true);
-    try {
-      if (onRequest) {
-        await onRequest();
-      }
-      setRequested(true);
-      toast.success('가입 신청 완료!', {
-        description: `${teamName} 팀에 가입 신청을 보냈습니다.`,
-      });
-    } catch (error) {
-      toast.error('가입 신청 실패', {
-        description: '잠시 후 다시 시도해주세요.',
-      });
-    } finally {
-      setLoading(false);
+  // Check for existing pending request on mount
+  useEffect(() => {
+    if (user && teamId) {
+      checkExistingRequest();
+    } else {
+      setChecking(false);
     }
+  }, [user, teamId]);
+
+  const checkExistingRequest = async () => {
+    if (!user) return;
+    
+    try {
+      const { data } = await supabase
+        .from('team_join_requests')
+        .select('id')
+        .eq('team_id', teamId)
+        .eq('user_id', user.id)
+        .eq('status', 'pending')
+        .single();
+
+      setHasRequested(!!data);
+    } catch {
+      // No existing request
+      setHasRequested(false);
+    } finally {
+      setChecking(false);
+    }
+  };
+
+  const handleSuccess = () => {
+    setHasRequested(true);
   };
 
   if (isMember) {
@@ -65,7 +80,7 @@ export function JoinRequestButton({
     );
   }
 
-  if (requested) {
+  if (hasRequested) {
     return (
       <button
         disabled
@@ -87,29 +102,36 @@ export function JoinRequestButton({
   }
 
   return (
-    <button
-      onClick={handleRequest}
-      disabled={loading}
-      className={cn(
-        'flex items-center justify-center gap-2',
-        'bg-primary text-primary-foreground',
-        'border-3 border-primary-dark',
-        'font-pixel text-[9px] uppercase',
-        'px-3 py-2',
-        'transition-all duration-100',
-        'hover:brightness-110',
-        'active:translate-x-0.5 active:translate-y-0.5',
-        'disabled:opacity-50 disabled:cursor-not-allowed',
-        className
-      )}
-      style={{ boxShadow: '3px 3px 0 hsl(var(--primary-dark))' }}
-    >
-      {loading ? (
-        <Loader2 size={14} className="animate-spin" />
-      ) : (
+    <>
+      <button
+        onClick={() => setShowModal(true)}
+        disabled={checking}
+        className={cn(
+          'flex items-center justify-center gap-2',
+          'bg-primary text-primary-foreground',
+          'border-3 border-primary-dark',
+          'font-pixel text-[9px] uppercase',
+          'px-3 py-2',
+          'transition-all duration-100',
+          'hover:brightness-110',
+          'active:translate-x-0.5 active:translate-y-0.5',
+          'disabled:opacity-50 disabled:cursor-not-allowed',
+          className
+        )}
+        style={{ boxShadow: '3px 3px 0 hsl(var(--primary-dark))' }}
+      >
         <UserPlus size={14} />
-      )}
-      <span>⚽ 가입 신청</span>
-    </button>
+        <span>⚽ 입단 신청하기</span>
+      </button>
+
+      <JoinRequestModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        teamId={teamId}
+        teamName={teamName}
+        teamEmblem={teamEmblem}
+        onSuccess={handleSuccess}
+      />
+    </>
   );
 }
