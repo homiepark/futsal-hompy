@@ -207,17 +207,8 @@ export default function TeamHome() {
             </div>
           )}
 
-          {/* Message Button - Different for Admin vs Non-Admin */}
-          {isAdmin ? (
-            <PixelButton
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate('/messages')}
-              className="w-full flex items-center justify-center gap-2"
-            >
-              📬 쪽지 확인하기
-            </PixelButton>
-          ) : (
+          {/* Message Button - Only for Non-Admin */}
+          {!isAdmin && (
             <button
               onClick={() => setShowDirectMessage(true)}
               className="w-full py-2.5 bg-secondary border-3 border-border-dark font-pixel text-[9px] text-foreground hover:bg-muted transition-colors flex items-center justify-center gap-2"
