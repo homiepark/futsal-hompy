@@ -6,10 +6,20 @@ import { TimelinePost } from '@/components/archive/TimelinePost';
 import { PhotoGridItem } from '@/components/archive/PhotoGridItem';
 import { ViewToggle } from '@/components/archive/ViewToggle';
 import { TeamSelector } from '@/components/ui/TeamSelector';
+import { ArchiveFolderTabs } from '@/components/archive/ArchiveFolderTabs';
+import { ArchiveWriteModal } from '@/components/archive/ArchiveWriteModal';
+import { FolderManageModal } from '@/components/archive/FolderManageModal';
 
 const myTeams = [
   { id: 'fc-bulkkot', name: 'FC 불꽃', emblem: '🔥' },
   { id: 'lions-fc', name: '라이언즈 FC', emblem: '🦁' },
+];
+
+const defaultFolders = [
+  { id: 'all', name: '전체보기', emoji: '📁', isDefault: true },
+  { id: 'matches', name: '경기 하이라이트', emoji: '⚽' },
+  { id: 'training', name: '훈련 기록', emoji: '🏃' },
+  { id: 'events', name: '팀 이벤트', emoji: '🎉' },
 ];
 
 const mockPosts = [
@@ -21,6 +31,7 @@ const mockPosts = [
     imageUrl: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=600',
     likes: 24,
     comments: 8,
+    folderId: 'matches',
   },
   {
     id: '2',
@@ -30,6 +41,7 @@ const mockPosts = [
     imageUrl: 'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=600',
     likes: 31,
     comments: 12,
+    folderId: 'matches',
   },
   {
     id: '3',
@@ -39,6 +51,7 @@ const mockPosts = [
     imageUrl: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=600',
     likes: 18,
     comments: 5,
+    folderId: 'training',
   },
   {
     id: '4',
@@ -48,6 +61,7 @@ const mockPosts = [
     imageUrl: 'https://images.unsplash.com/photo-1517466787929-bc90951d0974?w=600',
     likes: 42,
     comments: 15,
+    folderId: 'events',
   },
   {
     id: '5',
@@ -57,6 +71,7 @@ const mockPosts = [
     imageUrl: 'https://images.unsplash.com/photo-1529629468155-c2f79a99fefc?w=600',
     likes: 56,
     comments: 22,
+    folderId: 'events',
   },
   {
     id: '6',
@@ -66,6 +81,7 @@ const mockPosts = [
     imageUrl: 'https://images.unsplash.com/photo-1459865264687-595d652de67e?w=600',
     likes: 38,
     comments: 10,
+    folderId: 'matches',
   },
 ];
 
@@ -77,8 +93,19 @@ export default function TeamArchive() {
   const [view, setView] = useState<'grid' | 'single'>('single');
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [selectedTeam, setSelectedTeam] = useState(teamParam || 'all');
+  const [folders, setFolders] = useState(defaultFolders);
+  const [selectedFolder, setSelectedFolder] = useState('all');
+  const [showWriteModal, setShowWriteModal] = useState(false);
+  const [showFolderModal, setShowFolderModal] = useState(false);
 
-  const postsWithImages = mockPosts.filter(post => post.imageUrl);
+  const isAdmin = true; // Would check user's role
+
+  // Filter posts by folder
+  const filteredPosts = selectedFolder === 'all' 
+    ? mockPosts 
+    : mockPosts.filter(post => post.folderId === selectedFolder);
+
+  const postsWithImages = filteredPosts.filter(post => post.imageUrl);
 
   const handleGridItemClick = (postId: string) => {
     setSelectedPostId(postId);
@@ -91,6 +118,16 @@ export default function TeamArchive() {
     } else {
       navigate('/my-team');
     }
+  };
+
+  const handleArchiveSubmit = (data: any) => {
+    console.log('Archive post submitted:', data);
+    // TODO: Save to Supabase
+  };
+
+  const handleFoldersSave = (newFolders: typeof folders) => {
+    setFolders(newFolders);
+    // TODO: Save to Supabase
   };
 
   // Find current team info
@@ -113,9 +150,14 @@ export default function TeamArchive() {
               <h1 className="font-pixel text-[10px] text-foreground">아카이브</h1>
             </div>
           </div>
-          <PixelButton variant="accent" size="sm" className="flex items-center gap-1 text-[8px] px-2 py-1">
+          <PixelButton 
+            variant="accent" 
+            size="sm" 
+            className="flex items-center gap-1 text-[8px] px-2 py-1"
+            onClick={() => setShowWriteModal(true)}
+          >
             <Plus size={12} />
-            <span>업로드</span>
+            <span>글쓰기</span>
           </PixelButton>
         </div>
       </div>
@@ -130,7 +172,18 @@ export default function TeamArchive() {
           />
         </div>
 
-        {/* View Toggle & Upload Row */}
+        {/* Folder Tabs */}
+        <div className="mb-3">
+          <ArchiveFolderTabs
+            folders={folders}
+            selectedFolder={selectedFolder}
+            onSelect={setSelectedFolder}
+            isAdmin={isAdmin}
+            onManageFolders={() => setShowFolderModal(true)}
+          />
+        </div>
+
+        {/* View Toggle & Filter Row */}
         <div className="flex items-center justify-between gap-2 mb-3">
           <ViewToggle view={view} onViewChange={setView} />
           <div className="flex gap-1.5">
@@ -146,9 +199,16 @@ export default function TeamArchive() {
         {/* Content based on view */}
         <div 
           className="transition-opacity duration-300 ease-in-out"
-          key={view}
+          key={`${view}-${selectedFolder}`}
         >
-          {view === 'grid' ? (
+          {filteredPosts.length === 0 ? (
+            <div className="kairo-panel p-8 text-center">
+              <div className="text-4xl mb-3">📁</div>
+              <p className="font-pixel text-[10px] text-muted-foreground">
+                이 폴더에 게시물이 없습니다
+              </p>
+            </div>
+          ) : view === 'grid' ? (
             /* Grid View - Denser */
             <div className="grid grid-cols-3 gap-1.5">
               {postsWithImages.map((post) => (
@@ -164,13 +224,29 @@ export default function TeamArchive() {
           ) : (
             /* Single View (Timeline) - Denser */
             <div className="space-y-3">
-              {mockPosts.map((post) => (
+              {filteredPosts.map((post) => (
                 <TimelinePost key={post.id} {...post} />
               ))}
             </div>
           )}
         </div>
       </div>
+
+      {/* Write Modal */}
+      <ArchiveWriteModal
+        isOpen={showWriteModal}
+        onClose={() => setShowWriteModal(false)}
+        folders={folders.filter(f => !f.isDefault)}
+        onSubmit={handleArchiveSubmit}
+      />
+
+      {/* Folder Management Modal (Admin Only) */}
+      <FolderManageModal
+        isOpen={showFolderModal}
+        onClose={() => setShowFolderModal(false)}
+        folders={folders}
+        onSave={handleFoldersSave}
+      />
     </div>
   );
 }
