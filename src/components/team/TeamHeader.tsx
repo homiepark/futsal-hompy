@@ -1,4 +1,4 @@
-import { Star, Camera, Instagram, Youtube } from 'lucide-react';
+import { Star, Camera, Youtube } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
@@ -109,21 +109,6 @@ export function TeamHeader({
 
         {/* Social Links - Top Right */}
         <div className="absolute top-2 right-2 flex gap-1.5">
-          {instagramUrl && (
-            <a
-              href={instagramUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={cn(
-                'w-8 h-8 flex items-center justify-center',
-                'bg-card/95 border-2 border-border-dark',
-                'hover:bg-accent hover:border-accent-dark transition-colors'
-              )}
-              style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
-            >
-              <Instagram size={14} className="text-foreground" />
-            </a>
-          )}
           {youtubeUrl && (
             <a
               href={youtubeUrl}
