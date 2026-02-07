@@ -157,47 +157,42 @@ export default function TeamHome() {
           onSave={handleIntroUpdate}
         />
 
-        {/* Join Request or Team Actions */}
-        {!isMember ? (
-          <JoinRequestButton
-            teamId={teamData.id}
-            teamName={teamData.name}
-            teamEmblem={teamData.emblem}
-            className="w-full"
-          />
-        ) : (
-          <div className="space-y-2">
-            {/* Admin: Invite Player Button */}
-            {isAdmin && (
-              <PixelButton
-                variant="accent"
-                size="sm"
-                onClick={() => setShowInviteModal(true)}
-                className="w-full flex items-center justify-center gap-2"
-              >
-                <UserPlus size={14} />
-                선수 초대하기
-              </PixelButton>
-            )}
-            
-            {/* Member Actions */}
-            <div className="flex items-center gap-2">
-              <PixelButton
-                variant="primary"
-                size="sm"
-                onClick={() => navigate('/register')}
+        {/* Team Actions Section */}
+        <div className="space-y-2">
+          {/* Admin: Invite Player Button */}
+          {isAdmin && (
+            <PixelButton
+              variant="accent"
+              size="sm"
+              onClick={() => setShowInviteModal(true)}
+              className="w-full flex items-center justify-center gap-2"
+            >
+              <UserPlus size={14} />
+              선수 초대하기
+            </PixelButton>
+          )}
+          
+          {/* Join Request or Member Actions */}
+          <div className="flex items-center gap-2">
+            {!isMember ? (
+              <JoinRequestButton
+                teamId={teamData.id}
+                teamName={teamData.name}
+                teamEmblem={teamData.emblem}
                 className="flex-1"
-              >
-                ⚽ 입단 신청하기
-              </PixelButton>
-              <MessageButton 
-                label="쪽지" 
-                variant="admin" 
-                size="sm"
               />
-            </div>
+            ) : (
+              <div className="flex-1 text-center py-2 bg-muted border-2 border-border-dark font-pixel text-[9px] text-muted-foreground">
+                ✅ 팀원입니다
+              </div>
+            )}
+            <MessageButton 
+              label="쪽지" 
+              variant="admin" 
+              size="sm"
+            />
           </div>
-        )}
+        </div>
 
         {/* Latest Archive Preview */}
         <LatestArchive 
