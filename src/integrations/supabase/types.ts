@@ -401,7 +401,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      count_team_admins: { Args: { _team_id: string }; Returns: number }
       generate_nickname_tag: { Args: never; Returns: string }
+      is_team_admin: {
+        Args: { _team_id: string; _user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
