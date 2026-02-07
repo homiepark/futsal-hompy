@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { UserPlus, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
@@ -22,6 +23,7 @@ export function JoinRequestButton({
   className,
 }: JoinRequestButtonProps) {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [hasRequested, setHasRequested] = useState(false);
@@ -57,13 +59,33 @@ export function JoinRequestButton({
     }
   };
 
-  const handleClick = () => {
+  const handleClick = async () => {
     // Auth guard - show popup if not logged in
     if (!user) {
       setShowAuthModal(true);
       return;
     }
-    setShowModal(true);
+
+    // Check if user has a complete profile
+    try {
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('nickname, preferred_position, years_of_experience')
+        .eq('user_id', user.id)
+        .single();
+
+      // If no profile or profile is incomplete, redirect to register
+      if (error || !profile || !profile.preferred_position) {
+        navigate('/register', { state: { returnTo: window.location.pathname } });
+        return;
+      }
+
+      // Profile exists and is complete, show the modal
+      setShowModal(true);
+    } catch {
+      // On any error, redirect to register
+      navigate('/register', { state: { returnTo: window.location.pathname } });
+    }
   };
 
   const handleSuccess = () => {
