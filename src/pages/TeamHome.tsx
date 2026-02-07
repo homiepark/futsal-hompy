@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Settings, Users, UserPlus } from 'lucide-react';
+import { Settings, Users, UserPlus, Megaphone } from 'lucide-react';
 import { useTeam } from '@/contexts/TeamContext';
 import { useDev } from '@/contexts/DevContext';
 import { TeamHeader } from '@/components/team/TeamHeader';
@@ -11,10 +11,11 @@ import { MemberRoster } from '@/components/team/MemberRoster';
 import { Guestbook } from '@/components/team/Guestbook';
 import { PixelButton } from '@/components/ui/PixelButton';
 import { PixelBackButton } from '@/components/ui/PixelBackButton';
-import { MessageButton } from '@/components/ui/MessageButton';
 import { JoinRequestButton } from '@/components/team/JoinRequestButton';
 import { AdminTransferModal } from '@/components/team/AdminTransferModal';
 import { PlayerInviteModal } from '@/components/team/PlayerInviteModal';
+import { DirectMessageModal } from '@/components/messages/DirectMessageModal';
+import { BroadcastModal } from '@/components/messages/BroadcastModal';
 import { toast } from 'sonner';
 
 // Mock data - would come from Supabase
@@ -59,12 +60,17 @@ export default function TeamHome() {
   const { isDevAdmin } = useDev();
   const [showAdminTransfer, setShowAdminTransfer] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
+  const [showDirectMessage, setShowDirectMessage] = useState(false);
+  const [showBroadcast, setShowBroadcast] = useState(false);
   const [teamData, setTeamData] = useState(mockTeamData);
 
   // Use dev toggle for admin status
   const isAdmin = isDevAdmin;
   // For now, set isMember to false to show join button for testing
   const isMember = false; // Would check if user is a team member from database
+  
+  // Mock admin user ID for direct messaging
+  const adminUserId = 'admin-user-id-mock';
 
   // Set this team as active when entering
   useEffect(() => {
@@ -159,6 +165,19 @@ export default function TeamHome() {
 
         {/* Team Actions Section */}
         <div className="space-y-2">
+          {/* Admin: Team Broadcast Button */}
+          {isAdmin && (
+            <PixelButton
+              variant="default"
+              size="sm"
+              onClick={() => setShowBroadcast(true)}
+              className="w-full flex items-center justify-center gap-2"
+            >
+              <Megaphone size={14} />
+              📢 팀원 전체 메시지
+            </PixelButton>
+          )}
+
           {/* Admin: Invite Player Button */}
           {isAdmin && (
             <PixelButton
@@ -191,7 +210,7 @@ export default function TeamHome() {
           {/* Message Button - Different for Admin vs Non-Admin */}
           {isAdmin ? (
             <PixelButton
-              variant="default"
+              variant="ghost"
               size="sm"
               onClick={() => navigate('/messages')}
               className="w-full flex items-center justify-center gap-2"
@@ -200,10 +219,7 @@ export default function TeamHome() {
             </PixelButton>
           ) : (
             <button
-              onClick={() => {
-                toast.info('팀 관리자에게 쪽지를 보냅니다', { icon: '✉️' });
-                navigate('/messages');
-              }}
+              onClick={() => setShowDirectMessage(true)}
               className="w-full py-2.5 bg-secondary border-3 border-border-dark font-pixel text-[9px] text-foreground hover:bg-muted transition-colors flex items-center justify-center gap-2"
               style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
             >
@@ -243,6 +259,30 @@ export default function TeamHome() {
         onClose={() => setShowInviteModal(false)}
         teamId={teamData.id}
         teamName={teamData.name}
+      />
+
+      {/* Direct Message Modal (for non-admins) */}
+      <DirectMessageModal
+        isOpen={showDirectMessage}
+        onClose={() => setShowDirectMessage(false)}
+        recipientId={adminUserId}
+        recipientName="팀 관리자"
+        teamId={teamData.id}
+        teamName={teamData.name}
+        isTeamInquiry={true}
+      />
+
+      {/* Broadcast Modal (for admins) */}
+      <BroadcastModal
+        isOpen={showBroadcast}
+        onClose={() => setShowBroadcast(false)}
+        teamId={teamData.id}
+        teamName={teamData.name}
+        members={mockMembers.map(m => ({
+          id: m.id,
+          nickname: m.nickname,
+          avatarUrl: m.avatarUrl,
+        }))}
       />
     </div>
   );
