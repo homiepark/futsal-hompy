@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Send } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { ArrowLeft, Send, UserPlus } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { PixelCard } from '@/components/ui/PixelCard';
 import { PixelButton } from '@/components/ui/PixelButton';
 import { InvitationCard } from '@/components/messages/InvitationCard';
 import { MessageBadge, getMessageType } from '@/components/messages/MessageBadge';
 import { DirectMessageModal } from '@/components/messages/DirectMessageModal';
+import { ApplicantCard } from '@/components/team/ApplicantCard';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
+import { useDev } from '@/contexts/DevContext';
+import { toast } from 'sonner';
 
 interface Message {
   id: string;
@@ -86,13 +89,34 @@ function formatDate(dateStr: string): string {
   return date.toLocaleDateString('ko-KR');
 }
 
+interface JoinRequest {
+  id: string;
+  user_id: string;
+  team_id: string;
+  message: string | null;
+  status: string;
+  created_at: string;
+  profile?: {
+    nickname: string;
+    nickname_tag: string | null;
+    real_name: string | null;
+    avatar_url: string | null;
+    years_of_experience: number;
+    preferred_position: string | null;
+  };
+}
+
 export default function Messages() {
   const location = useLocation();
-  const [activeTab, setActiveTab] = useState<'all' | 'team' | 'personal' | 'invites'>('all');
+  const navigate = useNavigate();
+  const { isDevAdmin } = useDev();
+  const [activeTab, setActiveTab] = useState<'all' | 'team' | 'personal' | 'invites' | 'join-requests'>('all');
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
   const [replyText, setReplyText] = useState('');
   const [invitations, setInvitations] = useState<Invitation[]>([]);
+  const [joinRequests, setJoinRequests] = useState<JoinRequest[]>([]);
   const [loadingInvites, setLoadingInvites] = useState(false);
+  const [loadingJoinRequests, setLoadingJoinRequests] = useState(false);
   const [showDirectMessage, setShowDirectMessage] = useState(false);
   const [directMessageRecipient, setDirectMessageRecipient] = useState<{
     id: string;
@@ -103,7 +127,7 @@ export default function Messages() {
     isTeamInquiry?: boolean;
   } | null>(null);
 
-  // Check for direct message mode from navigation state
+  // Check for direct message mode or tab from navigation state
   useEffect(() => {
     const state = location.state as { 
       directMessage?: boolean; 
@@ -111,9 +135,14 @@ export default function Messages() {
       recipientName?: string;
       teamId?: string;
       teamName?: string;
+      tab?: string;
     } | null;
     
-    if (state?.directMessage && state.recipientId) {
+    if (state?.tab === 'join-requests' && isDevAdmin) {
+      setActiveTab('join-requests');
+      // Clear the state to prevent issues on refresh
+      window.history.replaceState({}, document.title);
+    } else if (state?.directMessage && state.recipientId) {
       setDirectMessageRecipient({
         id: state.recipientId,
         name: state.recipientName || '팀 관리자',
@@ -125,13 +154,15 @@ export default function Messages() {
       // Clear the state to prevent re-opening on refresh
       window.history.replaceState({}, document.title);
     }
-  }, [location.state]);
+  }, [location.state, isDevAdmin]);
 
   useEffect(() => {
     if (activeTab === 'invites') {
       fetchInvitations();
+    } else if (activeTab === 'join-requests' && isDevAdmin) {
+      fetchJoinRequests();
     }
-  }, [activeTab]);
+  }, [activeTab, isDevAdmin]);
 
   const fetchInvitations = async () => {
     setLoadingInvites(true);
@@ -168,6 +199,108 @@ export default function Messages() {
       console.error('Error fetching invitations:', error);
     } finally {
       setLoadingInvites(false);
+    }
+  };
+
+  const fetchJoinRequests = async () => {
+    setLoadingJoinRequests(true);
+    try {
+      // For demo, we'll fetch all pending requests (in real app, filter by admin's team)
+      const { data: requestsData, error: requestsError } = await supabase
+        .from('team_join_requests')
+        .select('*')
+        .eq('status', 'pending')
+        .order('created_at', { ascending: false });
+
+      if (requestsError) throw requestsError;
+
+      if (requestsData && requestsData.length > 0) {
+        const userIds = requestsData.map(r => r.user_id);
+        const { data: profilesData, error: profilesError } = await supabase
+          .from('profiles')
+          .select('user_id, nickname, nickname_tag, real_name, avatar_url, years_of_experience, preferred_position')
+          .in('user_id', userIds);
+
+        if (profilesError) throw profilesError;
+
+        const profileMap = new Map(profilesData?.map(p => [p.user_id, p]) || []);
+        const enrichedRequests = requestsData.map(req => ({
+          ...req,
+          profile: profileMap.get(req.user_id) || {
+            nickname: '알 수 없음',
+            nickname_tag: null,
+            real_name: null,
+            avatar_url: null,
+            years_of_experience: 0,
+            preferred_position: null,
+          },
+        }));
+
+        setJoinRequests(enrichedRequests);
+      } else {
+        setJoinRequests([]);
+      }
+    } catch (error) {
+      console.error('Error fetching join requests:', error);
+    } finally {
+      setLoadingJoinRequests(false);
+    }
+  };
+
+  const handleApproveRequest = async (requestId: string) => {
+    const request = joinRequests.find(r => r.id === requestId);
+    if (!request) return;
+
+    try {
+      const { error: updateError } = await supabase
+        .from('team_join_requests')
+        .update({ status: 'approved' })
+        .eq('id', requestId);
+
+      if (updateError) throw updateError;
+
+      const { error: memberError } = await supabase
+        .from('team_members')
+        .insert({
+          team_id: request.team_id,
+          user_id: request.user_id,
+          role: 'member',
+        });
+
+      if (memberError) throw memberError;
+
+      toast.success(`${request.profile?.nickname}님의 가입을 승인했습니다!`);
+      setJoinRequests(prev => prev.filter(r => r.id !== requestId));
+    } catch (error) {
+      console.error('Error approving request:', error);
+      toast.error('승인 처리 중 오류가 발생했습니다');
+    }
+  };
+
+  const handleRejectRequest = async (requestId: string) => {
+    const request = joinRequests.find(r => r.id === requestId);
+    if (!request) return;
+
+    try {
+      const { error } = await supabase
+        .from('team_join_requests')
+        .update({ status: 'rejected' })
+        .eq('id', requestId);
+
+      if (error) throw error;
+
+      toast.success(`${request.profile?.nickname}님의 가입을 거절했습니다`);
+      setJoinRequests(prev => prev.filter(r => r.id !== requestId));
+    } catch (error) {
+      console.error('Error rejecting request:', error);
+      toast.error('거절 처리 중 오류가 발생했습니다');
+    }
+  };
+
+  const handleMessageApplicant = (requestId: string) => {
+    const request = joinRequests.find(r => r.id === requestId);
+    if (request) {
+      navigate('/messages', { state: { recipientId: request.user_id } });
     }
   };
 
@@ -264,18 +397,19 @@ export default function Messages() {
 
       <div className="p-4 space-y-4">
         {/* Tabs */}
-        <div className="flex gap-1">
+        <div className="flex gap-1 flex-wrap">
           {[
             { key: 'all', label: '전체', icon: '📬' },
             { key: 'team', label: '팀', icon: '📢', color: 'primary' },
             { key: 'personal', label: '개인', icon: '💬', color: 'accent' },
             { key: 'invites', label: '초대', icon: '🎫', badge: invitations.length },
+            ...(isDevAdmin ? [{ key: 'join-requests', label: '입단신청', icon: '📋', badge: joinRequests.length }] : []),
           ].map((tab) => (
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key as typeof activeTab)}
               className={cn(
-                'flex-1 py-2 border-3 text-[10px] transition-all flex items-center justify-center gap-1 font-pixel',
+                'flex-1 min-w-[60px] py-2 border-3 text-[10px] transition-all flex items-center justify-center gap-1 font-pixel',
                 activeTab === tab.key
                   ? 'bg-primary text-primary-foreground border-primary-dark shadow-[2px_2px_0_hsl(var(--primary-dark))]'
                   : 'bg-card text-foreground border-border-dark shadow-[2px_2px_0_hsl(var(--pixel-shadow))]'
@@ -293,7 +427,57 @@ export default function Messages() {
         </div>
 
         {/* Content */}
-        {activeTab === 'invites' ? (
+        {activeTab === 'join-requests' && isDevAdmin ? (
+          /* Join Requests Tab (Admin Only) */
+          <div className="space-y-4">
+            {loadingJoinRequests ? (
+              <div className="space-y-4">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="kairo-panel p-4 animate-pulse">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 bg-muted border-2 border-border-dark" />
+                      <div className="flex-1 space-y-2">
+                        <div className="h-4 bg-muted rounded w-24" />
+                        <div className="h-3 bg-muted rounded w-16" />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : joinRequests.length > 0 ? (
+              joinRequests.map((request) => (
+                <ApplicantCard
+                  key={request.id}
+                  id={request.id}
+                  nickname={request.profile?.nickname || '알 수 없음'}
+                  nicknameTag={request.profile?.nickname_tag || undefined}
+                  realName={request.profile?.real_name || undefined}
+                  avatarUrl={request.profile?.avatar_url || undefined}
+                  yearsOfExperience={request.profile?.years_of_experience || 0}
+                  preferredPosition={request.profile?.preferred_position || 'MF'}
+                  message={request.message || undefined}
+                  onApprove={handleApproveRequest}
+                  onReject={handleRejectRequest}
+                  onMessage={handleMessageApplicant}
+                />
+              ))
+            ) : (
+              <div className="kairo-panel p-8 text-center">
+                <div className="w-20 h-20 mx-auto mb-4 bg-secondary border-3 border-border-dark flex items-center justify-center"
+                  style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}
+                >
+                  <UserPlus size={32} className="text-muted-foreground animate-pixel-pulse" />
+                </div>
+                <p className="font-pixel text-sm text-foreground mb-2">
+                  아직 새로운 입단 신청이 없어요!
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  새로운 팀원이 가입 신청을 하면 여기에 표시됩니다
+                </p>
+              </div>
+            )}
+          </div>
+        ) : activeTab === 'invites' ? (
           /* Invitations Tab */
           <div className="space-y-3">
             {loadingInvites ? (
