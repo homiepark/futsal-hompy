@@ -311,7 +311,16 @@ export default function Matchmaking() {
         </p>
       </div>
 
-      {/* Write Post Button */}
+      {/* Live Ticker */}
+      <MatchTicker />
+
+      {/* Filters */}
+      <MatchBoardFilters 
+        filters={filters}
+        onFiltersChange={setFilters}
+      />
+
+      {/* Write Post Button - Below Filters */}
       {canCreatePost && (
         <button
           onClick={() => setIsCreateModalOpen(true)}
@@ -327,15 +336,6 @@ export default function Matchmaking() {
           매칭공고 글쓰기
         </button>
       )}
-
-      {/* Live Ticker */}
-      <MatchTicker />
-
-      {/* Filters */}
-      <MatchBoardFilters 
-        filters={filters}
-        onFiltersChange={setFilters}
-      />
 
       {/* Match Posts */}
       <div className="space-y-4">
