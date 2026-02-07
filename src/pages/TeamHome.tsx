@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Settings, Users, UserPlus } from 'lucide-react';
 import { useTeam } from '@/contexts/TeamContext';
+import { useDev } from '@/contexts/DevContext';
 import { TeamHeader } from '@/components/team/TeamHeader';
 import { TeamSwitcher } from '@/components/team/TeamSwitcher';
 import { TeamIntro } from '@/components/team/TeamIntro';
@@ -55,11 +56,13 @@ export default function TeamHome() {
   const { teamId } = useParams<{ teamId: string }>();
   const navigate = useNavigate();
   const { setActiveTeam, clearActiveTeam } = useTeam();
+  const { isDevAdmin } = useDev();
   const [showAdminTransfer, setShowAdminTransfer] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [teamData, setTeamData] = useState(mockTeamData);
 
-  const isAdmin = true; // Would check user's role in team
+  // Use dev toggle for admin status
+  const isAdmin = isDevAdmin;
   const isMember = true; // Would check if user is a team member
 
   // Set this team as active when entering
