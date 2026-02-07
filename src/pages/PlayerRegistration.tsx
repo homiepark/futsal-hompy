@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { User } from 'lucide-react';
 import { PixelCard } from '@/components/ui/PixelCard';
 import { PixelButton } from '@/components/ui/PixelButton';
+import { PixelBackButton } from '@/components/ui/PixelBackButton';
 import { MessageButton } from '@/components/ui/MessageButton';
 import { cn } from '@/lib/utils';
 
@@ -37,6 +38,11 @@ export default function PlayerRegistration() {
 
   return (
     <div className="min-h-screen bg-background pb-24 px-4 py-6 max-w-lg mx-auto">
+      {/* Back Button */}
+      <div className="mb-4">
+        <PixelBackButton />
+      </div>
+
       {/* Title - Pixel Font */}
       <div className="text-center mb-6">
         <h1 className="font-pixel text-sm mb-2">⚽️ 선수 등록소</h1>

@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Camera, Check, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Camera, Check, ArrowRight } from 'lucide-react';
 import { PixelCard } from '@/components/ui/PixelCard';
 import { PixelButton } from '@/components/ui/PixelButton';
+import { PixelBackButton } from '@/components/ui/PixelBackButton';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
@@ -170,6 +171,11 @@ export default function ProfileSetup() {
 
   return (
     <div className="min-h-screen bg-background pb-24 px-4 py-6 max-w-lg mx-auto">
+      {/* Back Button */}
+      <div className="mb-4">
+        <PixelBackButton variant="green" />
+      </div>
+
       {/* Step Indicator */}
       <div className="flex items-center justify-center gap-2 mb-6">
         <div className="flex items-center gap-2">

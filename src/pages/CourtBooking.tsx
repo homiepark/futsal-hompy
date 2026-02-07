@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Search, SlidersHorizontal, MapPin } from 'lucide-react';
 import { PixelInput } from '@/components/ui/PixelInput';
 import { PixelButton } from '@/components/ui/PixelButton';
+import { PixelBackButton } from '@/components/ui/PixelBackButton';
 import { PixelCard } from '@/components/ui/PixelCard';
 import { CourtCard } from '@/components/courts/CourtCard';
 
@@ -45,10 +46,13 @@ export default function CourtBooking() {
     <div className="pb-20 px-4 py-6 max-w-lg mx-auto">
       {/* Header */}
       <div className="mb-6">
-        <h2 className="font-pixel text-xs text-foreground flex items-center gap-2 mb-4">
-          <span className="text-primary">📍</span>
-          코트 예약
-        </h2>
+        <div className="flex items-center gap-3 mb-4">
+          <PixelBackButton variant="green" />
+          <h2 className="font-pixel text-xs text-foreground flex items-center gap-2">
+            <span className="text-primary">📍</span>
+            코트 예약
+          </h2>
+        </div>
 
         {/* Search & Location */}
         <div className="flex gap-2 mb-4">

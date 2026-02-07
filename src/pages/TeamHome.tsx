@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Settings, Users, UserPlus } from 'lucide-react';
+import { Settings, Users, UserPlus } from 'lucide-react';
 import { useTeam } from '@/contexts/TeamContext';
 import { TeamHeader } from '@/components/team/TeamHeader';
 import { TeamSwitcher } from '@/components/team/TeamSwitcher';
@@ -9,6 +9,7 @@ import { LatestArchive } from '@/components/team/LatestArchive';
 import { MemberRoster } from '@/components/team/MemberRoster';
 import { Guestbook } from '@/components/team/Guestbook';
 import { PixelButton } from '@/components/ui/PixelButton';
+import { PixelBackButton } from '@/components/ui/PixelBackButton';
 import { MessageButton } from '@/components/ui/MessageButton';
 import { JoinRequestButton } from '@/components/team/JoinRequestButton';
 import { AdminTransferModal } from '@/components/team/AdminTransferModal';
@@ -103,12 +104,7 @@ export default function TeamHome() {
       <div className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b-2 border-border-dark">
         <div className="px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <button 
-              onClick={handleBack}
-              className="w-8 h-8 bg-secondary border-2 border-border-dark flex items-center justify-center hover:bg-muted transition-colors"
-            >
-              <ArrowLeft size={16} className="text-foreground" />
-            </button>
+            <PixelBackButton onClick={handleBack} variant="green" />
             <span className="font-pixel text-[10px] text-muted-foreground">MY TEAM</span>
           </div>
           <div className="flex items-center gap-2">

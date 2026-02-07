@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, UserPlus } from 'lucide-react';
+import { UserPlus } from 'lucide-react';
+import { PixelBackButton } from '@/components/ui/PixelBackButton';
 import { ApplicantCard } from '@/components/team/ApplicantCard';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -152,9 +153,7 @@ export default function JoinRequestManagement() {
       {/* Sticky Header */}
       <div className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b-3 border-border-dark">
         <div className="px-4 py-3 flex items-center gap-3">
-          <button onClick={handleBack} className="pixel-back-btn">
-            <ArrowLeft size={16} />
-          </button>
+          <PixelBackButton onClick={handleBack} />
           <div className="flex-1">
             <h1 className="font-pixel text-sm text-foreground">입단 신청 관리</h1>
             <p className="font-pixel text-[9px] text-muted-foreground mt-0.5">
