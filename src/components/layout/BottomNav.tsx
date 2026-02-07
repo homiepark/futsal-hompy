@@ -8,6 +8,7 @@ const navItems = [
   { icon: 'home' as const, label: '홈', path: '/' },
   { icon: 'archive' as const, label: 'MY TEAM', path: '/my-team' },
   { icon: 'matching' as const, label: '매칭', path: '/matchmaking' },
+  { icon: 'mail' as const, label: '쪽지', path: '/messages' },
   { icon: 'calendar' as const, label: '일정', path: '/schedule' },
   { icon: 'map' as const, label: '코트', path: '/courts' },
 ];
