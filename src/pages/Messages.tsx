@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { ArrowLeft, Send } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { PixelCard } from '@/components/ui/PixelCard';
 import { PixelButton } from '@/components/ui/PixelButton';
 import { InvitationCard } from '@/components/messages/InvitationCard';
+import { MessageBadge, getMessageType } from '@/components/messages/MessageBadge';
+import { DirectMessageModal } from '@/components/messages/DirectMessageModal';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -44,7 +46,7 @@ const mockMessages: Message[] = [
     senderId: 'team1',
     senderName: 'FC 불꽃',
     senderAvatar: '🔥',
-    content: '[팀 공지] 이번 주 토요일 훈련 장소가 변경되었습니다.',
+    content: '[📢 팀 공지] 이번 주 토요일 훈련 장소가 변경되었습니다.',
     isRead: false,
     createdAt: '1시간 전',
     teamId: 'team1',
@@ -54,9 +56,11 @@ const mockMessages: Message[] = [
     id: '3',
     senderId: 'user2',
     senderName: '박매칭',
-    content: '매칭 문의드립니다. 저희 팀과 한 번 경기하실래요?',
+    content: '[팀 문의] 저희 팀과 매칭 가능한지 문의드립니다.',
     isRead: true,
     createdAt: '어제',
+    teamId: 'team2',
+    teamName: '스피드FC',
   },
   {
     id: '4',
@@ -83,11 +87,45 @@ function formatDate(dateStr: string): string {
 }
 
 export default function Messages() {
+  const location = useLocation();
   const [activeTab, setActiveTab] = useState<'all' | 'team' | 'personal' | 'invites'>('all');
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
   const [replyText, setReplyText] = useState('');
   const [invitations, setInvitations] = useState<Invitation[]>([]);
   const [loadingInvites, setLoadingInvites] = useState(false);
+  const [showDirectMessage, setShowDirectMessage] = useState(false);
+  const [directMessageRecipient, setDirectMessageRecipient] = useState<{
+    id: string;
+    name: string;
+    avatar?: string;
+    teamId?: string;
+    teamName?: string;
+    isTeamInquiry?: boolean;
+  } | null>(null);
+
+  // Check for direct message mode from navigation state
+  useEffect(() => {
+    const state = location.state as { 
+      directMessage?: boolean; 
+      recipientId?: string; 
+      recipientName?: string;
+      teamId?: string;
+      teamName?: string;
+    } | null;
+    
+    if (state?.directMessage && state.recipientId) {
+      setDirectMessageRecipient({
+        id: state.recipientId,
+        name: state.recipientName || '팀 관리자',
+        teamId: state.teamId,
+        teamName: state.teamName,
+        isTeamInquiry: true,
+      });
+      setShowDirectMessage(true);
+      // Clear the state to prevent re-opening on refresh
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   useEffect(() => {
     if (activeTab === 'invites') {
@@ -111,7 +149,6 @@ export default function Messages() {
       if (error) throw error;
 
       if (data && data.length > 0) {
-        // Fetch team details
         const teamIds = data.map(inv => inv.team_id);
         const { data: teams } = await supabase
           .from('teams')
@@ -141,8 +178,11 @@ export default function Messages() {
   });
 
   const unreadCount = mockMessages.filter(m => !m.isRead).length;
+  const hasBroadcast = mockMessages.some(m => m.content.startsWith('[📢 팀 공지]') && !m.isRead);
 
   if (selectedMessage) {
+    const messageType = getMessageType(selectedMessage.content, selectedMessage.teamId);
+    
     return (
       <div className="pb-24 max-w-lg mx-auto">
         {/* Message Detail Header */}
@@ -158,6 +198,7 @@ export default function Messages() {
               {selectedMessage.senderAvatar || '👤'}
             </div>
             <span className="text-primary-foreground">{selectedMessage.senderName}</span>
+            <MessageBadge type={messageType} />
           </div>
         </div>
 
@@ -174,9 +215,7 @@ export default function Messages() {
                   <span className="text-xs text-muted-foreground">{selectedMessage.createdAt}</span>
                 </div>
                 {selectedMessage.teamName && (
-                  <span className="inline-block px-2 py-0.5 bg-accent/20 text-accent text-xs mb-2 border border-accent">
-                    {selectedMessage.teamName} 팀 공지
-                  </span>
+                  <MessageBadge type={messageType} className="mb-2" />
                 )}
                 <p className="text-foreground">{selectedMessage.content}</p>
               </div>
@@ -211,7 +250,12 @@ export default function Messages() {
         <h1 className="text-sm text-primary-foreground flex items-center gap-2">
           📬 쪽지함
           {unreadCount > 0 && (
-            <span className="px-2 py-0.5 bg-accent border border-accent-dark text-accent-foreground text-xs">
+            <span className={cn(
+              "px-2 py-0.5 text-accent-foreground text-xs border",
+              hasBroadcast 
+                ? "bg-destructive border-destructive animate-pulse" 
+                : "bg-accent border-accent-dark"
+            )}>
               {unreadCount}
             </span>
           )}
@@ -223,8 +267,8 @@ export default function Messages() {
         <div className="flex gap-1">
           {[
             { key: 'all', label: '전체', icon: '📬' },
-            { key: 'team', label: '팀', icon: '📢' },
-            { key: 'personal', label: '개인', icon: '💬' },
+            { key: 'team', label: '팀', icon: '📢', color: 'primary' },
+            { key: 'personal', label: '개인', icon: '💬', color: 'accent' },
             { key: 'invites', label: '초대', icon: '🎫', badge: invitations.length },
           ].map((tab) => (
             <button
@@ -281,48 +325,56 @@ export default function Messages() {
           /* Messages List */
           <div className="space-y-2">
             {filteredMessages.length > 0 ? (
-              filteredMessages.map((message) => (
-                <button
-                  key={message.id}
-                  onClick={() => setSelectedMessage(message)}
-                  className={cn(
-                    'w-full text-left p-3 border-4 transition-all',
-                    message.isRead
-                      ? 'bg-card border-border-dark shadow-[3px_3px_0_hsl(var(--pixel-shadow))]'
-                      : 'bg-accent/10 border-accent shadow-[3px_3px_0_hsl(var(--accent-dark))]'
-                  )}
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 bg-secondary border-2 border-border-dark flex items-center justify-center text-lg flex-shrink-0">
-                      {message.senderAvatar || '👤'}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between gap-2">
-                        <span className={cn(
-                          'truncate',
-                          !message.isRead && 'text-foreground'
-                        )}>
-                          {message.senderName}
-                        </span>
-                        <span className="text-xs text-muted-foreground flex-shrink-0">
-                          {message.createdAt}
-                        </span>
-                      </div>
-                      {message.teamName && (
-                        <span className="inline-block px-1.5 py-0.5 bg-accent/20 text-accent text-[10px] mt-1 border border-accent">
-                          {message.teamName}
-                        </span>
-                      )}
-                      <p className="text-sm text-muted-foreground truncate mt-1">
-                        {message.content}
-                      </p>
-                    </div>
-                    {!message.isRead && (
-                      <div className="w-2 h-2 bg-accent rounded-full flex-shrink-0 mt-2" />
+              filteredMessages.map((message) => {
+                const messageType = getMessageType(message.content, message.teamId);
+                const isBroadcast = message.content.startsWith('[📢 팀 공지]');
+                
+                return (
+                  <button
+                    key={message.id}
+                    onClick={() => setSelectedMessage(message)}
+                    className={cn(
+                      'w-full text-left p-3 border-4 transition-all',
+                      message.isRead
+                        ? 'bg-card border-border-dark shadow-[3px_3px_0_hsl(var(--pixel-shadow))]'
+                        : isBroadcast
+                          ? 'bg-destructive/10 border-destructive shadow-[3px_3px_0_hsl(var(--destructive))] animate-pulse'
+                          : 'bg-accent/10 border-accent shadow-[3px_3px_0_hsl(var(--accent-dark))]'
                     )}
-                  </div>
-                </button>
-              ))
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 bg-secondary border-2 border-border-dark flex items-center justify-center text-lg flex-shrink-0">
+                        {message.senderAvatar || '👤'}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-2 mb-1">
+                          <div className="flex items-center gap-2">
+                            <span className={cn(
+                              'truncate font-pixel text-xs',
+                              !message.isRead && 'text-foreground font-bold'
+                            )}>
+                              {message.senderName}
+                            </span>
+                            <MessageBadge type={messageType} />
+                          </div>
+                          <span className="text-xs text-muted-foreground flex-shrink-0">
+                            {message.createdAt}
+                          </span>
+                        </div>
+                        <p className="text-sm text-muted-foreground truncate">
+                          {message.content}
+                        </p>
+                      </div>
+                      {!message.isRead && (
+                        <div className={cn(
+                          "w-2 h-2 rounded-full flex-shrink-0 mt-2",
+                          isBroadcast ? "bg-destructive animate-ping" : "bg-accent"
+                        )} />
+                      )}
+                    </div>
+                  </button>
+                );
+              })
             ) : (
               <div className="text-center py-8 text-muted-foreground">
                 <span className="text-4xl block mb-2">📭</span>
@@ -340,6 +392,23 @@ export default function Messages() {
           </PixelButton>
         )}
       </div>
+
+      {/* Direct Message Modal */}
+      {directMessageRecipient && (
+        <DirectMessageModal
+          isOpen={showDirectMessage}
+          onClose={() => {
+            setShowDirectMessage(false);
+            setDirectMessageRecipient(null);
+          }}
+          recipientId={directMessageRecipient.id}
+          recipientName={directMessageRecipient.name}
+          recipientAvatar={directMessageRecipient.avatar}
+          teamId={directMessageRecipient.teamId}
+          teamName={directMessageRecipient.teamName}
+          isTeamInquiry={directMessageRecipient.isTeamInquiry}
+        />
+      )}
     </div>
   );
 }

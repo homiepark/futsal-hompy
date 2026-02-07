@@ -1,5 +1,7 @@
 import { Bell, Settings } from 'lucide-react';
 import { PixelIcon } from '@/components/ui/PixelIcon';
+import { MailIcon } from '@/components/layout/MailIcon';
+import { useState, useEffect } from 'react';
 
 function GoalIcon() {
   return (
@@ -18,6 +20,18 @@ function GoalIcon() {
 }
 
 export function Header() {
+  // Mock state - in real app would come from context/API
+  const [unreadCount, setUnreadCount] = useState(3);
+  const [hasBroadcast, setHasBroadcast] = useState(true); // Demo: true to show blinking
+
+  // Demo: Stop blinking after 5 seconds
+  useEffect(() => {
+    if (hasBroadcast) {
+      const timer = setTimeout(() => setHasBroadcast(false), 10000);
+      return () => clearTimeout(timer);
+    }
+  }, [hasBroadcast]);
+
   return (
     <header className="sticky top-0 z-40 bg-card border-b-4 border-border-dark shadow-pixel">
       <div className="flex items-center justify-between px-4 py-3 max-w-lg mx-auto">
@@ -28,6 +42,11 @@ export function Header() {
           </h1>
         </div>
         <div className="flex items-center gap-2">
+          {/* Mail Icon with broadcast blinking */}
+          <MailIcon 
+            unreadCount={unreadCount} 
+            hasBroadcast={hasBroadcast}
+          />
           <button className="relative">
             <PixelIcon icon={Bell} size="sm" />
             <span className="absolute -top-1 -right-1 w-3 h-3 bg-accent border border-accent-dark text-[6px] font-pixel text-accent-foreground flex items-center justify-center">
