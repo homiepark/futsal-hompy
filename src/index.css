@@ -418,4 +418,35 @@
   .animate-sparkle {
     animation: sparkle 2s ease-in-out infinite;
   }
+
+  /* Page transition for back navigation */
+  @keyframes slide-out-right {
+    from {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    to {
+      opacity: 0.8;
+      transform: translateX(20px);
+    }
+  }
+
+  @keyframes slide-in-left {
+    from {
+      opacity: 0.8;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .page-content {
+    animation: slide-in-left 0.2s ease-out;
+  }
+
+  body.page-transitioning-back .page-content {
+    animation: slide-out-right 0.15s ease-in forwards;
+  }
 }

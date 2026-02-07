@@ -9,6 +9,7 @@ import { TeamProvider } from "@/contexts/TeamContext";
 import { DevProvider } from "@/contexts/DevContext";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { DevToggleButton } from "@/components/dev/DevToggleButton";
+import { ScrollRestoration } from "@/components/layout/ScrollRestoration";
 import Index from "./pages/Index";
 import TeamHome from "./pages/TeamHome";
 import TeamArchive from "./pages/TeamArchive";
@@ -38,9 +39,10 @@ const App = () => (
             <Toaster />
             <Sonner />
             <BrowserRouter>
+              <ScrollRestoration />
               <div className="min-h-screen bg-background">
                 
-                <main className="pb-16">
+                <main className="pb-16 page-content">
                   <Routes>
                     <Route path="/" element={<Index />} />
                     <Route path="/my-team" element={<MyTeam />} />

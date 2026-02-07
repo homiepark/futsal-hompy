@@ -1,9 +1,10 @@
 import { ArrowLeft } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
+import { isMainTabRoute } from '@/hooks/useScrollRestoration';
 
 interface PixelBackButtonProps {
-  /** Custom click handler. If not provided, uses history.back() */
+  /** Custom click handler. If not provided, uses navigate(-1) */
   onClick?: () => void;
   /** Optional label text next to the arrow */
   label?: string;
@@ -11,22 +12,41 @@ interface PixelBackButtonProps {
   variant?: 'orange' | 'green';
   /** Additional CSS classes */
   className?: string;
+  /** Force show even on main tabs (for custom use cases) */
+  forceShow?: boolean;
 }
 
 export function PixelBackButton({ 
   onClick, 
   label,
   variant = 'orange',
-  className 
+  className,
+  forceShow = false,
 }: PixelBackButtonProps) {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Hide on main tab routes unless forced
+  if (!forceShow && isMainTabRoute(location.pathname)) {
+    return null;
+  }
 
   const handleClick = () => {
-    if (onClick) {
-      onClick();
-    } else {
-      navigate(-1);
-    }
+    // Add a small visual feedback before navigating
+    document.body.classList.add('page-transitioning-back');
+    
+    setTimeout(() => {
+      if (onClick) {
+        onClick();
+      } else {
+        navigate(-1);
+      }
+      
+      // Remove class after navigation
+      setTimeout(() => {
+        document.body.classList.remove('page-transitioning-back');
+      }, 50);
+    }, 50);
   };
 
   return (
@@ -46,4 +66,9 @@ export function PixelBackButton({
       )}
     </button>
   );
+}
+
+// Smart back button that only shows on sub-pages
+export function SmartBackButton(props: Omit<PixelBackButtonProps, 'forceShow'>) {
+  return <PixelBackButton {...props} />;
 }
