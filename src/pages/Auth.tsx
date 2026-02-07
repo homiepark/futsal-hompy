@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { z } from 'zod';
-import logoMain from '@/assets/logo-main.png';
+import logoAuth from '@/assets/logo-auth.png';
 
 // Validation schemas
 const emailSchema = z.string().email('올바른 이메일 형식이 아닙니다');
@@ -122,12 +122,9 @@ export default function Auth() {
       {/* Logo Section */}
       <div className="text-center mb-6">
         <img 
-          src={logoMain} 
+          src={logoAuth} 
           alt="우리의 풋살 - Our Futsal" 
-          className="h-20 mx-auto"
-          style={{
-            filter: 'brightness(1.15) saturate(0.85) contrast(0.95)',
-          }}
+          className="h-24 mx-auto"
         />
       </div>
 
