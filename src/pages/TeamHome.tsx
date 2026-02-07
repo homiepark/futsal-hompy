@@ -63,7 +63,8 @@ export default function TeamHome() {
 
   // Use dev toggle for admin status
   const isAdmin = isDevAdmin;
-  const isMember = true; // Would check if user is a team member
+  // For now, set isMember to false to show join button for testing
+  const isMember = false; // Would check if user is a team member from database
 
   // Set this team as active when entering
   useEffect(() => {
