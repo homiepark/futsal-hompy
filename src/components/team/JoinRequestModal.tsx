@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, Loader2, UserPlus } from 'lucide-react';
+import { X, Loader2, Send, PartyPopper } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -49,11 +49,14 @@ export function JoinRequestModal({
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState('');
+  const [showSuccess, setShowSuccess] = useState(false);
 
   // Fetch user profile on mount
   useEffect(() => {
     if (isOpen && user) {
       fetchProfile();
+      setShowSuccess(false);
+      setMessage('');
     }
   }, [isOpen, user]);
 
@@ -82,7 +85,7 @@ export function JoinRequestModal({
     if (!user || !profile) return;
     
     if (!message.trim()) {
-      toast.error('소개 메시지를 입력해주세요');
+      toast.error('한 줄 인사를 입력해주세요');
       return;
     }
 
@@ -132,12 +135,15 @@ export function JoinRequestModal({
         });
       }
 
-      toast.success('가입 신청 완료!', {
-        description: `${teamName} 팀에 가입 신청을 보냈습니다.`,
-      });
-      
+      // Show success state
+      setShowSuccess(true);
       onSuccess?.();
-      onClose();
+      
+      // Auto-close after 2.5 seconds
+      setTimeout(() => {
+        onClose();
+        setShowSuccess(false);
+      }, 2500);
     } catch (error: any) {
       console.error('Join request error:', error);
       toast.error('가입 신청 중 오류가 발생했습니다');
@@ -147,6 +153,39 @@ export function JoinRequestModal({
   };
 
   if (!isOpen) return null;
+
+  // Show success celebration
+  if (showSuccess) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+        <div 
+          className="relative w-full max-w-xs bg-card border-4 border-primary p-6 text-center animate-in zoom-in-95 duration-300"
+          style={{ boxShadow: '6px 6px 0 hsl(var(--primary-dark))' }}
+        >
+          <div className="text-5xl mb-4 animate-bounce">🎉</div>
+          <PartyPopper className="w-8 h-8 mx-auto text-accent mb-3" />
+          <h3 className="font-pixel text-sm text-foreground mb-2">
+            신청이 완료되었습니다!
+          </h3>
+          <p className="font-pixel text-[9px] text-muted-foreground">
+            관리자의 승인을 기다려주세요 ⏳
+          </p>
+          <div className="mt-4 flex justify-center gap-1">
+            {[...Array(5)].map((_, i) => (
+              <span 
+                key={i} 
+                className="text-lg animate-pulse"
+                style={{ animationDelay: `${i * 100}ms` }}
+              >
+                ⭐
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const position = profile?.preferred_position 
     ? positionLabels[profile.preferred_position] 
@@ -160,127 +199,112 @@ export function JoinRequestModal({
         onClick={onClose}
       />
 
-      {/* Modal */}
-      <div className="relative w-full max-w-sm kairo-panel animate-in fade-in zoom-in-95 duration-200">
+      {/* Modal - Simplified */}
+      <div 
+        className="relative w-full max-w-sm bg-card border-4 border-border-dark animate-in fade-in zoom-in-95 duration-200"
+        style={{ boxShadow: '6px 6px 0 hsl(var(--pixel-shadow))' }}
+      >
         {/* Header */}
-        <div className="kairo-panel-header justify-between">
+        <div className="bg-primary border-b-4 border-primary-dark p-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <UserPlus size={14} />
-            <span>입단 신청</span>
+            <Send size={14} className="text-primary-foreground" />
+            <span className="font-pixel text-[10px] text-primary-foreground">입단 신청서 보내기 ✉️</span>
           </div>
           <button 
             onClick={onClose}
-            className="w-6 h-6 flex items-center justify-center bg-primary-dark/50 hover:bg-destructive transition-colors"
+            className="w-6 h-6 flex items-center justify-center bg-primary-dark/50 hover:bg-destructive transition-colors border-2 border-primary-dark"
           >
             <X size={12} className="text-primary-foreground" />
           </button>
         </div>
 
-        {/* Content */}
+        {/* Content - Simplified */}
         <div className="p-4">
           {loading ? (
-            <div className="flex flex-col items-center justify-center py-8">
-              <Loader2 size={32} className="animate-spin text-primary mb-3" />
+            <div className="flex flex-col items-center justify-center py-6">
+              <Loader2 size={28} className="animate-spin text-primary mb-3" />
               <p className="font-pixel text-[9px] text-muted-foreground">
-                프로필 정보 불러오는 중...
+                로딩 중...
               </p>
             </div>
           ) : profile ? (
             <div className="space-y-4">
-              {/* Team Info */}
-              <div className="text-center pb-3 border-b-2 border-border-dark">
-                <div className="inline-flex items-center justify-center w-14 h-14 bg-secondary border-3 border-border-dark text-2xl mb-2"
-                  style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}
+              {/* Team Info - Compact */}
+              <div className="flex items-center gap-3 p-3 bg-secondary/50 border-2 border-border-dark">
+                <div 
+                  className="w-12 h-12 bg-card border-2 border-border-dark flex items-center justify-center text-2xl"
+                  style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
                 >
                   {teamEmblem}
                 </div>
-                <p className="font-pixel text-sm text-foreground">{teamName}</p>
-                <p className="font-pixel text-[8px] text-muted-foreground">에 가입 신청합니다</p>
-              </div>
-
-              {/* Profile Summary */}
-              <div className="kairo-section">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="font-pixel text-[8px] text-muted-foreground uppercase">신청자 정보</span>
-                  <span className="font-pixel text-[7px] text-primary">자동으로 불러옴</span>
-                </div>
-                
-                <div className="grid grid-cols-3 gap-2">
-                  {/* Nickname */}
-                  <div className="text-center p-2 bg-muted border-2 border-border-dark">
-                    <p className="font-pixel text-[7px] text-muted-foreground mb-1">닉네임</p>
-                    <p className="font-pixel text-[9px] text-foreground truncate">
-                      {profile.nickname}
-                    </p>
-                    {profile.nickname_tag && (
-                      <p className="font-pixel text-[7px] text-muted-foreground">
-                        #{profile.nickname_tag}
-                      </p>
-                    )}
-                  </div>
-                  
-                  {/* Position */}
-                  <div className="text-center p-2 bg-muted border-2 border-border-dark">
-                    <p className="font-pixel text-[7px] text-muted-foreground mb-1">포지션</p>
-                    <p className="text-lg">{position.emoji}</p>
-                    <p className="font-pixel text-[8px] text-foreground">{position.label}</p>
-                  </div>
-                  
-                  {/* Experience */}
-                  <div className="text-center p-2 bg-muted border-2 border-border-dark">
-                    <p className="font-pixel text-[7px] text-muted-foreground mb-1">경력</p>
-                    <p className="font-pixel text-[9px] text-foreground">
-                      {getExperienceLabel(profile.years_of_experience)}
-                    </p>
-                    <p className="font-pixel text-[7px] text-muted-foreground">
-                      {profile.years_of_experience}년
-                    </p>
-                  </div>
+                <div>
+                  <p className="font-pixel text-[11px] text-foreground font-bold">{teamName}</p>
+                  <p className="font-pixel text-[8px] text-muted-foreground">팀에 가입 신청</p>
                 </div>
               </div>
 
-              {/* Introduction Message */}
-              <div>
-                <label className="flex items-center justify-between mb-2">
-                  <span className="font-pixel text-[9px] text-foreground">
-                    소개 메시지 <span className="text-accent">*</span>
+              {/* Compact Profile Summary */}
+              <div className="p-3 bg-muted/50 border-2 border-dashed border-border">
+                <p className="font-pixel text-[8px] text-muted-foreground mb-2">✅ 내 프로필로 신청됩니다</p>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="font-pixel text-[9px] text-foreground bg-secondary px-2 py-1 border border-border-dark">
+                    {profile.nickname}
                   </span>
-                  <span className="font-pixel text-[7px] text-muted-foreground">
-                    {message.length}/200
+                  <span className="font-pixel text-[9px] text-foreground bg-secondary px-2 py-1 border border-border-dark">
+                    {position.emoji} {position.label}
+                  </span>
+                  <span className="font-pixel text-[9px] text-foreground bg-secondary px-2 py-1 border border-border-dark">
+                    {profile.years_of_experience}년차
+                  </span>
+                </div>
+              </div>
+
+              {/* Simple Message Input */}
+              <div>
+                <label className="block mb-2">
+                  <span className="font-pixel text-[10px] text-foreground">
+                    💬 팀장님께 한 줄 인사를 남겨주세요
                   </span>
                 </label>
                 <textarea
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
-                  placeholder="예: 안녕하세요! 열심히 활동하고 싶습니다 🔥"
+                  placeholder="예: 열심히 활동하겠습니다! 🔥"
                   className={cn(
-                    'w-full px-3 py-2 min-h-[80px] resize-none',
+                    'w-full px-3 py-3 min-h-[70px] resize-none',
                     'bg-input border-3 border-border-dark',
-                    'font-pixel text-[10px] placeholder:text-muted-foreground',
+                    'font-pixel text-[10px] placeholder:text-muted-foreground/60',
                     'focus:outline-none focus:border-primary'
                   )}
-                  maxLength={200}
+                  style={{ boxShadow: 'inset 2px 2px 0 hsl(var(--pixel-shadow) / 0.3)' }}
+                  maxLength={150}
                 />
+                <p className="font-pixel text-[7px] text-muted-foreground text-right mt-1">
+                  {message.length}/150
+                </p>
               </div>
             </div>
           ) : (
-            <div className="text-center py-8">
+            <div className="text-center py-6">
               <p className="font-pixel text-[10px] text-destructive">
-                프로필 정보를 불러올 수 없습니다
-              </p>
-              <p className="font-pixel text-[8px] text-muted-foreground mt-2">
-                프로필 설정을 먼저 완료해주세요
+                프로필을 찾을 수 없습니다
               </p>
             </div>
           )}
         </div>
 
-        {/* Footer */}
-        <div className="p-3 border-t-3 border-border-dark bg-muted/50 flex gap-2">
+        {/* Footer - Buttons */}
+        <div className="p-3 border-t-3 border-border-dark bg-muted/30 flex gap-2">
           <button
             onClick={onClose}
-            className="flex-1 py-2.5 bg-secondary border-3 border-border-dark font-pixel text-[9px] text-foreground hover:bg-muted transition-colors"
-            style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
+            className={cn(
+              "flex-1 py-3 font-pixel text-[10px]",
+              "bg-destructive/80 text-destructive-foreground",
+              "border-3 border-destructive",
+              "hover:bg-destructive transition-colors",
+              "active:translate-y-0.5"
+            )}
+            style={{ boxShadow: '2px 2px 0 hsl(var(--destructive) / 0.5)' }}
           >
             취소
           </button>
@@ -288,23 +312,25 @@ export function JoinRequestModal({
             onClick={handleSubmit}
             disabled={submitting || loading || !profile}
             className={cn(
-              'flex-1 py-2.5 border-3 font-pixel text-[9px] transition-all',
-              'flex items-center justify-center gap-2',
-              'bg-primary text-primary-foreground border-primary-dark',
-              'hover:brightness-110',
-              'disabled:opacity-50 disabled:cursor-not-allowed'
+              "flex-1 py-3 font-pixel text-[10px]",
+              "flex items-center justify-center gap-2",
+              "bg-primary text-primary-foreground",
+              "border-3 border-primary-dark",
+              "hover:brightness-110 transition-all",
+              "active:translate-y-0.5",
+              "disabled:opacity-50 disabled:cursor-not-allowed"
             )}
-            style={{ boxShadow: '2px 2px 0 hsl(var(--primary-dark))' }}
+            style={{ boxShadow: '3px 3px 0 hsl(var(--primary-dark))' }}
           >
             {submitting ? (
               <>
-                <Loader2 size={12} className="animate-spin" />
-                <span>신청 중...</span>
+                <Loader2 size={14} className="animate-spin" />
+                <span>전송 중...</span>
               </>
             ) : (
               <>
-                <span>✅</span>
-                <span>신청 완료</span>
+                <Send size={14} />
+                <span>신청하기</span>
               </>
             )}
           </button>
