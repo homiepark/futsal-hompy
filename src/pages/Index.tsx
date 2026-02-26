@@ -368,7 +368,7 @@ const Index = () => {
                 emblem={team.emblem}
                 name={team.name}
                 region={formatRegion(team)}
-                level={team.level as 'S' | 'A' | 'B' | 'C'}
+                level={team.level}
                 trainingTime={formatTrainingTime(team)}
                 memberCount={team.memberCount || 0}
                 isFavorited={team.isFavorited}
