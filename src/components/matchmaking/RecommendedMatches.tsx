@@ -11,7 +11,7 @@ interface RecommendedTeam {
   emblem: string;
   region: string;
   district: string;
-  level: 'S' | 'A' | 'B' | 'C';
+  level: string;
   mannerScore: number;
   matchTime: string;
   homeGroundName?: string;

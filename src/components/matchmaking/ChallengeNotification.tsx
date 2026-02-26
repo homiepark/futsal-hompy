@@ -115,7 +115,7 @@ export function ChallengeNotification({
 
   if (!team) return null;
 
-  const teamLevel = (team.level || 'C') as 'S' | 'A' | 'B' | 'C';
+  const teamLevel = team.level || '1';
 
   return (
     <>

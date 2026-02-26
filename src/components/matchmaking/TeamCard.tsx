@@ -11,7 +11,7 @@ interface TeamCardProps {
   name: string;
   emblem?: string;
   region: string;
-  level: 'S' | 'A' | 'B' | 'C';
+  level: string;
   members: number;
   gender: '남성' | '여성' | '혼성';
   matchTime?: string;
