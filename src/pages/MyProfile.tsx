@@ -159,8 +159,10 @@ export default function MyProfile() {
         .update({
           nickname: profile.nickname,
           years_of_experience: profile.yearsOfExperience,
+          months_of_experience: profile.monthsOfExperience,
           is_pro_elite: profile.isProElite,
-          preferred_position: profile.preferredPosition,
+          preferred_position: profile.preferredPositions[0] || 'ala',
+          preferred_positions: profile.preferredPositions,
           preferred_regions: JSON.parse(JSON.stringify(preferredRegions)),
         })
         .eq('user_id', user.id);
