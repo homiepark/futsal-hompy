@@ -233,7 +233,11 @@ export default function TeamArchive() {
         isOpen={showWriteModal}
         onClose={() => setShowWriteModal(false)}
         folders={folders.filter(f => !f.isDefault)}
-        onSubmit={handleArchiveSubmit}
+        teamId={selectedTeam}
+        onSubmitSuccess={() => {
+          console.log('Archive post created');
+          // TODO: refresh posts from DB
+        }}
       />
 
       {/* Folder Management Modal (Admin Only) */}
