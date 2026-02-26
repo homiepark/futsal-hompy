@@ -232,7 +232,7 @@ export function CreateMatchPostModal({
   }
 
   const hasHomeGround = team?.homeGroundName;
-  const teamLevel = (team?.level || 'C') as 'S' | 'A' | 'B' | 'C';
+  const teamLevel = (team?.level || '1');
   const mannerScore = team?.mannerScore || 4.5;
 
   // Format selected date for display
