@@ -275,6 +275,33 @@ const Index = () => {
       {user && userRegions.length > 0 && (
         <NeighborhoodNews userRegions={userRegions} userId={user.id} />
       )}
+
+      {/* For logged-in users without regions: show guide */}
+      {user && userRegions.length === 0 && (
+        <div className="px-4 py-3">
+          <div 
+            className="bg-card border-4 border-border-dark p-4 text-center"
+            style={{ boxShadow: '4px 4px 0 hsl(var(--pixel-shadow))' }}
+          >
+            <div className="text-3xl mb-2">📍</div>
+            <p className="font-pixel text-[10px] text-foreground mb-1">
+              활동 지역을 설정하면 동네 소식을 볼 수 있어요!
+            </p>
+            <button
+              onClick={() => navigate('/profile')}
+              className={cn(
+                'mt-2 px-4 py-2 font-pixel text-[9px]',
+                'bg-primary text-primary-foreground',
+                'border-3 border-primary-dark',
+                'shadow-[3px_3px_0_hsl(var(--primary-dark))]',
+                'hover:brightness-110 active:translate-x-0.5 active:translate-y-0.5'
+              )}
+            >
+              ⚙️ 활동 지역 설정하기
+            </button>
+          </div>
+        </div>
+      )}
       
       {/* For guests: show auth prompt */}
       {!user && (
