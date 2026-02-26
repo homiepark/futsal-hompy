@@ -347,7 +347,7 @@ export function AdvancedFilterBar({ filters, onFiltersChange }: AdvancedFilterBa
                   "font-pixel text-[7px] mt-0.5 truncate",
                   isActive ? "opacity-90" : "text-muted-foreground"
                 )}>
-                  {desc}
+                  {name}
                 </p>
               </button>
             );
