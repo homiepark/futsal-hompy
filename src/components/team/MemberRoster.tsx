@@ -8,7 +8,9 @@ interface Member {
   nickname: string;
   avatarUrl?: string;
   position: 'pivo' | 'ala' | 'fixo' | 'goleiro';
+  positions?: string[];
   yearsOfExperience: number;
+  monthsOfExperience?: number;
   isAdmin?: boolean;
   joinDate?: string;
   mannerRating?: number;
@@ -33,12 +35,13 @@ export function MemberRoster({ members, teamId }: MemberRosterProps) {
   const [selectedPlayer, setSelectedPlayer] = useState<Member | null>(null);
   const [showModal, setShowModal] = useState(false);
 
-  // Group by position
+  // Group by position (members with multiple positions appear in each group)
   const groupedMembers = members.reduce((acc, member) => {
-    if (!acc[member.position]) {
-      acc[member.position] = [];
-    }
-    acc[member.position].push(member);
+    const memberPositions = member.positions?.length ? member.positions : [member.position];
+    memberPositions.forEach(pos => {
+      if (!acc[pos]) acc[pos] = [];
+      acc[pos].push(member);
+    });
     return acc;
   }, {} as Record<string, Member[]>);
 
@@ -106,9 +109,21 @@ export function MemberRoster({ members, teamId }: MemberRosterProps) {
                         <span className="font-pixel text-[8px] text-foreground truncate leading-tight">
                           {member.nickname}
                         </span>
-                        <span className="font-pixel text-[7px] text-muted-foreground leading-tight">
-                          {member.yearsOfExperience}년차
-                        </span>
+                        <div className="flex items-center gap-1">
+                          <span className="font-pixel text-[7px] text-muted-foreground leading-tight">
+                            {member.yearsOfExperience}년{member.monthsOfExperience ? `${member.monthsOfExperience}개월` : ''}
+                          </span>
+                          {/* Show all position badges */}
+                          {(member.positions?.length ?? 0) > 1 && (
+                            <div className="flex gap-0.5">
+                              {member.positions?.filter(p => p !== position).map(p => (
+                                <span key={p} className="font-pixel text-[6px] px-1 bg-primary/20 border border-primary text-primary">
+                                  {positionInfo[p as keyof typeof positionInfo]?.emoji}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </button>
                   ))}

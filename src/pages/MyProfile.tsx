@@ -40,8 +40,9 @@ export default function MyProfile() {
     nickname: '풋살러',
     avatarUrl: '',
     yearsOfExperience: 0,
+    monthsOfExperience: 0,
     isProElite: false,
-    preferredPosition: 'ala',
+    preferredPositions: ['ala'] as string[],
   });
   
   // Multi-region state
@@ -73,8 +74,11 @@ export default function MyProfile() {
             nickname: data.nickname || '풋살러',
             avatarUrl: data.avatar_url || '',
             yearsOfExperience: data.years_of_experience || 0,
+            monthsOfExperience: (data as any).months_of_experience || 0,
             isProElite: data.is_pro_elite || false,
-            preferredPosition: data.preferred_position || 'ala',
+            preferredPositions: (data as any).preferred_positions?.length > 0 
+              ? (data as any).preferred_positions 
+              : (data.preferred_position ? [data.preferred_position] : ['ala']),
           });
           
           // Load preferred regions from JSONB
@@ -93,9 +97,10 @@ export default function MyProfile() {
     fetchProfile();
   }, [user]);
 
-  const getPositionLabel = (positionId: string) => {
-    const position = futsalPositions.find(p => p.id === positionId);
-    return position ? position.label : positionId;
+  const getPositionLabels = (positionIds: string[]) => {
+    return positionIds
+      .map(id => futsalPositions.find(p => p.id === id)?.label || id)
+      .join(' / ');
   };
 
   const handleAvatarClick = () => {
@@ -154,8 +159,10 @@ export default function MyProfile() {
         .update({
           nickname: profile.nickname,
           years_of_experience: profile.yearsOfExperience,
+          months_of_experience: profile.monthsOfExperience,
           is_pro_elite: profile.isProElite,
-          preferred_position: profile.preferredPosition,
+          preferred_position: profile.preferredPositions[0] || 'ala',
+          preferred_positions: profile.preferredPositions,
           preferred_regions: JSON.parse(JSON.stringify(preferredRegions)),
         })
         .eq('user_id', user.id);
@@ -234,7 +241,7 @@ export default function MyProfile() {
               className="text-lg text-foreground bg-transparent border-b-2 border-border focus:border-primary outline-none text-center w-full max-w-[200px]"
             />
             <p className="text-sm text-muted-foreground mt-1">
-              경력 {profile.yearsOfExperience}년 · {getPositionLabel(profile.preferredPosition)}
+              경력 {profile.yearsOfExperience}년 {profile.monthsOfExperience > 0 ? `${profile.monthsOfExperience}개월` : ''} · {getPositionLabels(profile.preferredPositions)}
             </p>
           </div>
         </PixelCard>
@@ -328,29 +335,45 @@ export default function MyProfile() {
           )}
         </PixelCard>
 
-        {/* Position Selection */}
+        {/* Position Selection - Multi-select */}
         <PixelCard>
-          <h2 className="text-foreground mb-4 flex items-center gap-2">
+          <h2 className="text-foreground mb-2 flex items-center gap-2">
             <span className="text-primary">⚽</span>
             포지션 선택
           </h2>
+          <p className="font-pixel text-[8px] text-muted-foreground mb-3">복수 선택 가능</p>
           <div className="grid grid-cols-2 gap-3">
-            {futsalPositions.map((pos) => (
-              <button
-                key={pos.id}
-                onClick={() => setProfile({ ...profile, preferredPosition: pos.id })}
-                className={cn(
-                  'p-3 border-4 transition-all text-center',
-                  profile.preferredPosition === pos.id
-                    ? 'bg-primary border-primary-dark text-primary-foreground shadow-[0_0_12px_hsl(var(--primary))]'
-                    : 'bg-secondary border-border-dark hover:border-primary'
-                )}
-              >
-                <span className="text-xl block mb-1">{pos.emoji}</span>
-                <span className="font-pixel text-[10px] block">{pos.label}</span>
-                <span className="font-body text-[9px] text-muted-foreground block">{pos.description}</span>
-              </button>
-            ))}
+            {futsalPositions.map((pos) => {
+              const isSelected = profile.preferredPositions.includes(pos.id);
+              return (
+                <button
+                  key={pos.id}
+                  onClick={() => {
+                    const newPositions = isSelected
+                      ? profile.preferredPositions.filter(p => p !== pos.id)
+                      : [...profile.preferredPositions, pos.id];
+                    if (newPositions.length > 0) {
+                      setProfile({ ...profile, preferredPositions: newPositions });
+                    }
+                  }}
+                  className={cn(
+                    'p-3 border-4 transition-all text-center relative',
+                    isSelected
+                      ? 'bg-primary border-primary-dark text-primary-foreground shadow-[0_0_12px_hsl(var(--primary))]'
+                      : 'bg-secondary border-border-dark hover:border-primary'
+                  )}
+                >
+                  {isSelected && (
+                    <div className="absolute top-1 right-1 w-4 h-4 bg-accent border-2 border-accent-dark flex items-center justify-center">
+                      <span className="text-[8px] text-accent-foreground">✓</span>
+                    </div>
+                  )}
+                  <span className="text-xl block mb-1">{pos.emoji}</span>
+                  <span className="font-pixel text-[10px] block">{pos.label}</span>
+                  <span className="font-body text-[9px] text-muted-foreground block">{pos.description}</span>
+                </button>
+              );
+            })}
           </div>
         </PixelCard>
 
@@ -361,27 +384,41 @@ export default function MyProfile() {
             풋살 경력 정보
           </h2>
 
-          {/* Years of Experience */}
+          {/* Years of Experience - Detailed */}
           <div className="mb-4">
-            <label className="text-sm text-muted-foreground mb-2 block">
-              풋살/축구 경력 (년)
+            <label className="font-pixel text-[10px] text-muted-foreground mb-2 block">
+              풋살/축구 경력
             </label>
             <div className="flex items-center gap-2">
-              <button
-                onClick={() => setProfile({ ...profile, yearsOfExperience: Math.max(0, profile.yearsOfExperience - 1) })}
-                className="w-10 h-10 bg-secondary border-4 border-border-dark text-lg shadow-[2px_2px_0_hsl(var(--pixel-shadow))] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0_hsl(var(--pixel-shadow))]"
-              >
-                -
-              </button>
-              <div className="flex-1 h-10 bg-muted border-4 border-border-dark flex items-center justify-center text-sm">
-                {profile.yearsOfExperience}년
+              <div className="flex-1">
+                <select
+                  value={profile.yearsOfExperience}
+                  onChange={(e) => setProfile({ ...profile, yearsOfExperience: Number(e.target.value) })}
+                  className="w-full px-2 py-2 bg-input border-3 border-border-dark font-pixel text-[10px] focus:outline-none focus:border-accent"
+                  style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
+                >
+                  {Array.from({ length: 31 }, (_, i) => i).map(y => (
+                    <option key={y} value={y}>{y}년</option>
+                  ))}
+                </select>
               </div>
-              <button
-                onClick={() => setProfile({ ...profile, yearsOfExperience: profile.yearsOfExperience + 1 })}
-                className="w-10 h-10 bg-secondary border-4 border-border-dark text-lg shadow-[2px_2px_0_hsl(var(--pixel-shadow))] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0_hsl(var(--pixel-shadow))]"
-              >
-                +
-              </button>
+              <div className="flex-1">
+                <select
+                  value={profile.monthsOfExperience}
+                  onChange={(e) => setProfile({ ...profile, monthsOfExperience: Number(e.target.value) })}
+                  className="w-full px-2 py-2 bg-input border-3 border-border-dark font-pixel text-[10px] focus:outline-none focus:border-accent"
+                  style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
+                >
+                  {Array.from({ length: 12 }, (_, i) => i).map(m => (
+                    <option key={m} value={m}>{m}개월</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className="mt-2 text-center p-2 bg-accent/20 border-2 border-accent">
+              <span className="font-pixel text-[10px] text-accent-foreground">
+                📊 경력: {profile.yearsOfExperience}년 {profile.monthsOfExperience > 0 ? `${profile.monthsOfExperience}개월` : ''}
+              </span>
             </div>
           </div>
 

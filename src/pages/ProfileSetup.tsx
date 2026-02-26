@@ -17,14 +17,6 @@ const positions = [
   { id: 'goleiro', label: '골레이로', emoji: '🧤', description: 'Goalkeeper' },
 ];
 
-// Experience levels
-const experienceLevels = [
-  { id: 1, label: 'Newbie', sublabel: '<1년', years: 0 },
-  { id: 2, label: 'Rookie', sublabel: '1-3년', years: 2 },
-  { id: 3, label: 'Regular', sublabel: '3-5년', years: 4 },
-  { id: 4, label: 'Veteran', sublabel: '5-10년', years: 7 },
-  { id: 5, label: 'Legend', sublabel: '10년+', years: 12 },
-];
 
 // Generate random 4-digit tag
 const generateTag = () => {
@@ -42,8 +34,10 @@ export default function ProfileSetup() {
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [nickname, setNickname] = useState('');
   const [realName, setRealName] = useState('');
-  const [selectedPosition, setSelectedPosition] = useState<string | null>(null);
-  const [experienceLevel, setExperienceLevel] = useState<number | null>(null);
+  const [selectedPositions, setSelectedPositions] = useState<string[]>([]);
+  const [careerType, setCareerType] = useState<'under1' | 'over1' | null>(null);
+  const [careerYears, setCareerYears] = useState(1);
+  const [careerMonths, setCareerMonths] = useState(0);
   const [isElite, setIsElite] = useState<boolean | null>(null);
 
   // Redirect if not logged in
@@ -76,12 +70,12 @@ export default function ProfileSetup() {
       toast({ title: '실명을 입력해주세요', variant: 'destructive' });
       return;
     }
-    if (!selectedPosition) {
-      toast({ title: '포지션을 선택해주세요', variant: 'destructive' });
+    if (selectedPositions.length === 0) {
+      toast({ title: '포지션을 하나 이상 선택해주세요', variant: 'destructive' });
       return;
     }
-    if (!experienceLevel) {
-      toast({ title: '경력 레벨을 선택해주세요', variant: 'destructive' });
+    if (careerType === null) {
+      toast({ title: '경력을 선택해주세요', variant: 'destructive' });
       return;
     }
     if (isElite === null) {
@@ -121,9 +115,9 @@ export default function ProfileSetup() {
         }
       }
 
-      // Get years from experience level
-      const expData = experienceLevels.find(l => l.id === experienceLevel);
-      const yearsOfExp = expData?.years || 0;
+      // Calculate career
+      const yearsOfExp = careerType === 'under1' ? 0 : careerYears;
+      const monthsOfExp = careerType === 'under1' ? 0 : careerMonths;
 
       // Update profile
       const { error } = await supabase
@@ -132,8 +126,10 @@ export default function ProfileSetup() {
           nickname: nickname.trim(),
           nickname_tag: nicknameTag,
           real_name: realName.trim(),
-          preferred_position: selectedPosition,
+          preferred_position: selectedPositions[0],
+          preferred_positions: selectedPositions,
           years_of_experience: yearsOfExp,
+          months_of_experience: monthsOfExp,
           is_pro_elite: isElite,
           avatar_url: uploadedAvatarUrl,
         })
@@ -282,91 +278,150 @@ export default function ProfileSetup() {
         </div>
       </PixelCard>
 
-      {/* Position Selection */}
+      {/* Position Selection - Multi-select */}
       <PixelCard className="mb-4">
-        <label className="block font-pixel text-xs text-foreground mb-3">
+        <label className="block font-pixel text-xs text-foreground mb-1">
           포지션 선택 <span className="text-accent">*</span>
         </label>
+        <p className="font-pixel text-[8px] text-muted-foreground mb-3">복수 선택 가능</p>
         <div className="grid grid-cols-2 gap-3">
-          {positions.map((pos) => (
-            <button
-              key={pos.id}
-              type="button"
-              onClick={() => setSelectedPosition(pos.id)}
-              className={cn(
-                'p-4 border-4 transition-all text-center relative',
-                selectedPosition === pos.id
-                  ? 'bg-primary border-primary-dark text-primary-foreground'
-                  : 'bg-secondary border-border-dark hover:border-primary'
-              )}
-              style={{
-                boxShadow: selectedPosition === pos.id
-                  ? '0 0 16px hsl(var(--primary)), 3px 3px 0 hsl(var(--primary-dark))'
-                  : '3px 3px 0 hsl(var(--pixel-shadow))'
-              }}
-            >
-              {selectedPosition === pos.id && (
-                <div className="absolute top-1 right-1 w-5 h-5 bg-accent border-2 border-accent-dark flex items-center justify-center">
-                  <Check size={12} className="text-accent-foreground" />
-                </div>
-              )}
-              <span className="text-3xl block mb-2">{pos.emoji}</span>
-              <span className="font-pixel text-[11px] block">{pos.label}</span>
-              <span className="font-pixel text-[8px] text-muted-foreground block mt-1">{pos.description}</span>
-            </button>
-          ))}
+          {positions.map((pos) => {
+            const isSelected = selectedPositions.includes(pos.id);
+            return (
+              <button
+                key={pos.id}
+                type="button"
+                onClick={() => {
+                  setSelectedPositions(prev =>
+                    isSelected
+                      ? prev.filter(p => p !== pos.id)
+                      : [...prev, pos.id]
+                  );
+                }}
+                className={cn(
+                  'p-4 border-4 transition-all text-center relative',
+                  isSelected
+                    ? 'bg-primary border-primary-dark text-primary-foreground'
+                    : 'bg-secondary border-border-dark hover:border-primary'
+                )}
+                style={{
+                  boxShadow: isSelected
+                    ? '0 0 16px hsl(var(--primary)), 3px 3px 0 hsl(var(--primary-dark))'
+                    : '3px 3px 0 hsl(var(--pixel-shadow))'
+                }}
+              >
+                {isSelected && (
+                  <div className="absolute top-1 right-1 w-5 h-5 bg-accent border-2 border-accent-dark flex items-center justify-center">
+                    <Check size={12} className="text-accent-foreground" />
+                  </div>
+                )}
+                <span className="text-3xl block mb-2">{pos.emoji}</span>
+                <span className="font-pixel text-[11px] block">{pos.label}</span>
+                <span className="font-pixel text-[8px] text-muted-foreground block mt-1">{pos.description}</span>
+              </button>
+            );
+          })}
         </div>
       </PixelCard>
 
-      {/* Experience Level */}
+      {/* Career Selection - Conditional */}
       <PixelCard className="mb-4">
         <label className="block font-pixel text-xs text-foreground mb-3">
-          경력 레벨 <span className="text-accent">*</span>
+          풋살/축구 경력 <span className="text-accent">*</span>
         </label>
-        <div className="flex gap-1">
-          {experienceLevels.map((level) => (
-            <button
-              key={level.id}
-              type="button"
-              onClick={() => setExperienceLevel(level.id)}
-              className={cn(
-                'flex-1 p-2 border-3 transition-all text-center',
-                experienceLevel === level.id
-                  ? 'bg-accent border-accent-dark text-accent-foreground'
-                  : 'bg-secondary border-border-dark hover:border-accent'
-              )}
-              style={{
-                boxShadow: experienceLevel === level.id
-                  ? '0 0 12px hsl(var(--accent))'
-                  : '2px 2px 0 hsl(var(--pixel-shadow))'
-              }}
-            >
-              <div className="font-pixel text-[7px] mb-1">
-                {'★'.repeat(level.id)}
+        
+        {/* Career Type Selection */}
+        <div className="grid grid-cols-2 gap-3 mb-4">
+          <button
+            type="button"
+            onClick={() => setCareerType('under1')}
+            className={cn(
+              'p-3 border-4 transition-all text-center',
+              careerType === 'under1'
+                ? 'bg-accent border-accent-dark text-accent-foreground'
+                : 'bg-secondary border-border-dark hover:border-accent'
+            )}
+            style={{
+              boxShadow: careerType === 'under1'
+                ? '0 0 12px hsl(var(--accent)), 3px 3px 0 hsl(var(--accent-dark))'
+                : '3px 3px 0 hsl(var(--pixel-shadow))'
+            }}
+          >
+            {careerType === 'under1' && (
+              <div className="absolute top-1 right-1 w-5 h-5 bg-primary border-2 border-primary-dark flex items-center justify-center">
+                <Check size={12} className="text-primary-foreground" />
               </div>
-              <p className="font-pixel text-[9px] font-medium leading-tight">{level.label}</p>
-              <p className="font-pixel text-[7px] text-muted-foreground">{level.sublabel}</p>
-            </button>
-          ))}
+            )}
+            <span className="text-xl block mb-1">🌱</span>
+            <span className="font-pixel text-[10px] block">1년 이하</span>
+            <span className="font-pixel text-[7px] text-muted-foreground block mt-1">Entry Level</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setCareerType('over1')}
+            className={cn(
+              'p-3 border-4 transition-all text-center',
+              careerType === 'over1'
+                ? 'bg-accent border-accent-dark text-accent-foreground'
+                : 'bg-secondary border-border-dark hover:border-accent'
+            )}
+            style={{
+              boxShadow: careerType === 'over1'
+                ? '0 0 12px hsl(var(--accent)), 3px 3px 0 hsl(var(--accent-dark))'
+                : '3px 3px 0 hsl(var(--pixel-shadow))'
+            }}
+          >
+            <span className="text-xl block mb-1">⚡</span>
+            <span className="font-pixel text-[10px] block">1년 이상</span>
+            <span className="font-pixel text-[7px] text-muted-foreground block mt-1">Experienced</span>
+          </button>
         </div>
-        {/* Experience Bar Visual */}
-        <div className="mt-3 h-4 bg-muted border-3 border-border-dark flex overflow-hidden">
-          {experienceLevels.map((level) => (
-            <div
-              key={level.id}
-              className={cn(
-                'flex-1 transition-all',
-                experienceLevel && level.id <= experienceLevel
-                  ? 'bg-accent'
-                  : 'bg-transparent'
-              )}
-            />
-          ))}
-        </div>
-        <div className="flex justify-between mt-1">
-          <span className="font-pixel text-[8px] text-muted-foreground">LV.1</span>
-          <span className="font-pixel text-[8px] text-muted-foreground">LV.MAX</span>
-        </div>
+
+        {/* Detailed Year/Month Input (conditional) */}
+        {careerType === 'over1' && (
+          <div className="p-3 bg-muted border-3 border-border-dark space-y-3">
+            <p className="font-pixel text-[9px] text-muted-foreground">상세 경력 입력</p>
+            <div className="flex items-center gap-2">
+              <div className="flex-1">
+                <label className="font-pixel text-[8px] text-muted-foreground block mb-1">년</label>
+                <select
+                  value={careerYears}
+                  onChange={(e) => setCareerYears(Number(e.target.value))}
+                  className="w-full px-2 py-2 bg-input border-3 border-border-dark font-pixel text-[10px] focus:outline-none focus:border-accent"
+                  style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
+                >
+                  {Array.from({ length: 30 }, (_, i) => i + 1).map(y => (
+                    <option key={y} value={y}>{y}년</option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex-1">
+                <label className="font-pixel text-[8px] text-muted-foreground block mb-1">개월</label>
+                <select
+                  value={careerMonths}
+                  onChange={(e) => setCareerMonths(Number(e.target.value))}
+                  className="w-full px-2 py-2 bg-input border-3 border-border-dark font-pixel text-[10px] focus:outline-none focus:border-accent"
+                  style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
+                >
+                  {Array.from({ length: 12 }, (_, i) => i).map(m => (
+                    <option key={m} value={m}>{m}개월</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className="text-center p-2 bg-accent/20 border-2 border-accent">
+              <span className="font-pixel text-[10px] text-accent-foreground">
+                📊 경력: {careerYears}년 {careerMonths > 0 ? `${careerMonths}개월` : ''}
+              </span>
+            </div>
+          </div>
+        )}
+
+        {careerType === 'under1' && (
+          <div className="p-3 bg-muted border-3 border-border-dark text-center">
+            <span className="font-pixel text-[10px] text-muted-foreground">🌱 입문 레벨로 설정됩니다</span>
+          </div>
+        )}
       </PixelCard>
 
       {/* Elite Status */}
