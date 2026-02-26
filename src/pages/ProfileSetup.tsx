@@ -42,8 +42,10 @@ export default function ProfileSetup() {
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [nickname, setNickname] = useState('');
   const [realName, setRealName] = useState('');
-  const [selectedPosition, setSelectedPosition] = useState<string | null>(null);
-  const [experienceLevel, setExperienceLevel] = useState<number | null>(null);
+  const [selectedPositions, setSelectedPositions] = useState<string[]>([]);
+  const [careerType, setCareerType] = useState<'under1' | 'over1' | null>(null);
+  const [careerYears, setCareerYears] = useState(1);
+  const [careerMonths, setCareerMonths] = useState(0);
   const [isElite, setIsElite] = useState<boolean | null>(null);
 
   // Redirect if not logged in
