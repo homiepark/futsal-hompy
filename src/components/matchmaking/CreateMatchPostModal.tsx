@@ -506,7 +506,7 @@ export function CreateMatchPostModal({
                           "font-pixel text-[7px]",
                           isSelected ? "opacity-75" : "text-muted-foreground"
                         )}>
-                          {tier}
+                          {name}
                         </span>
                       </div>
                     </div>
