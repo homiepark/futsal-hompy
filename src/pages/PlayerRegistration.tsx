@@ -79,27 +79,37 @@ export default function PlayerRegistration() {
         </p>
       </section>
 
-      {/* Position Selection */}
+      {/* Position Selection - Multi-select */}
       <section className="mb-6">
-        <label className="block font-body text-sm font-medium text-foreground mb-3">
+        <label className="block font-pixel text-sm font-medium text-foreground mb-1">
           포지션 선택
         </label>
+        <p className="font-pixel text-[8px] text-muted-foreground mb-3">복수 선택 가능</p>
         <div className="grid grid-cols-2 gap-3">
-          {positions.map((pos) => (
-            <button
-              key={pos.id}
-              onClick={() => setSelectedPosition(pos.id)}
-              className={cn(
-                'p-4 border-4 transition-all text-center',
-                selectedPosition === pos.id
-                  ? 'bg-primary border-primary-dark text-primary-foreground shadow-[0_0_12px_hsl(var(--primary))]'
-                  : 'bg-secondary border-border-dark hover:border-primary'
-              )}
-            >
-              <span className="text-2xl block mb-1">{pos.emoji}</span>
-              <span className="font-pixel text-[10px] block">{pos.label}</span>
-            </button>
-          ))}
+          {positions.map((pos) => {
+            const isSelected = selectedPositions.includes(pos.id);
+            return (
+              <button
+                key={pos.id}
+                onClick={() => {
+                  setSelectedPositions(prev =>
+                    isSelected
+                      ? prev.filter(p => p !== pos.id)
+                      : [...prev, pos.id]
+                  );
+                }}
+                className={cn(
+                  'p-4 border-4 transition-all text-center',
+                  isSelected
+                    ? 'bg-primary border-primary-dark text-primary-foreground shadow-[0_0_12px_hsl(var(--primary))]'
+                    : 'bg-secondary border-border-dark hover:border-primary'
+                )}
+              >
+                <span className="text-2xl block mb-1">{pos.emoji}</span>
+                <span className="font-pixel text-[10px] block">{pos.label}</span>
+              </button>
+            );
+          })}
         </div>
       </section>
 
