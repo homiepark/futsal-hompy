@@ -113,49 +113,72 @@ export default function PlayerRegistration() {
         </div>
       </section>
 
-      {/* Experience Level */}
+      {/* Career Selection - Conditional */}
       <section className="mb-6">
-        <label className="block font-body text-sm font-medium text-foreground mb-3">
-          경력 레벨
+        <label className="block font-pixel text-sm font-medium text-foreground mb-3">
+          경력
         </label>
-        <div className="flex gap-1">
-          {experienceLevels.map((level) => (
-            <button
-              key={level.id}
-              onClick={() => setExperienceLevel(level.id)}
-              className={cn(
-                'flex-1 p-2 border-4 transition-all text-center',
-                experienceLevel === level.id
-                  ? 'bg-accent border-accent-dark text-accent-foreground shadow-[0_0_12px_hsl(var(--accent))]'
-                  : 'bg-secondary border-border-dark hover:border-accent'
-              )}
-            >
-              <div className="font-pixel text-[8px] mb-1">
-                {'★'.repeat(level.stars)}
-              </div>
-              <p className="font-body text-[10px] font-medium leading-tight">{level.label}</p>
-              <p className="font-body text-[9px] text-muted-foreground">{level.sublabel}</p>
-            </button>
-          ))}
+        <div className="grid grid-cols-2 gap-3 mb-3">
+          <button
+            onClick={() => setCareerType('under1')}
+            className={cn(
+              'p-3 border-4 transition-all text-center',
+              careerType === 'under1'
+                ? 'bg-accent border-accent-dark text-accent-foreground shadow-[0_0_12px_hsl(var(--accent))]'
+                : 'bg-secondary border-border-dark hover:border-accent'
+            )}
+          >
+            <span className="text-xl block mb-1">🌱</span>
+            <span className="font-pixel text-[10px] block">1년 이하</span>
+          </button>
+          <button
+            onClick={() => setCareerType('over1')}
+            className={cn(
+              'p-3 border-4 transition-all text-center',
+              careerType === 'over1'
+                ? 'bg-accent border-accent-dark text-accent-foreground shadow-[0_0_12px_hsl(var(--accent))]'
+                : 'bg-secondary border-border-dark hover:border-accent'
+            )}
+          >
+            <span className="text-xl block mb-1">⚡</span>
+            <span className="font-pixel text-[10px] block">1년 이상</span>
+          </button>
         </div>
-        {/* Experience Bar Visual */}
-        <div className="mt-3 h-4 bg-muted border-4 border-border-dark flex">
-          {experienceLevels.map((level) => (
-            <div
-              key={level.id}
-              className={cn(
-                'flex-1 transition-all',
-                experienceLevel && level.id <= experienceLevel
-                  ? 'bg-accent'
-                  : 'bg-transparent'
-              )}
-            />
-          ))}
-        </div>
-        <div className="flex justify-between mt-1">
-          <span className="font-pixel text-[8px] text-muted-foreground">LV.1</span>
-          <span className="font-pixel text-[8px] text-muted-foreground">LV.MAX</span>
-        </div>
+
+        {careerType === 'over1' && (
+          <div className="p-3 bg-muted border-4 border-border-dark space-y-2">
+            <p className="font-pixel text-[9px] text-muted-foreground">상세 경력</p>
+            <div className="flex items-center gap-2">
+              <select
+                value={careerYears}
+                onChange={(e) => setCareerYears(Number(e.target.value))}
+                className="flex-1 px-2 py-2 bg-input border-3 border-border-dark font-pixel text-[10px] focus:outline-none focus:border-accent"
+              >
+                {Array.from({ length: 30 }, (_, i) => i + 1).map(y => (
+                  <option key={y} value={y}>{y}년</option>
+                ))}
+              </select>
+              <select
+                value={careerMonths}
+                onChange={(e) => setCareerMonths(Number(e.target.value))}
+                className="flex-1 px-2 py-2 bg-input border-3 border-border-dark font-pixel text-[10px] focus:outline-none focus:border-accent"
+              >
+                {Array.from({ length: 12 }, (_, i) => i).map(m => (
+                  <option key={m} value={m}>{m}개월</option>
+                ))}
+              </select>
+            </div>
+            <div className="text-center p-2 bg-accent/20 border-2 border-accent">
+              <span className="font-pixel text-[10px]">📊 {careerYears}년 {careerMonths > 0 ? `${careerMonths}개월` : ''}</span>
+            </div>
+          </div>
+        )}
+
+        {careerType === 'under1' && (
+          <div className="p-3 bg-muted border-4 border-border-dark text-center">
+            <span className="font-pixel text-[10px] text-muted-foreground">🌱 입문 레벨</span>
+          </div>
+        )}
       </section>
 
       {/* Elite Status */}
