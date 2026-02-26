@@ -8,18 +8,18 @@ interface TeamListCardProps {
   emblem: string;
   name: string;
   region: string;
-  level: 'S' | 'A' | 'B' | 'C';
+  level: string;
   trainingTime: string;
   memberCount: number;
   isFavorited?: boolean;
   onFavoriteToggle?: (isFavorited: boolean) => void;
 }
 
-const levelColors = {
-  S: 'bg-accent text-accent-foreground border-accent-dark',
-  A: 'bg-primary text-primary-foreground border-primary-dark',
-  B: 'bg-primary/70 text-primary-foreground border-primary-dark/70',
-  C: 'bg-primary/50 text-primary-foreground border-primary-dark/50',
+const levelColors: Record<string, string> = {
+  '1': 'bg-[hsl(var(--level-1))] text-white border-[hsl(var(--level-1))]',
+  '2': 'bg-[hsl(var(--level-2))] text-white border-[hsl(var(--level-2))]',
+  '3': 'bg-[hsl(var(--level-3))] text-white border-[hsl(var(--level-3))]',
+  '4': 'bg-[hsl(var(--level-4))] text-white border-[hsl(var(--level-4))]',
 };
 
 export function TeamListCard({ id, emblem, name, region, level, trainingTime, memberCount, isFavorited, onFavoriteToggle }: TeamListCardProps) {
