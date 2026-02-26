@@ -159,6 +159,59 @@ export type Database = {
           },
         ]
       }
+      player_guestbook_entries: {
+        Row: {
+          author_user_id: string
+          created_at: string
+          id: string
+          message: string
+          target_user_id: string
+        }
+        Insert: {
+          author_user_id: string
+          created_at?: string
+          id?: string
+          message: string
+          target_user_id: string
+        }
+        Update: {
+          author_user_id?: string
+          created_at?: string
+          id?: string
+          message?: string
+          target_user_id?: string
+        }
+        Relationships: []
+      }
+      player_guestbook_likes: {
+        Row: {
+          created_at: string
+          entry_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          entry_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          entry_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "player_guestbook_likes_entry_id_fkey"
+            columns: ["entry_id"]
+            isOneToOne: false
+            referencedRelation: "player_guestbook_entries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
