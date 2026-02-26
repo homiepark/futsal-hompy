@@ -332,55 +332,104 @@ export default function ProfileSetup() {
         </div>
       </PixelCard>
 
-      {/* Experience Level */}
+      {/* Career Selection - Conditional */}
       <PixelCard className="mb-4">
         <label className="block font-pixel text-xs text-foreground mb-3">
-          경력 레벨 <span className="text-accent">*</span>
+          풋살/축구 경력 <span className="text-accent">*</span>
         </label>
-        <div className="flex gap-1">
-          {experienceLevels.map((level) => (
-            <button
-              key={level.id}
-              type="button"
-              onClick={() => setExperienceLevel(level.id)}
-              className={cn(
-                'flex-1 p-2 border-3 transition-all text-center',
-                experienceLevel === level.id
-                  ? 'bg-accent border-accent-dark text-accent-foreground'
-                  : 'bg-secondary border-border-dark hover:border-accent'
-              )}
-              style={{
-                boxShadow: experienceLevel === level.id
-                  ? '0 0 12px hsl(var(--accent))'
-                  : '2px 2px 0 hsl(var(--pixel-shadow))'
-              }}
-            >
-              <div className="font-pixel text-[7px] mb-1">
-                {'★'.repeat(level.id)}
+        
+        {/* Career Type Selection */}
+        <div className="grid grid-cols-2 gap-3 mb-4">
+          <button
+            type="button"
+            onClick={() => setCareerType('under1')}
+            className={cn(
+              'p-3 border-4 transition-all text-center',
+              careerType === 'under1'
+                ? 'bg-accent border-accent-dark text-accent-foreground'
+                : 'bg-secondary border-border-dark hover:border-accent'
+            )}
+            style={{
+              boxShadow: careerType === 'under1'
+                ? '0 0 12px hsl(var(--accent)), 3px 3px 0 hsl(var(--accent-dark))'
+                : '3px 3px 0 hsl(var(--pixel-shadow))'
+            }}
+          >
+            {careerType === 'under1' && (
+              <div className="absolute top-1 right-1 w-5 h-5 bg-primary border-2 border-primary-dark flex items-center justify-center">
+                <Check size={12} className="text-primary-foreground" />
               </div>
-              <p className="font-pixel text-[9px] font-medium leading-tight">{level.label}</p>
-              <p className="font-pixel text-[7px] text-muted-foreground">{level.sublabel}</p>
-            </button>
-          ))}
+            )}
+            <span className="text-xl block mb-1">🌱</span>
+            <span className="font-pixel text-[10px] block">1년 이하</span>
+            <span className="font-pixel text-[7px] text-muted-foreground block mt-1">Entry Level</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setCareerType('over1')}
+            className={cn(
+              'p-3 border-4 transition-all text-center',
+              careerType === 'over1'
+                ? 'bg-accent border-accent-dark text-accent-foreground'
+                : 'bg-secondary border-border-dark hover:border-accent'
+            )}
+            style={{
+              boxShadow: careerType === 'over1'
+                ? '0 0 12px hsl(var(--accent)), 3px 3px 0 hsl(var(--accent-dark))'
+                : '3px 3px 0 hsl(var(--pixel-shadow))'
+            }}
+          >
+            <span className="text-xl block mb-1">⚡</span>
+            <span className="font-pixel text-[10px] block">1년 이상</span>
+            <span className="font-pixel text-[7px] text-muted-foreground block mt-1">Experienced</span>
+          </button>
         </div>
-        {/* Experience Bar Visual */}
-        <div className="mt-3 h-4 bg-muted border-3 border-border-dark flex overflow-hidden">
-          {experienceLevels.map((level) => (
-            <div
-              key={level.id}
-              className={cn(
-                'flex-1 transition-all',
-                experienceLevel && level.id <= experienceLevel
-                  ? 'bg-accent'
-                  : 'bg-transparent'
-              )}
-            />
-          ))}
-        </div>
-        <div className="flex justify-between mt-1">
-          <span className="font-pixel text-[8px] text-muted-foreground">LV.1</span>
-          <span className="font-pixel text-[8px] text-muted-foreground">LV.MAX</span>
-        </div>
+
+        {/* Detailed Year/Month Input (conditional) */}
+        {careerType === 'over1' && (
+          <div className="p-3 bg-muted border-3 border-border-dark space-y-3">
+            <p className="font-pixel text-[9px] text-muted-foreground">상세 경력 입력</p>
+            <div className="flex items-center gap-2">
+              <div className="flex-1">
+                <label className="font-pixel text-[8px] text-muted-foreground block mb-1">년</label>
+                <select
+                  value={careerYears}
+                  onChange={(e) => setCareerYears(Number(e.target.value))}
+                  className="w-full px-2 py-2 bg-input border-3 border-border-dark font-pixel text-[10px] focus:outline-none focus:border-accent"
+                  style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
+                >
+                  {Array.from({ length: 30 }, (_, i) => i + 1).map(y => (
+                    <option key={y} value={y}>{y}년</option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex-1">
+                <label className="font-pixel text-[8px] text-muted-foreground block mb-1">개월</label>
+                <select
+                  value={careerMonths}
+                  onChange={(e) => setCareerMonths(Number(e.target.value))}
+                  className="w-full px-2 py-2 bg-input border-3 border-border-dark font-pixel text-[10px] focus:outline-none focus:border-accent"
+                  style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
+                >
+                  {Array.from({ length: 12 }, (_, i) => i).map(m => (
+                    <option key={m} value={m}>{m}개월</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className="text-center p-2 bg-accent/20 border-2 border-accent">
+              <span className="font-pixel text-[10px] text-accent-foreground">
+                📊 경력: {careerYears}년 {careerMonths > 0 ? `${careerMonths}개월` : ''}
+              </span>
+            </div>
+          </div>
+        )}
+
+        {careerType === 'under1' && (
+          <div className="p-3 bg-muted border-3 border-border-dark text-center">
+            <span className="font-pixel text-[10px] text-muted-foreground">🌱 입문 레벨로 설정됩니다</span>
+          </div>
+        )}
       </PixelCard>
 
       {/* Elite Status */}
