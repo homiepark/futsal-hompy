@@ -4,6 +4,7 @@ import { PlayerStatsModal } from './PlayerStatsModal';
 
 interface Member {
   id: string;
+  userId?: string;
   nickname: string;
   avatarUrl?: string;
   position: 'pivo' | 'ala' | 'fixo' | 'goleiro';
