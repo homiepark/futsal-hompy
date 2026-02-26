@@ -15,9 +15,9 @@ interface TimelinePostProps {
   date: string;
   content: string;
   imageUrl?: string;
+  imageUrls?: string[];
   likes?: number;
   comments?: number;
-  /** Set to true to use mock counts instead of DB */
   isMock?: boolean;
 }
 
