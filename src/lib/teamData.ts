@@ -36,40 +36,44 @@ export type GenderValue = typeof genderOptions[number]['value'];
 // Level options with descriptions - used for team creation and filtering
 export const levelOptions = [
   { 
-    value: 'S', 
-    label: 'S급', 
-    tier: 'Grand Master',
-    desc: '압도적 전력의 군단',
-    characteristic: '선수/선출급(10년+)의 완벽한 전술',
-    operatingStyle: '프로 지향 및 대회 우승을 목표로 운영하는 팀',
-    icon: '🏆'
-  },
-  { 
-    value: 'A', 
-    label: 'A급', 
-    tier: 'High Class',
-    desc: '지역구 강호',
-    characteristic: '베테랑(7년+)의 탄탄한 조직력',
-    operatingStyle: '수준 높은 경기와 팽팽한 승부를 즐기는 팀',
-    icon: '⭐'
-  },
-  { 
-    value: 'B', 
-    label: 'B급', 
-    tier: 'Regular',
-    desc: '안정적인 베테랑',
-    characteristic: '일반 실력파(3~6년)의 탄탄한 기본기',
-    operatingStyle: '검증된 매너와 즐겁고 안정적인 운영을 지향하는 팀',
-    icon: '💪'
-  },
-  { 
-    value: 'C', 
-    label: 'C급', 
-    tier: 'Rookie',
-    desc: '성장하는 도전자',
-    characteristic: '루키(3년 미만)의 활기찬 시작',
+    value: '1', 
+    label: 'LV.1',
+    name: '풋린이',
+    tier: 'Beginner',
+    desc: '이제 막 풋살의 재미를 알아가는 새싹 단계',
+    characteristic: '풋살 입문(1년 미만)의 열정적인 시작',
     operatingStyle: '함께 배우며 성장하는 과정과 친목을 소중히 하는 팀',
-    icon: '🌟'
+    icon: '🌱'
+  },
+  { 
+    value: '2', 
+    label: 'LV.2',
+    name: '풋내기',
+    tier: 'Intermediate',
+    desc: '기본기를 익히고 경기의 흐름을 이해하기 시작한 단계',
+    characteristic: '기본기 습득(1~3년)의 안정적인 성장',
+    operatingStyle: '검증된 매너와 즐겁고 안정적인 운영을 지향하는 팀',
+    icon: '⚽'
+  },
+  { 
+    value: '3', 
+    label: 'LV.3',
+    name: '풋살러',
+    tier: 'Advanced',
+    desc: '팀의 중심이 되어 멋진 플레이를 보여주는 단계',
+    characteristic: '실력파(3~7년)의 탄탄한 조직력',
+    operatingStyle: '수준 높은 경기와 팽팽한 승부를 즐기는 팀',
+    icon: '🔥'
+  },
+  { 
+    value: '4', 
+    label: 'LV.4',
+    name: '풋살왕',
+    tier: 'Master',
+    desc: '경기장을 지배하는 압도적인 실력의 마스터 단계',
+    characteristic: '선수/선출급(7년+)의 완벽한 전술',
+    operatingStyle: '프로 지향 및 대회 우승을 목표로 운영하는 팀',
+    icon: '👑'
   },
 ] as const;
 
