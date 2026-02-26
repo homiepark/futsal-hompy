@@ -26,7 +26,7 @@ const mockUserTeams: Team[] = [
     id: 'blue-wave',
     name: '블루웨이브',
     emblem: '🌊',
-    level: 'B',
+    level: '2',
     favorites: 64,
     region: '인천 연수구',
   },
