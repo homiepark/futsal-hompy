@@ -123,9 +123,9 @@ export default function ProfileSetup() {
         }
       }
 
-      // Get years from experience level
-      const expData = experienceLevels.find(l => l.id === experienceLevel);
-      const yearsOfExp = expData?.years || 0;
+      // Calculate career
+      const yearsOfExp = careerType === 'under1' ? 0 : careerYears;
+      const monthsOfExp = careerType === 'under1' ? 0 : careerMonths;
 
       // Update profile
       const { error } = await supabase
@@ -134,8 +134,10 @@ export default function ProfileSetup() {
           nickname: nickname.trim(),
           nickname_tag: nicknameTag,
           real_name: realName.trim(),
-          preferred_position: selectedPosition,
+          preferred_position: selectedPositions[0],
+          preferred_positions: selectedPositions,
           years_of_experience: yearsOfExp,
+          months_of_experience: monthsOfExp,
           is_pro_elite: isElite,
           avatar_url: uploadedAvatarUrl,
         })
