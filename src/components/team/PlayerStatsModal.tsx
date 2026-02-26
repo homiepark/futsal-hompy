@@ -187,8 +187,14 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
                     <span className="font-pixel text-[7px] text-muted-foreground">{entry.date}</span>
                   </div>
                   <p className="font-pixel text-[9px] text-foreground mb-1 leading-tight">{entry.message}</p>
-                  <button className="flex items-center gap-0.5 text-accent hover:scale-110 transition-transform">
-                    <Heart size={10} fill="currentColor" />
+                  <button 
+                    onClick={() => toggleLike(entry.id)}
+                    className={cn(
+                      "flex items-center gap-0.5 hover:scale-110 transition-transform",
+                      entry.isLikedByMe ? "text-accent" : "text-muted-foreground"
+                    )}
+                  >
+                    <Heart size={10} fill={entry.isLikedByMe ? "currentColor" : "none"} />
                     <span className="font-pixel text-[7px]">{entry.likes}</span>
                   </button>
                 </div>
