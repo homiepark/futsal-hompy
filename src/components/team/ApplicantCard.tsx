@@ -40,12 +40,15 @@ export function ApplicantCard({
   realName,
   avatarUrl,
   yearsOfExperience,
+  monthsOfExperience,
   preferredPosition,
+  preferredPositions,
   message,
   onApprove,
   onReject,
   onMessage,
 }: ApplicantCardProps) {
+  const allPositions = preferredPositions?.length ? preferredPositions : [preferredPosition];
   const positionLabel = positionLabels[preferredPosition] || preferredPosition;
   const positionColor = positionColors[preferredPosition] || 'bg-muted text-muted-foreground';
 
