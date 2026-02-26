@@ -29,25 +29,18 @@ const positionInfo = {
   goleiro: { label: '골레이로', emoji: '🧤', color: 'bg-green-500/20 border-green-500 text-green-600', fullName: 'Goleiro (골키퍼)' },
 };
 
-// Mock guestbook entries (will be replaced with real data later)
-const mockGuestbookEntries: GuestbookEntry[] = [
-  { id: '1', authorNickname: '별빛#1234', message: '오늘 경기 멋졌어요! 🔥', date: '2024.01.20', likes: 3 },
-  { id: '2', authorNickname: '축구왕#5678', message: '패스 타이밍 진짜 좋았습니다 👍', date: '2024.01.18', likes: 5 },
-  { id: '3', authorNickname: '풋살러#9012', message: '다음에 또 같이 해요!', date: '2024.01.15', likes: 2 },
-];
-
 export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalProps) {
   const [guestbookMessage, setGuestbookMessage] = useState('');
-  const [guestbookEntries] = useState<GuestbookEntry[]>(mockGuestbookEntries);
+  const { user } = useAuth();
+  const { entries: guestbookEntries, submitEntry, toggleLike } = usePlayerGuestbook(player?.userId);
 
   if (!isOpen || !player) return null;
 
   const info = positionInfo[player.position];
 
-  const handleSubmitGuestbook = () => {
+  const handleSubmitGuestbook = async () => {
     if (!guestbookMessage.trim()) return;
-    // TODO: Submit to database
-    console.log('Submit guestbook:', guestbookMessage);
+    await submitEntry(guestbookMessage);
     setGuestbookMessage('');
   };
 
