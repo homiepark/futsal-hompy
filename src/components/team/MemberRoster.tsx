@@ -8,7 +8,9 @@ interface Member {
   nickname: string;
   avatarUrl?: string;
   position: 'pivo' | 'ala' | 'fixo' | 'goleiro';
+  positions?: string[];
   yearsOfExperience: number;
+  monthsOfExperience?: number;
   isAdmin?: boolean;
   joinDate?: string;
   mannerRating?: number;
