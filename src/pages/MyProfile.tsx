@@ -40,8 +40,9 @@ export default function MyProfile() {
     nickname: '풋살러',
     avatarUrl: '',
     yearsOfExperience: 0,
+    monthsOfExperience: 0,
     isProElite: false,
-    preferredPosition: 'ala',
+    preferredPositions: ['ala'] as string[],
   });
   
   // Multi-region state
