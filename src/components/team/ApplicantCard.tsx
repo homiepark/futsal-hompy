@@ -85,17 +85,23 @@ export function ApplicantCard({
               ({realName})
             </p>
           )}
-          <div className="flex items-center gap-2 mt-1">
-            <span className={cn(
-              'font-pixel text-[8px] px-2 py-0.5 border-2 border-border-dark',
-              positionColor
-            )}
-              style={{ boxShadow: '1px 1px 0 hsl(var(--pixel-shadow) / 0.5)' }}
-            >
-              {positionLabel}
-            </span>
+          <div className="flex items-center gap-2 mt-1 flex-wrap">
+            {allPositions.map(pos => {
+              const color = positionColors[pos] || 'bg-muted text-muted-foreground';
+              const label = positionLabels[pos] || pos;
+              return (
+                <span key={pos} className={cn(
+                  'font-pixel text-[8px] px-2 py-0.5 border-2 border-border-dark',
+                  color
+                )}
+                  style={{ boxShadow: '1px 1px 0 hsl(var(--pixel-shadow) / 0.5)' }}
+                >
+                  {label}
+                </span>
+              );
+            })}
             <span className="font-pixel text-[9px] text-muted-foreground">
-              경력 {yearsOfExperience}년
+              경력 {yearsOfExperience}년{monthsOfExperience ? ` ${monthsOfExperience}개월` : ''}
             </span>
           </div>
         </div>
