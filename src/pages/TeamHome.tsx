@@ -27,7 +27,7 @@ const mockTeamData = {
   emblem: '🔥',
   photoUrl: '',
   bannerUrl: '',
-  level: 'A' as const,
+  level: '3',
   favorites: 128,
   region: '서울 강남구',
   description: '열정 가득한 풋살 팀입니다!',

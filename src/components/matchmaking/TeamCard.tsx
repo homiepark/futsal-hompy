@@ -11,7 +11,7 @@ interface TeamCardProps {
   name: string;
   emblem?: string;
   region: string;
-  level: 'S' | 'A' | 'B' | 'C';
+  level: string;
   members: number;
   gender: '남성' | '여성' | '혼성';
   matchTime?: string;
@@ -24,10 +24,10 @@ interface TeamCardProps {
 }
 
 const levelVariants = {
-  'S': 'level-s',
-  'A': 'level-a',
-  'B': 'level-b',
-  'C': 'level-c',
+  '1': 'level-1',
+  '2': 'level-2',
+  '3': 'level-3',
+  '4': 'level-4',
 } as const;
 
 export function TeamCard({
@@ -65,8 +65,8 @@ export function TeamCard({
             </div>
           </div>
           <div className="flex flex-col items-end gap-1">
-            <PixelBadge variant={levelVariants[level]}>
-              Lv.{level}
+            <PixelBadge variant={levelVariants[level as keyof typeof levelVariants] || 'default'}>
+              LV.{level}
             </PixelBadge>
             {/* Manner Score */}
             <div className="flex items-center gap-1">

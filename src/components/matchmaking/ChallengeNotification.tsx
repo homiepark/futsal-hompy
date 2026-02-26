@@ -30,10 +30,10 @@ interface ChallengeNotificationProps {
 }
 
 const levelVariants = {
-  'S': 'level-s',
-  'A': 'level-a',
-  'B': 'level-b',
-  'C': 'level-c',
+  '1': 'level-1',
+  '2': 'level-2',
+  '3': 'level-3',
+  '4': 'level-4',
 } as const;
 
 export function ChallengeNotification({
@@ -115,7 +115,7 @@ export function ChallengeNotification({
 
   if (!team) return null;
 
-  const teamLevel = (team.level || 'C') as 'S' | 'A' | 'B' | 'C';
+  const teamLevel = team.level || '1';
 
   return (
     <>
@@ -169,8 +169,8 @@ export function ChallengeNotification({
             <div className="flex-1">
               <p className="font-pixel text-[11px] text-foreground font-bold">{team.name}</p>
               <div className="flex items-center gap-2 mt-1">
-                <PixelBadge variant={levelVariants[teamLevel]} className="text-[8px]">
-                  Lv.{teamLevel}
+                <PixelBadge variant={levelVariants[teamLevel as keyof typeof levelVariants] || 'default'} className="text-[8px]">
+                  LV.{teamLevel}
                 </PixelBadge>
                 <div className="flex items-center gap-1">
                   <Star size={10} className="text-accent fill-accent" />

@@ -12,7 +12,7 @@ interface MatchPostCardProps {
   id: string;
   teamName: string;
   teamEmblem: string;
-  teamLevel: 'S' | 'A' | 'B' | 'C';
+  teamLevel: string;
   teamMembers?: number;
   teamMannerScore?: number;
   locationName: string;
@@ -27,17 +27,17 @@ interface MatchPostCardProps {
 }
 
 const levelLabels: Record<string, string> = {
-  'S': 'Grand Master',
-  'A': 'High Class',
-  'B': 'Regular',
-  'C': 'Rookie',
+  '1': '풋린이',
+  '2': '풋내기',
+  '3': '풋살러',
+  '4': '풋살왕',
 };
 
 const levelVariants = {
-  'S': 'level-s',
-  'A': 'level-a',
-  'B': 'level-b',
-  'C': 'level-c',
+  '1': 'level-1',
+  '2': 'level-2',
+  '3': 'level-3',
+  '4': 'level-4',
 } as const;
 
 export function MatchPostCard({
@@ -87,8 +87,8 @@ export function MatchPostCard({
               <div>
                 <h3 className="font-pixel text-[11px] text-foreground font-bold">{teamName}</h3>
                 <div className="flex items-center gap-2 mt-1">
-                  <PixelBadge variant={levelVariants[teamLevel]} className="text-[8px]">
-                    Lv.{teamLevel}
+                  <PixelBadge variant={levelVariants[teamLevel as keyof typeof levelVariants] || 'default'} className="text-[8px]">
+                    LV.{teamLevel} {levelLabels[teamLevel] || ''}
                   </PixelBadge>
                   <div className="flex items-center gap-1">
                     <Star size={10} className="text-accent fill-accent" />
@@ -142,10 +142,10 @@ export function MatchPostCard({
               {targetLevels.map((level) => (
                 <PixelBadge 
                   key={level} 
-                  variant={levelVariants[level as 'S' | 'A' | 'B' | 'C']} 
+                  variant={levelVariants[level as keyof typeof levelVariants] || 'default'} 
                   className="text-[8px]"
                 >
-                  {level}급
+                  LV.{level}
                 </PixelBadge>
               ))}
             </div>

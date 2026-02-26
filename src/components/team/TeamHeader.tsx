@@ -9,7 +9,7 @@ interface TeamHeaderProps {
   emblem: string;
   photoUrl?: string;
   bannerUrl?: string;
-  level: 'S' | 'A' | 'B' | 'C';
+  level: string;
   favorites: number;
   region?: string;
   introduction?: string;
@@ -21,11 +21,11 @@ interface TeamHeaderProps {
   onIntroUpdate?: (text: string) => void;
 }
 
-const levelColors = {
-  S: 'bg-[hsl(45,100%,50%)] border-[hsl(45,100%,35%)] text-foreground shadow-[0_0_8px_hsl(45,100%,50%)]',
-  A: 'bg-accent border-accent-dark text-accent-foreground',
-  B: 'bg-primary border-primary-dark text-primary-foreground',
-  C: 'bg-secondary border-border-dark text-foreground',
+const levelColors: Record<string, string> = {
+  '1': 'bg-[hsl(var(--level-1))] border-[hsl(var(--level-1))] text-white',
+  '2': 'bg-[hsl(var(--level-2))] border-[hsl(var(--level-2))] text-white',
+  '3': 'bg-[hsl(var(--level-3))] border-[hsl(var(--level-3))] text-white',
+  '4': 'bg-[hsl(var(--level-4))] border-[hsl(var(--level-4))] text-white shadow-[0_0_8px_hsl(var(--level-4))]',
 };
 
 export function TeamHeader({
@@ -170,7 +170,7 @@ export function TeamHeader({
               <h1 className="font-pixel text-xs text-foreground leading-tight">{name}</h1>
               <div className={cn(
                 'px-1.5 py-0.5 border-2 font-pixel text-[8px]',
-                levelColors[level]
+                levelColors[level] || 'bg-primary text-primary-foreground'
               )}>
                 LV.{level}
               </div>

@@ -25,7 +25,7 @@ export default function CreateTeam() {
     emblem: '⚽',
     customLogoUrl: null as string | null,
     gender: 'mixed' as GenderValue,
-    level: 'B',
+    level: '1',
     region: '',
     district: '',
     trainingDays: [] as string[],

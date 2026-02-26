@@ -311,14 +311,14 @@ export function AdvancedFilterBar({ filters, onFiltersChange }: AdvancedFilterBa
           <LevelInfoButton />
         </div>
         <div className="grid grid-cols-2 gap-1.5">
-          {levelOptions.map(({ value, desc, tier, icon }) => {
+          {levelOptions.map(({ value, name, tier, icon }) => {
             const isActive = filters.levels.includes(value);
-            const levelColorClass = {
-              S: 'bg-accent text-accent-foreground border-accent-dark',
-              A: 'bg-primary text-primary-foreground border-primary-dark',
-              B: 'bg-primary/70 text-primary-foreground border-primary-dark/70',
-              C: 'bg-primary/50 text-primary-foreground border-primary-dark/50',
-            }[value];
+            const levelColorClass: Record<string, string> = {
+              '1': 'bg-[hsl(var(--level-1))] text-white border-[hsl(var(--level-1))]',
+              '2': 'bg-[hsl(var(--level-2))] text-white border-[hsl(var(--level-2))]',
+              '3': 'bg-[hsl(var(--level-3))] text-white border-[hsl(var(--level-3))]',
+              '4': 'bg-[hsl(var(--level-4))] text-white border-[hsl(var(--level-4))]',
+            };
             
             return (
               <button
@@ -327,15 +327,15 @@ export function AdvancedFilterBar({ filters, onFiltersChange }: AdvancedFilterBa
                 className={cn(
                   "px-2 py-2 border-3 transition-all text-left",
                   isActive
-                    ? levelColorClass
+                    ? levelColorClass[value]
                     : "bg-secondary text-secondary-foreground border-border-dark hover:border-primary"
                 )}
                 style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
-                title={`${tier}: ${desc}`}
+                title={`${name}: ${tier}`}
               >
                 <div className="flex items-center gap-1">
                   {isActive ? <Check size={10} /> : <span>{icon}</span>}
-                  <span className="font-pixel text-[10px]">Lv.{value}</span>
+                  <span className="font-pixel text-[10px]">LV.{value}</span>
                   <span className={cn(
                     "font-body text-[7px]",
                     isActive ? "opacity-75" : "text-muted-foreground"
@@ -347,7 +347,7 @@ export function AdvancedFilterBar({ filters, onFiltersChange }: AdvancedFilterBa
                   "font-pixel text-[7px] mt-0.5 truncate",
                   isActive ? "opacity-90" : "text-muted-foreground"
                 )}>
-                  {desc}
+                  {name}
                 </p>
               </button>
             );

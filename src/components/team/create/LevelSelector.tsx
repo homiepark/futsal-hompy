@@ -11,10 +11,10 @@ export function LevelSelector({ value, onChange }: LevelSelectorProps) {
   const getLevelColorClass = (level: string, isSelected: boolean) => {
     if (!isSelected) return 'bg-muted border-border-dark hover:bg-muted/70';
     const colors: Record<string, string> = {
-      S: 'bg-accent/20 border-accent',
-      A: 'bg-primary/20 border-primary',
-      B: 'bg-primary/15 border-primary/70',
-      C: 'bg-primary/10 border-primary/50',
+      '1': 'bg-[hsl(var(--level-1)/0.2)] border-[hsl(var(--level-1))]',
+      '2': 'bg-[hsl(var(--level-2)/0.2)] border-[hsl(var(--level-2))]',
+      '3': 'bg-[hsl(var(--level-3)/0.2)] border-[hsl(var(--level-3))]',
+      '4': 'bg-[hsl(var(--level-4)/0.2)] border-[hsl(var(--level-4))]',
     };
     return colors[level] || 'bg-primary/20 border-primary';
   };
@@ -22,10 +22,10 @@ export function LevelSelector({ value, onChange }: LevelSelectorProps) {
   const getBadgeColorClass = (level: string, isSelected: boolean) => {
     if (!isSelected) return 'bg-secondary text-secondary-foreground border-border-dark';
     const colors: Record<string, string> = {
-      S: 'bg-accent text-accent-foreground border-accent-dark',
-      A: 'bg-primary text-primary-foreground border-primary-dark',
-      B: 'bg-primary/80 text-primary-foreground border-primary-dark/80',
-      C: 'bg-primary/60 text-primary-foreground border-primary-dark/60',
+      '1': 'bg-[hsl(var(--level-1))] text-white border-[hsl(var(--level-1))]',
+      '2': 'bg-[hsl(var(--level-2))] text-white border-[hsl(var(--level-2))]',
+      '3': 'bg-[hsl(var(--level-3))] text-white border-[hsl(var(--level-3))]',
+      '4': 'bg-[hsl(var(--level-4))] text-white border-[hsl(var(--level-4))]',
     };
     return colors[level] || 'bg-primary text-primary-foreground border-primary';
   };
@@ -52,7 +52,7 @@ export function LevelSelector({ value, onChange }: LevelSelectorProps) {
                 )}
                 style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
               >
-                {/* Header with Badge and Tier */}
+                {/* Header with Badge and Name */}
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-base">{option.icon}</span>
                   <span className={cn(
@@ -61,12 +61,13 @@ export function LevelSelector({ value, onChange }: LevelSelectorProps) {
                   )}>
                     {option.label}
                   </span>
+                  <span className="font-pixel text-[11px] text-foreground font-bold">{option.name}</span>
                   <span className="font-body text-[10px] text-muted-foreground">({option.tier})</span>
                 </div>
                 
-                {/* Title */}
-                <p className="font-pixel text-[10px] text-foreground ml-7 mb-1">
-                  "{option.desc}"
+                {/* Description */}
+                <p className="font-body text-[10px] text-foreground ml-7 mb-1">
+                  {option.desc}
                 </p>
                 
                 {/* Characteristic */}

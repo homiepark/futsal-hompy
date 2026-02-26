@@ -11,7 +11,7 @@ interface RecommendedTeam {
   emblem: string;
   region: string;
   district: string;
-  level: 'S' | 'A' | 'B' | 'C';
+  level: string;
   mannerScore: number;
   matchTime: string;
   homeGroundName?: string;
@@ -25,10 +25,10 @@ interface RecommendedMatchesProps {
 }
 
 const levelVariants = {
-  'S': 'level-s',
-  'A': 'level-a',
-  'B': 'level-b',
-  'C': 'level-c',
+  '1': 'level-1',
+  '2': 'level-2',
+  '3': 'level-3',
+  '4': 'level-4',
 } as const;
 
 export function RecommendedMatches({ teams, userDistricts }: RecommendedMatchesProps) {
@@ -131,8 +131,8 @@ export function RecommendedMatches({ teams, userDistricts }: RecommendedMatchesP
 
               {/* Stats Row */}
               <div className="flex items-center justify-between">
-                <PixelBadge variant={levelVariants[team.level]} className="text-[7px]">
-                  Lv.{team.level}
+                <PixelBadge variant={levelVariants[team.level as keyof typeof levelVariants] || 'default'} className="text-[7px]">
+                  LV.{team.level}
                 </PixelBadge>
                 <div className="flex items-center gap-1">
                   <Star size={10} className="text-accent fill-accent" />

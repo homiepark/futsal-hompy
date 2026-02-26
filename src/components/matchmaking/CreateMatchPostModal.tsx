@@ -28,10 +28,10 @@ interface CreateMatchPostModalProps {
 }
 
 const levelVariants = {
-  'S': 'level-s',
-  'A': 'level-a',
-  'B': 'level-b',
-  'C': 'level-c',
+  '1': 'level-1',
+  '2': 'level-2',
+  '3': 'level-3',
+  '4': 'level-4',
 } as const;
 
 const timeSlots = [
@@ -232,7 +232,7 @@ export function CreateMatchPostModal({
   }
 
   const hasHomeGround = team?.homeGroundName;
-  const teamLevel = (team?.level || 'C') as 'S' | 'A' | 'B' | 'C';
+  const teamLevel = (team?.level || '1');
   const mannerScore = team?.mannerScore || 4.5;
 
   // Format selected date for display
@@ -285,8 +285,8 @@ export function CreateMatchPostModal({
               <div className="flex-1">
                 <p className="font-pixel text-[11px] text-foreground font-bold">{team.name}</p>
                 <div className="flex items-center gap-2 mt-1">
-                  <PixelBadge variant={levelVariants[teamLevel]} className="text-[8px]">
-                    Lv.{teamLevel}
+                  <PixelBadge variant={levelVariants[teamLevel as keyof typeof levelVariants] || 'default'} className="text-[8px]">
+                    LV.{teamLevel}
                   </PixelBadge>
                   <div className="flex items-center gap-1">
                     <Star size={12} className="text-accent fill-accent" />
@@ -472,14 +472,14 @@ export function CreateMatchPostModal({
             </div>
             <p className="font-pixel text-[8px] text-muted-foreground">복수 선택 가능</p>
             <div className="grid grid-cols-2 gap-2">
-              {levelOptions.map(({ value, tier, icon }) => {
+              {levelOptions.map(({ value, name, icon }) => {
                 const isSelected = targetLevels.includes(value);
-                const levelColorClass = {
-                  S: 'bg-accent text-accent-foreground border-accent-dark',
-                  A: 'bg-primary text-primary-foreground border-primary-dark',
-                  B: 'bg-primary/70 text-primary-foreground border-primary-dark/70',
-                  C: 'bg-primary/50 text-primary-foreground border-primary-dark/50',
-                }[value];
+                const levelColorClass: Record<string, string> = {
+                  '1': 'bg-[hsl(var(--level-1))] text-white border-[hsl(var(--level-1))]',
+                  '2': 'bg-[hsl(var(--level-2))] text-white border-[hsl(var(--level-2))]',
+                  '3': 'bg-[hsl(var(--level-3))] text-white border-[hsl(var(--level-3))]',
+                  '4': 'bg-[hsl(var(--level-4))] text-white border-[hsl(var(--level-4))]',
+                };
                 
                 return (
                   <button
@@ -488,7 +488,7 @@ export function CreateMatchPostModal({
                     className={cn(
                       "px-3 py-3 border-3 transition-all text-left relative overflow-hidden",
                       isSelected
-                        ? levelColorClass
+                        ? levelColorClass[value]
                         : "bg-secondary text-secondary-foreground border-border-dark hover:border-primary"
                     )}
                     style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}
@@ -501,12 +501,12 @@ export function CreateMatchPostModal({
                     <div className="flex items-center gap-2">
                       <span className="text-lg">{icon}</span>
                       <div>
-                        <span className="font-pixel text-[10px] font-bold block">Lv.{value}</span>
+                        <span className="font-pixel text-[10px] font-bold block">LV.{value}</span>
                         <span className={cn(
                           "font-pixel text-[7px]",
                           isSelected ? "opacity-75" : "text-muted-foreground"
                         )}>
-                          {tier}
+                          {name}
                         </span>
                       </div>
                     </div>

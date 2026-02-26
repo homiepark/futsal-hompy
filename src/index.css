@@ -54,11 +54,11 @@
     --field-green: 142 55% 42%;
     --court-line: 0 0% 100%;
     
-    /* Level Badge Colors - Green & Orange only */
-    --level-s: 27 97% 58%;
-    --level-a: 142 69% 45%;
-    --level-b: 142 55% 55%;
-    --level-c: 142 45% 65%;
+    /* Level Badge Colors - 4 tiers */
+    --level-1: 142 45% 65%;
+    --level-2: 142 55% 50%;
+    --level-3: 27 90% 55%;
+    --level-4: 340 75% 55%;
 
     --sidebar-background: 45 30% 96%;
     --sidebar-foreground: 30 20% 20%;
@@ -207,18 +207,18 @@
     box-shadow: 2px 2px 0 hsl(var(--pixel-shadow));
   }
 
-  /* Level Badges - Green & Orange only */
-  .level-s {
-    @apply bg-accent text-accent-foreground;
+  /* Level Badges - 4 tiers */
+  .level-1 {
+    @apply bg-[hsl(var(--level-1))] text-white;
   }
-  .level-a {
-    @apply bg-primary text-primary-foreground;
+  .level-2 {
+    @apply bg-[hsl(var(--level-2))] text-white;
   }
-  .level-b {
-    @apply bg-primary/70 text-primary-foreground;
+  .level-3 {
+    @apply bg-[hsl(var(--level-3))] text-white;
   }
-  .level-c {
-    @apply bg-primary/50 text-primary-foreground;
+  .level-4 {
+    @apply bg-[hsl(var(--level-4))] text-white;
   }
 
   /* Pixel Icon Wrapper */

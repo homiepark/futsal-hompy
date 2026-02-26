@@ -55,14 +55,14 @@ const mockMatchPosts: MatchPost[] = [
     match_date: format(new Date(), 'yyyy-MM-dd'),
     match_time_start: '14:00',
     match_time_end: '16:00',
-    target_levels: ['A', 'B'],
+    target_levels: ['3', '2'],
     description: '정정당당하게 한 판 하실 팀 찾습니다!',
     created_at: new Date().toISOString(),
     team: {
       id: 't1',
       name: 'FC 번개',
       emblem: '⚡',
-      level: 'A',
+      level: '3',
     },
   },
   {
@@ -73,14 +73,14 @@ const mockMatchPosts: MatchPost[] = [
     match_date: format(new Date(Date.now() + 86400000), 'yyyy-MM-dd'),
     match_time_start: '10:00',
     match_time_end: '12:00',
-    target_levels: ['B', 'C'],
+    target_levels: ['2', '1'],
     description: '주말 오전 친선 경기 원합니다. 초보 팀도 환영!',
     created_at: new Date().toISOString(),
     team: {
       id: 't2',
       name: '선데이 풋살',
       emblem: '☀️',
-      level: 'B',
+      level: '2',
     },
   },
   {
@@ -91,14 +91,14 @@ const mockMatchPosts: MatchPost[] = [
     match_date: format(new Date(Date.now() + 172800000), 'yyyy-MM-dd'),
     match_time_start: '19:00',
     match_time_end: '21:00',
-    target_levels: ['S', 'A'],
+    target_levels: ['4', '3'],
     description: '고수 팀만 오세요! 실력으로 승부합니다.',
     created_at: new Date().toISOString(),
     team: {
       id: 't3',
       name: '올드보이즈',
       emblem: '🦁',
-      level: 'S',
+      level: '4',
     },
   },
 ];
@@ -203,7 +203,7 @@ export default function Matchmaking() {
             id: post.team_id,
             name: '알 수 없는 팀',
             emblem: '⚽',
-            level: 'C',
+            level: '1',
           },
         }));
 
@@ -358,7 +358,7 @@ export default function Matchmaking() {
               id={post.id}
               teamName={post.team.name}
               teamEmblem={post.team.emblem}
-              teamLevel={post.team.level as 'S' | 'A' | 'B' | 'C'}
+              teamLevel={post.team.level}
               locationName={post.location_name}
               locationAddress={post.location_address || undefined}
               matchDate={parseISO(post.match_date)}
