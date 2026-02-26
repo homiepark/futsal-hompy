@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Heart, MessageCircle, Share2, Instagram, Send, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Instagram, Send, Trash2, ChevronDown, ChevronUp, ChevronLeft, ChevronRight } from 'lucide-react';
 import { PixelCard } from '@/components/ui/PixelCard';
 import { toast } from 'sonner';
 import { useArchiveLikes } from '@/hooks/useArchiveLikes';
