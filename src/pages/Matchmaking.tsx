@@ -203,7 +203,7 @@ export default function Matchmaking() {
             id: post.team_id,
             name: '알 수 없는 팀',
             emblem: '⚽',
-            level: 'C',
+            level: '1',
           },
         }));
 
