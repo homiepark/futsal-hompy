@@ -109,9 +109,21 @@ export function MemberRoster({ members, teamId }: MemberRosterProps) {
                         <span className="font-pixel text-[8px] text-foreground truncate leading-tight">
                           {member.nickname}
                         </span>
-                        <span className="font-pixel text-[7px] text-muted-foreground leading-tight">
-                          {member.yearsOfExperience}년차
-                        </span>
+                        <div className="flex items-center gap-1">
+                          <span className="font-pixel text-[7px] text-muted-foreground leading-tight">
+                            {member.yearsOfExperience}년{member.monthsOfExperience ? `${member.monthsOfExperience}개월` : ''}
+                          </span>
+                          {/* Show all position badges */}
+                          {(member.positions?.length ?? 0) > 1 && (
+                            <div className="flex gap-0.5">
+                              {member.positions?.filter(p => p !== position).map(p => (
+                                <span key={p} className="font-pixel text-[6px] px-1 bg-primary/20 border border-primary text-primary">
+                                  {positionInfo[p as keyof typeof positionInfo]?.emoji}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </button>
                   ))}
