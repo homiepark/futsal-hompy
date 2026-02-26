@@ -21,11 +21,11 @@ interface TeamHeaderProps {
   onIntroUpdate?: (text: string) => void;
 }
 
-const levelColors = {
-  S: 'bg-[hsl(45,100%,50%)] border-[hsl(45,100%,35%)] text-foreground shadow-[0_0_8px_hsl(45,100%,50%)]',
-  A: 'bg-accent border-accent-dark text-accent-foreground',
-  B: 'bg-primary border-primary-dark text-primary-foreground',
-  C: 'bg-secondary border-border-dark text-foreground',
+const levelColors: Record<string, string> = {
+  '1': 'bg-[hsl(var(--level-1))] border-[hsl(var(--level-1))] text-white',
+  '2': 'bg-[hsl(var(--level-2))] border-[hsl(var(--level-2))] text-white',
+  '3': 'bg-[hsl(var(--level-3))] border-[hsl(var(--level-3))] text-white',
+  '4': 'bg-[hsl(var(--level-4))] border-[hsl(var(--level-4))] text-white shadow-[0_0_8px_hsl(var(--level-4))]',
 };
 
 export function TeamHeader({
