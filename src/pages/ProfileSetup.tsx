@@ -17,14 +17,6 @@ const positions = [
   { id: 'goleiro', label: '골레이로', emoji: '🧤', description: 'Goalkeeper' },
 ];
 
-// Experience levels
-const experienceLevels = [
-  { id: 1, label: 'Newbie', sublabel: '<1년', years: 0 },
-  { id: 2, label: 'Rookie', sublabel: '1-3년', years: 2 },
-  { id: 3, label: 'Regular', sublabel: '3-5년', years: 4 },
-  { id: 4, label: 'Veteran', sublabel: '5-10년', years: 7 },
-  { id: 5, label: 'Legend', sublabel: '10년+', years: 12 },
-];
 
 // Generate random 4-digit tag
 const generateTag = () => {
