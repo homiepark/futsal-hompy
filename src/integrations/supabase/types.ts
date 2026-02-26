@@ -14,6 +14,114 @@ export type Database = {
   }
   public: {
     Tables: {
+      archive_post_comments: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          post_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          post_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          post_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "archive_post_comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "archive_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      archive_post_likes: {
+        Row: {
+          created_at: string
+          id: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "archive_post_likes_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "archive_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      archive_posts: {
+        Row: {
+          author_user_id: string
+          content: string
+          created_at: string
+          folder_id: string | null
+          id: string
+          image_url: string | null
+          team_id: string
+          updated_at: string
+          video_url: string | null
+        }
+        Insert: {
+          author_user_id: string
+          content: string
+          created_at?: string
+          folder_id?: string | null
+          id?: string
+          image_url?: string | null
+          team_id: string
+          updated_at?: string
+          video_url?: string | null
+        }
+        Update: {
+          author_user_id?: string
+          content?: string
+          created_at?: string
+          folder_id?: string | null
+          id?: string
+          image_url?: string | null
+          team_id?: string
+          updated_at?: string
+          video_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "archive_posts_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       match_applications: {
         Row: {
           applicant_team_id: string
