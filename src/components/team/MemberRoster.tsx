@@ -35,12 +35,13 @@ export function MemberRoster({ members, teamId }: MemberRosterProps) {
   const [selectedPlayer, setSelectedPlayer] = useState<Member | null>(null);
   const [showModal, setShowModal] = useState(false);
 
-  // Group by position
+  // Group by position (members with multiple positions appear in each group)
   const groupedMembers = members.reduce((acc, member) => {
-    if (!acc[member.position]) {
-      acc[member.position] = [];
-    }
-    acc[member.position].push(member);
+    const memberPositions = member.positions?.length ? member.positions : [member.position];
+    memberPositions.forEach(pos => {
+      if (!acc[pos]) acc[pos] = [];
+      acc[pos].push(member);
+    });
     return acc;
   }, {} as Record<string, Member[]>);
 
