@@ -19,7 +19,7 @@ const mockUserTeams: Team[] = [
     id: 'thunder-fc',
     name: '썬더 FC',
     emblem: '⚡',
-    level: 'S',
+    level: '4',
     favorites: 256,
     region: '서울 마포구',
   },
