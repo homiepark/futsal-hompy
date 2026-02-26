@@ -286,39 +286,49 @@ export default function ProfileSetup() {
         </div>
       </PixelCard>
 
-      {/* Position Selection */}
+      {/* Position Selection - Multi-select */}
       <PixelCard className="mb-4">
-        <label className="block font-pixel text-xs text-foreground mb-3">
+        <label className="block font-pixel text-xs text-foreground mb-1">
           포지션 선택 <span className="text-accent">*</span>
         </label>
+        <p className="font-pixel text-[8px] text-muted-foreground mb-3">복수 선택 가능</p>
         <div className="grid grid-cols-2 gap-3">
-          {positions.map((pos) => (
-            <button
-              key={pos.id}
-              type="button"
-              onClick={() => setSelectedPosition(pos.id)}
-              className={cn(
-                'p-4 border-4 transition-all text-center relative',
-                selectedPosition === pos.id
-                  ? 'bg-primary border-primary-dark text-primary-foreground'
-                  : 'bg-secondary border-border-dark hover:border-primary'
-              )}
-              style={{
-                boxShadow: selectedPosition === pos.id
-                  ? '0 0 16px hsl(var(--primary)), 3px 3px 0 hsl(var(--primary-dark))'
-                  : '3px 3px 0 hsl(var(--pixel-shadow))'
-              }}
-            >
-              {selectedPosition === pos.id && (
-                <div className="absolute top-1 right-1 w-5 h-5 bg-accent border-2 border-accent-dark flex items-center justify-center">
-                  <Check size={12} className="text-accent-foreground" />
-                </div>
-              )}
-              <span className="text-3xl block mb-2">{pos.emoji}</span>
-              <span className="font-pixel text-[11px] block">{pos.label}</span>
-              <span className="font-pixel text-[8px] text-muted-foreground block mt-1">{pos.description}</span>
-            </button>
-          ))}
+          {positions.map((pos) => {
+            const isSelected = selectedPositions.includes(pos.id);
+            return (
+              <button
+                key={pos.id}
+                type="button"
+                onClick={() => {
+                  setSelectedPositions(prev =>
+                    isSelected
+                      ? prev.filter(p => p !== pos.id)
+                      : [...prev, pos.id]
+                  );
+                }}
+                className={cn(
+                  'p-4 border-4 transition-all text-center relative',
+                  isSelected
+                    ? 'bg-primary border-primary-dark text-primary-foreground'
+                    : 'bg-secondary border-border-dark hover:border-primary'
+                )}
+                style={{
+                  boxShadow: isSelected
+                    ? '0 0 16px hsl(var(--primary)), 3px 3px 0 hsl(var(--primary-dark))'
+                    : '3px 3px 0 hsl(var(--pixel-shadow))'
+                }}
+              >
+                {isSelected && (
+                  <div className="absolute top-1 right-1 w-5 h-5 bg-accent border-2 border-accent-dark flex items-center justify-center">
+                    <Check size={12} className="text-accent-foreground" />
+                  </div>
+                )}
+                <span className="text-3xl block mb-2">{pos.emoji}</span>
+                <span className="font-pixel text-[11px] block">{pos.label}</span>
+                <span className="font-pixel text-[8px] text-muted-foreground block mt-1">{pos.description}</span>
+              </button>
+            );
+          })}
         </div>
       </PixelCard>
 
