@@ -87,8 +87,8 @@ export function MatchPostCard({
               <div>
                 <h3 className="font-pixel text-[11px] text-foreground font-bold">{teamName}</h3>
                 <div className="flex items-center gap-2 mt-1">
-                  <PixelBadge variant={levelVariants[teamLevel]} className="text-[8px]">
-                    Lv.{teamLevel}
+                  <PixelBadge variant={levelVariants[teamLevel as keyof typeof levelVariants] || 'default'} className="text-[8px]">
+                    LV.{teamLevel} {levelLabels[teamLevel] || ''}
                   </PixelBadge>
                   <div className="flex items-center gap-1">
                     <Star size={10} className="text-accent fill-accent" />
