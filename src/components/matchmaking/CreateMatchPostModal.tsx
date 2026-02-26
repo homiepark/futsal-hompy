@@ -472,7 +472,7 @@ export function CreateMatchPostModal({
             </div>
             <p className="font-pixel text-[8px] text-muted-foreground">복수 선택 가능</p>
             <div className="grid grid-cols-2 gap-2">
-              {levelOptions.map(({ value, tier, icon }) => {
+              {levelOptions.map(({ value, name, icon }) => {
                 const isSelected = targetLevels.includes(value);
                 const levelColorClass: Record<string, string> = {
                   '1': 'bg-[hsl(var(--level-1))] text-white border-[hsl(var(--level-1))]',
