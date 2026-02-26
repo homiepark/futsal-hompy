@@ -97,9 +97,10 @@ export default function MyProfile() {
     fetchProfile();
   }, [user]);
 
-  const getPositionLabel = (positionId: string) => {
-    const position = futsalPositions.find(p => p.id === positionId);
-    return position ? position.label : positionId;
+  const getPositionLabels = (positionIds: string[]) => {
+    return positionIds
+      .map(id => futsalPositions.find(p => p.id === id)?.label || id)
+      .join(' / ');
   };
 
   const handleAvatarClick = () => {
