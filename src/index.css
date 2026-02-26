@@ -207,18 +207,18 @@
     box-shadow: 2px 2px 0 hsl(var(--pixel-shadow));
   }
 
-  /* Level Badges - Green & Orange only */
-  .level-s {
-    @apply bg-accent text-accent-foreground;
+  /* Level Badges - 4 tiers */
+  .level-1 {
+    @apply bg-[hsl(var(--level-1))] text-white;
   }
-  .level-a {
-    @apply bg-primary text-primary-foreground;
+  .level-2 {
+    @apply bg-[hsl(var(--level-2))] text-white;
   }
-  .level-b {
-    @apply bg-primary/70 text-primary-foreground;
+  .level-3 {
+    @apply bg-[hsl(var(--level-3))] text-white;
   }
-  .level-c {
-    @apply bg-primary/50 text-primary-foreground;
+  .level-4 {
+    @apply bg-[hsl(var(--level-4))] text-white;
   }
 
   /* Pixel Icon Wrapper */

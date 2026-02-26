@@ -65,10 +65,10 @@ export default {
           line: "hsl(var(--court-line))",
         },
         level: {
-          s: "hsl(var(--level-s))",
-          a: "hsl(var(--level-a))",
-          b: "hsl(var(--level-b))",
-          c: "hsl(var(--level-c))",
+          1: "hsl(var(--level-1))",
+          2: "hsl(var(--level-2))",
+          3: "hsl(var(--level-3))",
+          4: "hsl(var(--level-4))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",

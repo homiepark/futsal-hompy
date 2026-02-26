@@ -122,5 +122,11 @@ export function getGenderLabel(value: string): string {
 
 // Helper to get level label from value
 export function getLevelLabel(value: string): string {
-  return levelOptions.find(l => l.value === value)?.label || `Lv.${value}`;
+  const opt = levelOptions.find(l => l.value === value);
+  return opt ? `${opt.label} ${opt.name}` : `LV.${value}`;
+}
+
+// Helper to get level name from value
+export function getLevelName(value: string): string {
+  return levelOptions.find(l => l.value === value)?.name || value;
 }
