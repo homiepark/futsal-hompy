@@ -55,14 +55,14 @@ const mockMatchPosts: MatchPost[] = [
     match_date: format(new Date(), 'yyyy-MM-dd'),
     match_time_start: '14:00',
     match_time_end: '16:00',
-    target_levels: ['A', 'B'],
+    target_levels: ['3', '2'],
     description: '정정당당하게 한 판 하실 팀 찾습니다!',
     created_at: new Date().toISOString(),
     team: {
       id: 't1',
       name: 'FC 번개',
       emblem: '⚡',
-      level: 'A',
+      level: '3',
     },
   },
   {
