@@ -78,12 +78,12 @@ export default function ProfileSetup() {
       toast({ title: '실명을 입력해주세요', variant: 'destructive' });
       return;
     }
-    if (!selectedPosition) {
-      toast({ title: '포지션을 선택해주세요', variant: 'destructive' });
+    if (selectedPositions.length === 0) {
+      toast({ title: '포지션을 하나 이상 선택해주세요', variant: 'destructive' });
       return;
     }
-    if (!experienceLevel) {
-      toast({ title: '경력 레벨을 선택해주세요', variant: 'destructive' });
+    if (careerType === null) {
+      toast({ title: '경력을 선택해주세요', variant: 'destructive' });
       return;
     }
     if (isElite === null) {
