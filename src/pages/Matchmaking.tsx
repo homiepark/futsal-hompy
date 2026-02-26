@@ -73,14 +73,14 @@ const mockMatchPosts: MatchPost[] = [
     match_date: format(new Date(Date.now() + 86400000), 'yyyy-MM-dd'),
     match_time_start: '10:00',
     match_time_end: '12:00',
-    target_levels: ['B', 'C'],
+    target_levels: ['2', '1'],
     description: '주말 오전 친선 경기 원합니다. 초보 팀도 환영!',
     created_at: new Date().toISOString(),
     team: {
       id: 't2',
       name: '선데이 풋살',
       emblem: '☀️',
-      level: 'B',
+      level: '2',
     },
   },
   {
