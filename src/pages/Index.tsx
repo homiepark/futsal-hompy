@@ -269,10 +269,6 @@ const Index = () => {
         <SimpleHeader />
       </div>
 
-      {/* Section 1: My Team Mini-Room (logged-in users only) */}
-      {user && (
-        <TeamMiniRoom userId={user.id} />
-      )}
 
       {/* Section 2: Neighborhood News Feed */}
       {/* For logged-in users: show if they have regions set */}
