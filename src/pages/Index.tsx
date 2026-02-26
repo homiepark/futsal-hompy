@@ -4,7 +4,7 @@ import { Bell, Settings, Mail, Plus } from 'lucide-react';
 import { SimpleHeader } from '@/components/findteam/SimpleHeader';
 import { TeamListCard } from '@/components/findteam/TeamListCard';
 import { NeighborhoodNews } from '@/components/home/NeighborhoodNews';
-import { TeamMiniRoom } from '@/components/home/TeamMiniRoom';
+
 import { CompactFilterBar } from '@/components/home/CompactFilterBar';
 import { GuestAuthPrompt } from '@/components/home/GuestAuthPrompt';
 import { PixelProfileIcon } from '@/components/ui/PixelProfileIcon';
