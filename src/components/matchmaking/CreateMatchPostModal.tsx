@@ -488,7 +488,7 @@ export function CreateMatchPostModal({
                     className={cn(
                       "px-3 py-3 border-3 transition-all text-left relative overflow-hidden",
                       isSelected
-                        ? levelColorClass
+                        ? levelColorClass[value]
                         : "bg-secondary text-secondary-foreground border-border-dark hover:border-primary"
                     )}
                     style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}
@@ -501,7 +501,7 @@ export function CreateMatchPostModal({
                     <div className="flex items-center gap-2">
                       <span className="text-lg">{icon}</span>
                       <div>
-                        <span className="font-pixel text-[10px] font-bold block">Lv.{value}</span>
+                        <span className="font-pixel text-[10px] font-bold block">LV.{value}</span>
                         <span className={cn(
                           "font-pixel text-[7px]",
                           isSelected ? "opacity-75" : "text-muted-foreground"
