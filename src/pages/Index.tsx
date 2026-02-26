@@ -4,7 +4,7 @@ import { Bell, Settings, Mail, Plus } from 'lucide-react';
 import { SimpleHeader } from '@/components/findteam/SimpleHeader';
 import { TeamListCard } from '@/components/findteam/TeamListCard';
 import { NeighborhoodNews } from '@/components/home/NeighborhoodNews';
-import { TeamMiniRoom } from '@/components/home/TeamMiniRoom';
+
 import { CompactFilterBar } from '@/components/home/CompactFilterBar';
 import { GuestAuthPrompt } from '@/components/home/GuestAuthPrompt';
 import { PixelProfileIcon } from '@/components/ui/PixelProfileIcon';
@@ -269,10 +269,6 @@ const Index = () => {
         <SimpleHeader />
       </div>
 
-      {/* Section 1: My Team Mini-Room (logged-in users only) */}
-      {user && (
-        <TeamMiniRoom userId={user.id} />
-      )}
 
       {/* Section 2: Neighborhood News Feed */}
       {/* For logged-in users: show if they have regions set */}
