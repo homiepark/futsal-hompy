@@ -38,6 +38,10 @@ export function TimelinePost({
   
   const [showComments, setShowComments] = useState(false);
   const [commentText, setCommentText] = useState('');
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // Build the effective image list: prefer imageUrls array, fallback to single imageUrl
+  const allImages = imageUrls.length > 0 ? imageUrls : (imageUrl ? [imageUrl] : []);
 
   const displayLikes = isMock ? mockLikes : likesCount;
   const displayComments = isMock ? mockComments : commentsCount;
@@ -55,6 +59,9 @@ export function TimelinePost({
     }
   };
 
+  const prevImage = () => setCurrentImageIndex(i => Math.max(0, i - 1));
+  const nextImage = () => setCurrentImageIndex(i => Math.min(allImages.length - 1, i + 1));
+
   return (
     <PixelCard className="space-y-3">
       {/* Header */}
@@ -71,14 +78,51 @@ export function TimelinePost({
       {/* Content */}
       <p className="font-body text-sm text-foreground">{content}</p>
 
-      {/* Image with Instagram Button */}
-      {imageUrl && (
+      {/* Image Carousel */}
+      {allImages.length > 0 && (
         <div className="relative border-4 border-border-dark shadow-pixel overflow-hidden rounded-lg">
           <img 
-            src={imageUrl} 
-            alt="게시물 이미지" 
-            className="w-full aspect-video object-cover"
+            src={allImages[currentImageIndex]} 
+            alt={`게시물 이미지 ${currentImageIndex + 1}`}
+            className="w-full aspect-video object-cover transition-opacity duration-200"
           />
+
+          {/* Navigation Arrows */}
+          {allImages.length > 1 && (
+            <>
+              {currentImageIndex > 0 && (
+                <button
+                  onClick={prevImage}
+                  className="absolute left-1.5 top-1/2 -translate-y-1/2 w-7 h-7 bg-background/80 border-2 border-border-dark flex items-center justify-center hover:bg-background transition-colors"
+                >
+                  <ChevronLeft size={14} className="text-foreground" />
+                </button>
+              )}
+              {currentImageIndex < allImages.length - 1 && (
+                <button
+                  onClick={nextImage}
+                  className="absolute right-1.5 top-1/2 -translate-y-1/2 w-7 h-7 bg-background/80 border-2 border-border-dark flex items-center justify-center hover:bg-background transition-colors"
+                >
+                  <ChevronRight size={14} className="text-foreground" />
+                </button>
+              )}
+              {/* Dots Indicator */}
+              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+                {allImages.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setCurrentImageIndex(idx)}
+                    className={cn(
+                      "w-1.5 h-1.5 border border-border-dark transition-colors",
+                      idx === currentImageIndex ? "bg-primary" : "bg-background/60"
+                    )}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+
+          {/* Instagram Share */}
           <button 
             onClick={() => {
               toast.success('인스타그램 공유 준비 중...', {
