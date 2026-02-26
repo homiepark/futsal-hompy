@@ -241,7 +241,7 @@ export default function MyProfile() {
               className="text-lg text-foreground bg-transparent border-b-2 border-border focus:border-primary outline-none text-center w-full max-w-[200px]"
             />
             <p className="text-sm text-muted-foreground mt-1">
-              경력 {profile.yearsOfExperience}년 · {getPositionLabel(profile.preferredPosition)}
+              경력 {profile.yearsOfExperience}년 {profile.monthsOfExperience > 0 ? `${profile.monthsOfExperience}개월` : ''} · {getPositionLabels(profile.preferredPositions)}
             </p>
           </div>
         </PixelCard>
