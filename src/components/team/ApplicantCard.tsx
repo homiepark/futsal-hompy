@@ -8,7 +8,9 @@ interface ApplicantCardProps {
   realName?: string;
   avatarUrl?: string;
   yearsOfExperience: number;
+  monthsOfExperience?: number;
   preferredPosition: string;
+  preferredPositions?: string[];
   message?: string;
   onApprove: (id: string) => void;
   onReject: (id: string) => void;
