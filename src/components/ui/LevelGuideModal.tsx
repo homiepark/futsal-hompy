@@ -46,61 +46,15 @@ const QuestionMarkIcon = ({ size = 2, className }: { size?: number; className?: 
   );
 };
 
-// 8x8 pixel whistle icon
-const WhistleIcon = ({ size = 2 }: { size?: number }) => {
-  const pattern = [
-    [0,0,0,0,0,1,1,0],
-    [0,0,0,0,1,1,1,1],
-    [0,0,0,1,1,1,1,1],
-    [1,1,1,1,1,1,1,0],
-    [1,1,1,1,1,1,0,0],
-    [0,1,1,1,1,0,0,0],
-    [0,0,1,1,0,0,0,0],
-    [0,0,0,0,0,0,0,0],
-  ];
-
-  return (
-    <div 
-      className="relative"
-      style={{ width: size * 8, height: size * 8 }}
-    >
-      {pattern.map((row, y) =>
-        row.map((pixel, x) => (
-          pixel === 1 && (
-            <div
-              key={`${x}-${y}`}
-              className="absolute"
-              style={{
-                width: size,
-                height: size,
-                left: x * size,
-                top: y * size,
-                backgroundColor: 'hsl(45 80% 55%)', // Gold whistle
-              }}
-            />
-          )
-        ))
-      )}
-    </div>
-  );
-};
-
 const levelColorMap: Record<string, string> = {
-  S: 'bg-accent text-accent-foreground border-accent-dark',
-  A: 'bg-primary text-primary-foreground border-primary-dark',
-  B: 'bg-primary/70 text-primary-foreground border-primary-dark/70',
-  C: 'bg-primary/50 text-primary-foreground border-primary-dark/50',
+  '1': 'bg-[hsl(var(--level-1))] text-white border-[hsl(var(--level-1))]',
+  '2': 'bg-[hsl(var(--level-2))] text-white border-[hsl(var(--level-2))]',
+  '3': 'bg-[hsl(var(--level-3))] text-white border-[hsl(var(--level-3))]',
+  '4': 'bg-[hsl(var(--level-4))] text-white border-[hsl(var(--level-4))]',
 };
 
 export function LevelGuideModal({ isOpen, onClose }: LevelGuideModalProps) {
   if (!isOpen) return null;
-
-  const levelRanges: Record<string, string> = {
-    S: '90 - 100',
-    A: '70 - 89',
-    B: '50 - 69',
-    C: '0 - 49',
-  };
 
   return (
     <>
@@ -136,25 +90,22 @@ export function LevelGuideModal({ isOpen, onClose }: LevelGuideModalProps) {
             <div className="bg-muted border-2 border-border-dark p-3">
               <h3 className="font-body font-bold text-foreground mb-2 flex items-center gap-2">
                 <span className="text-accent">📊</span>
-                팀 레벨 산정 공식
+                팀 레벨 산정 방식
               </h3>
               <div className="bg-background border-2 border-border p-3 font-mono text-xs text-foreground overflow-x-auto">
                 <code className="whitespace-pre">
-{`팀 레벨 = 0.4 × 전체평균 + 0.6 × Top5평균
+{`팀 레벨 = 팀원들의 경력 수준에 따라 산정
 
-전체평균 = Σ(개인점수) / 팀원수
-Top5평균 = 상위 5명 평균 점수
-
-개인점수 = 경력년수 × 10
-가중치   = 프로출신(×2) + 엘리트(×1.5)`}
+팀원 평균 경력 기반으로 자동 계산
+상위 실력자 가중 반영`}
                 </code>
               </div>
             </div>
 
-            {/* Level Cards with Detailed Descriptions */}
+            {/* Level Cards */}
             <div>
               <h3 className="font-body font-bold text-foreground mb-2 flex items-center gap-2">
-                <span className="text-primary">🏆</span>
+                <span className="text-primary">🏅</span>
                 레벨별 상세 안내
               </h3>
               <div className="space-y-2">
@@ -162,7 +113,7 @@ Top5평균 = 상위 5명 평균 점수
                   <div 
                     key={level.value}
                     className={cn(
-                      'p-3 border-3',
+                      'p-3 border-3 rounded-sm',
                       levelColorMap[level.value]
                     )}
                     style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}
@@ -171,11 +122,14 @@ Top5평균 = 상위 5명 평균 점수
                     <div className="flex items-center gap-2 mb-2">
                       <span className="text-lg">{level.icon}</span>
                       <span className="font-pixel text-[11px]">{level.label}</span>
+                      <span className="font-pixel text-[11px] font-bold">{level.name}</span>
                       <span className="font-body text-[10px] opacity-80">({level.tier})</span>
                     </div>
                     
-                    {/* Title */}
-                    <p className="font-pixel text-[9px] mb-1">"{level.desc}"</p>
+                    {/* Description */}
+                    <p className="font-body text-[11px] opacity-95 mb-1">
+                      {level.desc}
+                    </p>
                     
                     {/* Characteristic */}
                     <p className="font-body text-[10px] opacity-90 mb-1">
@@ -186,42 +140,14 @@ Top5평균 = 상위 5명 평균 점수
                     <p className="font-body text-[10px] opacity-90">
                       <span className="font-bold">운영:</span> {level.operatingStyle}
                     </p>
-                    
-                    {/* Score Range */}
-                    <div className="mt-2 pt-2 border-t border-current/20">
-                      <span className="font-mono text-[9px] opacity-75">
-                        점수: {levelRanges[level.value]}
-                      </span>
-                    </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Factors */}
-            <div className="bg-secondary/50 border-2 border-border p-3 rounded-lg">
-              <h4 className="font-body font-bold text-foreground text-sm mb-2">레벨 산정 요소:</h4>
-              <ul className="space-y-1.5 text-xs font-body text-muted-foreground">
-                <li className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 bg-primary" />
-                  개인 풋살/축구 경력 연수
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 bg-accent" />
-                  프로/엘리트 선수 출신 여부
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 bg-primary" />
-                  상위 5명 가중 반영 (60%)
-                </li>
-              </ul>
-            </div>
-
             {/* Trainer's Note */}
             <div className="bg-accent/10 border-2 border-accent p-3 flex items-start gap-3">
-              <div className="flex-shrink-0 mt-0.5">
-                <WhistleIcon size={3} />
-              </div>
+              <div className="flex-shrink-0 mt-0.5 text-xl">⚽</div>
               <div>
                 <p className="font-pixel text-[8px] text-accent mb-1">TRAINER'S NOTE</p>
                 <p className="font-body text-xs text-foreground">

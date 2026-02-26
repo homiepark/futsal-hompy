@@ -176,7 +176,7 @@ export function CompactFilterBar({ filters, onFiltersChange }: CompactFilterBarP
               <LevelInfoButton />
             </div>
             <div className="grid grid-cols-2 gap-2">
-              {levelOptions.map(({ value, label, desc, icon }) => (
+              {levelOpts.map(({ value, label, desc, icon }) => (
                 <button
                   key={value}
                   onClick={() => toggleLevel(value)}
