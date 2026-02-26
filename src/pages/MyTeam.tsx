@@ -27,17 +27,17 @@ const mockUserTeams: Team[] = [
     id: 'blue-wave',
     name: '블루웨이브',
     emblem: '🌊',
-    level: 'B',
+    level: '2',
     favorites: 64,
     region: '인천 연수구',
   },
 ];
 
 const levelColors: Record<string, string> = {
-  S: 'bg-gradient-to-r from-yellow-400 to-amber-500 text-black',
-  A: 'bg-gradient-to-r from-purple-500 to-purple-600 text-white',
-  B: 'bg-gradient-to-r from-blue-400 to-blue-500 text-white',
-  C: 'bg-gradient-to-r from-gray-400 to-gray-500 text-white',
+  '1': 'bg-[hsl(var(--level-1))] text-white',
+  '2': 'bg-[hsl(var(--level-2))] text-white',
+  '3': 'bg-[hsl(var(--level-3))] text-white',
+  '4': 'bg-[hsl(var(--level-4))] text-white',
 };
 
 export default function MyTeam() {
