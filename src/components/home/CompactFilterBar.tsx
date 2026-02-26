@@ -18,11 +18,11 @@ interface CompactFilterBarProps {
   onFiltersChange: (filters: any) => void;
 }
 
-const levelOptions = [
-  { value: 'S', label: 'S급', desc: '압도적 전력의 군단', icon: '🏆' },
-  { value: 'A', label: 'A급', desc: '지역구 강호', icon: '⭐' },
-  { value: 'B', label: 'B급', desc: '안정적인 베테랑', icon: '💪' },
-  { value: 'C', label: 'C급', desc: '성장하는 도전자', icon: '🌟' },
+const levelOpts = [
+  { value: '1', label: 'LV.1', desc: '풋린이', icon: '🌱' },
+  { value: '2', label: 'LV.2', desc: '풋내기', icon: '⚽' },
+  { value: '3', label: 'LV.3', desc: '풋살러', icon: '🔥' },
+  { value: '4', label: 'LV.4', desc: '풋살왕', icon: '👑' },
 ];
 
 const genderOptions = [
