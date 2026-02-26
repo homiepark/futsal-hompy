@@ -27,6 +27,7 @@ export function TimelinePost({
   date,
   content,
   imageUrl,
+  imageUrls = [],
   likes: mockLikes = 0,
   comments: mockComments = 0,
   isMock = true,
