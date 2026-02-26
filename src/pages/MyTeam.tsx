@@ -133,8 +133,8 @@ export default function MyTeam() {
                     <h2 className="font-pixel text-sm text-foreground truncate">
                       {team.name}
                     </h2>
-                    <span className={`px-2 py-0.5 text-[10px] font-pixel ${levelColors[team.level]}`}>
-                      Lv.{team.level}
+                    <span className={`px-2 py-0.5 text-[10px] font-pixel ${levelColors[team.level] || ''}`}>
+                      LV.{team.level}
                     </span>
                   </div>
                   

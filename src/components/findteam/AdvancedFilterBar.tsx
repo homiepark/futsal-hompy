@@ -327,15 +327,15 @@ export function AdvancedFilterBar({ filters, onFiltersChange }: AdvancedFilterBa
                 className={cn(
                   "px-2 py-2 border-3 transition-all text-left",
                   isActive
-                    ? levelColorClass
+                    ? levelColorClass[value]
                     : "bg-secondary text-secondary-foreground border-border-dark hover:border-primary"
                 )}
                 style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
-                title={`${tier}: ${desc}`}
+                title={`${name}: ${tier}`}
               >
                 <div className="flex items-center gap-1">
                   {isActive ? <Check size={10} /> : <span>{icon}</span>}
-                  <span className="font-pixel text-[10px]">Lv.{value}</span>
+                  <span className="font-pixel text-[10px]">LV.{value}</span>
                   <span className={cn(
                     "font-body text-[7px]",
                     isActive ? "opacity-75" : "text-muted-foreground"
