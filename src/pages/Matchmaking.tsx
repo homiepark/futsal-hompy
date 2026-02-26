@@ -358,7 +358,7 @@ export default function Matchmaking() {
               id={post.id}
               teamName={post.team.name}
               teamEmblem={post.team.emblem}
-              teamLevel={post.team.level as 'S' | 'A' | 'B' | 'C'}
+              teamLevel={post.team.level}
               locationName={post.location_name}
               locationAddress={post.location_address || undefined}
               matchDate={parseISO(post.match_date)}
