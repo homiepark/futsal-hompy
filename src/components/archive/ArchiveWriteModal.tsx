@@ -1,13 +1,18 @@
 import { useState, useRef } from 'react';
-import { X, Image, Video, Hash, Upload, Link } from 'lucide-react';
+import { X, Image, Video, Upload, Link, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface ArchiveWriteModalProps {
   isOpen: boolean;
   onClose: () => void;
   folders: { id: string; name: string; emoji: string }[];
-  onSubmit: (data: ArchivePostData) => void;
+  teamId: string;
+  onSubmitSuccess?: () => void;
+  /** Legacy callback for mock mode */
+  onSubmit?: (data: ArchivePostData) => void;
 }
 
 interface ArchivePostData {
@@ -29,13 +34,16 @@ const defaultTags = [
   { id: 'daily', label: '#일상', emoji: '📷' },
 ];
 
-export function ArchiveWriteModal({ isOpen, onClose, folders, onSubmit }: ArchiveWriteModalProps) {
+export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSuccess, onSubmit }: ArchiveWriteModalProps) {
+  const { user } = useAuth();
   const [content, setContent] = useState('');
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [videoUrl, setVideoUrl] = useState('');
   const [showVideoInput, setShowVideoInput] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [selectedFolder, setSelectedFolder] = useState(folders[0]?.id || 'all');
+  const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   if (!isOpen) return null;
@@ -43,10 +51,11 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, onSubmit }: Archiv
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error('이미지는 5MB 이하만 업로드 가능합니다');
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error('이미지는 10MB 이하만 업로드 가능합니다');
         return;
       }
+      setImageFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
@@ -63,27 +72,75 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, onSubmit }: Archiv
     );
   };
 
-  const handleSubmit = () => {
+  const uploadImage = async (file: File): Promise<string | null> => {
+    if (!user) return null;
+    const ext = file.name.split('.').pop();
+    const filePath = `${user.id}/${Date.now()}.${ext}`;
+
+    const { error } = await supabase.storage
+      .from('archive-images')
+      .upload(filePath, file, { upsert: false });
+
+    if (error) {
+      console.error('Upload error:', error);
+      throw error;
+    }
+
+    const { data: urlData } = supabase.storage
+      .from('archive-images')
+      .getPublicUrl(filePath);
+
+    return urlData.publicUrl;
+  };
+
+  const handleSubmit = async () => {
     if (!content.trim() && !imagePreview && !videoUrl) {
       toast.error('내용을 입력해주세요');
       return;
     }
-    
-    onSubmit({
-      content,
-      imageUrl: imagePreview || undefined,
-      videoUrl: videoUrl || undefined,
-      tags: selectedTags,
-      folderId: selectedFolder,
-    });
 
-    // Reset form
-    setContent('');
-    setImagePreview(null);
-    setVideoUrl('');
-    setSelectedTags([]);
-    toast.success('아카이브에 등록되었습니다!');
-    onClose();
+    if (!user) {
+      toast.error('로그인이 필요합니다');
+      return;
+    }
+
+    setUploading(true);
+
+    try {
+      // Upload image to storage if exists
+      let imageUrl: string | undefined;
+      if (imageFile) {
+        const url = await uploadImage(imageFile);
+        if (url) imageUrl = url;
+      }
+
+      // Insert into archive_posts
+      const { error } = await supabase.from('archive_posts').insert({
+        team_id: teamId,
+        author_user_id: user.id,
+        content: content.trim(),
+        image_url: imageUrl || null,
+        video_url: videoUrl || null,
+        folder_id: selectedFolder,
+      });
+
+      if (error) throw error;
+
+      // Reset form
+      setContent('');
+      setImagePreview(null);
+      setImageFile(null);
+      setVideoUrl('');
+      setSelectedTags([]);
+      toast.success('아카이브에 등록되었습니다! 📸');
+      onSubmitSuccess?.();
+      onClose();
+    } catch (err) {
+      console.error('Archive post error:', err);
+      toast.error('게시글 등록에 실패했습니다');
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (
@@ -173,7 +230,7 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, onSubmit }: Archiv
                   />
                 </div>
                 <button
-                  onClick={() => setImagePreview(null)}
+                  onClick={() => { setImagePreview(null); setImageFile(null); }}
                   className="absolute top-2 right-2 w-6 h-6 bg-destructive border-2 border-border-dark flex items-center justify-center"
                   style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
                 >
@@ -189,7 +246,7 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, onSubmit }: Archiv
                   <Image size={20} className="text-muted-foreground" />
                 </div>
                 <span className="font-pixel text-[8px] text-muted-foreground">
-                  클릭하여 이미지 업로드
+                  클릭하여 이미지 업로드 (최대 10MB)
                 </span>
               </button>
             )}
@@ -261,18 +318,29 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, onSubmit }: Archiv
         <div className="flex-shrink-0 p-3 border-t-3 border-border-dark bg-muted/50 flex gap-2">
           <button
             onClick={onClose}
-            className="flex-1 py-2.5 bg-secondary border-3 border-border-dark font-pixel text-[9px] text-foreground hover:bg-muted transition-colors"
+            disabled={uploading}
+            className="flex-1 py-2.5 bg-secondary border-3 border-border-dark font-pixel text-[9px] text-foreground hover:bg-muted transition-colors disabled:opacity-50"
             style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
           >
             취소
           </button>
           <button
             onClick={handleSubmit}
-            className="flex-1 py-2.5 bg-primary border-3 border-primary-dark font-pixel text-[9px] text-primary-foreground hover:brightness-110 transition-all flex items-center justify-center gap-1.5"
+            disabled={uploading}
+            className="flex-1 py-2.5 bg-primary border-3 border-primary-dark font-pixel text-[9px] text-primary-foreground hover:brightness-110 transition-all flex items-center justify-center gap-1.5 disabled:opacity-50"
             style={{ boxShadow: '2px 2px 0 hsl(var(--primary-dark))' }}
           >
-            <Upload size={12} />
-            등록하기
+            {uploading ? (
+              <>
+                <Loader2 size={12} className="animate-spin" />
+                업로드 중...
+              </>
+            ) : (
+              <>
+                <Upload size={12} />
+                등록하기
+              </>
+            )}
           </button>
         </div>
       </div>
