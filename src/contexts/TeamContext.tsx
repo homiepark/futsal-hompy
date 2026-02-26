@@ -6,7 +6,7 @@ export interface Team {
   emblem: string;
   photoUrl?: string;
   bannerUrl?: string;
-  level: 'S' | 'A' | 'B' | 'C';
+  level: string;
   favorites: number;
   region?: string;
   description?: string;

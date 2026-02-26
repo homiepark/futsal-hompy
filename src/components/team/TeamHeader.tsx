@@ -170,7 +170,7 @@ export function TeamHeader({
               <h1 className="font-pixel text-xs text-foreground leading-tight">{name}</h1>
               <div className={cn(
                 'px-1.5 py-0.5 border-2 font-pixel text-[8px]',
-                levelColors[level]
+                levelColors[level] || 'bg-primary text-primary-foreground'
               )}>
                 LV.{level}
               </div>

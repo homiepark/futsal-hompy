@@ -57,9 +57,9 @@ export function TeamListCard({ id, emblem, name, region, level, trainingTime, me
             <h3 className="font-body font-bold text-foreground truncate">{name}</h3>
             <span className={cn(
               "px-2 py-1 text-[10px] font-pixel border-2 shadow-[2px_2px_0_hsl(var(--pixel-shadow))]",
-              levelColors[level]
+              levelColors[level] || 'bg-primary text-primary-foreground border-primary-dark'
             )}>
-              Lv.{level}
+              LV.{level}
             </span>
             <LevelInfoButton />
           </div>
