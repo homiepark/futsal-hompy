@@ -91,14 +91,14 @@ const mockMatchPosts: MatchPost[] = [
     match_date: format(new Date(Date.now() + 172800000), 'yyyy-MM-dd'),
     match_time_start: '19:00',
     match_time_end: '21:00',
-    target_levels: ['S', 'A'],
+    target_levels: ['4', '3'],
     description: '고수 팀만 오세요! 실력으로 승부합니다.',
     created_at: new Date().toISOString(),
     team: {
       id: 't3',
       name: '올드보이즈',
       emblem: '🦁',
-      level: 'S',
+      level: '4',
     },
   },
 ];
