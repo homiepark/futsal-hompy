@@ -65,8 +65,8 @@ export function TeamCard({
             </div>
           </div>
           <div className="flex flex-col items-end gap-1">
-            <PixelBadge variant={levelVariants[level]}>
-              Lv.{level}
+            <PixelBadge variant={levelVariants[level as keyof typeof levelVariants] || 'default'}>
+              LV.{level}
             </PixelBadge>
             {/* Manner Score */}
             <div className="flex items-center gap-1">

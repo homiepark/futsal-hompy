@@ -169,8 +169,8 @@ export function ChallengeNotification({
             <div className="flex-1">
               <p className="font-pixel text-[11px] text-foreground font-bold">{team.name}</p>
               <div className="flex items-center gap-2 mt-1">
-                <PixelBadge variant={levelVariants[teamLevel]} className="text-[8px]">
-                  Lv.{teamLevel}
+                <PixelBadge variant={levelVariants[teamLevel as keyof typeof levelVariants] || 'default'} className="text-[8px]">
+                  LV.{teamLevel}
                 </PixelBadge>
                 <div className="flex items-center gap-1">
                   <Star size={10} className="text-accent fill-accent" />

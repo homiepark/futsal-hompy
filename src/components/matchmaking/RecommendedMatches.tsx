@@ -131,8 +131,8 @@ export function RecommendedMatches({ teams, userDistricts }: RecommendedMatchesP
 
               {/* Stats Row */}
               <div className="flex items-center justify-between">
-                <PixelBadge variant={levelVariants[team.level]} className="text-[7px]">
-                  Lv.{team.level}
+                <PixelBadge variant={levelVariants[team.level as keyof typeof levelVariants] || 'default'} className="text-[7px]">
+                  LV.{team.level}
                 </PixelBadge>
                 <div className="flex items-center gap-1">
                   <Star size={10} className="text-accent fill-accent" />
