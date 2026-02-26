@@ -192,12 +192,12 @@ export function MatchBoardFilters({ filters, onFiltersChange }: MatchBoardFilter
         <div className="flex gap-1.5">
           {levelOptions.map(({ value, icon }) => {
             const isActive = filters.levels.includes(value);
-            const levelColorClass = {
-              S: 'bg-accent text-accent-foreground border-accent-dark',
-              A: 'bg-primary text-primary-foreground border-primary-dark',
-              B: 'bg-primary/70 text-primary-foreground border-primary-dark/70',
-              C: 'bg-primary/50 text-primary-foreground border-primary-dark/50',
-            }[value];
+            const levelColorClass: Record<string, string> = {
+              '1': 'bg-[hsl(var(--level-1))] text-white border-[hsl(var(--level-1))]',
+              '2': 'bg-[hsl(var(--level-2))] text-white border-[hsl(var(--level-2))]',
+              '3': 'bg-[hsl(var(--level-3))] text-white border-[hsl(var(--level-3))]',
+              '4': 'bg-[hsl(var(--level-4))] text-white border-[hsl(var(--level-4))]',
+            };
             
             return (
               <button
