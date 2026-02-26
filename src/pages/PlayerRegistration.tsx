@@ -13,18 +13,12 @@ const positions = [
   { id: 'goleiro', label: '골레이로', emoji: '🧤' },
 ];
 
-const experienceLevels = [
-  { id: 1, label: 'Newbie', sublabel: '<1년', stars: 1 },
-  { id: 2, label: 'Rookie', sublabel: '1-3년', stars: 2 },
-  { id: 3, label: 'Regular', sublabel: '3-5년', stars: 3 },
-  { id: 4, label: 'Veteran', sublabel: '5-10년', stars: 4 },
-  { id: 5, label: 'Legend', sublabel: '10년+', stars: 5 },
-];
-
 export default function PlayerRegistration() {
   const [nickname, setNickname] = useState('');
-  const [selectedPosition, setSelectedPosition] = useState<string | null>(null);
-  const [experienceLevel, setExperienceLevel] = useState<number | null>(null);
+  const [selectedPositions, setSelectedPositions] = useState<string[]>([]);
+  const [careerType, setCareerType] = useState<'under1' | 'over1' | null>(null);
+  const [careerYears, setCareerYears] = useState(1);
+  const [careerMonths, setCareerMonths] = useState(0);
   const [isElite, setIsElite] = useState<boolean | null>(null);
 
   const handleSubmit = () => {
