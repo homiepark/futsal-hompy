@@ -130,3 +130,11 @@ export function getLevelLabel(value: string): string {
 export function getLevelName(value: string): string {
   return levelOptions.find(l => l.value === value)?.name || value;
 }
+
+// Level variant map for PixelBadge component
+export const levelVariantMap: Record<string, 'level-1' | 'level-2' | 'level-3' | 'level-4'> = {
+  '1': 'level-1',
+  '2': 'level-2',
+  '3': 'level-3',
+  '4': 'level-4',
+};

@@ -12,7 +12,7 @@ interface MatchPostCardProps {
   id: string;
   teamName: string;
   teamEmblem: string;
-  teamLevel: 'S' | 'A' | 'B' | 'C';
+  teamLevel: string;
   teamMembers?: number;
   teamMannerScore?: number;
   locationName: string;
@@ -27,17 +27,17 @@ interface MatchPostCardProps {
 }
 
 const levelLabels: Record<string, string> = {
-  'S': 'Grand Master',
-  'A': 'High Class',
-  'B': 'Regular',
-  'C': 'Rookie',
+  '1': '풋린이',
+  '2': '풋내기',
+  '3': '풋살러',
+  '4': '풋살왕',
 };
 
 const levelVariants = {
-  'S': 'level-s',
-  'A': 'level-a',
-  'B': 'level-b',
-  'C': 'level-c',
+  '1': 'level-1',
+  '2': 'level-2',
+  '3': 'level-3',
+  '4': 'level-4',
 } as const;
 
 export function MatchPostCard({

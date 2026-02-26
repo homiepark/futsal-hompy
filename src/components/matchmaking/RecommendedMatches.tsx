@@ -25,10 +25,10 @@ interface RecommendedMatchesProps {
 }
 
 const levelVariants = {
-  'S': 'level-s',
-  'A': 'level-a',
-  'B': 'level-b',
-  'C': 'level-c',
+  '1': 'level-1',
+  '2': 'level-2',
+  '3': 'level-3',
+  '4': 'level-4',
 } as const;
 
 export function RecommendedMatches({ teams, userDistricts }: RecommendedMatchesProps) {
