@@ -86,6 +86,7 @@ export type Database = {
           folder_id: string | null
           id: string
           image_url: string | null
+          image_urls: string[] | null
           team_id: string
           updated_at: string
           video_url: string | null
@@ -97,6 +98,7 @@ export type Database = {
           folder_id?: string | null
           id?: string
           image_url?: string | null
+          image_urls?: string[] | null
           team_id: string
           updated_at?: string
           video_url?: string | null
@@ -108,6 +110,7 @@ export type Database = {
           folder_id?: string | null
           id?: string
           image_url?: string | null
+          image_urls?: string[] | null
           team_id?: string
           updated_at?: string
           video_url?: string | null

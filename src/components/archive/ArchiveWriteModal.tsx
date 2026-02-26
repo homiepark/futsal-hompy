@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { X, Image, Video, Upload, Link, Loader2 } from 'lucide-react';
+import { X, Image, Video, Upload, Link, Loader2, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -11,17 +11,11 @@ interface ArchiveWriteModalProps {
   folders: { id: string; name: string; emoji: string }[];
   teamId: string;
   onSubmitSuccess?: () => void;
-  /** Legacy callback for mock mode */
-  onSubmit?: (data: ArchivePostData) => void;
+  onSubmit?: (data: any) => void;
 }
 
-interface ArchivePostData {
-  content: string;
-  imageUrl?: string;
-  videoUrl?: string;
-  tags: string[];
-  folderId: string;
-}
+const MAX_IMAGES = 10;
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
 const defaultTags = [
   { id: 'match', label: '#경기', emoji: '⚽' },
@@ -34,11 +28,15 @@ const defaultTags = [
   { id: 'daily', label: '#일상', emoji: '📷' },
 ];
 
-export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSuccess, onSubmit }: ArchiveWriteModalProps) {
+interface ImageItem {
+  file: File;
+  preview: string;
+}
+
+export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSuccess }: ArchiveWriteModalProps) {
   const { user } = useAuth();
   const [content, setContent] = useState('');
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [images, setImages] = useState<ImageItem[]>([]);
   const [videoUrl, setVideoUrl] = useState('');
   const [showVideoInput, setShowVideoInput] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -48,57 +46,78 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
 
   if (!isOpen) return null;
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 10 * 1024 * 1024) {
-        toast.error('이미지는 10MB 이하만 업로드 가능합니다');
-        return;
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    const remaining = MAX_IMAGES - images.length;
+
+    if (files.length > remaining) {
+      toast.error(`이미지는 최대 ${MAX_IMAGES}장까지 업로드 가능합니다`);
+    }
+
+    const validFiles = files.slice(0, remaining).filter(file => {
+      if (file.size > MAX_FILE_SIZE) {
+        toast.error(`${file.name}은(는) 10MB를 초과합니다`);
+        return false;
       }
-      setImageFile(file);
+      return true;
+    });
+
+    validFiles.forEach(file => {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImagePreview(reader.result as string);
+        setImages(prev => [...prev, { file, preview: reader.result as string }]);
       };
       reader.readAsDataURL(file);
-    }
+    });
+
+    // Reset input so same file can be selected again
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const removeImage = (index: number) => {
+    setImages(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleTagToggle = (tagId: string) => {
-    setSelectedTags(prev => 
-      prev.includes(tagId) 
+    setSelectedTags(prev =>
+      prev.includes(tagId)
         ? prev.filter(t => t !== tagId)
         : [...prev, tagId]
     );
   };
 
-  const uploadImage = async (file: File): Promise<string | null> => {
-    if (!user) return null;
-    const ext = file.name.split('.').pop();
-    const filePath = `${user.id}/${Date.now()}.${ext}`;
+  const uploadImages = async (files: File[]): Promise<string[]> => {
+    if (!user) return [];
+    const urls: string[] = [];
 
-    const { error } = await supabase.storage
-      .from('archive-images')
-      .upload(filePath, file, { upsert: false });
+    for (const file of files) {
+      const ext = file.name.split('.').pop();
+      const filePath = `${user.id}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
 
-    if (error) {
-      console.error('Upload error:', error);
-      throw error;
+      const { error } = await supabase.storage
+        .from('archive-images')
+        .upload(filePath, file, { upsert: false });
+
+      if (error) {
+        console.error('Upload error:', error);
+        throw error;
+      }
+
+      const { data: urlData } = supabase.storage
+        .from('archive-images')
+        .getPublicUrl(filePath);
+
+      urls.push(urlData.publicUrl);
     }
 
-    const { data: urlData } = supabase.storage
-      .from('archive-images')
-      .getPublicUrl(filePath);
-
-    return urlData.publicUrl;
+    return urls;
   };
 
   const handleSubmit = async () => {
-    if (!content.trim() && !imagePreview && !videoUrl) {
+    if (!content.trim() && images.length === 0 && !videoUrl) {
       toast.error('내용을 입력해주세요');
       return;
     }
-
     if (!user) {
       toast.error('로그인이 필요합니다');
       return;
@@ -107,29 +126,25 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
     setUploading(true);
 
     try {
-      // Upload image to storage if exists
-      let imageUrl: string | undefined;
-      if (imageFile) {
-        const url = await uploadImage(imageFile);
-        if (url) imageUrl = url;
+      let imageUrls: string[] = [];
+      if (images.length > 0) {
+        imageUrls = await uploadImages(images.map(i => i.file));
       }
 
-      // Insert into archive_posts
       const { error } = await supabase.from('archive_posts').insert({
         team_id: teamId,
         author_user_id: user.id,
         content: content.trim(),
-        image_url: imageUrl || null,
+        image_url: imageUrls[0] || null,
+        image_urls: imageUrls,
         video_url: videoUrl || null,
         folder_id: selectedFolder,
       });
 
       if (error) throw error;
 
-      // Reset form
       setContent('');
-      setImagePreview(null);
-      setImageFile(null);
+      setImages([]);
       setVideoUrl('');
       setSelectedTags([]);
       toast.success('아카이브에 등록되었습니다! 📸');
@@ -145,13 +160,8 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Backdrop */}
-      <div 
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-        onClick={onClose}
-      />
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
 
-      {/* Modal */}
       <div className="relative w-full max-w-md max-h-[90vh] overflow-hidden kairo-panel animate-in fade-in zoom-in-95 duration-200 flex flex-col">
         {/* Header */}
         <div className="kairo-panel-header justify-between flex-shrink-0">
@@ -159,7 +169,7 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
             <span>📝</span>
             <span>아카이브 작성</span>
           </div>
-          <button 
+          <button
             onClick={onClose}
             className="w-6 h-6 flex items-center justify-center bg-primary-dark/50 hover:bg-destructive transition-colors"
           >
@@ -171,9 +181,7 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
         <div className="flex-1 overflow-y-auto p-3 space-y-3">
           {/* Folder Selection */}
           <div>
-            <label className="block font-pixel text-[8px] text-muted-foreground uppercase mb-1.5">
-              폴더 선택
-            </label>
+            <label className="block font-pixel text-[8px] text-muted-foreground uppercase mb-1.5">폴더 선택</label>
             <div className="flex flex-wrap gap-1.5">
               {folders.map((folder) => (
                 <button
@@ -195,9 +203,7 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
 
           {/* Content Input */}
           <div>
-            <label className="block font-pixel text-[8px] text-muted-foreground uppercase mb-1.5">
-              내용
-            </label>
+            <label className="block font-pixel text-[8px] text-muted-foreground uppercase mb-1.5">내용</label>
             <textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
@@ -207,35 +213,53 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
             />
           </div>
 
-          {/* Image Upload */}
+          {/* Multi Image Upload */}
           <div>
-            <label className="block font-pixel text-[8px] text-muted-foreground uppercase mb-1.5">
-              이미지
-            </label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="font-pixel text-[8px] text-muted-foreground uppercase">
+                이미지 ({images.length}/{MAX_IMAGES})
+              </label>
+            </div>
             <input
               ref={fileInputRef}
               type="file"
               accept="image/*"
-              onChange={handleImageUpload}
+              multiple
+              onChange={handleImageSelect}
               className="hidden"
             />
-            
-            {imagePreview ? (
-              <div className="relative">
-                <div className="border-4 border-border-dark overflow-hidden" style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}>
-                  <img 
-                    src={imagePreview} 
-                    alt="Preview" 
-                    className="w-full h-40 object-cover"
-                  />
+
+            {images.length > 0 ? (
+              <div className="space-y-2">
+                {/* Image Grid */}
+                <div className="grid grid-cols-3 gap-1.5">
+                  {images.map((img, idx) => (
+                    <div key={idx} className="relative aspect-square border-3 border-border-dark overflow-hidden group" style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}>
+                      <img src={img.preview} alt="" className="w-full h-full object-cover" />
+                      {idx === 0 && (
+                        <div className="absolute top-0.5 left-0.5 px-1 bg-primary border border-primary-dark">
+                          <span className="font-pixel text-[6px] text-primary-foreground">대표</span>
+                        </div>
+                      )}
+                      <button
+                        onClick={() => removeImage(idx)}
+                        className="absolute top-0.5 right-0.5 w-5 h-5 bg-destructive/90 border border-border-dark flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <X size={10} className="text-destructive-foreground" />
+                      </button>
+                    </div>
+                  ))}
+                  {/* Add More Button */}
+                  {images.length < MAX_IMAGES && (
+                    <button
+                      onClick={() => fileInputRef.current?.click()}
+                      className="aspect-square border-3 border-dashed border-border-dark bg-muted/50 flex flex-col items-center justify-center gap-1 hover:border-primary hover:bg-muted transition-colors"
+                    >
+                      <Plus size={16} className="text-muted-foreground" />
+                      <span className="font-pixel text-[6px] text-muted-foreground">추가</span>
+                    </button>
+                  )}
                 </div>
-                <button
-                  onClick={() => { setImagePreview(null); setImageFile(null); }}
-                  className="absolute top-2 right-2 w-6 h-6 bg-destructive border-2 border-border-dark flex items-center justify-center"
-                  style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
-                >
-                  <X size={12} className="text-destructive-foreground" />
-                </button>
               </div>
             ) : (
               <button
@@ -246,7 +270,7 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
                   <Image size={20} className="text-muted-foreground" />
                 </div>
                 <span className="font-pixel text-[8px] text-muted-foreground">
-                  클릭하여 이미지 업로드 (최대 10MB)
+                  클릭하여 이미지 업로드 (최대 {MAX_IMAGES}장, 각 10MB)
                 </span>
               </button>
             )}
@@ -255,9 +279,7 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
           {/* Video Link */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <label className="font-pixel text-[8px] text-muted-foreground uppercase">
-                동영상 링크
-              </label>
+              <label className="font-pixel text-[8px] text-muted-foreground uppercase">동영상 링크</label>
               <button
                 onClick={() => setShowVideoInput(!showVideoInput)}
                 className={cn(
@@ -271,7 +293,6 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
                 {showVideoInput ? '접기' : '추가'}
               </button>
             </div>
-            
             {showVideoInput && (
               <div className="flex gap-2">
                 <div className="flex-1 relative">
@@ -290,9 +311,7 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
 
           {/* Tags */}
           <div>
-            <label className="block font-pixel text-[8px] text-muted-foreground uppercase mb-1.5">
-              태그 선택
-            </label>
+            <label className="block font-pixel text-[8px] text-muted-foreground uppercase mb-1.5">태그 선택</label>
             <div className="grid grid-cols-4 gap-1.5">
               {defaultTags.map((tag) => (
                 <button
@@ -314,7 +333,7 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
           </div>
         </div>
 
-        {/* Footer Actions */}
+        {/* Footer */}
         <div className="flex-shrink-0 p-3 border-t-3 border-border-dark bg-muted/50 flex gap-2">
           <button
             onClick={onClose}
