@@ -330,9 +330,11 @@ export type Database = {
           district: string | null
           id: string
           is_pro_elite: boolean
+          months_of_experience: number
           nickname: string
           nickname_tag: string | null
           preferred_position: string | null
+          preferred_positions: string[] | null
           preferred_regions: Json | null
           real_name: string | null
           region: string | null
@@ -346,9 +348,11 @@ export type Database = {
           district?: string | null
           id?: string
           is_pro_elite?: boolean
+          months_of_experience?: number
           nickname?: string
           nickname_tag?: string | null
           preferred_position?: string | null
+          preferred_positions?: string[] | null
           preferred_regions?: Json | null
           real_name?: string | null
           region?: string | null
@@ -362,9 +366,11 @@ export type Database = {
           district?: string | null
           id?: string
           is_pro_elite?: boolean
+          months_of_experience?: number
           nickname?: string
           nickname_tag?: string | null
           preferred_position?: string | null
+          preferred_positions?: string[] | null
           preferred_regions?: Json | null
           real_name?: string | null
           region?: string | null
