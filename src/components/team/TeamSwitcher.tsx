@@ -10,7 +10,7 @@ const mockUserTeams: Team[] = [
     id: 'fc-bulkkot',
     name: 'FC 불꽃',
     emblem: '🔥',
-    level: 'A',
+    level: '3',
     favorites: 128,
     region: '서울 강남구',
   },
