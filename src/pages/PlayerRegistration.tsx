@@ -22,11 +22,11 @@ export default function PlayerRegistration() {
   const [isElite, setIsElite] = useState<boolean | null>(null);
 
   const handleSubmit = () => {
-    if (!nickname || !selectedPosition || !experienceLevel || isElite === null) {
+    if (!nickname || selectedPositions.length === 0 || careerType === null || isElite === null) {
       alert('모든 항목을 입력해주세요!');
       return;
     }
-    console.log({ nickname, selectedPosition, experienceLevel, isElite });
+    console.log({ nickname, selectedPositions, careerType, careerYears, careerMonths, isElite });
     // TODO: Handle registration logic
   };
 
