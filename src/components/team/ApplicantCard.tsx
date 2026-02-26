@@ -49,7 +49,7 @@ export function ApplicantCard({
   onMessage,
 }: ApplicantCardProps) {
   const allPositions = preferredPositions?.length ? preferredPositions : [preferredPosition];
-  const positionLabel = positionLabels[preferredPosition] || preferredPosition;
+  const positionLabel = allPositions.map(p => positionLabels[p] || p).join(' / ');
   const positionColor = positionColors[preferredPosition] || 'bg-muted text-muted-foreground';
 
   // Format display name for admin view
