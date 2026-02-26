@@ -9,7 +9,7 @@ interface TeamHeaderProps {
   emblem: string;
   photoUrl?: string;
   bannerUrl?: string;
-  level: 'S' | 'A' | 'B' | 'C';
+  level: string;
   favorites: number;
   region?: string;
   introduction?: string;
