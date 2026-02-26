@@ -335,29 +335,45 @@ export default function MyProfile() {
           )}
         </PixelCard>
 
-        {/* Position Selection */}
+        {/* Position Selection - Multi-select */}
         <PixelCard>
-          <h2 className="text-foreground mb-4 flex items-center gap-2">
+          <h2 className="text-foreground mb-2 flex items-center gap-2">
             <span className="text-primary">⚽</span>
             포지션 선택
           </h2>
+          <p className="font-pixel text-[8px] text-muted-foreground mb-3">복수 선택 가능</p>
           <div className="grid grid-cols-2 gap-3">
-            {futsalPositions.map((pos) => (
-              <button
-                key={pos.id}
-                onClick={() => setProfile({ ...profile, preferredPosition: pos.id })}
-                className={cn(
-                  'p-3 border-4 transition-all text-center',
-                  profile.preferredPosition === pos.id
-                    ? 'bg-primary border-primary-dark text-primary-foreground shadow-[0_0_12px_hsl(var(--primary))]'
-                    : 'bg-secondary border-border-dark hover:border-primary'
-                )}
-              >
-                <span className="text-xl block mb-1">{pos.emoji}</span>
-                <span className="font-pixel text-[10px] block">{pos.label}</span>
-                <span className="font-body text-[9px] text-muted-foreground block">{pos.description}</span>
-              </button>
-            ))}
+            {futsalPositions.map((pos) => {
+              const isSelected = profile.preferredPositions.includes(pos.id);
+              return (
+                <button
+                  key={pos.id}
+                  onClick={() => {
+                    const newPositions = isSelected
+                      ? profile.preferredPositions.filter(p => p !== pos.id)
+                      : [...profile.preferredPositions, pos.id];
+                    if (newPositions.length > 0) {
+                      setProfile({ ...profile, preferredPositions: newPositions });
+                    }
+                  }}
+                  className={cn(
+                    'p-3 border-4 transition-all text-center relative',
+                    isSelected
+                      ? 'bg-primary border-primary-dark text-primary-foreground shadow-[0_0_12px_hsl(var(--primary))]'
+                      : 'bg-secondary border-border-dark hover:border-primary'
+                  )}
+                >
+                  {isSelected && (
+                    <div className="absolute top-1 right-1 w-4 h-4 bg-accent border-2 border-accent-dark flex items-center justify-center">
+                      <span className="text-[8px] text-accent-foreground">✓</span>
+                    </div>
+                  )}
+                  <span className="text-xl block mb-1">{pos.emoji}</span>
+                  <span className="font-pixel text-[10px] block">{pos.label}</span>
+                  <span className="font-body text-[9px] text-muted-foreground block">{pos.description}</span>
+                </button>
+              );
+            })}
           </div>
         </PixelCard>
 
