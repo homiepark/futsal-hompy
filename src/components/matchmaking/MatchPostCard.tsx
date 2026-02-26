@@ -142,10 +142,10 @@ export function MatchPostCard({
               {targetLevels.map((level) => (
                 <PixelBadge 
                   key={level} 
-                  variant={levelVariants[level as 'S' | 'A' | 'B' | 'C']} 
+                  variant={levelVariants[level as keyof typeof levelVariants] || 'default'} 
                   className="text-[8px]"
                 >
-                  {level}급
+                  LV.{level}
                 </PixelBadge>
               ))}
             </div>

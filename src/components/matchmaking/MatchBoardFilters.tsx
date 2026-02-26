@@ -206,14 +206,14 @@ export function MatchBoardFilters({ filters, onFiltersChange }: MatchBoardFilter
                 className={cn(
                   "px-3 py-1.5 border-2 transition-all",
                   isActive
-                    ? levelColorClass
+                    ? levelColorClass[value]
                     : "bg-secondary text-secondary-foreground border-border-dark hover:border-primary"
                 )}
                 style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
               >
                 <span className="font-pixel text-[9px]">
                   {isActive && <Check size={10} className="inline mr-0.5" />}
-                  {value}급
+                  LV.{value}
                 </span>
               </button>
             );
