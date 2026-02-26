@@ -74,8 +74,11 @@ export default function MyProfile() {
             nickname: data.nickname || '풋살러',
             avatarUrl: data.avatar_url || '',
             yearsOfExperience: data.years_of_experience || 0,
+            monthsOfExperience: (data as any).months_of_experience || 0,
             isProElite: data.is_pro_elite || false,
-            preferredPosition: data.preferred_position || 'ala',
+            preferredPositions: (data as any).preferred_positions?.length > 0 
+              ? (data as any).preferred_positions 
+              : (data.preferred_position ? [data.preferred_position] : ['ala']),
           });
           
           // Load preferred regions from JSONB
