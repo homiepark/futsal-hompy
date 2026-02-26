@@ -1,17 +1,12 @@
 import { useState } from 'react';
 import { X, Calendar, Trophy, Send, Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
-interface GuestbookEntry {
-  id: string;
-  authorNickname: string;
-  message: string;
-  date: string;
-  likes: number;
-}
+import { usePlayerGuestbook } from '@/hooks/usePlayerGuestbook';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface PlayerStats {
   id: string;
+  userId?: string;
   nickname: string;
   avatarUrl?: string;
   position: 'pivo' | 'ala' | 'fixo' | 'goleiro';
@@ -34,25 +29,18 @@ const positionInfo = {
   goleiro: { label: '골레이로', emoji: '🧤', color: 'bg-green-500/20 border-green-500 text-green-600', fullName: 'Goleiro (골키퍼)' },
 };
 
-// Mock guestbook entries (will be replaced with real data later)
-const mockGuestbookEntries: GuestbookEntry[] = [
-  { id: '1', authorNickname: '별빛#1234', message: '오늘 경기 멋졌어요! 🔥', date: '2024.01.20', likes: 3 },
-  { id: '2', authorNickname: '축구왕#5678', message: '패스 타이밍 진짜 좋았습니다 👍', date: '2024.01.18', likes: 5 },
-  { id: '3', authorNickname: '풋살러#9012', message: '다음에 또 같이 해요!', date: '2024.01.15', likes: 2 },
-];
-
 export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalProps) {
   const [guestbookMessage, setGuestbookMessage] = useState('');
-  const [guestbookEntries] = useState<GuestbookEntry[]>(mockGuestbookEntries);
+  const { user } = useAuth();
+  const { entries: guestbookEntries, submitEntry, toggleLike } = usePlayerGuestbook(player?.userId);
 
   if (!isOpen || !player) return null;
 
   const info = positionInfo[player.position];
 
-  const handleSubmitGuestbook = () => {
+  const handleSubmitGuestbook = async () => {
     if (!guestbookMessage.trim()) return;
-    // TODO: Submit to database
-    console.log('Submit guestbook:', guestbookMessage);
+    await submitEntry(guestbookMessage);
     setGuestbookMessage('');
   };
 
@@ -199,8 +187,14 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
                     <span className="font-pixel text-[7px] text-muted-foreground">{entry.date}</span>
                   </div>
                   <p className="font-pixel text-[9px] text-foreground mb-1 leading-tight">{entry.message}</p>
-                  <button className="flex items-center gap-0.5 text-accent hover:scale-110 transition-transform">
-                    <Heart size={10} fill="currentColor" />
+                  <button 
+                    onClick={() => toggleLike(entry.id)}
+                    className={cn(
+                      "flex items-center gap-0.5 hover:scale-110 transition-transform",
+                      entry.isLikedByMe ? "text-accent" : "text-muted-foreground"
+                    )}
+                  >
+                    <Heart size={10} fill={entry.isLikedByMe ? "currentColor" : "none"} />
                     <span className="font-pixel text-[7px]">{entry.likes}</span>
                   </button>
                 </div>
