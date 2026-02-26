@@ -1,17 +1,12 @@
 import { useState } from 'react';
 import { X, Calendar, Trophy, Send, Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
-interface GuestbookEntry {
-  id: string;
-  authorNickname: string;
-  message: string;
-  date: string;
-  likes: number;
-}
+import { usePlayerGuestbook } from '@/hooks/usePlayerGuestbook';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface PlayerStats {
   id: string;
+  userId?: string;
   nickname: string;
   avatarUrl?: string;
   position: 'pivo' | 'ala' | 'fixo' | 'goleiro';
