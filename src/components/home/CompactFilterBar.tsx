@@ -52,16 +52,31 @@ export function CompactFilterBar({ filters, onFiltersChange }: CompactFilterBarP
     onFiltersChange({ ...filters, genders: newGenders });
   };
 
+  const toggleRegion = (region: PreferredRegion) => {
+    const exists = filters.selectedRegions.some(
+      r => r.region === region.region && r.district === region.district
+    );
+    const newRegions = exists
+      ? filters.selectedRegions.filter(r => !(r.region === region.region && r.district === region.district))
+      : [...filters.selectedRegions, region];
+    onFiltersChange({ ...filters, selectedRegions: newRegions });
+  };
+
+  const clearRegions = () => {
+    onFiltersChange({ ...filters, selectedRegions: [] });
+  };
+
   const clearFilters = () => {
     onFiltersChange({
       ...filters,
       teamName: '',
       levels: [],
       genders: [],
+      selectedRegions: [],
     });
   };
 
-  const hasActiveFilters = filters.teamName || filters.levels.length > 0 || filters.genders.length > 0;
+  const hasActiveFilters = filters.teamName || filters.levels.length > 0 || filters.genders.length > 0 || filters.selectedRegions.length > 0;
 
   return (
     <div className="px-4 py-3">
@@ -225,24 +240,40 @@ export function CompactFilterBar({ filters, onFiltersChange }: CompactFilterBarP
 
         {expandedFilter === 'region' && (
           <div className="px-3 pb-3 border-t-2 border-border pt-3">
-            <span className="font-pixel text-[8px] text-muted-foreground block mb-2">
-              지역 설정은 프로필에서 변경할 수 있습니다
-            </span>
+            <div className="flex items-center justify-between mb-2">
+              <span className="font-pixel text-[8px] text-muted-foreground">지역 필터 (탭하여 해제)</span>
+              {filters.selectedRegions.length > 0 && (
+                <button
+                  onClick={clearRegions}
+                  className="font-pixel text-[7px] text-accent hover:text-accent-dark"
+                >
+                  전체 지역 보기
+                </button>
+              )}
+            </div>
             {filters.selectedRegions.length > 0 ? (
               <div className="flex flex-wrap gap-1.5">
                 {filters.selectedRegions.map((r) => (
-                  <span
+                  <button
                     key={`${r.region}-${r.district}`}
-                    className="px-2 py-1 bg-primary/20 text-primary font-pixel text-[8px] border-2 border-primary/40"
+                    onClick={() => toggleRegion(r)}
+                    className="px-2 py-1 bg-primary text-primary-foreground font-pixel text-[8px] border-2 border-primary-dark hover:bg-destructive hover:border-destructive transition-colors flex items-center gap-1"
+                    style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow) / 0.5)' }}
                   >
                     📍 {r.district}
-                  </span>
+                    <X size={8} />
+                  </button>
                 ))}
               </div>
             ) : (
-              <p className="font-pixel text-[8px] text-muted-foreground text-center py-2">
-                프로필에서 관심 지역을 설정해주세요
-              </p>
+              <div className="text-center py-2 bg-primary/5 border border-primary/20 px-3">
+                <p className="font-pixel text-[8px] text-primary">
+                  ✅ 전체 지역에서 팀을 검색합니다
+                </p>
+                <p className="font-pixel text-[7px] text-muted-foreground mt-1">
+                  프로필에서 관심 지역을 설정하면 기본 필터로 적용됩니다
+                </p>
+              </div>
             )}
           </div>
         )}
