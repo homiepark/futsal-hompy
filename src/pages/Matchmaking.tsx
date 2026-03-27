@@ -9,6 +9,7 @@ import { MatchBoardFilters } from '@/components/matchmaking/MatchBoardFilters';
 import { CreateMatchPostModal } from '@/components/matchmaking/CreateMatchPostModal';
 import { ChallengeNotification, useChallengeNotifications } from '@/components/matchmaking/ChallengeNotification';
 import { MatchTicker } from '@/components/matchmaking/MatchTicker';
+import { RecommendedMatches } from '@/components/matchmaking/RecommendedMatches';
 import { useDev } from '@/contexts/DevContext';
 import { format, parseISO, isToday, isTomorrow, isThisWeek } from 'date-fns';
 
@@ -313,6 +314,55 @@ export default function Matchmaking() {
 
       {/* Live Ticker */}
       <MatchTicker />
+
+      {/* AI Recommended Matches */}
+      {userTeam && (
+        <RecommendedMatches
+          teams={[
+            {
+              id: 'rec-1',
+              name: 'FC 드래곤즈',
+              emblem: '🐉',
+              region: '서울',
+              district: '강남구',
+              level: userTeam.level || '2',
+              mannerScore: 4.7,
+              matchTime: '토 14:00-16:00',
+              homeGroundName: '강남 풋살파크',
+              homeGroundAddress: '서울 강남구 역삼동 123',
+              tags: ['실력 비슷', '내 동네 팀'],
+              matchScore: 95,
+            },
+            {
+              id: 'rec-2',
+              name: '유나이티드 FC',
+              emblem: '🦅',
+              region: '서울',
+              district: '마포구',
+              level: String(Math.max(1, parseInt(userTeam.level || '2') - 1)),
+              mannerScore: 4.5,
+              matchTime: '일 10:00-12:00',
+              homeGroundName: '상암 월드컵 풋살장',
+              homeGroundAddress: '서울 마포구 상암동 456',
+              tags: ['실력 비슷', '첫 대결'],
+              matchScore: 82,
+            },
+            {
+              id: 'rec-3',
+              name: '스틸러스',
+              emblem: '⚔️',
+              region: '서울',
+              district: '용산구',
+              level: String(Math.min(4, parseInt(userTeam.level || '2') + 1)),
+              mannerScore: 4.3,
+              matchTime: '수 19:00-21:00',
+              tags: ['도전 매치!'],
+              matchScore: 75,
+            },
+          ]}
+          userDistricts={['강남구', '서초구']}
+        />
+      )}
 
       {/* Filters */}
       <MatchBoardFilters 

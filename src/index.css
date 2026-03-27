@@ -532,4 +532,14 @@
   .animate-bounce-subtle {
     animation: bounce-subtle 0.4s ease-in-out;
   }
+
+  /* Slide up animation for modals */
+  @keyframes slide-up {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.3s ease-out;
+  }
 }

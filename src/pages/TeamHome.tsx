@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Settings, UserPlus } from 'lucide-react';
+import { Settings, UserPlus, Palette } from 'lucide-react';
 import { useTeam } from '@/contexts/TeamContext';
 import { useDev } from '@/contexts/DevContext';
 import { TeamHeader } from '@/components/team/TeamHeader';
@@ -10,6 +10,9 @@ import { TeamIntro } from '@/components/team/TeamIntro';
 import { LatestArchive } from '@/components/team/LatestArchive';
 import { MemberRoster } from '@/components/team/MemberRoster';
 import { Guestbook } from '@/components/team/Guestbook';
+import { VisitorCounter } from '@/components/team/VisitorCounter';
+import { BgmPlayer } from '@/components/team/BgmPlayer';
+import { HompySkinSelector } from '@/components/team/HompySkinSelector';
 import { PixelButton } from '@/components/ui/PixelButton';
 import { PixelBackButton } from '@/components/ui/PixelBackButton';
 import { JoinRequestButton } from '@/components/team/JoinRequestButton';
@@ -64,6 +67,8 @@ export default function TeamHome() {
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [showDirectMessage, setShowDirectMessage] = useState(false);
   const [showBroadcast, setShowBroadcast] = useState(false);
+  const [showSkinSelector, setShowSkinSelector] = useState(false);
+  const [currentSkin, setCurrentSkin] = useState('default');
   const [teamData, setTeamData] = useState(mockTeamData);
   const [notices, setNotices] = useState<Array<{ id: string; content: string; created_at: string }>>([]);
 
@@ -164,6 +169,16 @@ export default function TeamHome() {
         <div className="flex items-center gap-2">
             {isAdmin && (
               <button
+                onClick={() => setShowSkinSelector(true)}
+                className="w-8 h-8 bg-secondary border-2 border-border-dark flex items-center justify-center hover:bg-muted transition-colors"
+                title="스킨 변경"
+                style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
+              >
+                <Palette size={14} className="text-foreground" />
+              </button>
+            )}
+            {isAdmin && (
+              <button
                 onClick={() => setShowAdminTransfer(true)}
                 className="w-8 h-8 bg-secondary border-2 border-border-dark flex items-center justify-center hover:bg-muted transition-colors"
                 title="관리자 설정"
@@ -194,6 +209,12 @@ export default function TeamHome() {
       />
 
       <div className="px-4 py-4 space-y-4">
+        {/* Cyworld-style Visitor Counter */}
+        <VisitorCounter todayCount={12} totalCount={3847} />
+
+        {/* BGM Player */}
+        <BgmPlayer teamName={teamData.name} />
+
         {/* Team Announcement Section */}
         <TeamAnnouncement
           teamId={teamId || ''}
@@ -316,6 +337,17 @@ export default function TeamHome() {
         teamId={teamData.id}
         teamName={teamData.name}
         isTeamInquiry={true}
+      />
+
+      {/* Skin Selector Modal */}
+      <HompySkinSelector
+        isOpen={showSkinSelector}
+        onClose={() => setShowSkinSelector(false)}
+        currentSkin={currentSkin}
+        onSkinChange={(skinId) => {
+          setCurrentSkin(skinId);
+          toast.success('스킨이 변경되었습니다! ✨');
+        }}
       />
 
       {/* Broadcast Modal (for admins) */}

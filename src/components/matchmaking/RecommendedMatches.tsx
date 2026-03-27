@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Star, MapPin, Clock } from 'lucide-react';
+import { Star, MapPin, Clock, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PixelBadge } from '@/components/ui/PixelBadge';
 import { MapModal } from './MapModal';
@@ -17,6 +17,7 @@ interface RecommendedTeam {
   homeGroundName?: string;
   homeGroundAddress?: string;
   tags: string[];
+  matchScore?: number; // 0-100 compatibility
 }
 
 interface RecommendedMatchesProps {
@@ -66,9 +67,9 @@ export function RecommendedMatches({ teams, userDistricts }: RecommendedMatchesP
     <>
       <div className="mb-6">
         <h3 className="font-pixel text-[10px] text-foreground flex items-center gap-2 mb-3">
-          <span className="text-accent">⭐</span>
+          <Sparkles size={14} className="text-accent animate-sparkle" />
           추천 매치
-          <span className="px-2 py-0.5 bg-accent/20 text-accent text-[8px] border border-accent/50 rounded">
+          <span className="px-2 py-0.5 bg-accent/20 text-accent text-[8px] border border-accent/50">
             AI 추천
           </span>
         </h3>
@@ -93,6 +94,29 @@ export function RecommendedMatches({ teams, userDistricts }: RecommendedMatchesP
                     <span className="font-pixel text-[7px]">{team.district}</span>
                   </div>
                 </div>
+                {/* Compatibility Score */}
+                {team.matchScore && (
+                  <div className="relative w-9 h-9 shrink-0">
+                    <svg className="w-9 h-9 -rotate-90" viewBox="0 0 36 36">
+                      <path
+                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                        fill="none"
+                        stroke="hsl(var(--border))"
+                        strokeWidth="3"
+                      />
+                      <path
+                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                        fill="none"
+                        stroke={team.matchScore >= 85 ? 'hsl(var(--primary))' : team.matchScore >= 70 ? 'hsl(var(--accent))' : 'hsl(var(--muted-foreground))'}
+                        strokeWidth="3"
+                        strokeDasharray={`${team.matchScore}, 100`}
+                      />
+                    </svg>
+                    <span className="absolute inset-0 flex items-center justify-center font-pixel text-[7px] text-foreground">
+                      {team.matchScore}
+                    </span>
+                  </div>
+                )}
               </div>
 
               {/* Tags */}

@@ -63,6 +63,18 @@ const mockPosts = [
     likes: 42,
     comments: 15,
     folderId: 'events',
+    isVideo: false,
+  },
+  {
+    id: '4-1',
+    author: 'FC 불꽃',
+    date: '2024.01.05',
+    content: '이번 주 베스트 골 모음! 역대급 중거리 슛 터졌습니다 ⚽🔥',
+    imageUrl: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=600',
+    likes: 67,
+    comments: 23,
+    folderId: 'matches',
+    isVideo: true,
   },
   {
     id: '5',

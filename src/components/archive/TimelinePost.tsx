@@ -16,6 +16,8 @@ interface TimelinePostProps {
   content: string;
   imageUrl?: string;
   imageUrls?: string[];
+  videoUrl?: string;
+  isVideo?: boolean;
   likes?: number;
   comments?: number;
   isMock?: boolean;
@@ -28,6 +30,8 @@ export function TimelinePost({
   content,
   imageUrl,
   imageUrls = [],
+  videoUrl,
+  isVideo = false,
   likes: mockLikes = 0,
   comments: mockComments = 0,
   isMock = true,
@@ -78,11 +82,31 @@ export function TimelinePost({
       {/* Content */}
       <p className="font-body text-sm text-foreground">{content}</p>
 
-      {/* Image Carousel */}
-      {allImages.length > 0 && (
+      {/* Video Player */}
+      {(isVideo || videoUrl) && (
         <div className="relative border-4 border-border-dark shadow-pixel overflow-hidden rounded-lg">
-          <img 
-            src={allImages[currentImageIndex]} 
+          <video
+            src={videoUrl || imageUrl}
+            poster={imageUrl}
+            controls
+            className="w-full aspect-video object-cover bg-black"
+            preload="metadata"
+          >
+            브라우저가 비디오를 지원하지 않습니다.
+          </video>
+          <div className="absolute top-2 left-2 px-2 py-0.5 bg-accent border-2 border-accent-dark font-pixel text-[7px] text-accent-foreground"
+            style={{ boxShadow: '1px 1px 0 hsl(var(--accent-dark))' }}
+          >
+            🎬 VIDEO
+          </div>
+        </div>
+      )}
+
+      {/* Image Carousel */}
+      {!isVideo && !videoUrl && allImages.length > 0 && (
+        <div className="relative border-4 border-border-dark shadow-pixel overflow-hidden rounded-lg">
+          <img
+            src={allImages[currentImageIndex]}
             alt={`게시물 이미지 ${currentImageIndex + 1}`}
             className="w-full aspect-video object-cover transition-opacity duration-200"
           />

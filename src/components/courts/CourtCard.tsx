@@ -2,7 +2,6 @@ import { MapPin, Clock, Star, Wifi, Car } from 'lucide-react';
 import { PixelCard } from '@/components/ui/PixelCard';
 import { PixelButton } from '@/components/ui/PixelButton';
 import { PixelBadge } from '@/components/ui/PixelBadge';
-import { PixelIcon } from '@/components/ui/PixelIcon';
 
 interface CourtCardProps {
   name: string;
@@ -13,12 +12,8 @@ interface CourtCardProps {
   availableSlots: number;
   amenities: string[];
   imageUrl?: string;
+  onBook?: () => void;
 }
-
-const amenityIcons: Record<string, typeof Wifi> = {
-  wifi: Wifi,
-  parking: Car,
-};
 
 export function CourtCard({
   name,
@@ -29,15 +24,16 @@ export function CourtCard({
   availableSlots,
   amenities,
   imageUrl,
+  onBook,
 }: CourtCardProps) {
   return (
     <PixelCard className="space-y-3">
       {/* Image */}
       {imageUrl && (
         <div className="border-4 border-border-dark shadow-pixel overflow-hidden -mx-4 -mt-4 mb-4">
-          <img 
-            src={imageUrl} 
-            alt={name} 
+          <img
+            src={imageUrl}
+            alt={name}
             className="w-full h-32 object-cover"
           />
         </div>
@@ -81,7 +77,7 @@ export function CourtCard({
       </div>
 
       {/* Action */}
-      <PixelButton variant="accent" className="w-full">
+      <PixelButton variant="accent" className="w-full" onClick={onBook}>
         예약하기
       </PixelButton>
     </PixelCard>
