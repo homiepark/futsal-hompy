@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { X, ChevronLeft, ChevronRight, Check, Clock, MapPin, Users } from 'lucide-react';
 import { format, addDays, isSameDay } from 'date-fns';
 import { ko } from 'date-fns/locale';
+import { toast } from 'sonner';
 
 interface TimeSlot {
   time: string;
@@ -57,7 +58,11 @@ export function CourtBookingModal({ isOpen, onClose, courtName, courtAddress, pr
   }, 0);
 
   const handleConfirm = () => {
-    // TODO: Save to Supabase
+    toast.success('예약이 완료되었습니다! ⚽', {
+      description: `${courtName} | ${format(selectedDate, 'M월 d일')} ${selectedSlots[0]}~${parseInt(selectedSlots[selectedSlots.length - 1]) + 1}:00`,
+    });
+    setSelectedSlots([]);
+    setStep('select');
     onClose();
   };
 

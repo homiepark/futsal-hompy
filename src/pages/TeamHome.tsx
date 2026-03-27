@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Settings, UserPlus, Palette } from 'lucide-react';
 import { useTeam } from '@/contexts/TeamContext';
@@ -24,40 +24,47 @@ import { BroadcastModal } from '@/components/messages/BroadcastModal';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
-// Mock data - would come from Supabase
-const mockTeamData = {
-  id: 'fc-bulkkot',
-  name: 'FC 불꽃',
-  emblem: '🔥',
-  photoUrl: '',
-  bannerUrl: '',
-  level: '3',
-  favorites: 128,
-  region: '서울 강남구',
-  description: '열정 가득한 풋살 팀입니다!',
-  introduction: '2020년 창단된 열정 가득한 풋살 팀입니다! 매주 주말 강남에서 활동하며, 실력보다 즐거움을 추구합니다. 새로운 팀원을 환영합니다! 🔥⚽',
-  instagramUrl: 'https://instagram.com/fc_bulkkot',
-  youtubeUrl: '',
-  foundedYear: 2020,
-};
+interface TeamData {
+  id: string;
+  name: string;
+  emblem: string;
+  photo_url: string | null;
+  banner_url: string | null;
+  level: string | null;
+  region: string | null;
+  district: string | null;
+  introduction: string | null;
+  instagram_url: string | null;
+  youtube_url: string | null;
+  admin_user_id: string | null;
+}
 
-const mockArchiveItems = [
-  { id: '1', imageUrl: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=300', date: '2024.01.20' },
-  { id: '2', imageUrl: 'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=300', date: '2024.01.15' },
-  { id: '3', imageUrl: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=300', date: '2024.01.08' },
-  { id: '4', imageUrl: 'https://images.unsplash.com/photo-1517466787929-bc90951d0974?w=300', isVideo: true, date: '2024.01.02' },
-];
+interface MemberData {
+  id: string;
+  userId?: string;
+  nickname: string;
+  avatarUrl?: string;
+  position: 'pivo' | 'ala' | 'fixo' | 'goleiro';
+  yearsOfExperience?: number;
+  isAdmin?: boolean;
+}
 
-const mockMembers = [
-  { id: '1', nickname: '캡틴불꽃', avatarUrl: '', position: 'pivo' as const, yearsOfExperience: 8, isAdmin: true },
-  { id: '2', nickname: '스피드스타', avatarUrl: '', position: 'ala' as const, yearsOfExperience: 5 },
-  { id: '3', nickname: '번개발', avatarUrl: '', position: 'ala' as const, yearsOfExperience: 3 },
-  { id: '4', nickname: '철벽수비', avatarUrl: '', position: 'fixo' as const, yearsOfExperience: 6 },
-  { id: '5', nickname: '수비왕', avatarUrl: '', position: 'fixo' as const, yearsOfExperience: 4 },
-  { id: '6', nickname: '세이브킹', avatarUrl: '', position: 'goleiro' as const, yearsOfExperience: 7 },
-  { id: '7', nickname: '드리블러', avatarUrl: '', position: 'pivo' as const, yearsOfExperience: 2 },
-  { id: '8', nickname: '슛터', avatarUrl: '', position: 'ala' as const, yearsOfExperience: 4 },
-];
+interface ArchiveItem {
+  id: string;
+  imageUrl: string;
+  isVideo?: boolean;
+  date: string;
+}
+
+const VALID_POSITIONS = ['pivo', 'ala', 'fixo', 'goleiro'] as const;
+type Position = typeof VALID_POSITIONS[number];
+
+function toPosition(value: string | undefined | null): Position {
+  if (value && VALID_POSITIONS.includes(value as Position)) {
+    return value as Position;
+  }
+  return 'ala'; // default fallback
+}
 
 export default function TeamHome() {
   const { teamId } = useParams<{ teamId: string }>();
@@ -70,21 +77,25 @@ export default function TeamHome() {
   const [showBroadcast, setShowBroadcast] = useState(false);
   const [showSkinSelector, setShowSkinSelector] = useState(false);
   const [currentSkin, setCurrentSkin] = useState('default');
-  const [teamData, setTeamData] = useState(mockTeamData);
-  const [notices, setNotices] = useState<Array<{ id: string; content: string; created_at: string }>>([]);
 
-  // Use dev toggle for admin status
-  const isAdmin = isDevAdmin;
-  // For now, set isMember to false to show join button for testing
-  const isMember = false; // Would check if user is a team member from database
-  
-  // Mock admin user ID for direct messaging
-  const adminUserId = 'admin-user-id-mock';
+  const [teamData, setTeamData] = useState<TeamData | null>(null);
+  const [members, setMembers] = useState<MemberData[]>([]);
+  const [archiveItems, setArchiveItems] = useState<ArchiveItem[]>([]);
+  const [notices, setNotices] = useState<Array<{ id: string; content: string; created_at: string }>>([]);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Derived state
+  const isAdmin = isDevAdmin || (currentUserId != null && teamData?.admin_user_id === currentUserId)
+    || members.some(m => m.userId === currentUserId && m.isAdmin);
+  const isMember = currentUserId != null && members.some(m => m.userId === currentUserId);
+  const adminUserId = teamData?.admin_user_id ?? '';
 
   // Fetch notices for the team
-  const fetchNotices = async () => {
+  const fetchNotices = useCallback(async () => {
     if (!teamId) return;
-    
+
     const { data, error } = await supabase
       .from('team_notices')
       .select('id, content, created_at')
@@ -96,38 +107,198 @@ export default function TeamHome() {
     if (!error && data) {
       setNotices(data);
     }
-  };
+  }, [teamId]);
 
-  // Set this team as active when entering and fetch notices
+  // Fetch all team data
   useEffect(() => {
-    setActiveTeam(mockTeamData);
-    fetchNotices();
-    
+    if (!teamId) return;
+
+    let cancelled = false;
+
+    async function fetchAll() {
+      setLoading(true);
+      setError(null);
+
+      try {
+        // Get current user
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!cancelled) {
+          setCurrentUserId(user?.id ?? null);
+        }
+
+        // Fetch team, members, archive, notices in parallel
+        const [teamRes, membersRes, archiveRes, noticesRes] = await Promise.all([
+          supabase
+            .from('teams')
+            .select('*')
+            .eq('id', teamId)
+            .single(),
+
+          supabase
+            .from('team_members')
+            .select(`
+              id,
+              user_id,
+              role,
+              profiles:user_id (
+                nickname,
+                avatar_url,
+                preferred_positions,
+                years_of_experience
+              )
+            `)
+            .eq('team_id', teamId),
+
+          supabase
+            .from('archive_posts')
+            .select('id, image_url, video_url, created_at')
+            .eq('team_id', teamId)
+            .order('created_at', { ascending: false })
+            .limit(4),
+
+          supabase
+            .from('team_notices')
+            .select('id, content, created_at')
+            .eq('team_id', teamId)
+            .eq('is_active', true)
+            .order('created_at', { ascending: false })
+            .limit(20),
+        ]);
+
+        if (cancelled) return;
+
+        // Handle team data
+        if (teamRes.error) {
+          setError('팀 정보를 불러올 수 없습니다.');
+          setLoading(false);
+          return;
+        }
+
+        const team = teamRes.data as TeamData;
+        setTeamData(team);
+
+        // Set active team in context
+        setActiveTeam({
+          id: team.id,
+          name: team.name,
+          emblem: team.emblem,
+          photoUrl: team.photo_url ?? '',
+          bannerUrl: team.banner_url ?? '',
+          level: team.level ?? '1',
+          favorites: 0,
+          region: [team.region, team.district].filter(Boolean).join(' '),
+          description: team.introduction ?? '',
+          introduction: team.introduction ?? '',
+          instagramUrl: team.instagram_url ?? '',
+          youtubeUrl: team.youtube_url ?? '',
+        });
+
+        // Handle members
+        if (!membersRes.error && membersRes.data) {
+          const mapped: MemberData[] = membersRes.data.map((m: any) => {
+            const profile = m.profiles;
+            const positions: string[] = profile?.preferred_positions ?? [];
+            return {
+              id: m.id,
+              userId: m.user_id,
+              nickname: profile?.nickname ?? '알 수 없음',
+              avatarUrl: profile?.avatar_url ?? '',
+              position: toPosition(positions[0]),
+              yearsOfExperience: profile?.years_of_experience ?? 0,
+              isAdmin: m.role === 'admin' || m.user_id === team.admin_user_id,
+            };
+          });
+          setMembers(mapped);
+        }
+
+        // Handle archive
+        if (!archiveRes.error && archiveRes.data) {
+          const mapped: ArchiveItem[] = archiveRes.data.map((a: any) => ({
+            id: a.id,
+            imageUrl: a.image_url ?? '',
+            isVideo: !!a.video_url,
+            date: new Date(a.created_at).toLocaleDateString('ko-KR', {
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+            }).replace(/\. /g, '.').replace(/\.$/, ''),
+          }));
+          setArchiveItems(mapped);
+        }
+
+        // Handle notices
+        if (!noticesRes.error && noticesRes.data) {
+          setNotices(noticesRes.data);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          console.error('Failed to load team data:', err);
+          setError('데이터를 불러오는 중 오류가 발생했습니다.');
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    }
+
+    fetchAll();
+
     return () => {
-      // Optional: clear on unmount
+      cancelled = true;
     };
   }, [teamId, setActiveTeam]);
 
   const handleBack = () => {
     clearActiveTeam();
-    navigate(-1); // Go back to previous page (could be Matchmaking, MyTeam, etc.)
+    navigate(-1);
   };
 
-  const handleBannerUpdate = (url: string) => {
-    setTeamData(prev => ({ ...prev, bannerUrl: url }));
-    // TODO: Update in Supabase
+  const handleBannerUpdate = async (url: string) => {
+    if (!teamId) return;
+    const { error } = await supabase
+      .from('teams')
+      .update({ banner_url: url })
+      .eq('id', teamId);
+
+    if (error) {
+      toast.error('배너 업데이트에 실패했습니다');
+      return;
+    }
+    setTeamData(prev => prev ? { ...prev, banner_url: url } : prev);
+    toast.success('배너가 업데이트되었습니다');
   };
 
-  const handleIntroUpdate = (text: string) => {
-    setTeamData(prev => ({ ...prev, introduction: text }));
+  const handleIntroUpdate = async (text: string) => {
+    if (!teamId) return;
+    const { error } = await supabase
+      .from('teams')
+      .update({ introduction: text })
+      .eq('id', teamId);
+
+    if (error) {
+      toast.error('팀 소개 저장에 실패했습니다');
+      return;
+    }
+    setTeamData(prev => prev ? { ...prev, introduction: text } : prev);
     toast.success('팀 소개가 저장되었습니다');
-    // TODO: Update in Supabase
   };
 
-  const handleAdminTransfer = (newAdminId: string) => {
-    const member = mockMembers.find(m => m.id === newAdminId);
-    toast.success(`${member?.nickname}님에게 관리자 권한이 이전되었습니다`);
-    // TODO: Update in Supabase
+  const handleAdminTransfer = async (newAdminId: string) => {
+    const member = members.find(m => m.id === newAdminId);
+    if (!teamId || !member?.userId) return;
+
+    const { error } = await supabase
+      .from('teams')
+      .update({ admin_user_id: member.userId })
+      .eq('id', teamId);
+
+    if (error) {
+      toast.error('관리자 이전에 실패했습니다');
+      return;
+    }
+    setTeamData(prev => prev ? { ...prev, admin_user_id: member.userId! } : prev);
+    toast.success(`${member.nickname}님에게 관리자 권한이 이전되었습니다`);
   };
 
   // Create a new notice
@@ -157,6 +328,35 @@ export default function TeamHome() {
     }
   };
 
+  // Loading state
+  if (loading) {
+    return (
+      <div className="pb-24 max-w-lg mx-auto flex items-center justify-center min-h-[60vh]">
+        <div className="text-center space-y-3">
+          <div className="animate-pulse font-pixel text-sm text-muted-foreground">
+            로딩 중...
+          </div>
+          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error || !teamData) {
+    return (
+      <div className="pb-24 max-w-lg mx-auto flex items-center justify-center min-h-[60vh]">
+        <div className="text-center space-y-3">
+          <p className="font-pixel text-sm text-destructive">{error ?? '팀을 찾을 수 없습니다.'}</p>
+          <PixelButton variant="default" size="sm" onClick={() => navigate(-1)}>
+            돌아가기
+          </PixelButton>
+        </div>
+      </div>
+    );
+  }
+
+  const regionDisplay = [teamData.region, teamData.district].filter(Boolean).join(' ');
 
   return (
     <div className="pb-24 max-w-lg mx-auto">
@@ -197,13 +397,13 @@ export default function TeamHome() {
       <TeamHeader
         name={teamData.name}
         emblem={teamData.emblem}
-        photoUrl={teamData.photoUrl}
-        bannerUrl={teamData.bannerUrl}
-        level={teamData.level}
-        favorites={teamData.favorites}
-        region={teamData.region}
-        instagramUrl={teamData.instagramUrl}
-        youtubeUrl={teamData.youtubeUrl}
+        photoUrl={teamData.photo_url ?? ''}
+        bannerUrl={teamData.banner_url ?? ''}
+        level={teamData.level ?? '1'}
+        favorites={0}
+        region={regionDisplay}
+        instagramUrl={teamData.instagram_url ?? ''}
+        youtubeUrl={teamData.youtube_url ?? ''}
         isAdmin={isAdmin}
         onPhotoEdit={() => console.log('Edit team photo')}
         onBannerUpdate={handleBannerUpdate}
@@ -218,10 +418,16 @@ export default function TeamHome() {
 
         {/* Team Level & Stats */}
         <TeamLevelBadge
-          level={teamData.level}
+          level={teamData.level ?? '1'}
           matchCount={23}
           mannerScore={4.5}
-          avgExperience={4.8}
+          avgExperience={
+            members.length > 0
+              ? Math.round(
+                  (members.reduce((sum, m) => sum + (m.yearsOfExperience ?? 0), 0) / members.length) * 10
+                ) / 10
+              : 0
+          }
         />
 
         {/* Team Announcement Section */}
@@ -235,7 +441,7 @@ export default function TeamHome() {
 
         {/* Team Introduction */}
         <TeamIntro
-          introduction={teamData.introduction}
+          introduction={teamData.introduction ?? ''}
           isAdmin={isAdmin}
           onSave={handleIntroUpdate}
         />
@@ -266,7 +472,7 @@ export default function TeamHome() {
               선수 초대하기
             </PixelButton>
           )}
-          
+
           {/* Join Request or Member Status or Admin Management */}
           {isAdmin ? (
             <PixelButton
@@ -305,14 +511,14 @@ export default function TeamHome() {
         </div>
 
         {/* Latest Archive Preview */}
-        <LatestArchive 
-          teamId={teamData.id} 
-          items={mockArchiveItems} 
+        <LatestArchive
+          teamId={teamData.id}
+          items={archiveItems}
         />
 
         {/* Member Roster */}
-        <MemberRoster 
-          members={mockMembers}
+        <MemberRoster
+          members={members}
           teamId={teamData.id}
         />
 
@@ -324,8 +530,8 @@ export default function TeamHome() {
       <AdminTransferModal
         isOpen={showAdminTransfer}
         onClose={() => setShowAdminTransfer(false)}
-        members={mockMembers}
-        currentAdminId="1"
+        members={members}
+        currentAdminId={members.find(m => m.userId === teamData.admin_user_id)?.id ?? ''}
         onTransfer={handleAdminTransfer}
       />
 
@@ -365,7 +571,7 @@ export default function TeamHome() {
         onClose={() => setShowBroadcast(false)}
         teamId={teamData.id}
         teamName={teamData.name}
-        members={mockMembers.map(m => ({
+        members={members.map(m => ({
           id: m.id,
           nickname: m.nickname,
           avatarUrl: m.avatarUrl,

@@ -1,37 +1,10 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useTeam, Team } from '@/contexts/TeamContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { PixelCard } from '@/components/ui/PixelCard';
-import { PixelBadge } from '@/components/ui/PixelBadge';
 import { Star, ChevronRight } from 'lucide-react';
-
-// Mock user's teams - would come from Supabase
-const mockUserTeams: Team[] = [
-  {
-    id: 'fc-bulkkot',
-    name: 'FC 불꽃',
-    emblem: '🔥',
-    level: '3',
-    favorites: 128,
-    region: '서울 강남구',
-  },
-  {
-    id: 'thunder-fc',
-    name: '썬더 FC',
-    emblem: '⚡',
-    level: '4',
-    favorites: 256,
-    region: '서울 마포구',
-  },
-  {
-    id: 'blue-wave',
-    name: '블루웨이브',
-    emblem: '🌊',
-    level: '2',
-    favorites: 64,
-    region: '인천 연수구',
-  },
-];
 
 const levelColors: Record<string, string> = {
   '1': 'bg-[hsl(var(--level-1))] text-white',
@@ -43,16 +16,56 @@ const levelColors: Record<string, string> = {
 export default function MyTeam() {
   const navigate = useNavigate();
   const { setActiveTeam } = useTeam();
+  const { user, loading: authLoading } = useAuth();
   const [userTeams, setUserTeams] = useState<Team[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate fetching user's teams
-    setTimeout(() => {
-      setUserTeams(mockUserTeams);
+    if (authLoading) return;
+    if (!user) {
       setIsLoading(false);
-    }, 300);
-  }, []);
+      return;
+    }
+
+    const fetchUserTeams = async () => {
+      setIsLoading(true);
+      const { data, error } = await supabase
+        .from('team_members')
+        .select('team_id, role, teams(id, name, emblem, level, region, district, banner_url, photo_url, description, introduction, instagram_url, youtube_url)')
+        .eq('user_id', user.id);
+
+      if (error) {
+        console.error('Failed to fetch user teams:', error);
+        setIsLoading(false);
+        return;
+      }
+
+      const teams: Team[] = (data ?? [])
+        .filter((row) => row.teams)
+        .map((row) => {
+          const t = row.teams as any;
+          return {
+            id: t.id,
+            name: t.name,
+            emblem: t.emblem,
+            level: t.level,
+            favorites: 0,
+            region: [t.region, t.district].filter(Boolean).join(' ') || undefined,
+            photoUrl: t.photo_url ?? undefined,
+            bannerUrl: t.banner_url ?? undefined,
+            description: t.description ?? undefined,
+            introduction: t.introduction ?? undefined,
+            instagramUrl: t.instagram_url ?? undefined,
+            youtubeUrl: t.youtube_url ?? undefined,
+          };
+        });
+
+      setUserTeams(teams);
+      setIsLoading(false);
+    };
+
+    fetchUserTeams();
+  }, [user, authLoading]);
 
   useEffect(() => {
     // If user has only 1 team, navigate directly
@@ -67,12 +80,33 @@ export default function MyTeam() {
     navigate(`/team/${team.id}`);
   };
 
-  if (isLoading) {
+  if (authLoading || isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="text-4xl animate-bounce mb-4">⚽</div>
           <p className="font-pixel text-[10px] text-muted-foreground">로딩 중...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Not logged in
+  if (!user) {
+    return (
+      <div className="pb-24 max-w-lg mx-auto px-4">
+        <div className="pt-8 text-center">
+          <div className="text-6xl mb-4">🔒</div>
+          <h1 className="font-pixel text-lg text-foreground mb-2">MY TEAM</h1>
+          <p className="font-body text-muted-foreground mb-6">
+            로그인이 필요합니다
+          </p>
+          <Link
+            to="/auth"
+            className="inline-block px-6 py-3 bg-primary border-4 border-primary-dark text-primary-foreground font-pixel text-[10px] shadow-pixel hover:translate-y-[-2px] transition-transform"
+          >
+            로그인하기
+          </Link>
         </div>
       </div>
     );
@@ -137,7 +171,7 @@ export default function MyTeam() {
                       LV.{team.level}
                     </span>
                   </div>
-                  
+
                   {team.region && (
                     <p className="font-body text-xs text-muted-foreground mb-2">
                       📍 {team.region}
@@ -151,9 +185,9 @@ export default function MyTeam() {
                 </div>
 
                 {/* Arrow */}
-                <ChevronRight 
-                  size={20} 
-                  className="text-muted-foreground group-hover:text-primary transition-colors shrink-0" 
+                <ChevronRight
+                  size={20}
+                  className="text-muted-foreground group-hover:text-primary transition-colors shrink-0"
                 />
               </div>
             </PixelCard>

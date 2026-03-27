@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Plus, Image, Video } from 'lucide-react';
 import { PixelButton } from '@/components/ui/PixelButton';
@@ -10,11 +10,23 @@ import { TeamSelector } from '@/components/ui/TeamSelector';
 import { ArchiveFolderTabs } from '@/components/archive/ArchiveFolderTabs';
 import { ArchiveWriteModal } from '@/components/archive/ArchiveWriteModal';
 import { FolderManageModal } from '@/components/archive/FolderManageModal';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import { format } from 'date-fns';
 
-const myTeams = [
-  { id: 'fc-bulkkot', name: 'FC 불꽃', emblem: '🔥' },
-  { id: 'lions-fc', name: '라이언즈 FC', emblem: '🦁' },
-];
+interface ArchivePost {
+  id: string;
+  author: string;
+  date: string;
+  content: string;
+  imageUrl?: string;
+  imageUrls?: string[];
+  videoUrl?: string;
+  isVideo?: boolean;
+  likes: number;
+  comments: number;
+  folderId: string;
+}
 
 const defaultFolders = [
   { id: 'all', name: '전체보기', emoji: '📁', isDefault: true },
@@ -23,86 +35,12 @@ const defaultFolders = [
   { id: 'events', name: '팀 이벤트', emoji: '🎉' },
 ];
 
-const mockPosts = [
-  {
-    id: '1',
-    author: 'FC 불꽃',
-    date: '2024.01.20',
-    content: '오늘 FC 번개와의 경기에서 3-2로 극적인 역전승! 후반 막판 동점골에 이어 연장에서 결승골까지! 팀원들 모두 고생했습니다 💪🔥',
-    imageUrl: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=600',
-    likes: 24,
-    comments: 8,
-    folderId: 'matches',
-  },
-  {
-    id: '2',
-    author: 'FC 불꽃',
-    date: '2024.01.15',
-    content: '신년 첫 경기 승리! 2024년도 좋은 출발입니다 ⚽',
-    imageUrl: 'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=600',
-    likes: 31,
-    comments: 12,
-    folderId: 'matches',
-  },
-  {
-    id: '3',
-    author: 'FC 불꽃',
-    date: '2024.01.08',
-    content: '새해 첫 훈련! 올해 목표는 리그 우승입니다 🏆',
-    imageUrl: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=600',
-    likes: 18,
-    comments: 5,
-    folderId: 'training',
-  },
-  {
-    id: '4',
-    author: 'FC 불꽃',
-    date: '2024.01.02',
-    content: '팀 유니폼 도착! 올해도 화이팅 🔥',
-    imageUrl: 'https://images.unsplash.com/photo-1517466787929-bc90951d0974?w=600',
-    likes: 42,
-    comments: 15,
-    folderId: 'events',
-    isVideo: false,
-  },
-  {
-    id: '4-1',
-    author: 'FC 불꽃',
-    date: '2024.01.05',
-    content: '이번 주 베스트 골 모음! 역대급 중거리 슛 터졌습니다 ⚽🔥',
-    imageUrl: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=600',
-    likes: 67,
-    comments: 23,
-    folderId: 'matches',
-    isVideo: true,
-  },
-  {
-    id: '5',
-    author: 'FC 불꽃',
-    date: '2023.12.28',
-    content: '송년회 단체사진 📸',
-    imageUrl: 'https://images.unsplash.com/photo-1529629468155-c2f79a99fefc?w=600',
-    likes: 56,
-    comments: 22,
-    folderId: 'events',
-  },
-  {
-    id: '6',
-    author: 'FC 불꽃',
-    date: '2023.12.20',
-    content: '마지막 경기 승리로 마무리!',
-    imageUrl: 'https://images.unsplash.com/photo-1459865264687-595d652de67e?w=600',
-    likes: 38,
-    comments: 10,
-    folderId: 'matches',
-  },
-];
-
 export default function TeamArchive() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const teamParam = searchParams.get('team');
-  
+  const { user } = useAuth();
+
   const [view, setView] = useState<'grid' | 'single'>('single');
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [selectedTeam, setSelectedTeam] = useState(teamParam || 'all');
@@ -110,13 +48,115 @@ export default function TeamArchive() {
   const [selectedFolder, setSelectedFolder] = useState('all');
   const [showWriteModal, setShowWriteModal] = useState(false);
   const [showFolderModal, setShowFolderModal] = useState(false);
+  const [posts, setPosts] = useState<ArchivePost[]>([]);
+  const [myTeams, setMyTeams] = useState<{ id: string; name: string; emblem: string }[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const isAdmin = true; // Would check user's role
+  const isAdmin = true; // TODO: check real admin status
+
+  // Fetch user's teams
+  useEffect(() => {
+    async function fetchTeams() {
+      if (!user) return;
+      const { data } = await supabase
+        .from('team_members')
+        .select('team_id, teams(id, name, emblem)')
+        .eq('user_id', user.id);
+
+      if (data) {
+        const teams = data
+          .map((d: any) => d.teams)
+          .filter(Boolean);
+        setMyTeams(teams);
+        if (teams.length > 0 && !teamParam) {
+          setSelectedTeam(teams[0].id);
+        }
+      }
+    }
+    fetchTeams();
+  }, [user, teamParam]);
+
+  // Fetch archive posts
+  const fetchPosts = useCallback(async () => {
+    setLoading(true);
+    try {
+      let query = supabase
+        .from('archive_posts')
+        .select('id, content, image_url, image_urls, video_url, folder_id, created_at, author_user_id')
+        .order('created_at', { ascending: false });
+
+      if (selectedTeam && selectedTeam !== 'all') {
+        query = query.eq('team_id', selectedTeam);
+      }
+
+      const { data, error } = await query;
+
+      if (error) throw error;
+
+      if (data) {
+        // Fetch author profiles
+        const authorIds = [...new Set(data.map(p => p.author_user_id))];
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('user_id, nickname')
+          .in('user_id', authorIds);
+
+        const profileMap = new Map(profiles?.map(p => [p.user_id, p.nickname]) || []);
+
+        // Fetch like counts
+        const postIds = data.map(p => p.id);
+        const { data: likeCounts } = await supabase
+          .from('archive_post_likes')
+          .select('post_id')
+          .in('post_id', postIds);
+
+        const likeMap = new Map<string, number>();
+        likeCounts?.forEach(l => {
+          likeMap.set(l.post_id, (likeMap.get(l.post_id) || 0) + 1);
+        });
+
+        // Fetch comment counts
+        const { data: commentCounts } = await supabase
+          .from('archive_post_comments')
+          .select('post_id')
+          .in('post_id', postIds);
+
+        const commentMap = new Map<string, number>();
+        commentCounts?.forEach(c => {
+          commentMap.set(c.post_id, (commentMap.get(c.post_id) || 0) + 1);
+        });
+
+        const mappedPosts: ArchivePost[] = data.map(post => ({
+          id: post.id,
+          author: profileMap.get(post.author_user_id) || '알 수 없음',
+          date: format(new Date(post.created_at), 'yyyy.MM.dd'),
+          content: post.content,
+          imageUrl: post.image_url || undefined,
+          imageUrls: post.image_urls || undefined,
+          videoUrl: post.video_url || undefined,
+          isVideo: !!post.video_url,
+          likes: likeMap.get(post.id) || 0,
+          comments: commentMap.get(post.id) || 0,
+          folderId: post.folder_id || 'all',
+        }));
+
+        setPosts(mappedPosts);
+      }
+    } catch (err) {
+      console.error('Error fetching archive posts:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [selectedTeam]);
+
+  useEffect(() => {
+    fetchPosts();
+  }, [fetchPosts]);
 
   // Filter posts by folder
-  const filteredPosts = selectedFolder === 'all' 
-    ? mockPosts 
-    : mockPosts.filter(post => post.folderId === selectedFolder);
+  const filteredPosts = selectedFolder === 'all'
+    ? posts
+    : posts.filter(post => post.folderId === selectedFolder);
 
   const postsWithImages = filteredPosts.filter(post => post.imageUrl);
 
@@ -133,17 +173,10 @@ export default function TeamArchive() {
     }
   };
 
-  const handleArchiveSubmit = (data: any) => {
-    console.log('Archive post submitted:', data);
-    // TODO: Save to Supabase
-  };
-
   const handleFoldersSave = (newFolders: typeof folders) => {
     setFolders(newFolders);
-    // TODO: Save to Supabase
   };
 
-  // Find current team info
   const currentTeam = myTeams.find(t => t.id === selectedTeam);
 
   return (
@@ -158,9 +191,9 @@ export default function TeamArchive() {
               <h1 className="font-pixel text-[10px] text-foreground">아카이브</h1>
             </div>
           </div>
-          <PixelButton 
-            variant="accent" 
-            size="sm" 
+          <PixelButton
+            variant="accent"
+            size="sm"
             className="flex items-center gap-1 text-[8px] px-2 py-1"
             onClick={() => setShowWriteModal(true)}
           >
@@ -172,13 +205,15 @@ export default function TeamArchive() {
 
       <div className="px-3 py-3">
         {/* Team Selector */}
-        <div className="mb-3">
-          <TeamSelector 
-            teams={myTeams} 
-            selectedTeam={selectedTeam} 
-            onSelect={setSelectedTeam} 
-          />
-        </div>
+        {myTeams.length > 0 && (
+          <div className="mb-3">
+            <TeamSelector
+              teams={myTeams}
+              selectedTeam={selectedTeam}
+              onSelect={setSelectedTeam}
+            />
+          </div>
+        )}
 
         {/* Folder Tabs */}
         <div className="mb-3">
@@ -205,22 +240,26 @@ export default function TeamArchive() {
         </div>
 
         {/* Content based on view */}
-        <div 
+        <div
           className="transition-opacity duration-300 ease-in-out"
           key={`${view}-${selectedFolder}`}
         >
-          {filteredPosts.length === 0 ? (
+          {loading ? (
+            <div className="text-center py-8">
+              <div className="text-4xl mb-3 animate-bounce">📸</div>
+              <p className="font-pixel text-[10px] text-muted-foreground">불러오는 중...</p>
+            </div>
+          ) : filteredPosts.length === 0 ? (
             <div className="kairo-panel p-8 text-center">
               <div className="text-4xl mb-3">📁</div>
               <p className="font-pixel text-[10px] text-muted-foreground">
-                이 폴더에 게시물이 없습니다
+                {posts.length === 0 ? '아직 게시물이 없습니다. 첫 글을 작성해보세요!' : '이 폴더에 게시물이 없습니다'}
               </p>
             </div>
           ) : view === 'grid' ? (
-            /* Grid View - Denser */
             <div className="grid grid-cols-3 gap-1.5">
               {postsWithImages.map((post) => (
-                <PhotoGridItem 
+                <PhotoGridItem
                   key={post.id}
                   id={post.id}
                   imageUrl={post.imageUrl!}
@@ -230,10 +269,9 @@ export default function TeamArchive() {
               ))}
             </div>
           ) : (
-            /* Single View (Timeline) - Denser */
             <div className="space-y-3">
               {filteredPosts.map((post) => (
-                <TimelinePost key={post.id} {...post} />
+                <TimelinePost key={post.id} {...post} isMock={false} />
               ))}
             </div>
           )}
@@ -246,10 +284,7 @@ export default function TeamArchive() {
         onClose={() => setShowWriteModal(false)}
         folders={folders.filter(f => !f.isDefault)}
         teamId={selectedTeam}
-        onSubmitSuccess={() => {
-          console.log('Archive post created');
-          // TODO: refresh posts from DB
-        }}
+        onSubmitSuccess={fetchPosts}
       />
 
       {/* Folder Management Modal (Admin Only) */}
