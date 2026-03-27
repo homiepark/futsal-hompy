@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ArrowLeft, Send, UserPlus } from 'lucide-react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { PixelCard } from '@/components/ui/PixelCard';
 import { PixelButton } from '@/components/ui/PixelButton';
 import { InvitationCard } from '@/components/messages/InvitationCard';
@@ -9,10 +9,21 @@ import { DirectMessageModal } from '@/components/messages/DirectMessageModal';
 import { ApplicantCard } from '@/components/team/ApplicantCard';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
-import { useDev } from '@/contexts/DevContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
-interface Message {
+interface Conversation {
+  otherUserId: string;
+  otherUserNickname: string;
+  otherUserAvatar: string | null;
+  latestMessage: string;
+  latestMessageAt: string;
+  unreadCount: number;
+  teamId: string | null;
+  teamName: string | null;
+}
+
+interface ConversationMessage {
   id: string;
   senderId: string;
   senderName: string;
@@ -20,8 +31,7 @@ interface Message {
   content: string;
   isRead: boolean;
   createdAt: string;
-  teamId?: string;
-  teamName?: string;
+  isMine: boolean;
 }
 
 interface Invitation {
@@ -33,60 +43,6 @@ interface Invitation {
     name: string;
     emblem: string;
   };
-}
-
-const mockMessages: Message[] = [
-  {
-    id: '1',
-    senderId: 'user1',
-    senderName: '김풋살',
-    content: '안녕하세요! 다음 경기 참가 가능하신가요?',
-    isRead: false,
-    createdAt: '10분 전',
-  },
-  {
-    id: '2',
-    senderId: 'team1',
-    senderName: 'FC 불꽃',
-    senderAvatar: '🔥',
-    content: '[📢 팀 공지] 이번 주 토요일 훈련 장소가 변경되었습니다.',
-    isRead: false,
-    createdAt: '1시간 전',
-    teamId: 'team1',
-    teamName: 'FC 불꽃',
-  },
-  {
-    id: '3',
-    senderId: 'user2',
-    senderName: '박매칭',
-    content: '[팀 문의] 저희 팀과 매칭 가능한지 문의드립니다.',
-    isRead: true,
-    createdAt: '어제',
-    teamId: 'team2',
-    teamName: '스피드FC',
-  },
-  {
-    id: '4',
-    senderId: 'user3',
-    senderName: '이코치',
-    content: '레슨 관련해서 연락드렸습니다.',
-    isRead: true,
-    createdAt: '3일 전',
-  },
-];
-
-function formatDate(dateStr: string): string {
-  const date = new Date(dateStr);
-  const now = new Date();
-  const diff = now.getTime() - date.getTime();
-  const minutes = Math.floor(diff / 60000);
-  const hours = Math.floor(diff / 3600000);
-  const days = Math.floor(diff / 86400000);
-
-  if (minutes < 60) return `${minutes}분 전`;
-  if (hours < 24) return `${hours}시간 전`;
-  if (days < 7) return `${days}일 전`;
-  return date.toLocaleDateString('ko-KR');
 }
 
 interface JoinRequest {
@@ -106,17 +62,38 @@ interface JoinRequest {
   };
 }
 
+function formatDate(dateStr: string): string {
+  const date = new Date(dateStr);
+  const now = new Date();
+  const diff = now.getTime() - date.getTime();
+  const minutes = Math.floor(diff / 60000);
+  const hours = Math.floor(diff / 3600000);
+  const days = Math.floor(diff / 86400000);
+
+  if (minutes < 1) return '방금';
+  if (minutes < 60) return `${minutes}분 전`;
+  if (hours < 24) return `${hours}시간 전`;
+  if (days < 7) return `${days}일 전`;
+  return date.toLocaleDateString('ko-KR');
+}
+
 export default function Messages() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { isDevAdmin } = useDev();
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'all' | 'team' | 'personal' | 'invites' | 'join-requests'>('all');
-  const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [loadingConversations, setLoadingConversations] = useState(false);
+  const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
+  const [conversationMessages, setConversationMessages] = useState<ConversationMessage[]>([]);
+  const [loadingMessages, setLoadingMessages] = useState(false);
   const [replyText, setReplyText] = useState('');
+  const [sendingReply, setSendingReply] = useState(false);
   const [invitations, setInvitations] = useState<Invitation[]>([]);
   const [joinRequests, setJoinRequests] = useState<JoinRequest[]>([]);
   const [loadingInvites, setLoadingInvites] = useState(false);
   const [loadingJoinRequests, setLoadingJoinRequests] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [showDirectMessage, setShowDirectMessage] = useState(false);
   const [directMessageRecipient, setDirectMessageRecipient] = useState<{
     id: string;
@@ -127,20 +104,33 @@ export default function Messages() {
     isTeamInquiry?: boolean;
   } | null>(null);
 
+  // Check if user is admin of any team
+  useEffect(() => {
+    if (!user) return;
+    const checkAdmin = async () => {
+      const { data } = await supabase
+        .from('teams')
+        .select('id')
+        .eq('admin_user_id', user.id)
+        .limit(1);
+      setIsAdmin(!!(data && data.length > 0));
+    };
+    checkAdmin();
+  }, [user]);
+
   // Check for direct message mode or tab from navigation state
   useEffect(() => {
-    const state = location.state as { 
-      directMessage?: boolean; 
-      recipientId?: string; 
+    const state = location.state as {
+      directMessage?: boolean;
+      recipientId?: string;
       recipientName?: string;
       teamId?: string;
       teamName?: string;
       tab?: string;
     } | null;
-    
-    if (state?.tab === 'join-requests' && isDevAdmin) {
+
+    if (state?.tab === 'join-requests' && isAdmin) {
       setActiveTab('join-requests');
-      // Clear the state to prevent issues on refresh
       window.history.replaceState({}, document.title);
     } else if (state?.directMessage && state.recipientId) {
       setDirectMessageRecipient({
@@ -151,25 +141,233 @@ export default function Messages() {
         isTeamInquiry: true,
       });
       setShowDirectMessage(true);
-      // Clear the state to prevent re-opening on refresh
       window.history.replaceState({}, document.title);
     }
-  }, [location.state, isDevAdmin]);
+  }, [location.state, isAdmin]);
 
-  useEffect(() => {
-    if (activeTab === 'invites') {
-      fetchInvitations();
-    } else if (activeTab === 'join-requests' && isDevAdmin) {
-      fetchJoinRequests();
+  // Fetch conversations
+  const fetchConversations = useCallback(async () => {
+    if (!user) return;
+    setLoadingConversations(true);
+    try {
+      // Get all messages involving the current user
+      const { data: messages, error } = await supabase
+        .from('messages')
+        .select('id, sender_id, receiver_id, content, is_read, created_at, team_id')
+        .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      if (!messages || messages.length === 0) {
+        setConversations([]);
+        return;
+      }
+
+      // Group by the other person's user_id
+      const conversationMap = new Map<string, {
+        otherUserId: string;
+        latestMessage: string;
+        latestMessageAt: string;
+        unreadCount: number;
+        teamId: string | null;
+      }>();
+
+      for (const msg of messages) {
+        const otherUserId = msg.sender_id === user.id ? msg.receiver_id : msg.sender_id;
+        const existing = conversationMap.get(otherUserId);
+
+        if (!existing) {
+          conversationMap.set(otherUserId, {
+            otherUserId,
+            latestMessage: msg.content,
+            latestMessageAt: msg.created_at,
+            unreadCount: (!msg.is_read && msg.receiver_id === user.id) ? 1 : 0,
+            teamId: msg.team_id,
+          });
+        } else {
+          if (!msg.is_read && msg.receiver_id === user.id) {
+            existing.unreadCount += 1;
+          }
+        }
+      }
+
+      // Fetch profiles for all other users
+      const otherUserIds = Array.from(conversationMap.keys());
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('user_id, nickname, avatar_url')
+        .in('user_id', otherUserIds);
+
+      const profileMap = new Map<string, { user_id: string; nickname: string; avatar_url: string | null }>(
+        profiles?.map(p => [p.user_id, p]) || []
+      );
+
+      // Fetch team names for messages with team_id
+      const teamIds = Array.from(new Set(
+        Array.from(conversationMap.values())
+          .map(c => c.teamId)
+          .filter((id): id is string => id !== null)
+      ));
+      let teamMap = new Map<string, string>();
+      if (teamIds.length > 0) {
+        const { data: teams } = await supabase
+          .from('teams')
+          .select('id, name')
+          .in('id', teamIds);
+        teamMap = new Map(teams?.map(t => [t.id, t.name]) || []);
+      }
+
+      const convList: Conversation[] = Array.from(conversationMap.values()).map(conv => {
+        const profile = profileMap.get(conv.otherUserId);
+        return {
+          otherUserId: conv.otherUserId,
+          otherUserNickname: profile?.nickname || '알 수 없음',
+          otherUserAvatar: profile?.avatar_url || null,
+          latestMessage: conv.latestMessage,
+          latestMessageAt: conv.latestMessageAt,
+          unreadCount: conv.unreadCount,
+          teamId: conv.teamId,
+          teamName: conv.teamId ? (teamMap.get(conv.teamId) || null) : null,
+        };
+      });
+
+      // Sort by latest message time
+      convList.sort((a, b) => new Date(b.latestMessageAt).getTime() - new Date(a.latestMessageAt).getTime());
+
+      setConversations(convList);
+    } catch (error) {
+      console.error('Error fetching conversations:', error);
+      toast.error('메시지를 불러오는 데 실패했습니다');
+    } finally {
+      setLoadingConversations(false);
     }
-  }, [activeTab, isDevAdmin]);
+  }, [user]);
 
-  const fetchInvitations = async () => {
+  // Fetch conversation messages and mark as read
+  const openConversation = useCallback(async (conv: Conversation) => {
+    if (!user) return;
+    setSelectedConversation(conv);
+    setLoadingMessages(true);
+    setReplyText('');
+
+    try {
+      // Fetch all messages between user and the other person
+      const { data: messages, error } = await supabase
+        .from('messages')
+        .select('id, sender_id, receiver_id, content, is_read, created_at')
+        .or(
+          `and(sender_id.eq.${user.id},receiver_id.eq.${conv.otherUserId}),and(sender_id.eq.${conv.otherUserId},receiver_id.eq.${user.id})`
+        )
+        .order('created_at', { ascending: true });
+
+      if (error) throw error;
+
+      // Get sender profile
+      const { data: otherProfile } = await supabase
+        .from('profiles')
+        .select('nickname, avatar_url')
+        .eq('user_id', conv.otherUserId)
+        .single();
+
+      const { data: myProfile } = await supabase
+        .from('profiles')
+        .select('nickname, avatar_url')
+        .eq('user_id', user.id)
+        .single();
+
+      const convMessages: ConversationMessage[] = (messages || []).map(msg => ({
+        id: msg.id,
+        senderId: msg.sender_id,
+        senderName: msg.sender_id === user.id
+          ? (myProfile?.nickname || '나')
+          : (otherProfile?.nickname || conv.otherUserNickname),
+        senderAvatar: msg.sender_id === user.id
+          ? (myProfile?.avatar_url || undefined)
+          : (otherProfile?.avatar_url || undefined),
+        content: msg.content,
+        isRead: msg.is_read,
+        createdAt: msg.created_at,
+        isMine: msg.sender_id === user.id,
+      }));
+
+      setConversationMessages(convMessages);
+
+      // Mark unread messages as read
+      const unreadIds = (messages || [])
+        .filter(m => !m.is_read && m.receiver_id === user.id)
+        .map(m => m.id);
+
+      if (unreadIds.length > 0) {
+        await supabase
+          .from('messages')
+          .update({ is_read: true })
+          .in('id', unreadIds);
+
+        // Update the conversation's unread count locally
+        setConversations(prev =>
+          prev.map(c =>
+            c.otherUserId === conv.otherUserId ? { ...c, unreadCount: 0 } : c
+          )
+        );
+      }
+    } catch (error) {
+      console.error('Error fetching conversation messages:', error);
+      toast.error('대화를 불러오는 데 실패했습니다');
+    } finally {
+      setLoadingMessages(false);
+    }
+  }, [user]);
+
+  // Send a reply message
+  const handleSendReply = async () => {
+    if (!user || !selectedConversation || !replyText.trim()) return;
+    setSendingReply(true);
+    try {
+      const { error } = await supabase
+        .from('messages')
+        .insert({
+          sender_id: user.id,
+          receiver_id: selectedConversation.otherUserId,
+          content: replyText.trim(),
+          team_id: selectedConversation.teamId || null,
+        });
+
+      if (error) throw error;
+
+      // Add the message locally
+      const newMsg: ConversationMessage = {
+        id: crypto.randomUUID(),
+        senderId: user.id,
+        senderName: '나',
+        content: replyText.trim(),
+        isRead: false,
+        createdAt: new Date().toISOString(),
+        isMine: true,
+      };
+      setConversationMessages(prev => [...prev, newMsg]);
+      setReplyText('');
+
+      // Update conversation list
+      setConversations(prev =>
+        prev.map(c =>
+          c.otherUserId === selectedConversation.otherUserId
+            ? { ...c, latestMessage: replyText.trim(), latestMessageAt: new Date().toISOString() }
+            : c
+        )
+      );
+    } catch (error) {
+      console.error('Error sending reply:', error);
+      toast.error('메시지 전송에 실패했습니다');
+    } finally {
+      setSendingReply(false);
+    }
+  };
+
+  // Fetch invitations
+  const fetchInvitations = useCallback(async () => {
+    if (!user) return;
     setLoadingInvites(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
       const { data, error } = await supabase
         .from('team_invitations')
         .select('id, team_id, message, created_at')
@@ -200,15 +398,31 @@ export default function Messages() {
     } finally {
       setLoadingInvites(false);
     }
-  };
+  }, [user]);
 
-  const fetchJoinRequests = async () => {
+  // Fetch join requests for teams where user is admin
+  const fetchJoinRequests = useCallback(async () => {
+    if (!user) return;
     setLoadingJoinRequests(true);
     try {
-      // For demo, we'll fetch all pending requests (in real app, filter by admin's team)
+      // Get teams where user is admin
+      const { data: adminTeams, error: teamsError } = await supabase
+        .from('teams')
+        .select('id')
+        .eq('admin_user_id', user.id);
+
+      if (teamsError) throw teamsError;
+      if (!adminTeams || adminTeams.length === 0) {
+        setJoinRequests([]);
+        return;
+      }
+
+      const adminTeamIds = adminTeams.map(t => t.id);
+
       const { data: requestsData, error: requestsError } = await supabase
         .from('team_join_requests')
         .select('*')
+        .in('team_id', adminTeamIds)
         .eq('status', 'pending')
         .order('created_at', { ascending: false });
 
@@ -245,8 +459,21 @@ export default function Messages() {
     } finally {
       setLoadingJoinRequests(false);
     }
-  };
+  }, [user]);
 
+  // Initial load and tab changes
+  useEffect(() => {
+    if (!user) return;
+    if (activeTab === 'invites') {
+      fetchInvitations();
+    } else if (activeTab === 'join-requests' && isAdmin) {
+      fetchJoinRequests();
+    } else {
+      fetchConversations();
+    }
+  }, [activeTab, user, isAdmin, fetchConversations, fetchInvitations, fetchJoinRequests]);
+
+  // Handle approve join request
   const handleApproveRequest = async (requestId: string) => {
     const request = joinRequests.find(r => r.id === requestId);
     if (!request) return;
@@ -277,6 +504,7 @@ export default function Messages() {
     }
   };
 
+  // Handle reject join request
   const handleRejectRequest = async (requestId: string) => {
     const request = joinRequests.find(r => r.id === requestId);
     if (!request) return;
@@ -300,60 +528,120 @@ export default function Messages() {
   const handleMessageApplicant = (requestId: string) => {
     const request = joinRequests.find(r => r.id === requestId);
     if (request) {
-      navigate('/messages', { state: { recipientId: request.user_id } });
+      setDirectMessageRecipient({
+        id: request.user_id,
+        name: request.profile?.nickname || '알 수 없음',
+      });
+      setShowDirectMessage(true);
     }
   };
 
-  const filteredMessages = mockMessages.filter(msg => {
-    if (activeTab === 'team') return !!msg.teamId;
-    if (activeTab === 'personal') return !msg.teamId;
+  // Filter conversations based on active tab
+  const filteredConversations = conversations.filter(conv => {
+    if (activeTab === 'team') return !!conv.teamId;
+    if (activeTab === 'personal') return !conv.teamId;
     return true;
   });
 
-  const unreadCount = mockMessages.filter(m => !m.isRead).length;
-  const hasBroadcast = mockMessages.some(m => m.content.startsWith('[📢 팀 공지]') && !m.isRead);
+  const totalUnreadCount = conversations.reduce((sum, c) => sum + c.unreadCount, 0);
 
-  if (selectedMessage) {
-    const messageType = getMessageType(selectedMessage.content, selectedMessage.teamId);
-    
+  // Conversation detail view
+  if (selectedConversation) {
+    const messageType = getMessageType(
+      selectedConversation.latestMessage,
+      selectedConversation.teamId
+    );
+
     return (
       <div className="pb-24 max-w-lg mx-auto">
         {/* Message Detail Header */}
         <div className="sticky top-0 z-40 bg-primary border-b-4 border-primary-dark p-4 flex items-center gap-3">
-          <button 
-            onClick={() => setSelectedMessage(null)}
+          <button
+            onClick={() => {
+              setSelectedConversation(null);
+              setConversationMessages([]);
+              fetchConversations();
+            }}
             className="w-8 h-8 bg-primary-foreground/20 border-2 border-primary-dark flex items-center justify-center"
           >
             <ArrowLeft size={18} className="text-primary-foreground" />
           </button>
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-secondary border-2 border-border-dark flex items-center justify-center text-sm">
-              {selectedMessage.senderAvatar || '👤'}
+            <div className="w-8 h-8 bg-secondary border-2 border-border-dark flex items-center justify-center text-sm overflow-hidden">
+              {selectedConversation.otherUserAvatar ? (
+                <img
+                  src={selectedConversation.otherUserAvatar}
+                  alt=""
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                '👤'
+              )}
             </div>
-            <span className="text-primary-foreground">{selectedMessage.senderName}</span>
-            <MessageBadge type={messageType} />
+            <span className="text-primary-foreground">{selectedConversation.otherUserNickname}</span>
+            {selectedConversation.teamName && (
+              <MessageBadge type={messageType} />
+            )}
           </div>
         </div>
 
         <div className="p-4 space-y-4">
-          {/* Message Content */}
-          <PixelCard>
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 bg-secondary border-2 border-border-dark flex items-center justify-center text-lg flex-shrink-0">
-                {selectedMessage.senderAvatar || '👤'}
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-foreground">{selectedMessage.senderName}</span>
-                  <span className="text-xs text-muted-foreground">{selectedMessage.createdAt}</span>
+          {/* Messages */}
+          {loadingMessages ? (
+            <div className="space-y-3">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="animate-pulse">
+                  <PixelCard>
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 bg-muted border-2 border-border-dark flex-shrink-0" />
+                      <div className="flex-1 space-y-2">
+                        <div className="h-4 bg-muted rounded w-24" />
+                        <div className="h-3 bg-muted rounded w-3/4" />
+                      </div>
+                    </div>
+                  </PixelCard>
                 </div>
-                {selectedMessage.teamName && (
-                  <MessageBadge type={messageType} className="mb-2" />
-                )}
-                <p className="text-foreground">{selectedMessage.content}</p>
-              </div>
+              ))}
             </div>
-          </PixelCard>
+          ) : conversationMessages.length > 0 ? (
+            conversationMessages.map(msg => (
+              <PixelCard key={msg.id}>
+                <div className={cn(
+                  'flex items-start gap-3',
+                  msg.isMine && 'flex-row-reverse'
+                )}>
+                  <div className="w-10 h-10 bg-secondary border-2 border-border-dark flex items-center justify-center text-lg flex-shrink-0 overflow-hidden">
+                    {msg.senderAvatar ? (
+                      <img src={msg.senderAvatar} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      '👤'
+                    )}
+                  </div>
+                  <div className={cn('flex-1', msg.isMine && 'text-right')}>
+                    <div className={cn(
+                      'flex items-center gap-2 mb-2',
+                      msg.isMine && 'flex-row-reverse'
+                    )}>
+                      <span className="text-foreground text-sm">{msg.senderName}</span>
+                      <span className="text-xs text-muted-foreground">{formatDate(msg.createdAt)}</span>
+                    </div>
+                    <p className={cn(
+                      'text-foreground inline-block px-3 py-2 border-2 border-border-dark text-sm',
+                      msg.isMine
+                        ? 'bg-primary/10 rounded-l-lg rounded-br-lg'
+                        : 'bg-card rounded-r-lg rounded-bl-lg'
+                    )}>
+                      {msg.content}
+                    </p>
+                  </div>
+                </div>
+              </PixelCard>
+            ))
+          ) : (
+            <div className="text-center py-8 text-muted-foreground text-sm">
+              메시지가 없습니다
+            </div>
+          )}
 
           {/* Reply Input */}
           <div className="flex gap-2">
@@ -361,11 +649,29 @@ export default function Messages() {
               type="text"
               value={replyText}
               onChange={(e) => setReplyText(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSendReply();
+                }
+              }}
               placeholder="답장 입력..."
               className="flex-1 px-4 py-3 bg-card border-4 border-border-dark shadow-[2px_2px_0_hsl(var(--pixel-shadow))] outline-none focus:border-primary"
+              disabled={sendingReply}
             />
-            <button className="w-12 h-12 bg-primary border-4 border-primary-dark flex items-center justify-center shadow-[4px_4px_0_hsl(var(--primary-dark))]">
-              <Send size={20} className="text-primary-foreground" />
+            <button
+              onClick={handleSendReply}
+              disabled={sendingReply || !replyText.trim()}
+              className={cn(
+                'w-12 h-12 border-4 flex items-center justify-center',
+                sendingReply || !replyText.trim()
+                  ? 'bg-muted border-border-dark cursor-not-allowed'
+                  : 'bg-primary border-primary-dark shadow-[4px_4px_0_hsl(var(--primary-dark))]'
+              )}
+            >
+              <Send size={20} className={cn(
+                sendingReply || !replyText.trim() ? 'text-muted-foreground' : 'text-primary-foreground'
+              )} />
             </button>
           </div>
         </div>
@@ -377,22 +683,20 @@ export default function Messages() {
     <div className="pb-24 max-w-lg mx-auto">
       {/* Header */}
       <div className="sticky top-0 z-40 bg-primary border-b-4 border-primary-dark p-4 flex items-center gap-3">
-        <button 
-          onClick={() => navigate(-1)} 
+        <button
+          onClick={() => navigate(-1)}
           className="w-8 h-8 bg-primary-foreground/20 border-2 border-primary-dark flex items-center justify-center"
         >
           <ArrowLeft size={18} className="text-primary-foreground" />
         </button>
         <h1 className="text-sm text-primary-foreground flex items-center gap-2">
           📬 쪽지함
-          {unreadCount > 0 && (
+          {totalUnreadCount > 0 && (
             <span className={cn(
               "px-2 py-0.5 text-accent-foreground text-xs border",
-              hasBroadcast 
-                ? "bg-destructive border-destructive animate-pulse" 
-                : "bg-accent border-accent-dark"
+              "bg-accent border-accent-dark"
             )}>
-              {unreadCount}
+              {totalUnreadCount}
             </span>
           )}
         </h1>
@@ -406,7 +710,7 @@ export default function Messages() {
             { key: 'team', label: '팀', icon: '📢', color: 'primary' },
             { key: 'personal', label: '개인', icon: '💬', color: 'accent' },
             { key: 'invites', label: '초대', icon: '🎫', badge: invitations.length },
-            ...(isDevAdmin ? [{ key: 'join-requests', label: '입단신청', icon: '📋', badge: joinRequests.length }] : []),
+            ...(isAdmin ? [{ key: 'join-requests', label: '입단신청', icon: '📋', badge: joinRequests.length }] : []),
           ].map((tab) => (
             <button
               key={tab.key}
@@ -430,7 +734,7 @@ export default function Messages() {
         </div>
 
         {/* Content */}
-        {activeTab === 'join-requests' && isDevAdmin ? (
+        {activeTab === 'join-requests' && isAdmin ? (
           /* Join Requests Tab (Admin Only) */
           <div className="space-y-4">
             {loadingJoinRequests ? (
@@ -509,20 +813,34 @@ export default function Messages() {
             )}
           </div>
         ) : (
-          /* Messages List */
+          /* Conversations List */
           <div className="space-y-2">
-            {filteredMessages.length > 0 ? (
-              filteredMessages.map((message) => {
-                const messageType = getMessageType(message.content, message.teamId);
-                const isBroadcast = message.content.startsWith('[📢 팀 공지]');
-                
+            {loadingConversations ? (
+              <div className="space-y-2">
+                {[1, 2, 3].map(i => (
+                  <div key={i} className="p-3 border-4 border-border-dark bg-card animate-pulse">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 bg-muted border-2 border-border-dark flex-shrink-0" />
+                      <div className="flex-1 space-y-2">
+                        <div className="h-4 bg-muted rounded w-24" />
+                        <div className="h-3 bg-muted rounded w-3/4" />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : filteredConversations.length > 0 ? (
+              filteredConversations.map((conv) => {
+                const messageType = getMessageType(conv.latestMessage, conv.teamId);
+                const isBroadcast = conv.latestMessage.startsWith('[📢 팀 공지]');
+
                 return (
                   <button
-                    key={message.id}
-                    onClick={() => setSelectedMessage(message)}
+                    key={conv.otherUserId}
+                    onClick={() => openConversation(conv)}
                     className={cn(
                       'w-full text-left p-3 border-4 transition-all',
-                      message.isRead
+                      conv.unreadCount === 0
                         ? 'bg-card border-border-dark shadow-[3px_3px_0_hsl(var(--pixel-shadow))]'
                         : isBroadcast
                           ? 'bg-destructive/10 border-destructive shadow-[3px_3px_0_hsl(var(--destructive))] animate-pulse'
@@ -530,33 +848,47 @@ export default function Messages() {
                     )}
                   >
                     <div className="flex items-start gap-3">
-                      <div className="w-10 h-10 bg-secondary border-2 border-border-dark flex items-center justify-center text-lg flex-shrink-0">
-                        {message.senderAvatar || '👤'}
+                      <div className="w-10 h-10 bg-secondary border-2 border-border-dark flex items-center justify-center text-lg flex-shrink-0 overflow-hidden">
+                        {conv.otherUserAvatar ? (
+                          <img
+                            src={conv.otherUserAvatar}
+                            alt=""
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          '👤'
+                        )}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-2 mb-1">
                           <div className="flex items-center gap-2">
                             <span className={cn(
                               'truncate font-pixel text-xs',
-                              !message.isRead && 'text-foreground font-bold'
+                              conv.unreadCount > 0 && 'text-foreground font-bold'
                             )}>
-                              {message.senderName}
+                              {conv.otherUserNickname}
                             </span>
                             <MessageBadge type={messageType} />
                           </div>
                           <span className="text-xs text-muted-foreground flex-shrink-0">
-                            {message.createdAt}
+                            {formatDate(conv.latestMessageAt)}
                           </span>
                         </div>
                         <p className="text-sm text-muted-foreground truncate">
-                          {message.content}
+                          {conv.latestMessage}
                         </p>
                       </div>
-                      {!message.isRead && (
-                        <div className={cn(
-                          "w-2 h-2 rounded-full flex-shrink-0 mt-2",
-                          isBroadcast ? "bg-destructive animate-ping" : "bg-accent"
-                        )} />
+                      {conv.unreadCount > 0 && (
+                        <div className="flex-shrink-0 mt-1">
+                          <span className={cn(
+                            "px-1.5 py-0.5 text-[10px] font-pixel border",
+                            isBroadcast
+                              ? "bg-destructive text-white border-destructive animate-ping"
+                              : "bg-accent text-accent-foreground border-accent-dark"
+                          )}>
+                            {conv.unreadCount}
+                          </span>
+                        </div>
                       )}
                     </div>
                   </button>
@@ -572,8 +904,15 @@ export default function Messages() {
         )}
 
         {/* New Message Button */}
-        {activeTab !== 'invites' && (
-          <PixelButton variant="accent" className="w-full flex items-center justify-center gap-2">
+        {activeTab !== 'invites' && activeTab !== 'join-requests' && (
+          <PixelButton
+            variant="accent"
+            className="w-full flex items-center justify-center gap-2"
+            onClick={() => {
+              setDirectMessageRecipient(null);
+              setShowDirectMessage(true);
+            }}
+          >
             <span>✉️</span>
             <span>새 쪽지 보내기</span>
           </PixelButton>
@@ -587,6 +926,7 @@ export default function Messages() {
           onClose={() => {
             setShowDirectMessage(false);
             setDirectMessageRecipient(null);
+            fetchConversations();
           }}
           recipientId={directMessageRecipient.id}
           recipientName={directMessageRecipient.name}
