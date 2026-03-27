@@ -425,6 +425,8 @@ export default function TeamHome() {
         level={teamData.level ?? '1'}
         favorites={0}
         region={regionDisplay}
+        homeGroundName={teamData.home_ground_name ?? ''}
+        homeGroundAddress={teamData.home_ground_address ?? ''}
         instagramUrl={teamData.instagram_url ?? ''}
         youtubeUrl={teamData.youtube_url ?? ''}
         teamId={teamId}
@@ -505,31 +507,6 @@ export default function TeamHome() {
               : 0
           }
         />
-
-        {/* 활동 구장 */}
-        {teamData.home_ground_name && (
-          <button
-            onClick={() => {
-              const query = teamData.home_ground_address || teamData.home_ground_name;
-              if (query) window.open(`https://map.naver.com/v5/search/${encodeURIComponent(query)}`, '_blank');
-            }}
-            className="w-full bg-card border-3 border-border-dark p-3 flex items-center gap-3 hover:border-primary transition-colors"
-            style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}
-          >
-            <div className="w-10 h-10 bg-[#03C75A] border-2 border-[#02b351] flex items-center justify-center shrink-0"
-              style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow) / 0.5)' }}
-            >
-              <MapPin size={16} className="text-white" />
-            </div>
-            <div className="flex-1 text-left min-w-0">
-              <span className="font-pixel text-[9px] text-foreground block truncate">{teamData.home_ground_name}</span>
-              {teamData.home_ground_address && (
-                <span className="font-pixel text-[7px] text-muted-foreground block truncate">{teamData.home_ground_address}</span>
-              )}
-            </div>
-            <span className="font-pixel text-[7px] text-[#03C75A] shrink-0">지도 보기 →</span>
-          </button>
-        )}
 
         {/* 팀 소개 */}
         <TeamIntro

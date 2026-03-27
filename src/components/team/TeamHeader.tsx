@@ -1,4 +1,4 @@
-import { Star, Camera, Pencil, Check, X } from 'lucide-react';
+import { Star, Camera, Pencil, Check, X, MapPin } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
@@ -12,6 +12,8 @@ interface TeamHeaderProps {
   level: string;
   favorites: number;
   region?: string;
+  homeGroundName?: string;
+  homeGroundAddress?: string;
   instagramUrl?: string;
   youtubeUrl?: string;
   teamId?: string;
@@ -253,8 +255,20 @@ export function TeamHeader({
                 </div>
               )}
             </div>
-            <div className="flex items-center gap-2">
-              {region && <p className="font-pixel text-[8px] text-muted-foreground">{region}</p>}
+            <div className="flex items-center gap-2 flex-wrap">
+              {region && <p className="font-pixel text-[8px] text-muted-foreground">📍 {region}</p>}
+              {homeGroundName && (
+                <button
+                  onClick={() => {
+                    const query = homeGroundAddress || homeGroundName;
+                    if (query) window.open(`https://map.naver.com/v5/search/${encodeURIComponent(query)}`, '_blank');
+                  }}
+                  className="flex items-center gap-0.5 font-pixel text-[7px] text-[#03C75A] hover:underline"
+                >
+                  <MapPin size={8} />
+                  {homeGroundName}
+                </button>
+              )}
               <div className="flex items-center gap-0.5">
                 <Star size={12} className="text-[hsl(45,100%,50%)] fill-[hsl(45,100%,50%)]" />
                 <span className="font-pixel text-[8px] text-foreground">{favorites}</span>
