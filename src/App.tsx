@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Component, ReactNode } from "react";
 
 import { AuthProvider } from "@/contexts/AuthContext";
 import { TeamProvider } from "@/contexts/TeamContext";
@@ -28,9 +29,38 @@ import ResetPassword from "./pages/ResetPassword";
 import Messages from "./pages/Messages";
 import NotFound from "./pages/NotFound";
 
+// Error Boundary to catch render errors
+class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean; error: Error | null }> {
+  constructor(props: { children: ReactNode }) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ padding: 20, fontFamily: 'monospace', fontSize: 12, color: 'red', wordBreak: 'break-all' }}>
+          <h2>App Error:</h2>
+          <pre>{this.state.error?.message}</pre>
+          <pre>{this.state.error?.stack}</pre>
+          <button onClick={() => window.location.reload()} style={{ marginTop: 10, padding: '8px 16px', background: '#333', color: '#fff', border: 'none' }}>
+            새로고침
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 const queryClient = new QueryClient();
 
 const App = () => (
+  <ErrorBoundary>
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <AuthProvider>
@@ -73,6 +103,7 @@ const App = () => (
       </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;
