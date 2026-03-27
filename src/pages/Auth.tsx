@@ -23,6 +23,7 @@ export default function Auth() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSocialLoading, setIsSocialLoading] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string; confirmPassword?: string }>({});
 
   const validateForm = (): boolean => {
@@ -59,7 +60,7 @@ export default function Auth() {
           email: email.trim(),
           password,
           options: {
-            emailRedirectTo: window.location.origin,
+            emailRedirectTo: `${window.location.origin}/profile-setup`,
           },
         });
 
@@ -81,23 +82,34 @@ export default function Auth() {
         if (error) throw error;
 
         if (data.user) {
-          toast({
-            title: '👋 환영합니다!',
-            description: '로그인되었습니다.',
-          });
-          navigate('/');
+          // Check if profile is complete
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('nickname')
+            .eq('user_id', data.user.id)
+            .single();
+
+          if (!profile?.nickname) {
+            navigate('/profile-setup');
+          } else {
+            toast({
+              title: '👋 환영합니다!',
+              description: '로그인되었습니다.',
+            });
+            navigate('/');
+          }
         }
       }
     } catch (error: any) {
       console.error('Auth error:', error);
-      
+
       let errorMessage = '오류가 발생했습니다';
       if (error.message?.includes('Invalid login credentials')) {
         errorMessage = '이메일 또는 비밀번호가 올바르지 않습니다';
       } else if (error.message?.includes('User already registered')) {
-        errorMessage = '이미 등록된 이메일입니다';
+        errorMessage = '이미 등록된 이메일입니다. 로그인해주세요!';
       } else if (error.message?.includes('Email not confirmed')) {
-        errorMessage = '이메일 인증이 필요합니다';
+        errorMessage = '이메일 인증이 필요합니다. 받은편지함을 확인해주세요.';
       }
 
       toast({
@@ -110,6 +122,27 @@ export default function Auth() {
     }
   };
 
+  const handleKakaoLogin = async () => {
+    setIsSocialLoading(true);
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'kakao',
+        options: {
+          redirectTo: `${window.location.origin}/profile-setup`,
+        },
+      });
+      if (error) throw error;
+    } catch (error: any) {
+      console.error('Kakao login error:', error);
+      toast({
+        title: '카카오 로그인 오류',
+        description: '카카오 로그인에 실패했습니다. 다시 시도해주세요.',
+        variant: 'destructive',
+      });
+      setIsSocialLoading(false);
+    }
+  };
+
   const toggleMode = () => {
     setMode(mode === 'login' ? 'signup' : 'login');
     setErrors({});
@@ -118,29 +151,24 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8f6f0] flex flex-col items-center px-4 py-6">
+    <div className="min-h-screen bg-background flex flex-col items-center px-4 py-6">
       {/* Logo Section */}
       <div className="text-center mb-6">
-        <img 
-          src={logoAuth} 
-          alt="우리의 풋살 - Our Futsal" 
+        <img
+          src={logoAuth}
+          alt="우리의 풋살 - Our Futsal"
           className="h-24 mx-auto"
         />
       </div>
 
-      {/* Auth Card - Matching the exact design */}
-      <div 
-        className="w-full max-w-sm bg-[#fdfcf8] overflow-hidden"
-        style={{ 
-          border: '4px solid hsl(30, 45%, 65%)',
-          borderRadius: '16px',
-          boxShadow: `
-            6px 6px 0 hsl(30, 35%, 55%),
-            inset 0 0 0 2px hsl(40, 50%, 92%)
-          `,
+      {/* Auth Card */}
+      <div
+        className="w-full max-w-sm bg-card overflow-hidden border-4 border-border-dark"
+        style={{
+          boxShadow: '6px 6px 0 hsl(var(--pixel-shadow))',
         }}
       >
-        {/* Tab Switch - Exact match */}
+        {/* Tab Switch */}
         <div className="flex">
           <button
             type="button"
@@ -149,10 +177,10 @@ export default function Auth() {
               'flex-1 py-3.5 font-pixel text-[11px] transition-all flex items-center justify-center gap-2',
               mode === 'signup'
                 ? 'bg-primary text-primary-foreground'
-                : 'bg-[#f0ebe0] text-[#6B5B4F] hover:bg-[#e8e3d8]'
+                : 'bg-secondary text-muted-foreground hover:bg-muted'
             )}
             style={{
-              borderBottom: mode === 'signup' ? 'none' : '2px solid hsl(30, 30%, 75%)',
+              borderBottom: mode === 'signup' ? 'none' : '2px solid hsl(var(--border-dark))',
             }}
           >
             <UserPlus size={14} />
@@ -165,10 +193,10 @@ export default function Auth() {
               'flex-1 py-3.5 font-pixel text-[11px] transition-all flex items-center justify-center gap-2',
               mode === 'login'
                 ? 'bg-primary text-primary-foreground'
-                : 'bg-[#f0ebe0] text-[#6B5B4F] hover:bg-[#e8e3d8]'
+                : 'bg-secondary text-muted-foreground hover:bg-muted'
             )}
             style={{
-              borderBottom: mode === 'login' ? 'none' : '2px solid hsl(30, 30%, 75%)',
+              borderBottom: mode === 'login' ? 'none' : '2px solid hsl(var(--border-dark))',
             }}
           >
             <LogIn size={14} />
@@ -177,41 +205,64 @@ export default function Auth() {
         </div>
 
         <div className="p-5 pt-4">
-          {/* Step Indicator (only for signup) - Exact match */}
+          {/* Step Indicator (only for signup) */}
           {mode === 'signup' && (
             <div className="flex items-center justify-center gap-2 mb-5">
               <div className="flex items-center gap-1.5">
-                <div 
-                  className="w-7 h-7 bg-primary flex items-center justify-center font-pixel text-[10px] text-primary-foreground"
-                  style={{ 
-                    border: '2px solid hsl(142, 65%, 40%)',
-                    boxShadow: '2px 2px 0 hsl(var(--pixel-shadow) / 0.5)'
-                  }}
+                <div
+                  className="w-7 h-7 bg-primary flex items-center justify-center font-pixel text-[10px] text-primary-foreground border-2 border-primary-dark"
+                  style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow) / 0.5)' }}
                 >
                   1
                 </div>
                 <span className="font-pixel text-[9px] text-primary">계정 생성</span>
               </div>
-              <div className="w-8 h-[2px] bg-[#c4b8a4]" />
+              <div className="w-8 h-[2px] bg-border-dark/30" />
               <div className="flex items-center gap-1.5">
-                <div 
-                  className="w-7 h-7 bg-[#f0ebe0] flex items-center justify-center font-pixel text-[10px] text-[#6B5B4F]"
-                  style={{ 
-                    border: '2px solid hsl(30, 30%, 70%)',
-                    boxShadow: '2px 2px 0 hsl(var(--pixel-shadow) / 0.3)'
-                  }}
+                <div
+                  className="w-7 h-7 bg-secondary flex items-center justify-center font-pixel text-[10px] text-muted-foreground border-2 border-border-dark"
+                  style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow) / 0.3)' }}
                 >
                   2
                 </div>
-                <span className="font-pixel text-[9px] text-[#6B5B4F]">프로필 설정</span>
+                <span className="font-pixel text-[9px] text-muted-foreground">프로필 설정</span>
               </div>
             </div>
           )}
 
+          {/* Social Login Buttons */}
+          <div className="space-y-2 mb-4">
+            {/* Kakao Login */}
+            <button
+              type="button"
+              onClick={handleKakaoLogin}
+              disabled={isSocialLoading}
+              className="w-full py-3 flex items-center justify-center gap-2 font-pixel text-[10px] transition-all hover:brightness-105 active:translate-y-0.5 disabled:opacity-60"
+              style={{
+                background: '#FEE500',
+                color: '#191919',
+                border: '3px solid #E5CC00',
+                boxShadow: '0 3px 0 #C7B100',
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="#191919">
+                <path d="M12 3C6.48 3 2 6.48 2 10.5c0 2.58 1.72 4.84 4.3 6.12-.19.71-.69 2.57-.79 2.97-.12.49.18.48.38.35.15-.1 2.45-1.66 3.44-2.34.87.13 1.77.2 2.67.2 5.52 0 10-3.48 10-7.8S17.52 3 12 3z"/>
+              </svg>
+              <span>{isSocialLoading ? '연결 중...' : '카카오로 시작하기'}</span>
+            </button>
+          </div>
+
+          {/* Divider */}
+          <div className="flex items-center gap-3 mb-4">
+            <div className="flex-1 h-[2px] bg-border" />
+            <span className="font-pixel text-[8px] text-muted-foreground">또는 이메일로</span>
+            <div className="flex-1 h-[2px] bg-border" />
+          </div>
+
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Email Input */}
             <div>
-              <label className="flex items-center gap-1.5 font-pixel text-[10px] text-[#4A3C30] mb-2">
+              <label className="flex items-center gap-1.5 font-pixel text-[10px] text-foreground mb-2">
                 <Mail size={12} />
                 <span>이메일</span>
               </label>
@@ -219,17 +270,11 @@ export default function Auth() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="your@email.com"
+                placeholder="email@example.com"
                 className={cn(
-                  'w-full px-4 py-3 bg-[#FFFDF8] text-[#3D3028] font-body text-sm',
-                  'placeholder:text-[#9A8A78]',
-                  'focus:outline-none focus:bg-[#FFF9F0]',
+                  'w-full pixel-input',
                   errors.email && 'border-destructive'
                 )}
-                style={{
-                  border: '2px solid #d4c8b8',
-                  borderRadius: '10px',
-                }}
                 autoComplete="email"
               />
               {errors.email && (
@@ -239,7 +284,7 @@ export default function Auth() {
 
             {/* Password Input */}
             <div>
-              <label className="flex items-center gap-1.5 font-pixel text-[10px] text-[#4A3C30] mb-2">
+              <label className="flex items-center gap-1.5 font-pixel text-[10px] text-foreground mb-2">
                 <Lock size={12} />
                 <span>비밀번호</span>
               </label>
@@ -248,23 +293,17 @@ export default function Auth() {
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
+                  placeholder="6자 이상"
                   className={cn(
-                    'w-full px-4 py-3 pr-12 bg-[#FFFDF8] text-[#3D3028] font-body text-sm',
-                    'placeholder:text-[#9A8A78]',
-                    'focus:outline-none focus:bg-[#FFF9F0]',
+                    'w-full pixel-input pr-12',
                     errors.password && 'border-destructive'
                   )}
-                  style={{
-                    border: '2px solid #d4c8b8',
-                    borderRadius: '10px',
-                  }}
                   autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-[#9A8A78] hover:text-[#4A3C30] transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
@@ -277,7 +316,7 @@ export default function Auth() {
             {/* Confirm Password (signup only) */}
             {mode === 'signup' && (
               <div>
-                <label className="flex items-center gap-1.5 font-pixel text-[10px] text-[#4A3C30] mb-2">
+                <label className="flex items-center gap-1.5 font-pixel text-[10px] text-foreground mb-2">
                   <Lock size={12} />
                   <span>비밀번호 확인</span>
                 </label>
@@ -285,17 +324,11 @@ export default function Auth() {
                   type={showPassword ? 'text' : 'password'}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="••••••••"
+                  placeholder="비밀번호 재입력"
                   className={cn(
-                    'w-full px-4 py-3 bg-[#FFFDF8] text-[#3D3028] font-body text-sm',
-                    'placeholder:text-[#9A8A78]',
-                    'focus:outline-none focus:bg-[#FFF9F0]',
+                    'w-full pixel-input',
                     errors.confirmPassword && 'border-destructive'
                   )}
-                  style={{
-                    border: '2px solid #d4c8b8',
-                    borderRadius: '10px',
-                  }}
                   autoComplete="new-password"
                 />
                 {errors.confirmPassword && (
@@ -304,23 +337,13 @@ export default function Auth() {
               </div>
             )}
 
-            {/* Submit Button - Exact match */}
+            {/* Submit Button */}
             <button
               type="submit"
               disabled={isLoading}
-              className={cn(
-                'w-full py-3.5 font-pixel text-[12px] text-white',
-                'flex items-center justify-center gap-2',
-                'transition-all duration-100',
-                'hover:brightness-110',
-                'active:translate-y-0.5',
-                'disabled:opacity-60 disabled:cursor-not-allowed'
-              )}
+              className="w-full py-3.5 bg-primary text-primary-foreground font-pixel text-[12px] flex items-center justify-center gap-2 border-3 border-primary-dark transition-all hover:brightness-110 active:translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed"
               style={{
-                background: 'linear-gradient(180deg, hsl(142, 69%, 55%) 0%, hsl(142, 69%, 45%) 100%)',
-                border: '3px solid hsl(142, 65%, 35%)',
-                borderRadius: '10px',
-                boxShadow: '0 4px 0 hsl(142, 60%, 30%), inset 0 1px 0 hsl(142, 70%, 65%)',
+                boxShadow: '0 4px 0 hsl(var(--primary-dark)), inset 0 1px 0 hsl(0 0% 100% / 0.2)',
               }}
             >
               {isLoading ? (
@@ -346,7 +369,7 @@ export default function Auth() {
             <button
               type="button"
               onClick={toggleMode}
-              className="font-pixel text-[9px] text-[#6B5B4F] block w-full"
+              className="font-pixel text-[9px] text-muted-foreground block w-full"
             >
               {mode === 'signup' ? (
                 <>이미 계정이 있으신가요? <span className="text-primary hover:underline">로그인</span></>
@@ -354,7 +377,7 @@ export default function Auth() {
                 <>계정이 없으신가요? <span className="text-primary hover:underline">회원가입</span></>
               )}
             </button>
-            
+
             {/* Forgot Password Link - only show in login mode */}
             {mode === 'login' && (
               <Link
@@ -368,17 +391,17 @@ export default function Auth() {
         </div>
       </div>
 
-      {/* Decorative Diamonds - Exact match */}
+      {/* Decorative Diamonds */}
       <div className="flex justify-center items-center gap-4 mt-8">
         <span className="text-primary text-lg">◆</span>
         <span className="text-accent text-lg">◆</span>
         <span className="text-primary text-lg">◆</span>
       </div>
 
-      {/* Back Link - Exact match */}
-      <Link 
-        to="/" 
-        className="mt-6 flex items-center gap-2 font-pixel text-[10px] text-[#6B5B4F] hover:text-primary transition-colors"
+      {/* Back Link */}
+      <Link
+        to="/"
+        className="mt-6 flex items-center gap-2 font-pixel text-[10px] text-muted-foreground hover:text-primary transition-colors"
       >
         <ArrowLeft size={14} />
         <span>홈으로 돌아가기</span>

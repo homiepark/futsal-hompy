@@ -1,0 +1,87 @@
+import { useNavigate } from 'react-router-dom';
+import { Trophy, Star, Users, ChevronRight } from 'lucide-react';
+
+interface PopularTeam {
+  id: string;
+  name: string;
+  emblem: string;
+  level: string;
+  wins: number;
+  memberCount: number;
+}
+
+const mockPopularTeams: PopularTeam[] = [
+  { id: '1', name: 'FC 불꽃', emblem: '🔥', level: '4', wins: 23, memberCount: 12 },
+  { id: '2', name: '스틸러스', emblem: '⚔️', level: '3', wins: 18, memberCount: 10 },
+  { id: '3', name: 'FC 드래곤즈', emblem: '🐉', level: '3', wins: 15, memberCount: 8 },
+];
+
+const levelColors: Record<string, string> = {
+  '1': 'bg-[hsl(var(--level-1))]',
+  '2': 'bg-[hsl(var(--level-2))]',
+  '3': 'bg-[hsl(var(--level-3))]',
+  '4': 'bg-[hsl(var(--level-4))]',
+};
+
+export function HotTeamsRanking() {
+  const navigate = useNavigate();
+
+  return (
+    <div className="px-4 py-3">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="font-pixel text-[10px] text-foreground flex items-center gap-2">
+          <Trophy size={14} className="text-accent" />
+          이번 달 인기팀 TOP 3
+        </h3>
+        <button
+          onClick={() => navigate('/')}
+          className="font-pixel text-[8px] text-muted-foreground hover:text-primary flex items-center gap-0.5"
+        >
+          더보기 <ChevronRight size={10} />
+        </button>
+      </div>
+
+      <div className="space-y-2">
+        {mockPopularTeams.map((team, index) => (
+          <button
+            key={team.id}
+            onClick={() => navigate(`/team/${team.id}`)}
+            className="w-full flex items-center gap-3 p-2.5 bg-card border-3 border-border-dark hover:border-primary transition-colors"
+            style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}
+          >
+            {/* Rank */}
+            <div className={`w-7 h-7 flex items-center justify-center font-pixel text-[10px] text-white border-2 ${
+              index === 0 ? 'bg-accent border-accent-dark' :
+              index === 1 ? 'bg-primary border-primary-dark' :
+              'bg-muted-foreground border-border-dark'
+            }`}
+              style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow) / 0.5)' }}
+            >
+              {index + 1}
+            </div>
+
+            {/* Team Info */}
+            <span className="text-xl">{team.emblem}</span>
+            <div className="flex-1 text-left min-w-0">
+              <span className="font-pixel text-[9px] text-foreground block truncate">{team.name}</span>
+              <div className="flex items-center gap-2 mt-0.5">
+                <span className={`px-1.5 py-0.5 text-[7px] font-pixel text-white ${levelColors[team.level]}`}>
+                  LV.{team.level}
+                </span>
+                <span className="font-pixel text-[7px] text-muted-foreground flex items-center gap-0.5">
+                  <Users size={8} /> {team.memberCount}명
+                </span>
+              </div>
+            </div>
+
+            {/* Win Count */}
+            <div className="text-right shrink-0">
+              <span className="font-pixel text-[10px] text-accent block">{team.wins}</span>
+              <span className="font-pixel text-[7px] text-muted-foreground">승</span>
+            </div>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}

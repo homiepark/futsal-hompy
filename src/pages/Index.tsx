@@ -4,6 +4,9 @@ import { Bell, Settings, Mail, Plus } from 'lucide-react';
 import { SimpleHeader } from '@/components/findteam/SimpleHeader';
 import { TeamListCard } from '@/components/findteam/TeamListCard';
 import { NeighborhoodNews } from '@/components/home/NeighborhoodNews';
+import { LiveMatchBanner } from '@/components/home/LiveMatchBanner';
+import { HotTeamsRanking } from '@/components/home/HotTeamsRanking';
+import { RecentActivityFeed } from '@/components/home/RecentActivityFeed';
 
 import { CompactFilterBar } from '@/components/home/CompactFilterBar';
 import { GuestAuthPrompt } from '@/components/home/GuestAuthPrompt';
@@ -269,6 +272,11 @@ const Index = () => {
         <SimpleHeader />
       </div>
 
+      {/* Live Match Banner - engaging first content */}
+      <LiveMatchBanner />
+
+      {/* Hot Teams Ranking */}
+      <HotTeamsRanking />
 
       {/* Section 2: Neighborhood News Feed */}
       {/* For logged-in users: show if they have regions set */}
@@ -414,6 +422,9 @@ const Index = () => {
           </div>
         )}
       </div>
+
+      {/* Recent Activity Feed */}
+      <RecentActivityFeed />
 
       {/* Bottom Spacing */}
       <div className="h-20" />

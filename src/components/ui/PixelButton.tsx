@@ -10,7 +10,7 @@ const variantClasses = {
   default: 'pixel-btn bg-secondary text-secondary-foreground',
   primary: 'pixel-btn pixel-btn-primary',
   accent: 'pixel-btn pixel-btn-accent',
-  ghost: 'font-pixel text-xs uppercase hover:bg-muted px-4 py-3 transition-colors',
+  ghost: 'font-pixel text-xs uppercase hover:bg-muted px-4 py-3 transition-colors border-2 border-transparent hover:border-border-dark',
 };
 
 const sizeClasses = {

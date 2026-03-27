@@ -6,6 +6,7 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
+  isProfileComplete: boolean;
   signOut: () => Promise<void>;
 }
 
@@ -13,6 +14,7 @@ const AuthContext = createContext<AuthContextType>({
   user: null,
   session: null,
   loading: true,
+  isProfileComplete: false,
   signOut: async () => {},
 });
 
@@ -32,13 +34,36 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isProfileComplete, setIsProfileComplete] = useState(false);
+
+  const checkProfileComplete = async (userId: string) => {
+    try {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('nickname')
+        .eq('user_id', userId)
+        .single();
+
+      setIsProfileComplete(!!profile?.nickname);
+    } catch {
+      setIsProfileComplete(false);
+    }
+  };
 
   useEffect(() => {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      async (_event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
+
+        if (session?.user) {
+          // Use setTimeout to avoid Supabase deadlock
+          setTimeout(() => checkProfileComplete(session.user.id), 0);
+        } else {
+          setIsProfileComplete(false);
+        }
+
         setLoading(false);
       }
     );
@@ -47,6 +72,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
+
+      if (session?.user) {
+        checkProfileComplete(session.user.id);
+      }
+
       setLoading(false);
     });
 
@@ -59,10 +89,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
     await supabase.auth.signOut();
     setUser(null);
     setSession(null);
+    setIsProfileComplete(false);
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, signOut }}>
+    <AuthContext.Provider value={{ user, session, loading, isProfileComplete, signOut }}>
       {children}
     </AuthContext.Provider>
   );
