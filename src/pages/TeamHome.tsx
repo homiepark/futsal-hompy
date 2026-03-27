@@ -13,6 +13,7 @@ import { Guestbook } from '@/components/team/Guestbook';
 import { VisitorCounter } from '@/components/team/VisitorCounter';
 import { BgmPlayer } from '@/components/team/BgmPlayer';
 import { HompySkinSelector } from '@/components/team/HompySkinSelector';
+import { TeamLevelBadge } from '@/components/team/TeamLevelBadge';
 import { PixelButton } from '@/components/ui/PixelButton';
 import { PixelBackButton } from '@/components/ui/PixelBackButton';
 import { JoinRequestButton } from '@/components/team/JoinRequestButton';
@@ -214,6 +215,14 @@ export default function TeamHome() {
 
         {/* BGM Player */}
         <BgmPlayer teamName={teamData.name} />
+
+        {/* Team Level & Stats */}
+        <TeamLevelBadge
+          level={teamData.level}
+          matchCount={23}
+          mannerScore={4.5}
+          avgExperience={4.8}
+        />
 
         {/* Team Announcement Section */}
         <TeamAnnouncement
