@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Palette, X, Check } from 'lucide-react';
 
 interface Skin {
@@ -9,7 +9,7 @@ interface Skin {
   borderColor: string;
   headerBg: string;
   accentColor: string;
-  preview: string; // CSS gradient for preview
+  preview: string;
 }
 
 const skins: Skin[] = [
@@ -19,9 +19,9 @@ const skins: Skin[] = [
     emoji: '⚽',
     bgColor: 'hsl(40 40% 97%)',
     borderColor: 'hsl(30 30% 50%)',
-    headerBg: 'hsl(142 69% 52%)',
-    accentColor: 'hsl(27 97% 58%)',
-    preview: 'linear-gradient(135deg, hsl(142 69% 52%), hsl(142 55% 42%))',
+    headerBg: 'hsl(168 55% 42%)',
+    accentColor: 'hsl(12 80% 62%)',
+    preview: 'linear-gradient(135deg, hsl(168 55% 42%), hsl(168 45% 32%))',
   },
   {
     id: 'fire',
@@ -85,6 +85,18 @@ interface HompySkinSelectorProps {
 export function HompySkinSelector({ isOpen, onClose, currentSkin, onSkinChange }: HompySkinSelectorProps) {
   const [previewSkin, setPreviewSkin] = useState(currentSkin);
 
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.touchAction = 'none';
+    }
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.touchAction = '';
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const handleApply = () => {
@@ -93,11 +105,12 @@ export function HompySkinSelector({ isOpen, onClose, currentSkin, onSkinChange }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center px-4">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div
-        className="relative w-full max-w-lg bg-card border-t-4 border-border-dark rounded-t-xl overflow-hidden animate-slide-up"
-        style={{ boxShadow: '0 -4px 20px hsl(var(--pixel-shadow) / 0.3)' }}
+        className="relative w-full max-w-sm bg-card border-4 border-border-dark overflow-hidden animate-slide-up"
+        style={{ boxShadow: '6px 6px 0 hsl(var(--pixel-shadow))' }}
+        onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 bg-primary text-primary-foreground">
@@ -110,8 +123,11 @@ export function HompySkinSelector({ isOpen, onClose, currentSkin, onSkinChange }
           </button>
         </div>
 
-        {/* Skin Grid */}
-        <div className="p-4 grid grid-cols-3 gap-3 max-h-[50vh] overflow-y-auto">
+        {/* Skin Grid - scrollable with proper touch */}
+        <div
+          className="p-4 grid grid-cols-3 gap-3 max-h-[60vh] overflow-y-auto overscroll-contain"
+          style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-y' }}
+        >
           {skins.map((skin) => (
             <button
               key={skin.id}
@@ -123,7 +139,6 @@ export function HompySkinSelector({ isOpen, onClose, currentSkin, onSkinChange }
               }`}
               style={{ boxShadow: previewSkin === skin.id ? '3px 3px 0 hsl(var(--primary-dark))' : '2px 2px 0 hsl(var(--pixel-shadow))' }}
             >
-              {/* Preview Color */}
               <div
                 className="w-full aspect-square rounded-sm mb-2 border border-black/10"
                 style={{ background: skin.preview }}
@@ -132,7 +147,6 @@ export function HompySkinSelector({ isOpen, onClose, currentSkin, onSkinChange }
                 <span className="text-lg block">{skin.emoji}</span>
                 <span className="font-pixel text-[7px] text-foreground block mt-1">{skin.name}</span>
               </div>
-              {/* Current indicator */}
               {currentSkin === skin.id && (
                 <div className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-accent border-2 border-accent-dark rounded-full flex items-center justify-center">
                   <Check size={10} className="text-accent-foreground" />
