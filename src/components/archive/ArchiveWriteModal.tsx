@@ -16,6 +16,7 @@ interface ArchiveWriteModalProps {
 
 const MAX_IMAGES = 10;
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+const MAX_VIDEO_SIZE = 50 * 1024 * 1024; // 50MB
 
 const defaultTags = [
   { id: 'match', label: '#경기', emoji: '⚽' },
@@ -38,11 +39,15 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
   const [content, setContent] = useState('');
   const [images, setImages] = useState<ImageItem[]>([]);
   const [videoUrl, setVideoUrl] = useState('');
+  const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [videoPreview, setVideoPreview] = useState('');
   const [showVideoInput, setShowVideoInput] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [selectedFolder, setSelectedFolder] = useState(folders[0]?.id || 'all');
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
 
   if (!isOpen) return null;
 
@@ -76,6 +81,45 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
 
   const removeImage = (index: number) => {
     setImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleVideoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > MAX_VIDEO_SIZE) {
+      toast.error(`동영상은 50MB 이하만 직접 업로드 가능합니다. 큰 영상은 링크로 추가해주세요.`);
+      return;
+    }
+
+    setVideoFile(file);
+    setVideoPreview(URL.createObjectURL(file));
+    setVideoUrl(''); // clear link if file selected
+    if (videoInputRef.current) videoInputRef.current.value = '';
+  };
+
+  const removeVideo = () => {
+    setVideoFile(null);
+    if (videoPreview) URL.revokeObjectURL(videoPreview);
+    setVideoPreview('');
+  };
+
+  const uploadVideo = async (file: File): Promise<string> => {
+    if (!user) throw new Error('로그인 필요');
+    const ext = file.name.split('.').pop();
+    const filePath = `${user.id}/${Date.now()}-video.${ext}`;
+
+    const { error } = await supabase.storage
+      .from('archive-images')
+      .upload(filePath, file, { upsert: false });
+
+    if (error) throw error;
+
+    const { data: urlData } = supabase.storage
+      .from('archive-images')
+      .getPublicUrl(filePath);
+
+    return urlData.publicUrl;
   };
 
   const handleTagToggle = (tagId: string) => {
@@ -128,20 +172,29 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
     }
 
     setUploading(true);
+    setUploadProgress('');
 
     try {
       let imageUrls: string[] = [];
       if (images.length > 0) {
+        setUploadProgress(`사진 업로드 중 (${images.length}장)...`);
         imageUrls = await uploadImages(images.map(i => i.file));
       }
 
+      let finalVideoUrl = videoUrl || null;
+      if (videoFile) {
+        setUploadProgress('동영상 업로드 중...');
+        finalVideoUrl = await uploadVideo(videoFile);
+      }
+
+      setUploadProgress('저장 중...');
       const { error } = await supabase.from('archive_posts').insert({
         team_id: teamId,
         author_user_id: user.id,
         content: content.trim(),
         image_url: imageUrls[0] || null,
         image_urls: imageUrls,
-        video_url: videoUrl || null,
+        video_url: finalVideoUrl,
         folder_id: selectedFolder,
       });
 
@@ -150,8 +203,9 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
       setContent('');
       setImages([]);
       setVideoUrl('');
+      removeVideo();
       setSelectedTags([]);
-      toast.success('아카이브에 등록되었습니다! 📸');
+      toast.success('추억저장소에 등록되었습니다! 📸');
       onSubmitSuccess?.();
       onClose();
     } catch (err) {
@@ -280,34 +334,54 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
             )}
           </div>
 
-          {/* Video Link */}
+          {/* Video Upload / Link */}
           <div>
-            <div className="flex items-center justify-between mb-1.5">
-              <label className="font-pixel text-[8px] text-muted-foreground uppercase">동영상 링크</label>
-              <button
-                onClick={() => setShowVideoInput(!showVideoInput)}
-                className={cn(
-                  'px-2 py-0.5 border-2 font-pixel text-[7px] transition-all',
-                  showVideoInput
-                    ? 'bg-primary border-primary-dark text-primary-foreground'
-                    : 'bg-muted border-border-dark text-foreground hover:border-primary'
-                )}
-              >
-                <Video size={10} className="inline mr-1" />
-                {showVideoInput ? '접기' : '추가'}
-              </button>
-            </div>
-            {showVideoInput && (
+            <label className="block font-pixel text-[8px] text-muted-foreground uppercase mb-1.5">
+              🎬 동영상 (50MB 이하 직접 업로드 또는 링크)
+            </label>
+            <input
+              ref={videoInputRef}
+              type="file"
+              accept="video/*"
+              onChange={handleVideoSelect}
+              className="hidden"
+            />
+
+            {videoFile ? (
+              <div className="relative border-3 border-border-dark overflow-hidden" style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}>
+                <video src={videoPreview} className="w-full aspect-video object-cover bg-black" controls />
+                <button
+                  onClick={removeVideo}
+                  className="absolute top-1 right-1 w-6 h-6 bg-destructive/90 border border-border-dark flex items-center justify-center"
+                >
+                  <X size={12} className="text-destructive-foreground" />
+                </button>
+                <div className="absolute bottom-1 left-1 px-2 py-0.5 bg-accent border border-accent-dark">
+                  <span className="font-pixel text-[6px] text-accent-foreground">
+                    {(videoFile.size / 1024 / 1024).toFixed(1)}MB
+                  </span>
+                </div>
+              </div>
+            ) : (
               <div className="flex gap-2">
-                <div className="flex-1 relative">
-                  <Link size={12} className="absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                  <input
-                    type="url"
-                    value={videoUrl}
-                    onChange={(e) => setVideoUrl(e.target.value)}
-                    placeholder="YouTube 또는 동영상 URL"
-                    className="w-full pl-7 pr-3 py-2 bg-input border-2 border-border-dark font-pixel text-[9px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary"
-                  />
+                <button
+                  onClick={() => videoInputRef.current?.click()}
+                  className="flex-1 py-4 border-3 border-dashed border-border-dark bg-muted/50 flex flex-col items-center gap-1 hover:border-primary hover:bg-muted transition-colors"
+                >
+                  <Video size={18} className="text-muted-foreground" />
+                  <span className="font-pixel text-[7px] text-muted-foreground">파일 선택</span>
+                </button>
+                <div className="flex-1">
+                  <div className="relative h-full">
+                    <Link size={12} className="absolute left-2 top-3 text-muted-foreground" />
+                    <input
+                      type="url"
+                      value={videoUrl}
+                      onChange={(e) => setVideoUrl(e.target.value)}
+                      placeholder="또는 URL 붙여넣기"
+                      className="w-full h-full pl-7 pr-3 py-2 bg-input border-3 border-border-dark font-pixel text-[8px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary"
+                    />
+                  </div>
                 </div>
               </div>
             )}
@@ -357,7 +431,7 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
             {uploading ? (
               <>
                 <Loader2 size={12} className="animate-spin" />
-                업로드 중...
+                {uploadProgress || '업로드 중...'}
               </>
             ) : (
               <>
