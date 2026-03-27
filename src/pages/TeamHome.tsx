@@ -586,7 +586,7 @@ export default function TeamHome() {
         />
 
         {/* Guestbook */}
-        <Guestbook />
+        <Guestbook teamId={teamId} />
       </div>
 
       {/* Admin Transfer Modal */}
