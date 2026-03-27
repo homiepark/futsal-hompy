@@ -3,6 +3,7 @@ import { X, Send, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 
 interface TeamMember {
   id: string;
@@ -25,6 +26,7 @@ export function BroadcastModal({
   teamName,
   members,
 }: BroadcastModalProps) {
+  useBodyScrollLock(isOpen);
   const [content, setContent] = useState('');
   const [sending, setSending] = useState(false);
 

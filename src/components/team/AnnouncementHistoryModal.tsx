@@ -1,4 +1,5 @@
 import { X, Clock, Megaphone } from 'lucide-react';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 
 interface Notice {
   id: string;
@@ -17,6 +18,8 @@ export function AnnouncementHistoryModal({
   onClose,
   notices,
 }: AnnouncementHistoryModalProps) {
+  useBodyScrollLock(isOpen);
+
   if (!isOpen) return null;
 
   return (

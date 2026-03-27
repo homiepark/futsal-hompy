@@ -3,6 +3,7 @@ import { X, ChevronLeft, ChevronRight, Check, Clock, MapPin, Users } from 'lucid
 import { format, addDays, isSameDay } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { toast } from 'sonner';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 
 interface TimeSlot {
   time: string;
@@ -35,6 +36,7 @@ const generateTimeSlots = (price: number): TimeSlot[] => {
 };
 
 export function CourtBookingModal({ isOpen, onClose, courtName, courtAddress, pricePerHour }: CourtBookingModalProps) {
+  useBodyScrollLock(isOpen);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedSlots, setSelectedSlots] = useState<string[]>([]);
   const [step, setStep] = useState<'select' | 'confirm'>('select');

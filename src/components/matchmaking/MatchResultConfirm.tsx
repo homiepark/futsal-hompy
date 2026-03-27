@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { X, Check, Trophy, Shield } from 'lucide-react';
 import { toast } from 'sonner';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 
 interface MatchResultConfirmProps {
   isOpen: boolean;
@@ -25,6 +26,7 @@ export function MatchResultConfirm({
   matchDate,
   onSubmit,
 }: MatchResultConfirmProps) {
+  useBodyScrollLock(isOpen);
   const [selectedResult, setSelectedResult] = useState<'win' | 'draw' | 'loss' | null>(null);
   const [mannerRating, setMannerRating] = useState(3);
 

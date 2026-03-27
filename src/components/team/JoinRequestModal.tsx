@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 
 interface UserProfile {
   nickname: string;
@@ -44,6 +45,7 @@ export function JoinRequestModal({
   teamEmblem = '⚽',
   onSuccess,
 }: JoinRequestModalProps) {
+  useBodyScrollLock(isOpen);
   const { user } = useAuth();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { levelOptions } from '@/lib/teamData';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 
 interface LevelGuideModalProps {
   isOpen: boolean;

@@ -3,6 +3,7 @@ import { X, Calendar, Trophy, Send, Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { usePlayerGuestbook } from '@/hooks/usePlayerGuestbook';
 import { useAuth } from '@/contexts/AuthContext';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 
 interface PlayerStats {
   id: string;
@@ -30,6 +31,7 @@ const positionInfo = {
 };
 
 export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalProps) {
+  useBodyScrollLock(isOpen);
   const [guestbookMessage, setGuestbookMessage] = useState('');
   const { user } = useAuth();
   const { entries: guestbookEntries, submitEntry, toggleLike } = usePlayerGuestbook(player?.userId);

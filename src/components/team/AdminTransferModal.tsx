@@ -3,6 +3,7 @@ import { X, Crown, AlertTriangle, UserPlus, UserMinus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PixelButton } from '@/components/ui/PixelButton';
 import { toast } from 'sonner';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 
 interface Member {
   id: string;
@@ -30,6 +31,7 @@ export function AdminTransferModal({
   onAddAdmin,
   onRemoveAdmin,
 }: AdminTransferModalProps) {
+  useBodyScrollLock(isOpen);
   const [selectedMember, setSelectedMember] = useState<string | null>(null);
   const [confirmStep, setConfirmStep] = useState(false);
   const [mode, setMode] = useState<'manage' | 'transfer'>('manage');

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { X, Plus, Trash2, GripVertical, Edit2, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 
 interface Folder {
   id: string;

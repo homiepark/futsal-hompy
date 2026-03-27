@@ -1,5 +1,6 @@
 import { X } from 'lucide-react';
 import { PixelButton } from '@/components/ui/PixelButton';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 
 interface DraftConfirmModalProps {
   isOpen: boolean;
@@ -12,6 +13,8 @@ export function DraftConfirmModal({
   onContinue,
   onDiscard,
 }: DraftConfirmModalProps) {
+  useBodyScrollLock(isOpen);
+
   if (!isOpen) return null;
 
   return (

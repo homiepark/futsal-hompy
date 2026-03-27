@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 
 interface ArchiveWriteModalProps {
   isOpen: boolean;
@@ -35,6 +36,7 @@ interface ImageItem {
 }
 
 export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSuccess }: ArchiveWriteModalProps) {
+  useBodyScrollLock(isOpen);
   const { user } = useAuth();
   const [content, setContent] = useState('');
   const [images, setImages] = useState<ImageItem[]>([]);

@@ -11,6 +11,7 @@ import { ko } from 'date-fns/locale';
 import { levelOptions } from '@/lib/teamData';
 import { useMatchPostDraft } from '@/hooks/useMatchPostDraft';
 import { DraftConfirmModal } from './DraftConfirmModal';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 
 interface CreateMatchPostModalProps {
   isOpen: boolean;
@@ -49,6 +50,7 @@ export function CreateMatchPostModal({
   onSuccess,
   team,
 }: CreateMatchPostModalProps) {
+  useBodyScrollLock(isOpen);
   const [locationType, setLocationType] = useState<'home_ground' | 'custom'>('home_ground');
   const [customLocationName, setCustomLocationName] = useState('');
   const [customLocationAddress, setCustomLocationAddress] = useState('');

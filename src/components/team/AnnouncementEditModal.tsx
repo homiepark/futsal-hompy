@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { X, Pencil, Send } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 
 interface AnnouncementEditModalProps {
   isOpen: boolean;
@@ -15,6 +16,7 @@ export function AnnouncementEditModal({
   onSave,
   currentContent,
 }: AnnouncementEditModalProps) {
+  useBodyScrollLock(isOpen);
   const [content, setContent] = useState(currentContent);
   const [isSaving, setIsSaving] = useState(false);
 

@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 import { PixelButton } from '@/components/ui/PixelButton';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 
 interface PlayerInviteModalProps {
   isOpen: boolean;
@@ -38,6 +39,7 @@ const positionLabels: Record<string, string> = {
 };
 
 export function PlayerInviteModal({ isOpen, onClose, teamId, teamName }: PlayerInviteModalProps) {
+  useBodyScrollLock(isOpen);
   const [searchQuery, setSearchQuery] = useState('');
   const [positionFilter, setPositionFilter] = useState('all');
   const [searchResults, setSearchResults] = useState<UserProfile[]>([]);

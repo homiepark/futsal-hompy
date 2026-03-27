@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Palette, X, Check } from 'lucide-react';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 
 interface Skin {
   id: string;

@@ -3,6 +3,7 @@ import { X, Send } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 
 interface DirectMessageModalProps {
   isOpen: boolean;
@@ -25,6 +26,7 @@ export function DirectMessageModal({
   teamName,
   isTeamInquiry = false,
 }: DirectMessageModalProps) {
+  useBodyScrollLock(isOpen);
   const [content, setContent] = useState('');
   const [sending, setSending] = useState(false);
   const [showEnvelope, setShowEnvelope] = useState(true);
