@@ -220,12 +220,12 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
 
-      <div className="relative w-full max-w-md max-h-[90vh] overflow-hidden kairo-panel animate-in fade-in zoom-in-95 duration-200 flex flex-col">
+      <div className="relative w-full max-w-md max-h-[80vh] mb-20 overflow-hidden kairo-panel animate-in fade-in zoom-in-95 duration-200 flex flex-col">
         {/* Header */}
         <div className="kairo-panel-header justify-between flex-shrink-0">
           <div className="flex items-center gap-2">
             <span>📝</span>
-            <span>아카이브 작성</span>
+            <span>추억저장소 글쓰기</span>
           </div>
           <button
             onClick={onClose}
