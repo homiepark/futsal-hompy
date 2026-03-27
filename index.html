@@ -20,7 +20,18 @@
   </head>
 
   <body>
-    <div id="root"><div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:monospace;">로딩중...</div></div>
+    <div id="root"><div id="loading" style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:monospace;">로딩중...</div></div>
+    <script>
+      window.onerror = function(msg, src, line, col, err) {
+        document.getElementById('root').innerHTML = '<div style="padding:20px;font-family:monospace;color:red;font-size:11px;word-break:break-all;white-space:pre-wrap;"><h3>Error:</h3>' + msg + '\n\nSource: ' + src + ':' + line + '\n\n' + (err && err.stack ? err.stack : '') + '</div>';
+      };
+    </script>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      setTimeout(function() {
+        var el = document.getElementById('loading');
+        if (el) el.innerHTML = '앱 로드 실패 - 브라우저 콘솔을 확인하세요';
+      }, 5000);
+    </script>
   </body>
 </html>
