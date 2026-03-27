@@ -550,4 +550,20 @@
   .animate-slide-up {
     animation: slide-up 0.3s ease-out;
   }
+
+  /* Floating emoji confetti animation */
+  @keyframes emoji-float {
+    0% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-80px) scale(0.5);
+    }
+  }
+
+  .animate-emoji-float {
+    animation: emoji-float 1s ease-out forwards;
+  }
 }

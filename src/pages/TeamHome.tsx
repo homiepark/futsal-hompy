@@ -10,10 +10,8 @@ import { TeamIntro } from '@/components/team/TeamIntro';
 import { LatestArchive } from '@/components/team/LatestArchive';
 import { MemberRoster } from '@/components/team/MemberRoster';
 import { Guestbook } from '@/components/team/Guestbook';
-import { VisitorCounter } from '@/components/team/VisitorCounter';
 
 import { HompySkinSelector } from '@/components/team/HompySkinSelector';
-import { TeamLevelBadge } from '@/components/team/TeamLevelBadge';
 import { PixelButton } from '@/components/ui/PixelButton';
 import { PixelBackButton } from '@/components/ui/PixelBackButton';
 import { JoinRequestButton } from '@/components/team/JoinRequestButton';
@@ -22,6 +20,9 @@ import { PlayerInviteModal } from '@/components/team/PlayerInviteModal';
 import { DirectMessageModal } from '@/components/messages/DirectMessageModal';
 import { BroadcastModal } from '@/components/messages/BroadcastModal';
 import { TeamSettingsModal } from '@/components/team/TeamSettingsModal';
+import { TeamMoodIndicator } from '@/components/team/TeamMoodIndicator';
+import { TeamAchievements } from '@/components/team/TeamAchievements';
+import { FightingButton } from '@/components/team/FightingButton';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -381,10 +382,15 @@ export default function TeamHome() {
   }
 
   const regionDisplay = [teamData.region, teamData.district].filter(Boolean).join(' ');
+  const avgExp = members.length > 0
+    ? Math.round(
+        (members.reduce((sum, m) => sum + (m.yearsOfExperience ?? 0), 0) / members.length) * 10
+      ) / 10
+    : 0;
 
   return (
     <div className="pb-24 max-w-lg mx-auto">
-      {/* Sticky Header with Team Switcher */}
+      {/* 1. Sticky Header with Team Switcher */}
       <div className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b-2 border-border-dark">
         <div className="px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -417,7 +423,7 @@ export default function TeamHome() {
         </div>
       </div>
 
-      {/* Team Header with Banner */}
+      {/* 2. Team Banner + Photo + Name/Level/Region/HomeGround */}
       <TeamHeader
         name={teamData.name}
         emblem={teamData.emblem}
@@ -443,36 +449,7 @@ export default function TeamHome() {
         onNameClick={() => { if (isAdmin) { setShowNameEdit(true); setNewTeamName(teamData.name); } }}
       />
 
-      {/* Inline Team Name Edit */}
-      {isAdmin && showNameEdit && (
-        <div className="px-4 py-2 bg-muted/50 border-b border-border flex items-center gap-2">
-          <input
-            className="flex-1 px-2 py-1 font-pixel text-[10px] border-2 border-border-dark bg-background"
-            value={newTeamName}
-            onChange={e => setNewTeamName(e.target.value)}
-            onKeyDown={e => { if (e.key === 'Enter') handleNameSave(); if (e.key === 'Escape') setShowNameEdit(false); }}
-            autoFocus
-            placeholder="새 팀 이름"
-          />
-          <button onClick={handleNameSave} className="font-pixel text-[9px] px-2 py-1 bg-primary text-primary-foreground border-2 border-border-dark">저장</button>
-          <button onClick={() => setShowNameEdit(false)} className="font-pixel text-[9px] px-2 py-1 bg-secondary text-foreground border-2 border-border-dark">취소</button>
-        </div>
-      )}
-
-      {/* 공지 관리 */}
-      <div className="px-4 pt-3">
-        <div className="bg-muted/40 border border-border rounded p-2">
-          <TeamAnnouncement
-            teamId={teamId || ''}
-            notices={notices}
-            isAdmin={isAdmin}
-            onCreateNotice={handleCreateNotice}
-            onRefresh={fetchNotices}
-          />
-        </div>
-      </div>
-
-      {/* === Marquee Notice Bar (전광판 스타일) === */}
+      {/* 3. Marquee Notice Bar (전광판) */}
       {notices.length > 0 && (
         <div className="bg-foreground/90 overflow-hidden border-y-2 border-border-dark">
           <div className="py-2 flex items-center">
@@ -497,84 +474,90 @@ export default function TeamHome() {
       )}
 
       <div className="px-4 py-4 space-y-5">
-        {/* Visitor Counter */}
-        <VisitorCounter todayCount={12} totalCount={3847} />
+        {/* 4. Quick Stats Row */}
+        <div className="flex gap-2 overflow-x-auto pb-1">
+          {[
+            { label: '레벨', value: `LV.${teamData.level}`, icon: '🏅' },
+            { label: '매치', value: '23전', icon: '⚔️' },
+            { label: '경력', value: `${avgExp}년`, icon: '⏰' },
+            { label: '매너', value: '4.5', icon: '⭐' },
+            { label: '멤버', value: `${members.length}명`, icon: '👥' },
+          ].map(stat => (
+            <div key={stat.label} className="shrink-0 bg-card border-2 border-border-dark px-3 py-2 text-center" style={{boxShadow:'2px 2px 0 hsl(var(--pixel-shadow) / 0.5)'}}>
+              <span className="text-base block">{stat.icon}</span>
+              <span className="font-pixel text-[10px] text-foreground block">{stat.value}</span>
+              <span className="font-pixel text-[6px] text-muted-foreground">{stat.label}</span>
+            </div>
+          ))}
+        </div>
 
-        {/* Team Level & Stats */}
-        <TeamLevelBadge
-          level={teamData.level ?? '1'}
-          matchCount={23}
-          mannerScore={4.5}
-          avgExperience={
-            members.length > 0
-              ? Math.round(
-                  (members.reduce((sum, m) => sum + (m.yearsOfExperience ?? 0), 0) / members.length) * 10
-                ) / 10
-              : 0
-          }
-        />
+        {/* 5. Team Mood + Fighting Button */}
+        <div className="flex items-center gap-3">
+          <div className="flex-1">
+            <TeamMoodIndicator teamId={teamData.id} />
+          </div>
+          <div className="flex-1">
+            <FightingButton teamId={teamData.id} />
+          </div>
+        </div>
 
-        {/* 팀 소개 */}
+        {/* 6. Achievements */}
+        <TeamAchievements teamId={teamData.id} />
+
+        {/* 7. Team Intro */}
         <TeamIntro
           introduction={teamData.introduction ?? ''}
           isAdmin={isAdmin}
           onSave={handleIntroUpdate}
         />
 
-        {/* Team Actions Section */}
-        <div className="space-y-2">
-          {/* Admin: Team Broadcast Button */}
-          {isAdmin && (
-            <PixelButton
-              variant="default"
-              size="sm"
-              onClick={() => setShowBroadcast(true)}
-              className="w-full flex items-center justify-center"
-            >
-              📢 팀원 전체 메시지
-            </PixelButton>
-          )}
+        {/* 8. Latest Archive (추억저장소) */}
+        <LatestArchive
+          teamId={teamData.id}
+          items={archiveItems}
+        />
 
-          {/* Admin: Invite Player Button */}
-          {isAdmin && (
-            <PixelButton
-              variant="accent"
-              size="sm"
-              onClick={() => setShowInviteModal(true)}
-              className="w-full flex items-center justify-center gap-2"
-            >
-              <UserPlus size={14} />
-              선수 초대하기
-            </PixelButton>
-          )}
+        {/* 9. Member Roster */}
+        <MemberRoster
+          members={members}
+          teamId={teamData.id}
+        />
 
-          {/* Join Request or Member Status or Admin Management */}
-          {isAdmin ? (
-            <PixelButton
-              variant="default"
-              size="sm"
-              onClick={() => navigate('/messages', { state: { tab: 'join-requests' } })}
-              className="w-full flex items-center justify-center"
-            >
-              📋 입단 신청 관리
-            </PixelButton>
-          ) : !isMember ? (
-            <JoinRequestButton
-              teamId={teamData.id}
-              teamName={teamData.name}
-              teamEmblem={teamData.emblem}
-              className="w-full"
-            />
-          ) : (
-            <div className="w-full text-center py-2.5 bg-muted border-2 border-border-dark font-pixel text-[9px] text-muted-foreground"
-              style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
-            >
-              ✅ 팀원입니다
-            </div>
-          )}
+        {/* 10. Guestbook */}
+        <Guestbook teamId={teamId} />
 
-          {/* Message Button - Only for Non-Admin */}
-          {!isAdmin && (
+        {/* 11. Admin Actions - compact horizontal icon row */}
+        {isAdmin && (
+          <div className="flex gap-2">
+            <button onClick={() => setShowBroadcast(true)} className="flex-1 py-2.5 bg-card border-2 border-border-dark font-pixel text-[8px] text-foreground flex items-center justify-center gap-1 hover:bg-muted" style={{boxShadow:'2px 2px 0 hsl(var(--pixel-shadow) / 0.5)'}}>
+              📢 메시지
+            </button>
+            <button onClick={() => setShowInviteModal(true)} className="flex-1 py-2.5 bg-card border-2 border-border-dark font-pixel text-[8px] text-foreground flex items-center justify-center gap-1 hover:bg-muted" style={{boxShadow:'2px 2px 0 hsl(var(--pixel-shadow) / 0.5)'}}>
+              👥 초대
+            </button>
+            <button onClick={() => navigate('/messages', { state: { tab: 'join-requests' } })} className="flex-1 py-2.5 bg-card border-2 border-border-dark font-pixel text-[8px] text-foreground flex items-center justify-center gap-1 hover:bg-muted" style={{boxShadow:'2px 2px 0 hsl(var(--pixel-shadow) / 0.5)'}}>
+              📋 입단관리
+            </button>
+          </div>
+        )}
+
+        {/* 12. Non-admin actions */}
+        {!isAdmin && (
+          <div className="space-y-2">
+            {!isMember ? (
+              <JoinRequestButton
+                teamId={teamData.id}
+                teamName={teamData.name}
+                teamEmblem={teamData.emblem}
+                className="w-full"
+              />
+            ) : (
+              <div className="w-full text-center py-2.5 bg-muted border-2 border-border-dark font-pixel text-[9px] text-muted-foreground"
+                style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
+              >
+                ✅ 팀원입니다
+              </div>
+            )}
             <button
               onClick={() => setShowDirectMessage(true)}
               className="w-full py-2.5 bg-secondary border-3 border-border-dark font-pixel text-[9px] text-foreground hover:bg-muted transition-colors flex items-center justify-center gap-2"
@@ -582,23 +565,8 @@ export default function TeamHome() {
             >
               ✉️ 팀 관리자에게 쪽지보내기
             </button>
-          )}
-        </div>
-
-        {/* 📸 추억저장소 (formerly 아카이브) */}
-        <LatestArchive
-          teamId={teamData.id}
-          items={archiveItems}
-        />
-
-        {/* Member Roster */}
-        <MemberRoster
-          members={members}
-          teamId={teamData.id}
-        />
-
-        {/* Guestbook */}
-        <Guestbook teamId={teamId} />
+          </div>
+        )}
       </div>
 
       {/* Admin Transfer Modal */}
