@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { MapPin, Medal, Users, ChevronDown, Search, X } from 'lucide-react';
+import { MapPin, Medal, Users, ChevronDown, Search, X, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { LevelInfoButton } from '@/components/ui/LevelGuideModal';
+import { regionData, regions } from '@/lib/teamData';
 
 interface PreferredRegion {
   region: string;
@@ -33,6 +34,7 @@ const genderOptions = [
 
 export function CompactFilterBar({ filters, onFiltersChange }: CompactFilterBarProps) {
   const [expandedFilter, setExpandedFilter] = useState<'level' | 'gender' | 'region' | null>(null);
+  const [selectedRegionKey, setSelectedRegionKey] = useState<string>('');
 
   const toggleFilter = (filter: 'level' | 'gender' | 'region') => {
     setExpandedFilter(expandedFilter === filter ? null : filter);
@@ -240,41 +242,94 @@ export function CompactFilterBar({ filters, onFiltersChange }: CompactFilterBarP
 
         {expandedFilter === 'region' && (
           <div className="px-3 pb-3 border-t-2 border-border pt-3">
-            <div className="flex items-center justify-between mb-2">
-              <span className="font-pixel text-[8px] text-muted-foreground">지역 필터 (탭하여 해제)</span>
-              {filters.selectedRegions.length > 0 && (
-                <button
-                  onClick={clearRegions}
-                  className="font-pixel text-[7px] text-accent hover:text-accent-dark"
-                >
-                  전체 지역 보기
-                </button>
-              )}
-            </div>
-            {filters.selectedRegions.length > 0 ? (
-              <div className="flex flex-wrap gap-1.5">
-                {filters.selectedRegions.map((r) => (
+            {/* Selected regions */}
+            {filters.selectedRegions.length > 0 && (
+              <div className="mb-2">
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="font-pixel text-[8px] text-muted-foreground">선택된 지역</span>
                   <button
-                    key={`${r.region}-${r.district}`}
-                    onClick={() => toggleRegion(r)}
-                    className="px-2 py-1 bg-primary text-primary-foreground font-pixel text-[8px] border-2 border-primary-dark hover:bg-destructive hover:border-destructive transition-colors flex items-center gap-1"
-                    style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow) / 0.5)' }}
+                    onClick={clearRegions}
+                    className="font-pixel text-[7px] text-accent hover:text-accent-dark"
                   >
-                    📍 {r.district}
-                    <X size={8} />
+                    전체 해제
+                  </button>
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {filters.selectedRegions.map((r) => (
+                    <button
+                      key={`${r.region}-${r.district}`}
+                      onClick={() => toggleRegion(r)}
+                      className="px-2 py-1 bg-primary text-primary-foreground font-pixel text-[8px] border-2 border-primary-dark hover:bg-destructive hover:border-destructive transition-colors flex items-center gap-1"
+                      style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow) / 0.5)' }}
+                    >
+                      {r.region} {r.district}
+                      <X size={8} />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Region selector - 2 step: 시/도 → 구/군 */}
+            <div className="space-y-2">
+              {/* Step 1: 시/도 선택 */}
+              <div className="flex flex-wrap gap-1">
+                {regions.map((region) => (
+                  <button
+                    key={region}
+                    onClick={() => setSelectedRegionKey(selectedRegionKey === region ? '' : region)}
+                    className={cn(
+                      "px-2 py-1 font-pixel text-[8px] border-2 transition-all",
+                      selectedRegionKey === region
+                        ? "bg-primary text-primary-foreground border-primary-dark"
+                        : filters.selectedRegions.some(r => r.region === region)
+                          ? "bg-primary/20 text-primary border-primary/40"
+                          : "bg-muted text-muted-foreground border-border-dark hover:border-primary/50"
+                    )}
+                  >
+                    {region}
                   </button>
                 ))}
               </div>
-            ) : (
-              <div className="text-center py-2 bg-primary/5 border border-primary/20 px-3">
-                <p className="font-pixel text-[8px] text-primary">
-                  ✅ 전체 지역에서 팀을 검색합니다
+
+              {/* Step 2: 구/군 선택 */}
+              {selectedRegionKey && regionData[selectedRegionKey] && (
+                <div className="bg-muted/50 border-2 border-border-dark p-2">
+                  <span className="font-pixel text-[7px] text-muted-foreground block mb-1.5">
+                    {selectedRegionKey} 지역 선택 (복수 가능)
+                  </span>
+                  <div className="flex flex-wrap gap-1 max-h-32 overflow-y-auto overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
+                    {regionData[selectedRegionKey].map((district) => {
+                      const isSelected = filters.selectedRegions.some(
+                        r => r.region === selectedRegionKey && r.district === district
+                      );
+                      return (
+                        <button
+                          key={district}
+                          onClick={() => toggleRegion({ region: selectedRegionKey, district })}
+                          className={cn(
+                            "px-2 py-1 font-pixel text-[7px] border transition-all flex items-center gap-0.5",
+                            isSelected
+                              ? "bg-primary text-primary-foreground border-primary-dark"
+                              : "bg-card text-foreground border-border hover:border-primary/50"
+                          )}
+                        >
+                          {isSelected && <Check size={8} />}
+                          {district}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Empty state */}
+              {filters.selectedRegions.length === 0 && !selectedRegionKey && (
+                <p className="font-pixel text-[7px] text-muted-foreground text-center py-1">
+                  시/도를 선택하면 세부 지역을 고를 수 있어요
                 </p>
-                <p className="font-pixel text-[7px] text-muted-foreground mt-1">
-                  프로필에서 관심 지역을 설정하면 기본 필터로 적용됩니다
-                </p>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         )}
       </div>
