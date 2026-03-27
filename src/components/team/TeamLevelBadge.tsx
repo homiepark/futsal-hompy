@@ -90,8 +90,8 @@ export function TeamLevelBadge({
             LV.{level}
           </div>
           <div>
-            <span className="font-pixel text-[9px] text-foreground block">{levelNames[level] || '입문'}</span>
-            <span className="font-pixel text-[7px] text-muted-foreground">자기신고</span>
+            <span className="font-pixel text-[9px] text-foreground block">{levelNames[level] || '풋린이'}</span>
+            <span className="font-pixel text-[7px] text-muted-foreground">팀 레벨</span>
           </div>
         </div>
 
