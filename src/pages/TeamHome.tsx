@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Settings, UserPlus, Palette } from 'lucide-react';
+import { Settings, UserPlus, Palette, MapPin } from 'lucide-react';
 import { useTeam } from '@/contexts/TeamContext';
 import { useDev } from '@/contexts/DevContext';
 import { TeamHeader } from '@/components/team/TeamHeader';
@@ -21,6 +21,7 @@ import { AdminTransferModal } from '@/components/team/AdminTransferModal';
 import { PlayerInviteModal } from '@/components/team/PlayerInviteModal';
 import { DirectMessageModal } from '@/components/messages/DirectMessageModal';
 import { BroadcastModal } from '@/components/messages/BroadcastModal';
+import { TeamSettingsModal } from '@/components/team/TeamSettingsModal';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -37,6 +38,8 @@ interface TeamData {
   instagram_url: string | null;
   youtube_url: string | null;
   admin_user_id: string | null;
+  home_ground_name: string | null;
+  home_ground_address: string | null;
 }
 
 interface MemberData {
@@ -76,6 +79,7 @@ export default function TeamHome() {
   const [showDirectMessage, setShowDirectMessage] = useState(false);
   const [showBroadcast, setShowBroadcast] = useState(false);
   const [showSkinSelector, setShowSkinSelector] = useState(false);
+  const [showTeamSettings, setShowTeamSettings] = useState(false);
   const [currentSkin, setCurrentSkin] = useState('default');
   const [showNameEdit, setShowNameEdit] = useState(false);
   const [newTeamName, setNewTeamName] = useState('');
@@ -399,9 +403,9 @@ export default function TeamHome() {
             )}
             {isAdmin && (
               <button
-                onClick={() => setShowAdminTransfer(true)}
+                onClick={() => setShowTeamSettings(true)}
                 className="w-8 h-8 bg-secondary border-2 border-border-dark flex items-center justify-center hover:bg-muted transition-colors"
-                title="관리자 설정"
+                title="팀 설정"
                 style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
               >
                 <Settings size={14} className="text-foreground" />
@@ -501,6 +505,31 @@ export default function TeamHome() {
               : 0
           }
         />
+
+        {/* 활동 구장 */}
+        {teamData.home_ground_name && (
+          <button
+            onClick={() => {
+              const query = teamData.home_ground_address || teamData.home_ground_name;
+              if (query) window.open(`https://map.naver.com/v5/search/${encodeURIComponent(query)}`, '_blank');
+            }}
+            className="w-full bg-card border-3 border-border-dark p-3 flex items-center gap-3 hover:border-primary transition-colors"
+            style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}
+          >
+            <div className="w-10 h-10 bg-[#03C75A] border-2 border-[#02b351] flex items-center justify-center shrink-0"
+              style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow) / 0.5)' }}
+            >
+              <MapPin size={16} className="text-white" />
+            </div>
+            <div className="flex-1 text-left min-w-0">
+              <span className="font-pixel text-[9px] text-foreground block truncate">{teamData.home_ground_name}</span>
+              {teamData.home_ground_address && (
+                <span className="font-pixel text-[7px] text-muted-foreground block truncate">{teamData.home_ground_address}</span>
+              )}
+            </div>
+            <span className="font-pixel text-[7px] text-[#03C75A] shrink-0">지도 보기 →</span>
+          </button>
+        )}
 
         {/* 팀 소개 */}
         <TeamIntro
@@ -625,6 +654,20 @@ export default function TeamHome() {
         onSkinChange={(skinId) => {
           setCurrentSkin(skinId);
           toast.success('스킨이 변경되었습니다! ✨');
+        }}
+      />
+
+      {/* Team Settings Modal */}
+      <TeamSettingsModal
+        isOpen={showTeamSettings}
+        onClose={() => setShowTeamSettings(false)}
+        teamId={teamId || ''}
+        currentRegion={teamData.region || ''}
+        currentDistrict={teamData.district || ''}
+        currentHomeGround={teamData.home_ground_name || ''}
+        currentHomeGroundAddress={teamData.home_ground_address || ''}
+        onUpdate={(data) => {
+          setTeamData(prev => prev ? { ...prev, ...data } as TeamData : prev);
         }}
       />
 
