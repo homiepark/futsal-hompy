@@ -19,6 +19,7 @@ interface TeamHeaderProps {
   onPhotoUpdate?: (url: string) => void;
   onBannerUpdate?: (url: string) => void;
   onNameUpdate?: (name: string) => void;
+  onNameClick?: () => void;
   /** @deprecated use onPhotoUpdate */
   onPhotoEdit?: () => void;
 }
@@ -45,6 +46,7 @@ export function TeamHeader({
   onPhotoUpdate,
   onBannerUpdate,
   onNameUpdate,
+  onNameClick,
 }: TeamHeaderProps) {
   const [uploading, setUploading] = useState(false);
   const [isEditingName, setIsEditingName] = useState(false);
@@ -212,7 +214,7 @@ export function TeamHeader({
                   <h1 className="font-pixel text-xs text-foreground leading-tight">{name}</h1>
                   {isAdmin && (
                     <button
-                      onClick={() => setIsEditingName(true)}
+                      onClick={() => onNameClick ? onNameClick() : setIsEditingName(true)}
                       className="w-5 h-5 flex items-center justify-center text-muted-foreground hover:text-primary transition-colors"
                       title="팀명 변경"
                     >

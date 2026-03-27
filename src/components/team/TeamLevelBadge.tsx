@@ -15,17 +15,17 @@ interface TeamLevelBadgeProps {
 
 /** 매치 횟수 기반 경험 등급 */
 function getMatchTier(count: number): { label: string; emoji: string; color: string } {
-  if (count >= 50) return { label: '베테랑', emoji: '🏅', color: 'text-[hsl(var(--level-4))]' };
-  if (count >= 20) return { label: '숙련', emoji: '⚔️', color: 'text-[hsl(var(--level-3))]' };
-  if (count >= 5) return { label: '활동중', emoji: '🏃', color: 'text-[hsl(var(--level-2))]' };
-  return { label: '신규', emoji: '🌱', color: 'text-[hsl(var(--level-1))]' };
+  if (count >= 50) return { label: '레전드', emoji: '🏅', color: 'text-[hsl(var(--level-4))]' };
+  if (count >= 20) return { label: '베테랑', emoji: '⚔️', color: 'text-[hsl(var(--level-3))]' };
+  if (count >= 5) return { label: '경험자', emoji: '🏃', color: 'text-[hsl(var(--level-2))]' };
+  return { label: '뉴비', emoji: '🌱', color: 'text-[hsl(var(--level-1))]' };
 }
 
 const levelNames: Record<string, string> = {
-  '1': '입문',
-  '2': '아마추어',
-  '3': '세미프로',
-  '4': '프로',
+  '1': '풋린이',
+  '2': '풋내기',
+  '3': '풋살러',
+  '4': '풋살왕',
 };
 
 const levelColors: Record<string, string> = {

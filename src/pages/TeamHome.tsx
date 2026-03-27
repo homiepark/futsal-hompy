@@ -11,7 +11,7 @@ import { LatestArchive } from '@/components/team/LatestArchive';
 import { MemberRoster } from '@/components/team/MemberRoster';
 import { Guestbook } from '@/components/team/Guestbook';
 import { VisitorCounter } from '@/components/team/VisitorCounter';
-import { BgmPlayer } from '@/components/team/BgmPlayer';
+
 import { HompySkinSelector } from '@/components/team/HompySkinSelector';
 import { TeamLevelBadge } from '@/components/team/TeamLevelBadge';
 import { PixelButton } from '@/components/ui/PixelButton';
@@ -77,6 +77,8 @@ export default function TeamHome() {
   const [showBroadcast, setShowBroadcast] = useState(false);
   const [showSkinSelector, setShowSkinSelector] = useState(false);
   const [currentSkin, setCurrentSkin] = useState('default');
+  const [showNameEdit, setShowNameEdit] = useState(false);
+  const [newTeamName, setNewTeamName] = useState('');
 
   const [teamData, setTeamData] = useState<TeamData | null>(null);
   const [members, setMembers] = useState<MemberData[]>([]);
@@ -302,6 +304,22 @@ export default function TeamHome() {
     toast.success(`${member.nickname}님에게 관리자 권한이 이전되었습니다`);
   };
 
+  const handleNameSave = async () => {
+    if (!teamId || !newTeamName.trim()) return;
+    const { error } = await supabase
+      .from('teams')
+      .update({ name: newTeamName.trim() })
+      .eq('id', teamId);
+
+    if (error) {
+      toast.error('팀 이름 변경에 실패했습니다');
+      return;
+    }
+    setTeamData(prev => prev ? { ...prev, name: newTeamName.trim() } : prev);
+    setShowNameEdit(false);
+    toast.success('팀 이름이 변경되었습니다');
+  };
+
   // Create a new notice
   const handleCreateNotice = async (content: string) => {
     try {
@@ -410,7 +428,37 @@ export default function TeamHome() {
         onPhotoUpdate={(url) => setTeamData(prev => prev ? { ...prev, photo_url: url } : prev)}
         onBannerUpdate={handleBannerUpdate}
         onNameUpdate={(newName) => setTeamData(prev => prev ? { ...prev, name: newName } : prev)}
+        onNameClick={() => { if (isAdmin) { setShowNameEdit(true); setNewTeamName(teamData.name); } }}
       />
+
+      {/* Inline Team Name Edit */}
+      {isAdmin && showNameEdit && (
+        <div className="px-4 py-2 bg-muted/50 border-b border-border flex items-center gap-2">
+          <input
+            className="flex-1 px-2 py-1 font-pixel text-[10px] border-2 border-border-dark bg-background"
+            value={newTeamName}
+            onChange={e => setNewTeamName(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') handleNameSave(); if (e.key === 'Escape') setShowNameEdit(false); }}
+            autoFocus
+            placeholder="새 팀 이름"
+          />
+          <button onClick={handleNameSave} className="font-pixel text-[9px] px-2 py-1 bg-primary text-primary-foreground border-2 border-border-dark">저장</button>
+          <button onClick={() => setShowNameEdit(false)} className="font-pixel text-[9px] px-2 py-1 bg-secondary text-foreground border-2 border-border-dark">취소</button>
+        </div>
+      )}
+
+      {/* 공지 관리 */}
+      <div className="px-4 pt-3">
+        <div className="bg-muted/40 border border-border rounded p-2">
+          <TeamAnnouncement
+            teamId={teamId || ''}
+            notices={notices}
+            isAdmin={isAdmin}
+            onCreateNotice={handleCreateNotice}
+            onRefresh={fetchNotices}
+          />
+        </div>
+      </div>
 
       {/* === Marquee Notice Bar (전광판 스타일) === */}
       {notices.length > 0 && (
@@ -437,11 +485,8 @@ export default function TeamHome() {
       )}
 
       <div className="px-4 py-4 space-y-5">
-        {/* Visitor Counter + BGM */}
-        <div className="grid grid-cols-1 gap-3">
-          <VisitorCounter todayCount={12} totalCount={3847} />
-          <BgmPlayer teamName={teamData.name} />
-        </div>
+        {/* Visitor Counter */}
+        <VisitorCounter todayCount={12} totalCount={3847} />
 
         {/* Team Level & Stats */}
         <TeamLevelBadge
@@ -456,17 +501,6 @@ export default function TeamHome() {
               : 0
           }
         />
-
-        {/* 공지 관리 (관리자만 보임) */}
-        {isAdmin && (
-          <TeamAnnouncement
-            teamId={teamId || ''}
-            notices={notices}
-            isAdmin={isAdmin}
-            onCreateNotice={handleCreateNotice}
-            onRefresh={fetchNotices}
-          />
-        )}
 
         {/* 팀 소개 */}
         <TeamIntro
