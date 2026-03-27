@@ -91,6 +91,7 @@ export default function TeamHome() {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isFavorited, setIsFavorited] = useState(false);
 
   // Derived state
   const isAdmin = isDevAdmin || (currentUserId != null && teamData?.admin_user_id === currentUserId)
@@ -431,6 +432,11 @@ export default function TeamHome() {
         youtubeUrl={teamData.youtube_url ?? ''}
         teamId={teamId}
         isAdmin={isAdmin}
+        isFavorited={isFavorited}
+        onFavoriteToggle={(val) => {
+          setIsFavorited(val);
+          toast.success(val ? '즐겨찾기에 추가했습니다 ⭐' : '즐겨찾기를 해제했습니다');
+        }}
         onPhotoUpdate={(url) => setTeamData(prev => prev ? { ...prev, photo_url: url } : prev)}
         onBannerUpdate={handleBannerUpdate}
         onNameUpdate={(newName) => setTeamData(prev => prev ? { ...prev, name: newName } : prev)}
