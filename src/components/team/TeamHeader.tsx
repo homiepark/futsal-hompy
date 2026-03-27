@@ -41,6 +41,8 @@ export function TeamHeader({
   level,
   favorites,
   region,
+  homeGroundName,
+  homeGroundAddress,
   instagramUrl,
   youtubeUrl,
   teamId,
