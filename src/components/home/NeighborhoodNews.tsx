@@ -98,37 +98,71 @@ export function NeighborhoodNews({ userRegions, userId, isGuest = false, onGuest
             });
           }
 
-          // Mock: Add some match/recruit news for variety
-          if (Math.random() > 0.5) {
-            items.push({
-              id: `match-${team.id}`,
-              teamId: team.id,
-              teamName: team.name,
-              teamEmblem: team.emblem,
-              teamLevel: team.level,
-              district: team.district || '',
-              type: 'match',
-              content: `${team.level}급 매치 성사!`,
-              tags: [...baseTags, `#${team.level}급_매치성사`],
-              updatedAt: team.updated_at,
+        });
+
+        // Fetch real match posts for matching teams
+        const matchingTeamIds = matchingTeams.map(t => t.id);
+        if (matchingTeamIds.length > 0) {
+          const { data: matchPosts } = await supabase
+            .from('match_posts')
+            .select('id, team_id, location_name, match_date, status, created_at')
+            .in('team_id', matchingTeamIds)
+            .order('created_at', { ascending: false })
+            .limit(10);
+
+          if (matchPosts) {
+            const teamMap = new Map(matchingTeams.map(t => [t.id, t]));
+            matchPosts.forEach(post => {
+              const team = teamMap.get(post.team_id);
+              if (!team) return;
+              const baseTags = [`#${team.district}`];
+              items.push({
+                id: `match-${post.id}`,
+                teamId: team.id,
+                teamName: team.name,
+                teamEmblem: team.emblem,
+                teamLevel: team.level,
+                district: team.district || '',
+                type: 'match',
+                content: post.status === 'matched'
+                  ? `${team.level}급 매치 성사!`
+                  : `${post.location_name}에서 매치 상대 모집중`,
+                tags: [...baseTags, post.status === 'matched' ? `#${team.level}급_매치성사` : '#매치모집'],
+                updatedAt: post.created_at,
+              });
             });
           }
 
-          if (Math.random() > 0.7) {
-            items.push({
-              id: `recruit-${team.id}`,
-              teamId: team.id,
-              teamName: team.name,
-              teamEmblem: team.emblem,
-              teamLevel: team.level,
-              district: team.district || '',
-              type: 'recruit',
-              content: '새 멤버를 모집합니다!',
-              tags: [...baseTags, '#신규멤버모집'],
-              updatedAt: team.updated_at,
+          // Fetch real team notices for matching teams
+          const { data: notices } = await supabase
+            .from('team_notices')
+            .select('id, team_id, content, created_at')
+            .in('team_id', matchingTeamIds)
+            .eq('is_active', true)
+            .order('created_at', { ascending: false })
+            .limit(10);
+
+          if (notices) {
+            const teamMap = new Map(matchingTeams.map(t => [t.id, t]));
+            notices.forEach(notice => {
+              const team = teamMap.get(notice.team_id);
+              if (!team) return;
+              const baseTags = [`#${team.district}`];
+              items.push({
+                id: `notice-${notice.id}`,
+                teamId: team.id,
+                teamName: team.name,
+                teamEmblem: team.emblem,
+                teamLevel: team.level,
+                district: team.district || '',
+                type: 'recruit',
+                content: notice.content,
+                tags: [...baseTags, '#팀공지'],
+                updatedAt: notice.created_at,
+              });
             });
           }
-        });
+        }
 
         items.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
         setNewsItems(items.slice(0, 12));

@@ -1,5 +1,7 @@
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Trophy, Star, Users, ChevronRight } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface PopularTeam {
   id: string;
@@ -10,12 +12,6 @@ interface PopularTeam {
   memberCount: number;
 }
 
-const mockPopularTeams: PopularTeam[] = [
-  { id: '1', name: 'FC 불꽃', emblem: '🔥', level: '4', wins: 23, memberCount: 12 },
-  { id: '2', name: '스틸러스', emblem: '⚔️', level: '3', wins: 18, memberCount: 10 },
-  { id: '3', name: 'FC 드래곤즈', emblem: '🐉', level: '3', wins: 15, memberCount: 8 },
-];
-
 const levelColors: Record<string, string> = {
   '1': 'bg-[hsl(var(--level-1))]',
   '2': 'bg-[hsl(var(--level-2))]',
@@ -25,6 +21,86 @@ const levelColors: Record<string, string> = {
 
 export function HotTeamsRanking() {
   const navigate = useNavigate();
+  const [teams, setTeams] = useState<PopularTeam[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchTeams() {
+      try {
+        const { data: teamsData, error: teamsError } = await supabase
+          .from('teams')
+          .select('id, name, emblem, level')
+          .order('created_at', { ascending: false })
+          .limit(3);
+
+        if (teamsError || !teamsData) {
+          console.error('Failed to fetch teams:', teamsError);
+          return;
+        }
+
+        const { data: membersData } = await supabase
+          .from('team_members')
+          .select('team_id');
+
+        const memberCounts: Record<string, number> = {};
+        if (membersData) {
+          for (const m of membersData) {
+            memberCounts[m.team_id] = (memberCounts[m.team_id] || 0) + 1;
+          }
+        }
+
+        setTeams(
+          teamsData.map((t) => ({
+            id: t.id,
+            name: t.name,
+            emblem: t.emblem || '⚽',
+            level: t.level?.toString() || '1',
+            wins: 0,
+            memberCount: memberCounts[t.id] || 0,
+          }))
+        );
+      } catch (err) {
+        console.error('Failed to fetch teams:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchTeams();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="px-4 py-3">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="font-pixel text-[10px] text-foreground flex items-center gap-2">
+            <Trophy size={14} className="text-accent" />
+            이번 달 인기팀 TOP 3
+          </h3>
+        </div>
+        <div className="space-y-2">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="w-full h-14 bg-muted animate-pulse border-3 border-border-dark" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (teams.length === 0) {
+    return (
+      <div className="px-4 py-3">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="font-pixel text-[10px] text-foreground flex items-center gap-2">
+            <Trophy size={14} className="text-accent" />
+            이번 달 인기팀 TOP 3
+          </h3>
+        </div>
+        <div className="bg-card border-3 border-border-dark p-4 text-center">
+          <span className="font-pixel text-[8px] text-muted-foreground">등록된 팀이 없습니다</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="px-4 py-3">
@@ -42,7 +118,7 @@ export function HotTeamsRanking() {
       </div>
 
       <div className="space-y-2">
-        {mockPopularTeams.map((team, index) => (
+        {teams.map((team, index) => (
           <button
             key={team.id}
             onClick={() => navigate(`/team/${team.id}`)}

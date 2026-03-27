@@ -46,69 +46,11 @@ const initialFilters: BoardFilters = {
   levels: [],
 };
 
-// Mock data for demonstration - will be replaced with real data
-const mockMatchPosts: MatchPost[] = [
-  {
-    id: '1',
-    team_id: 't1',
-    location_name: '용산 풋살파크',
-    location_address: '서울 용산구 한강대로 123',
-    match_date: format(new Date(), 'yyyy-MM-dd'),
-    match_time_start: '14:00',
-    match_time_end: '16:00',
-    target_levels: ['3', '2'],
-    description: '정정당당하게 한 판 하실 팀 찾습니다!',
-    created_at: new Date().toISOString(),
-    team: {
-      id: 't1',
-      name: 'FC 번개',
-      emblem: '⚡',
-      level: '3',
-    },
-  },
-  {
-    id: '2',
-    team_id: 't2',
-    location_name: '상암 월드컵 풋살장',
-    location_address: '서울 마포구 상암동 456',
-    match_date: format(new Date(Date.now() + 86400000), 'yyyy-MM-dd'),
-    match_time_start: '10:00',
-    match_time_end: '12:00',
-    target_levels: ['2', '1'],
-    description: '주말 오전 친선 경기 원합니다. 초보 팀도 환영!',
-    created_at: new Date().toISOString(),
-    team: {
-      id: 't2',
-      name: '선데이 풋살',
-      emblem: '☀️',
-      level: '2',
-    },
-  },
-  {
-    id: '3',
-    team_id: 't3',
-    location_name: '강남 스포츠센터',
-    location_address: '서울 강남구 역삼동 789',
-    match_date: format(new Date(Date.now() + 172800000), 'yyyy-MM-dd'),
-    match_time_start: '19:00',
-    match_time_end: '21:00',
-    target_levels: ['4', '3'],
-    description: '고수 팀만 오세요! 실력으로 승부합니다.',
-    created_at: new Date().toISOString(),
-    team: {
-      id: 't3',
-      name: '올드보이즈',
-      emblem: '🦁',
-      level: '4',
-    },
-  },
-];
-
 export default function Matchmaking() {
   const navigate = useNavigate();
   const { isDevAdmin } = useDev();
   const [filters, setFilters] = useState<BoardFilters>(initialFilters);
-  const [matchPosts, setMatchPosts] = useState<MatchPost[]>(mockMatchPosts);
+  const [matchPosts, setMatchPosts] = useState<MatchPost[]>([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [userTeam, setUserTeam] = useState<{
     id: string;
@@ -121,6 +63,20 @@ export default function Matchmaking() {
   } | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [recommendedTeams, setRecommendedTeams] = useState<Array<{
+    id: string;
+    name: string;
+    emblem: string;
+    region: string;
+    district: string;
+    level: string;
+    mannerScore: number;
+    matchTime: string;
+    homeGroundName?: string;
+    homeGroundAddress?: string;
+    tags: string[];
+    matchScore: number;
+  }>>([]);
 
   // Combine real admin status with dev admin toggle
   const canCreatePost = isAdmin || isDevAdmin;
@@ -143,7 +99,7 @@ export default function Matchmaking() {
           .limit(1);
 
         if (teams && teams.length > 0) {
-          setUserTeam({
+          const myTeam = {
             id: teams[0].id,
             name: teams[0].name,
             emblem: teams[0].emblem,
@@ -151,8 +107,12 @@ export default function Matchmaking() {
             mannerScore: 4.5, // Default score for now
             homeGroundName: teams[0].home_ground_name || undefined,
             homeGroundAddress: teams[0].home_ground_address || undefined,
-          });
+          };
+          setUserTeam(myTeam);
           setIsAdmin(true);
+
+          // Load recommended teams
+          loadRecommendedTeams(myTeam.id, myTeam.level);
         }
 
         // Load match posts from database
@@ -212,7 +172,50 @@ export default function Matchmaking() {
       }
     } catch (error) {
       console.error('Error loading match posts:', error);
-      // Keep using mock data if fetch fails
+    }
+  };
+
+  const loadRecommendedTeams = async (myTeamId: string, myLevel?: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('teams')
+        .select('id, name, emblem, level, region, district, home_ground_name, home_ground_address')
+        .neq('id', myTeamId)
+        .limit(3);
+
+      if (error) throw error;
+      if (!data || data.length === 0) return;
+
+      const myLevelNum = parseInt(myLevel || '2');
+      const mapped = data.map(team => {
+        const teamLevelNum = parseInt(team.level || '2');
+        const levelDiff = Math.abs(myLevelNum - teamLevelNum);
+        const matchScore = Math.max(50, 100 - levelDiff * 15);
+        const tags: string[] = [];
+        if (levelDiff <= 1) tags.push('실력 비슷');
+        if (levelDiff >= 2) tags.push('도전 매치!');
+        if (team.district) tags.push(`#${team.district}`);
+
+        return {
+          id: team.id,
+          name: team.name,
+          emblem: team.emblem,
+          region: team.region || '',
+          district: team.district || '',
+          level: team.level || '2',
+          mannerScore: 4.5,
+          matchTime: '',
+          homeGroundName: team.home_ground_name || undefined,
+          homeGroundAddress: team.home_ground_address || undefined,
+          tags,
+          matchScore,
+        };
+      });
+
+      mapped.sort((a, b) => b.matchScore - a.matchScore);
+      setRecommendedTeams(mapped);
+    } catch (error) {
+      console.error('Error loading recommended teams:', error);
     }
   };
 
@@ -316,51 +319,10 @@ export default function Matchmaking() {
       <MatchTicker />
 
       {/* AI Recommended Matches */}
-      {userTeam && (
+      {userTeam && recommendedTeams.length > 0 && (
         <RecommendedMatches
-          teams={[
-            {
-              id: 'rec-1',
-              name: 'FC 드래곤즈',
-              emblem: '🐉',
-              region: '서울',
-              district: '강남구',
-              level: userTeam.level || '2',
-              mannerScore: 4.7,
-              matchTime: '토 14:00-16:00',
-              homeGroundName: '강남 풋살파크',
-              homeGroundAddress: '서울 강남구 역삼동 123',
-              tags: ['실력 비슷', '내 동네 팀'],
-              matchScore: 95,
-            },
-            {
-              id: 'rec-2',
-              name: '유나이티드 FC',
-              emblem: '🦅',
-              region: '서울',
-              district: '마포구',
-              level: String(Math.max(1, parseInt(userTeam.level || '2') - 1)),
-              mannerScore: 4.5,
-              matchTime: '일 10:00-12:00',
-              homeGroundName: '상암 월드컵 풋살장',
-              homeGroundAddress: '서울 마포구 상암동 456',
-              tags: ['실력 비슷', '첫 대결'],
-              matchScore: 82,
-            },
-            {
-              id: 'rec-3',
-              name: '스틸러스',
-              emblem: '⚔️',
-              region: '서울',
-              district: '용산구',
-              level: String(Math.min(4, parseInt(userTeam.level || '2') + 1)),
-              mannerScore: 4.3,
-              matchTime: '수 19:00-21:00',
-              tags: ['도전 매치!'],
-              matchScore: 75,
-            },
-          ]}
-          userDistricts={['강남구', '서초구']}
+          teams={recommendedTeams}
+          userDistricts={recommendedTeams.map(t => t.district).filter(Boolean)}
         />
       )}
 

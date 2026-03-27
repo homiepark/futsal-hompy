@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/integrations/supabase/client';
 
 interface TickerItem {
   id: string;
@@ -7,20 +8,63 @@ interface TickerItem {
   type: 'match' | 'new_team' | 'result';
 }
 
-// Mock ticker data - would be replaced with real-time data
-const mockTickerData: TickerItem[] = [
-  { id: '1', message: '🔥 FC번개 vs 선데이풋살 매치 성사!', type: 'match' },
-  { id: '2', message: '⚽ 강남구에 새로운 팀 "올드보이즈" 등장', type: 'new_team' },
-  { id: '3', message: '🏆 레이디스FC 3연승 달성!', type: 'result' },
-  { id: '4', message: '📍 마포구 위클리킥 매치 상대 모집중', type: 'match' },
-  { id: '5', message: '⭐ 송파구 매너왕 팀 선정: 올드보이즈', type: 'result' },
+const defaultTicker: TickerItem[] = [
+  { id: 'default', message: '새로운 매치 공고를 기다리는 중...', type: 'match' },
 ];
 
 export function MatchTicker() {
-  const [tickerItems] = useState<TickerItem[]>(mockTickerData);
+  const [tickerItems, setTickerItems] = useState<TickerItem[]>(defaultTicker);
+
+  useEffect(() => {
+    async function fetchTickerData() {
+      try {
+        const { data, error } = await supabase
+          .from('match_posts')
+          .select('id, team_id, location_name, match_date, status')
+          .order('created_at', { ascending: false })
+          .limit(10);
+
+        if (error) throw error;
+        if (!data || data.length === 0) return;
+
+        // Fetch team names for the posts
+        const teamIds = [...new Set(data.map(p => p.team_id))];
+        const { data: teamsData } = await supabase
+          .from('teams')
+          .select('id, name')
+          .in('id', teamIds);
+
+        const teamsMap = new Map(teamsData?.map(t => [t.id, t.name]) || []);
+
+        const items: TickerItem[] = data.map(post => {
+          const teamName = teamsMap.get(post.team_id) || '알 수 없는 팀';
+          if (post.status === 'matched') {
+            return {
+              id: post.id,
+              message: `🔥 ${teamName} 매치 성사!`,
+              type: 'result' as const,
+            };
+          }
+          return {
+            id: post.id,
+            message: `⚽ ${teamName}이(가) 매치 상대를 찾습니다!`,
+            type: 'match' as const,
+          };
+        });
+
+        if (items.length > 0) {
+          setTickerItems(items);
+        }
+      } catch (error) {
+        console.error('Error fetching ticker data:', error);
+      }
+    }
+
+    fetchTickerData();
+  }, []);
 
   return (
-    <div 
+    <div
       className="overflow-hidden bg-primary border-3 border-primary-dark mb-4"
       style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}
     >
@@ -29,12 +73,12 @@ export function MatchTicker() {
         <div className="flex-shrink-0 px-3 py-2 bg-accent text-accent-foreground border-r-3 border-accent-dark">
           <span className="font-pixel text-[8px] uppercase">LIVE</span>
         </div>
-        
+
         {/* Scrolling Ticker */}
         <div className="flex-1 overflow-hidden">
           <div className="animate-ticker whitespace-nowrap py-2 px-4">
             {tickerItems.map((item, index) => (
-              <span 
+              <span
                 key={item.id}
                 className={cn(
                   "inline-block mx-6 font-pixel text-[9px] text-primary-foreground",
@@ -48,7 +92,7 @@ export function MatchTicker() {
             ))}
             {/* Duplicate for seamless loop */}
             {tickerItems.map((item, index) => (
-              <span 
+              <span
                 key={`dup-${item.id}`}
                 className="inline-block mx-6 font-pixel text-[9px] text-primary-foreground"
               >
@@ -61,7 +105,7 @@ export function MatchTicker() {
           </div>
         </div>
       </div>
-      
+
       <style>{`
         @keyframes ticker {
           0% { transform: translateX(0); }

@@ -1,4 +1,8 @@
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { formatDistanceToNow } from 'date-fns';
+import { ko } from 'date-fns/locale';
 
 interface ActivityItem {
   id: string;
@@ -9,41 +13,6 @@ interface ActivityItem {
   timeAgo: string;
 }
 
-const mockActivities: ActivityItem[] = [
-  {
-    id: '1',
-    type: 'match_result',
-    teamName: 'FC 불꽃',
-    teamEmblem: '🔥',
-    description: 'FC 번개에 승리! 통산 23승 달성',
-    timeAgo: '2시간 전',
-  },
-  {
-    id: '2',
-    type: 'new_team',
-    teamName: '블루웨이브',
-    teamEmblem: '🌊',
-    description: '새로운 팀이 등록되었습니다',
-    timeAgo: '5시간 전',
-  },
-  {
-    id: '3',
-    type: 'archive_post',
-    teamName: '스틸러스',
-    teamEmblem: '⚔️',
-    description: '훈련 하이라이트 영상 업로드',
-    timeAgo: '어제',
-  },
-  {
-    id: '4',
-    type: 'court_booking',
-    teamName: 'FC 드래곤즈',
-    teamEmblem: '🐉',
-    description: '강남 풋살파크 토요일 14시 예약',
-    timeAgo: '어제',
-  },
-];
-
 const typeConfig = {
   match_result: { icon: '⚽', label: '경기결과' },
   new_team: { icon: '🆕', label: '신규팀' },
@@ -53,6 +22,90 @@ const typeConfig = {
 
 export function RecentActivityFeed() {
   const navigate = useNavigate();
+  const [activities, setActivities] = useState<ActivityItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchActivities() {
+      try {
+        const { data: postsData, error: postsError } = await supabase
+          .from('archive_posts')
+          .select('id, team_id, content, created_at')
+          .order('created_at', { ascending: false })
+          .limit(4);
+
+        if (postsError || !postsData || postsData.length === 0) {
+          setActivities([]);
+          return;
+        }
+
+        const teamIds = [...new Set(postsData.map((p) => p.team_id))];
+        const { data: teamsData } = await supabase
+          .from('teams')
+          .select('id, name, emblem')
+          .in('id', teamIds);
+
+        const teamsMap: Record<string, { name: string; emblem: string }> = {};
+        if (teamsData) {
+          for (const t of teamsData) {
+            teamsMap[t.id] = { name: t.name, emblem: t.emblem || '⚽' };
+          }
+        }
+
+        setActivities(
+          postsData.map((p) => {
+            const team = teamsMap[p.team_id] || { name: '알 수 없음', emblem: '⚽' };
+            return {
+              id: p.id,
+              type: 'archive_post' as const,
+              teamName: team.name,
+              teamEmblem: team.emblem,
+              description: p.content ? p.content.slice(0, 30) + (p.content.length > 30 ? '...' : '') : '',
+              timeAgo: formatDistanceToNow(new Date(p.created_at), { addSuffix: true, locale: ko }),
+            };
+          })
+        );
+      } catch (err) {
+        console.error('Failed to fetch activities:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchActivities();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="px-4 py-3">
+        <h3 className="font-pixel text-[10px] text-foreground flex items-center gap-2 mb-3">
+          <span className="text-primary">📋</span>
+          최근 활동
+        </h3>
+        <div className="space-y-1">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="w-full h-12 bg-muted animate-pulse border-3 border-border-dark" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (activities.length === 0) {
+    return (
+      <div className="px-4 py-3">
+        <h3 className="font-pixel text-[10px] text-foreground flex items-center gap-2 mb-3">
+          <span className="text-primary">📋</span>
+          최근 활동
+        </h3>
+        <div
+          className="bg-card border-3 border-border-dark p-4 text-center"
+          style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}
+        >
+          <span className="font-pixel text-[8px] text-muted-foreground">최근 활동이 없습니다</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="px-4 py-3">
@@ -65,7 +118,7 @@ export function RecentActivityFeed() {
         className="bg-card border-3 border-border-dark divide-y divide-border"
         style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}
       >
-        {mockActivities.map((activity) => {
+        {activities.map((activity) => {
           const config = typeConfig[activity.type];
           return (
             <div

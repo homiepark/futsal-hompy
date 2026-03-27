@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Swords, Clock, MapPin } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { format, isToday, isTomorrow } from 'date-fns';
 
 interface LiveMatch {
   id: string;
@@ -12,39 +14,110 @@ interface LiveMatch {
   status: 'upcoming' | 'live' | 'recruiting';
 }
 
-const mockLiveMatches: LiveMatch[] = [
-  {
-    id: '1',
-    teamA: { name: 'FC 불꽃', emblem: '🔥', level: '3' },
-    teamB: { name: 'FC 번개', emblem: '⚡', level: '3' },
-    location: '강남 풋살파크',
-    date: '오늘',
-    time: '14:00',
-    status: 'upcoming',
-  },
-  {
-    id: '2',
-    teamA: { name: '스틸러스', emblem: '⚔️', level: '4' },
-    teamB: { name: '???', emblem: '❓', level: '' },
-    location: '상암 월드컵 풋살장',
-    date: '내일',
-    time: '19:00',
-    status: 'recruiting',
-  },
-];
-
 export function LiveMatchBanner() {
   const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [matches, setMatches] = useState<LiveMatch[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentIndex(prev => (prev + 1) % mockLiveMatches.length);
-    }, 4000);
-    return () => clearInterval(timer);
+    async function fetchMatches() {
+      try {
+        const today = format(new Date(), 'yyyy-MM-dd');
+        const { data: matchData, error: matchError } = await supabase
+          .from('match_posts')
+          .select('id, team_id, match_date, match_time_start, location_name, status')
+          .eq('status', 'open')
+          .gte('match_date', today)
+          .order('match_date', { ascending: true })
+          .limit(3);
+
+        if (matchError || !matchData || matchData.length === 0) {
+          setMatches([]);
+          return;
+        }
+
+        const teamIds = [...new Set(matchData.map((m) => m.team_id))];
+        const { data: teamsData } = await supabase
+          .from('teams')
+          .select('id, name, emblem, level')
+          .in('id', teamIds);
+
+        const teamsMap: Record<string, { name: string; emblem: string; level: string }> = {};
+        if (teamsData) {
+          for (const t of teamsData) {
+            teamsMap[t.id] = {
+              name: t.name,
+              emblem: t.emblem || '⚽',
+              level: t.level?.toString() || '1',
+            };
+          }
+        }
+
+        const liveMatches: LiveMatch[] = matchData.map((m) => {
+          const team = teamsMap[m.team_id] || { name: '알 수 없음', emblem: '⚽', level: '1' };
+          const matchDate = new Date(m.match_date + 'T00:00:00');
+          let dateLabel = format(matchDate, 'M/d');
+          if (isToday(matchDate)) dateLabel = '오늘';
+          else if (isTomorrow(matchDate)) dateLabel = '내일';
+
+          return {
+            id: m.id,
+            teamA: team,
+            teamB: { name: '???', emblem: '❓', level: '' },
+            location: m.location_name || '미정',
+            date: dateLabel,
+            time: m.match_time_start ? m.match_time_start.slice(0, 5) : '',
+            status: 'recruiting' as const,
+          };
+        });
+
+        setMatches(liveMatches);
+      } catch (err) {
+        console.error('Failed to fetch matches:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchMatches();
   }, []);
 
-  const match = mockLiveMatches[currentIndex];
+  useEffect(() => {
+    if (matches.length <= 1) return;
+    const timer = setInterval(() => {
+      setCurrentIndex(prev => (prev + 1) % matches.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [matches.length]);
+
+  if (loading) {
+    return (
+      <div className="px-4 py-3">
+        <div className="w-full h-32 bg-muted animate-pulse border-3 border-border-dark" />
+      </div>
+    );
+  }
+
+  if (matches.length === 0) {
+    return (
+      <div className="px-4 py-3">
+        <div
+          className="w-full bg-card border-3 border-border-dark overflow-hidden"
+          style={{ boxShadow: '4px 4px 0 hsl(var(--pixel-shadow))' }}
+        >
+          <div className="bg-primary/10 border-b-2 border-border px-3 py-1.5 flex items-center gap-1.5">
+            <Swords size={12} className="text-primary" />
+            <span className="font-pixel text-[8px] text-primary">매치 현황</span>
+          </div>
+          <div className="px-4 py-6 text-center">
+            <span className="font-pixel text-[9px] text-muted-foreground">현재 등록된 매치가 없습니다</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const match = matches[currentIndex];
 
   const statusConfig = {
     upcoming: { label: '오늘 경기', color: 'bg-primary text-primary-foreground', dotColor: 'bg-primary' },
@@ -112,7 +185,7 @@ export function LiveMatchBanner() {
 
         {/* Dots */}
         <div className="flex justify-center gap-1.5 pb-2">
-          {mockLiveMatches.map((_, i) => (
+          {matches.map((_, i) => (
             <span
               key={i}
               className={`w-1.5 h-1.5 border border-border-dark ${i === currentIndex ? config.dotColor : 'bg-muted'}`}

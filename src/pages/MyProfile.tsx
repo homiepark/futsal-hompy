@@ -50,10 +50,8 @@ export default function MyProfile() {
   const [tempRegion, setTempRegion] = useState('');
   const [tempDistrict, setTempDistrict] = useState('');
 
-  const [myTeams] = useState([
-    { id: '1', name: 'FC 불꽃', emblem: '🔥', role: 'admin' },
-    { id: '2', name: '라이언즈 FC', emblem: '🦁', role: 'member' },
-  ]);
+  const [myTeams, setMyTeams] = useState<{ id: string; name: string; emblem: string; role: string }[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   // Fetch profile on mount
   useEffect(() => {
@@ -95,6 +93,53 @@ export default function MyProfile() {
     };
 
     fetchProfile();
+  }, [user]);
+
+  // Fetch my teams from Supabase
+  useEffect(() => {
+    const fetchMyTeams = async () => {
+      if (!user) return;
+      try {
+        const { data, error } = await supabase
+          .from('team_members')
+          .select('role, teams(id, name, emblem)')
+          .eq('user_id', user.id);
+        if (error) throw error;
+        if (data) {
+          const teams = data
+            .filter((d: any) => d.teams)
+            .map((d: any) => ({
+              id: d.teams.id,
+              name: d.teams.name,
+              emblem: d.teams.emblem,
+              role: d.role,
+            }));
+          setMyTeams(teams);
+        }
+      } catch (error) {
+        console.error('Error fetching my teams:', error);
+      }
+    };
+    fetchMyTeams();
+  }, [user]);
+
+  // Fetch unread message count
+  useEffect(() => {
+    const fetchUnreadCount = async () => {
+      if (!user) return;
+      try {
+        const { count, error } = await supabase
+          .from('messages')
+          .select('id', { count: 'exact', head: true })
+          .eq('receiver_id', user.id)
+          .eq('is_read', false);
+        if (error) throw error;
+        setUnreadCount(count || 0);
+      } catch (error) {
+        console.error('Error fetching unread count:', error);
+      }
+    };
+    fetchUnreadCount();
   }, [user]);
 
   const getPositionLabels = (positionIds: string[]) => {
@@ -194,9 +239,11 @@ export default function MyProfile() {
         </div>
         <Link to="/messages" className="relative w-10 h-10 bg-primary-foreground/20 border-2 border-primary-dark flex items-center justify-center">
           <Mail size={20} className="text-primary-foreground" />
-          <span className="absolute -top-1 -right-1 w-5 h-5 bg-accent border border-accent-dark text-[10px] text-accent-foreground flex items-center justify-center">
-            2
-          </span>
+          {unreadCount > 0 && (
+            <span className="absolute -top-1 -right-1 w-5 h-5 bg-accent border border-accent-dark text-[10px] text-accent-foreground flex items-center justify-center">
+              {unreadCount}
+            </span>
+          )}
         </Link>
       </div>
 
