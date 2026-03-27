@@ -18,6 +18,8 @@ interface TeamHeaderProps {
   youtubeUrl?: string;
   teamId?: string;
   isAdmin?: boolean;
+  isFavorited?: boolean;
+  onFavoriteToggle?: (isFavorited: boolean) => void;
   onPhotoUpdate?: (url: string) => void;
   onBannerUpdate?: (url: string) => void;
   onNameUpdate?: (name: string) => void;
@@ -51,6 +53,8 @@ export function TeamHeader({
   onBannerUpdate,
   onNameUpdate,
   onNameClick,
+  isFavorited = false,
+  onFavoriteToggle,
 }: TeamHeaderProps) {
   const [uploading, setUploading] = useState(false);
   const [isEditingName, setIsEditingName] = useState(false);
@@ -215,6 +219,16 @@ export function TeamHeader({
                 </div>
               ) : (
                 <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => onFavoriteToggle?.(!isFavorited)}
+                    className="transition-transform active:scale-125"
+                    title={isFavorited ? '즐겨찾기 해제' : '즐겨찾기'}
+                  >
+                    <Star
+                      size={14}
+                      className={isFavorited ? 'text-[hsl(45,100%,50%)] fill-[hsl(45,100%,50%)]' : 'text-muted-foreground'}
+                    />
+                  </button>
                   <h1 className="font-pixel text-xs text-foreground leading-tight">{name}</h1>
                   {isAdmin && (
                     <button
@@ -257,24 +271,28 @@ export function TeamHeader({
                 </div>
               )}
             </div>
-            <div className="flex items-center gap-2 flex-wrap">
-              {region && <p className="font-pixel text-[8px] text-muted-foreground">📍 {region}</p>}
-              {homeGroundName && (
-                <button
-                  onClick={() => {
-                    const query = homeGroundAddress || homeGroundName;
-                    if (query) window.open(`https://map.naver.com/v5/search/${encodeURIComponent(query)}`, '_blank');
-                  }}
-                  className="flex items-center gap-0.5 font-pixel text-[7px] text-[#03C75A] hover:underline"
-                >
-                  <MapPin size={8} />
-                  {homeGroundName}
-                </button>
+            <div className="flex flex-col gap-1 mt-0.5">
+              {region && (
+                <div className="flex items-center gap-1">
+                  <span className="font-pixel text-[7px] text-muted-foreground/70">활동지역</span>
+                  <span className="font-pixel text-[8px] text-muted-foreground">📍 {region}</span>
+                </div>
               )}
-              <div className="flex items-center gap-0.5">
-                <Star size={12} className="text-[hsl(45,100%,50%)] fill-[hsl(45,100%,50%)]" />
-                <span className="font-pixel text-[8px] text-foreground">{favorites}</span>
-              </div>
+              {homeGroundName && (
+                <div className="flex items-center gap-1">
+                  <span className="font-pixel text-[7px] text-muted-foreground/70">홈구장</span>
+                  <button
+                    onClick={() => {
+                      const query = homeGroundAddress || homeGroundName;
+                      if (query) window.open(`https://map.naver.com/v5/search/${encodeURIComponent(query)}`, '_blank');
+                    }}
+                    className="flex items-center gap-0.5 font-pixel text-[7px] text-[#03C75A] hover:underline"
+                  >
+                    <MapPin size={8} />
+                    {homeGroundName}
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
