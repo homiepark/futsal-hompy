@@ -159,52 +159,66 @@ export function TeamSettingsModal({
               type="text"
               value={homeGround}
               onChange={(e) => setHomeGround(e.target.value)}
-              placeholder="구장 이름 (예: 강남 풋살파크)"
+              placeholder="구장 이름 (예: 잠앤조이 풋살파크)"
+              className="w-full pixel-input mb-2"
+            />
+            <input
+              type="text"
+              value={homeGroundAddress}
+              onChange={(e) => setHomeGroundAddress(e.target.value)}
+              placeholder="주소 직접 입력 또는 아래 검색 이용"
               className="w-full pixel-input mb-2"
             />
 
-            {/* 주소 검색 버튼 + 입력 */}
-            <div className="flex gap-2 mb-2">
-              <input
-                type="text"
-                value={homeGroundAddress}
-                onChange={(e) => setHomeGroundAddress(e.target.value)}
-                placeholder="주소 검색을 눌러주세요"
-                className="flex-1 pixel-input"
-                readOnly
-              />
+            {/* 검색 버튼 2개 */}
+            <div className="flex gap-2">
+              {/* 구장 이름으로 네이버 지도 검색 */}
+              <button
+                type="button"
+                onClick={() => {
+                  const query = homeGround || homeGroundAddress;
+                  if (!query) {
+                    toast.error('구장 이름을 먼저 입력해주세요');
+                    return;
+                  }
+                  window.open(`https://map.naver.com/v5/search/${encodeURIComponent(query + ' 풋살')}`, '_blank');
+                }}
+                className="flex-1 py-2 bg-[#03C75A] text-white font-pixel text-[8px] border-2 border-[#02b351] hover:brightness-110 transition-all flex items-center justify-center gap-1"
+                style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow) / 0.5)' }}
+              >
+                <Navigation size={10} />
+                구장 이름으로 찾기
+              </button>
+
+              {/* 도로명 주소 검색 */}
               <button
                 type="button"
                 onClick={() => {
                   const daum = (window as any).daum;
                   if (!daum?.Postcode) {
-                    toast.error('주소 검색 서비스를 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
+                    toast.error('주소 검색을 불러오는 중입니다');
                     return;
                   }
                   new daum.Postcode({
                     oncomplete: (data: any) => {
-                      const fullAddress = data.roadAddress || data.jibunAddress || data.address;
-                      setHomeGroundAddress(fullAddress);
+                      setHomeGroundAddress(data.roadAddress || data.jibunAddress || data.address);
                       if (!homeGround && data.buildingName) {
                         setHomeGround(data.buildingName);
                       }
                     },
                   }).open();
                 }}
-                className="shrink-0 px-3 py-2 bg-primary text-primary-foreground font-pixel text-[8px] border-2 border-primary-dark hover:brightness-110 transition-all flex items-center gap-1"
-                style={{ boxShadow: '2px 2px 0 hsl(var(--primary-dark))' }}
+                className="flex-1 py-2 bg-secondary text-foreground font-pixel text-[8px] border-2 border-border-dark hover:bg-muted transition-all flex items-center justify-center gap-1"
+                style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow) / 0.5)' }}
               >
                 <MapPin size={10} />
-                주소 검색
+                도로명 주소 검색
               </button>
             </div>
 
-            {/* 선택된 주소 표시 */}
-            {homeGroundAddress && (
-              <div className="px-2 py-1.5 bg-primary/10 border border-primary/30 font-pixel text-[8px] text-primary mb-2">
-                📍 {homeGroundAddress}
-              </div>
-            )}
+            <p className="font-pixel text-[6px] text-muted-foreground mt-1.5">
+              💡 구장 이름만 입력해도 OK! 주소는 선택사항이에요
+            </p>
           </div>
         </div>
 
