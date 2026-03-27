@@ -55,6 +55,8 @@ const levelColorMap: Record<string, string> = {
 };
 
 export function LevelGuideModal({ isOpen, onClose }: LevelGuideModalProps) {
+  useBodyScrollLock(isOpen);
+
   if (!isOpen) return null;
 
   return (

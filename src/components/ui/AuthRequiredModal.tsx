@@ -14,6 +14,7 @@ export function AuthRequiredModal({
   onClose,
   message = '먼저 로그인을 해주세요!',
 }: AuthRequiredModalProps) {
+  useBodyScrollLock(isOpen);
   const navigate = useNavigate();
 
   if (!isOpen) return null;

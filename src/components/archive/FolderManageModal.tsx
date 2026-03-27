@@ -21,6 +21,7 @@ interface FolderManageModalProps {
 const emojiOptions = ['📁', '⚽', '🏆', '🎯', '📸', '🎬', '🏃', '💪', '🔥', '⭐', '🎉', '📝'];
 
 export function FolderManageModal({ isOpen, onClose, folders, onSave }: FolderManageModalProps) {
+  useBodyScrollLock(isOpen);
   const [editableFolders, setEditableFolders] = useState<Folder[]>(folders);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState('');
