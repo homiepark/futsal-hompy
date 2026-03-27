@@ -188,7 +188,7 @@ export default function TeamArchive() {
             <PixelBackButton onClick={handleBack} />
             <div className="flex items-center gap-1.5">
               {currentTeam && <span className="text-lg">{currentTeam.emblem}</span>}
-              <h1 className="font-pixel text-[10px] text-foreground">아카이브</h1>
+              <h1 className="font-pixel text-[10px] text-foreground">추억저장소</h1>
             </div>
           </div>
           <PixelButton

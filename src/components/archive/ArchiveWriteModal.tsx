@@ -122,6 +122,10 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
       toast.error('로그인이 필요합니다');
       return;
     }
+    if (!teamId || teamId === 'all') {
+      toast.error('팀을 선택해주세요');
+      return;
+    }
 
     setUploading(true);
 
@@ -344,10 +348,11 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
             취소
           </button>
           <button
+            type="button"
             onClick={handleSubmit}
             disabled={uploading}
-            className="flex-1 py-2.5 bg-primary border-3 border-primary-dark font-pixel text-[9px] text-primary-foreground hover:brightness-110 transition-all flex items-center justify-center gap-1.5 disabled:opacity-50"
-            style={{ boxShadow: '2px 2px 0 hsl(var(--primary-dark))' }}
+            className="flex-[2] py-3 bg-primary border-3 border-primary-dark font-pixel text-[10px] text-primary-foreground hover:brightness-110 transition-all flex items-center justify-center gap-1.5 disabled:opacity-50"
+            style={{ boxShadow: '3px 3px 0 hsl(var(--primary-dark))' }}
           >
             {uploading ? (
               <>

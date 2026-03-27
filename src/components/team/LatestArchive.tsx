@@ -21,7 +21,7 @@ export function LatestArchive({ teamId, items }: LatestArchiveProps) {
       {/* Panel Header */}
       <div className="kairo-panel-header">
         <span className="text-sm">📸</span>
-        <span>최근 아카이브</span>
+        <span>추억저장소</span>
       </div>
 
       {/* Content */}

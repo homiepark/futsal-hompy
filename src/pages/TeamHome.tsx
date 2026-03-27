@@ -410,12 +410,36 @@ export default function TeamHome() {
         onBannerUpdate={handleBannerUpdate}
       />
 
-      <div className="px-4 py-4 space-y-4">
-        {/* Cyworld-style Visitor Counter */}
-        <VisitorCounter todayCount={12} totalCount={3847} />
+      {/* === Marquee Notice Bar (전광판 스타일) === */}
+      {notices.length > 0 && (
+        <div className="bg-foreground/90 overflow-hidden border-y-2 border-border-dark">
+          <div className="py-2 flex items-center">
+            <span className="shrink-0 px-2 font-pixel text-[8px] text-accent bg-accent/20 border-r border-border-dark">📢</span>
+            <div className="flex-1 overflow-hidden">
+              <div className="animate-marquee whitespace-nowrap">
+                {notices.map((n, i) => (
+                  <span key={n.id} className="font-pixel text-[9px] text-background mx-6">
+                    {n.content}
+                    {i < notices.length - 1 && <span className="mx-4 text-accent">◆</span>}
+                  </span>
+                ))}
+                {notices.map((n) => (
+                  <span key={`dup-${n.id}`} className="font-pixel text-[9px] text-background mx-6">
+                    {n.content}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
-        {/* BGM Player */}
-        <BgmPlayer teamName={teamData.name} />
+      <div className="px-4 py-4 space-y-5">
+        {/* Visitor Counter + BGM */}
+        <div className="grid grid-cols-1 gap-3">
+          <VisitorCounter todayCount={12} totalCount={3847} />
+          <BgmPlayer teamName={teamData.name} />
+        </div>
 
         {/* Team Level & Stats */}
         <TeamLevelBadge
@@ -431,16 +455,18 @@ export default function TeamHome() {
           }
         />
 
-        {/* Team Announcement Section */}
-        <TeamAnnouncement
-          teamId={teamId || ''}
-          notices={notices}
-          isAdmin={isAdmin}
-          onCreateNotice={handleCreateNotice}
-          onRefresh={fetchNotices}
-        />
+        {/* 공지 관리 (관리자만 보임) */}
+        {isAdmin && (
+          <TeamAnnouncement
+            teamId={teamId || ''}
+            notices={notices}
+            isAdmin={isAdmin}
+            onCreateNotice={handleCreateNotice}
+            onRefresh={fetchNotices}
+          />
+        )}
 
-        {/* Team Introduction */}
+        {/* 팀 소개 */}
         <TeamIntro
           introduction={teamData.introduction ?? ''}
           isAdmin={isAdmin}
@@ -511,7 +537,7 @@ export default function TeamHome() {
           )}
         </div>
 
-        {/* Latest Archive Preview */}
+        {/* 📸 추억저장소 (formerly 아카이브) */}
         <LatestArchive
           teamId={teamData.id}
           items={archiveItems}
