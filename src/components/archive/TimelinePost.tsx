@@ -108,7 +108,7 @@ export function TimelinePost({
           <img
             src={allImages[currentImageIndex]}
             alt={`게시물 이미지 ${currentImageIndex + 1}`}
-            className="w-full aspect-video object-cover transition-opacity duration-200"
+            className="w-full max-h-[500px] object-contain transition-opacity duration-200 bg-black/5"
           />
 
           {/* Navigation Arrows */}
