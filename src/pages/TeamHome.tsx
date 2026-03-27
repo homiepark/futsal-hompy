@@ -136,17 +136,7 @@ export default function TeamHome() {
 
           supabase
             .from('team_members')
-            .select(`
-              id,
-              user_id,
-              role,
-              profiles:user_id (
-                nickname,
-                avatar_url,
-                preferred_positions,
-                years_of_experience
-              )
-            `)
+            .select('id, user_id, role')
             .eq('team_id', teamId),
 
           supabase
@@ -193,15 +183,25 @@ export default function TeamHome() {
           youtubeUrl: team.youtube_url ?? '',
         });
 
-        // Handle members
-        if (!membersRes.error && membersRes.data) {
+        // Handle members - fetch profiles separately to avoid join issues
+        if (!membersRes.error && membersRes.data && membersRes.data.length > 0) {
+          const userIds = membersRes.data.map((m: any) => m.user_id);
+          const { data: profilesData } = await supabase
+            .from('profiles')
+            .select('user_id, nickname, avatar_url, preferred_positions, years_of_experience')
+            .in('user_id', userIds);
+
+          const profileMap = new Map(
+            (profilesData || []).map((p: any) => [p.user_id, p])
+          );
+
           const mapped: MemberData[] = membersRes.data.map((m: any) => {
-            const profile = m.profiles;
+            const profile = profileMap.get(m.user_id);
             const positions: string[] = profile?.preferred_positions ?? [];
             return {
               id: m.id,
               userId: m.user_id,
-              nickname: profile?.nickname ?? '알 수 없음',
+              nickname: profile?.nickname ?? '팀원',
               avatarUrl: profile?.avatar_url ?? '',
               position: toPosition(positions[0]),
               yearsOfExperience: profile?.years_of_experience ?? 0,
@@ -247,7 +247,8 @@ export default function TeamHome() {
     return () => {
       cancelled = true;
     };
-  }, [teamId, setActiveTeam]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [teamId]);
 
   const handleBack = () => {
     clearActiveTeam();
