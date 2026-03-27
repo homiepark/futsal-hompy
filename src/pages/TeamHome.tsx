@@ -405,9 +405,11 @@ export default function TeamHome() {
         region={regionDisplay}
         instagramUrl={teamData.instagram_url ?? ''}
         youtubeUrl={teamData.youtube_url ?? ''}
+        teamId={teamId}
         isAdmin={isAdmin}
-        onPhotoEdit={() => console.log('Edit team photo')}
+        onPhotoUpdate={(url) => setTeamData(prev => prev ? { ...prev, photo_url: url } : prev)}
         onBannerUpdate={handleBannerUpdate}
+        onNameUpdate={(newName) => setTeamData(prev => prev ? { ...prev, name: newName } : prev)}
       />
 
       {/* === Marquee Notice Bar (전광판 스타일) === */}
