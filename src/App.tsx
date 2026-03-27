@@ -59,51 +59,64 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <ErrorBoundary>
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <AuthProvider>
-        <TeamProvider>
-          <DevProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <ScrollRestoration />
-              <div className="min-h-screen bg-background">
-                
-                <main className="pb-16 page-content">
-                  <Routes>
-                    <Route path="/" element={<Index />} />
-                    <Route path="/my-team" element={<MyTeam />} />
-                    <Route path="/team/:teamId" element={<TeamHome />} />
-                    <Route path="/archive" element={<TeamArchive />} />
-                    <Route path="/create-team" element={<CreateTeam />} />
-                    <Route path="/team/:teamId/requests" element={<JoinRequestManagement />} />
-                    <Route path="/matchmaking" element={<Matchmaking />} />
-                    <Route path="/schedule" element={<Schedule />} />
-                    <Route path="/courts" element={<CourtBooking />} />
-                    <Route path="/register" element={<PlayerRegistration />} />
-                    <Route path="/profile" element={<MyProfile />} />
-                    <Route path="/profile-setup" element={<ProfileSetup />} />
-                    <Route path="/auth" element={<Auth />} />
-                    <Route path="/forgot-password" element={<ForgotPassword />} />
-                    <Route path="/reset-password" element={<ResetPassword />} />
-                    <Route path="/messages" element={<Messages />} />
-                    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </main>
-                <BottomNav />
-                <DevToggleButton />
-              </div>
-            </BrowserRouter>
-          </DevProvider>
-        </TeamProvider>
-      </AuthProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
-  </ErrorBoundary>
+const AppContent = () => (
+  <BrowserRouter>
+    <ScrollRestoration />
+    <div className="min-h-screen bg-background">
+      <main className="pb-16 page-content">
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/my-team" element={<MyTeam />} />
+          <Route path="/team/:teamId" element={<TeamHome />} />
+          <Route path="/archive" element={<TeamArchive />} />
+          <Route path="/create-team" element={<CreateTeam />} />
+          <Route path="/team/:teamId/requests" element={<JoinRequestManagement />} />
+          <Route path="/matchmaking" element={<Matchmaking />} />
+          <Route path="/schedule" element={<Schedule />} />
+          <Route path="/courts" element={<CourtBooking />} />
+          <Route path="/register" element={<PlayerRegistration />} />
+          <Route path="/profile" element={<MyProfile />} />
+          <Route path="/profile-setup" element={<ProfileSetup />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/messages" element={<Messages />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </main>
+      <BottomNav />
+      <DevToggleButton />
+    </div>
+  </BrowserRouter>
 );
+
+const App = () => {
+  try {
+    return (
+      <ErrorBoundary>
+        <QueryClientProvider client={queryClient}>
+          <TooltipProvider>
+            <AuthProvider>
+              <TeamProvider>
+                <DevProvider>
+                  <Toaster />
+                  <Sonner />
+                  <AppContent />
+                </DevProvider>
+              </TeamProvider>
+            </AuthProvider>
+          </TooltipProvider>
+        </QueryClientProvider>
+      </ErrorBoundary>
+    );
+  } catch (e: any) {
+    return (
+      <div style={{ padding: 20, fontFamily: 'monospace', color: 'red' }}>
+        <h2>Fatal Error:</h2>
+        <pre>{e?.message}{'\n'}{e?.stack}</pre>
+      </div>
+    );
+  }
+};
 
 export default App;
