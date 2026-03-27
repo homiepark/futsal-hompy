@@ -160,7 +160,7 @@ export function TeamHeader({
       </div>
 
       {/* Team Info */}
-      <div className="px-3 -mt-10">
+      <div className="px-3 -mt-6 relative z-10">
         <div className="flex items-end gap-3">
           {/* Team Photo */}
           <div className="relative">
@@ -192,7 +192,7 @@ export function TeamHeader({
           </div>
 
           {/* Team Name & Info */}
-          <div className="flex-1 pb-1.5">
+          <div className="flex-1 pb-1.5 bg-background/90 backdrop-blur-sm px-2 py-1 -mb-1">
             <div className="flex items-center flex-wrap gap-1.5 mb-0.5">
               {isEditingName ? (
                 <div className="flex items-center gap-1">
