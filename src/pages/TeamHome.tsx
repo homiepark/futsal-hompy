@@ -492,24 +492,20 @@ export default function TeamHome() {
                   toast('매너 점수는 매치 후 상대팀이 평가합니다', { icon: '⭐', description: '매치 결과 입력 시 상대팀에게 별 1~5점을 받아요' });
                 }
               }}
-              className="shrink-0 bg-card border-2 border-border-dark px-3 py-2 text-center hover:bg-muted transition-colors"
+              className="shrink-0 bg-card border-2 border-border-dark px-2.5 py-1.5 text-center hover:bg-muted transition-colors min-w-[56px]"
               style={{boxShadow:'2px 2px 0 hsl(var(--pixel-shadow) / 0.5)'}}
             >
-              <span className="text-base block">{stat.icon}</span>
-              <span className="font-pixel text-[10px] text-foreground block">{stat.value}</span>
-              <span className="font-pixel text-[6px] text-muted-foreground">{stat.label}</span>
+              <span className="text-sm block">{stat.icon}</span>
+              <span className="font-pixel text-[9px] text-foreground block">{stat.value}</span>
+              <span className="font-pixel text-[5px] text-muted-foreground">{stat.label}</span>
             </button>
           ))}
         </div>
 
         {/* 5. Team Mood + Fighting Button */}
-        <div className="flex items-center gap-3">
-          <div className="flex-1">
-            <TeamMoodIndicator teamId={teamData.id} />
-          </div>
-          <div className="flex-1">
-            <FightingButton teamId={teamData.id} />
-          </div>
+        <div className="flex items-center gap-2">
+          <TeamMoodIndicator teamId={teamData.id} isAdmin={isAdmin} />
+          <FightingButton teamName={teamData.name} />
         </div>
 
         {/* 6. Achievements */}

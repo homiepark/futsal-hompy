@@ -4,19 +4,19 @@ import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 
 const MOODS = [
-  { emoji: '🔥', label: '열정모드' },
-  { emoji: '😎', label: '여유모드' },
-  { emoji: '💪', label: '훈련모드' },
-  { emoji: '🎉', label: '파티모드' },
-  { emoji: '⚔️', label: '전투모드' },
+  { emoji: '🔥', label: '열정' },
+  { emoji: '😎', label: '여유' },
+  { emoji: '💪', label: '훈련' },
+  { emoji: '🎉', label: '파티' },
+  { emoji: '⚔️', label: '전투' },
 ] as const;
 
 interface TeamMoodIndicatorProps {
   teamId: string;
-  isAdmin: boolean;
+  isAdmin?: boolean;
 }
 
-export function TeamMoodIndicator({ teamId, isAdmin }: TeamMoodIndicatorProps) {
+export function TeamMoodIndicator({ teamId, isAdmin = false }: TeamMoodIndicatorProps) {
   const [moodIndex, setMoodIndex] = useState(0);
   const [bouncing, setBouncing] = useState(false);
 
@@ -35,36 +35,22 @@ export function TeamMoodIndicator({ teamId, isAdmin }: TeamMoodIndicatorProps) {
   }, [bouncing]);
 
   return (
-    <div
+    <button
       className={cn(
-        'border-3 border-border-dark bg-card p-4 text-center',
+        'border-2 border-border-dark bg-card px-3 py-2 flex items-center gap-2',
         isAdmin && 'cursor-pointer active:scale-95 transition-transform'
       )}
-      style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}
+      style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow) / 0.5)' }}
       onClick={handleClick}
-      role={isAdmin ? 'button' : undefined}
-      tabIndex={isAdmin ? 0 : undefined}
-      onKeyDown={isAdmin ? (e) => { if (e.key === 'Enter' || e.key === ' ') handleClick(); } : undefined}
+      disabled={!isAdmin}
     >
-      <p className="font-pixel text-[8px] text-muted-foreground mb-2">
-        팀 무드
-      </p>
-      <div
-        className={cn(
-          'text-5xl mb-2 inline-block',
-          bouncing && 'animate-pixel-bounce'
-        )}
-      >
+      <span className={cn('text-xl', bouncing && 'animate-pixel-bounce')}>
         {currentMood.emoji}
+      </span>
+      <div className="text-left">
+        <span className="font-pixel text-[8px] text-foreground block">{currentMood.label}</span>
+        {isAdmin && <span className="font-pixel text-[6px] text-muted-foreground">탭하여 변경</span>}
       </div>
-      <p className="font-pixel text-[10px] text-foreground">
-        {currentMood.label}
-      </p>
-      {isAdmin && (
-        <p className="font-pixel text-[7px] text-muted-foreground mt-2">
-          탭하여 변경
-        </p>
-      )}
-    </div>
+    </button>
   );
 }
