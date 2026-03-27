@@ -11,11 +11,13 @@ interface TeamSettingsModalProps {
   teamId: string;
   currentRegion: string;
   currentDistrict: string;
+  currentLevel: string;
   currentHomeGround: string;
   currentHomeGroundAddress: string;
   onUpdate: (data: {
     region?: string;
     district?: string;
+    level?: string;
     home_ground_name?: string;
     home_ground_address?: string;
   }) => void;
@@ -27,6 +29,7 @@ export function TeamSettingsModal({
   teamId,
   currentRegion,
   currentDistrict,
+  currentLevel,
   currentHomeGround,
   currentHomeGroundAddress,
   onUpdate,
@@ -34,6 +37,7 @@ export function TeamSettingsModal({
   useBodyScrollLock(isOpen);
   const [region, setRegion] = useState(currentRegion || '');
   const [district, setDistrict] = useState(currentDistrict || '');
+  const [level, setLevel] = useState(currentLevel || '1');
   const [homeGround, setHomeGround] = useState(currentHomeGround || '');
   const [homeGroundAddress, setHomeGroundAddress] = useState(currentHomeGroundAddress || '');
   const [saving, setSaving] = useState(false);
@@ -42,10 +46,11 @@ export function TeamSettingsModal({
     if (isOpen) {
       setRegion(currentRegion || '');
       setDistrict(currentDistrict || '');
+      setLevel(currentLevel || '1');
       setHomeGround(currentHomeGround || '');
       setHomeGroundAddress(currentHomeGroundAddress || '');
     }
-  }, [isOpen, currentRegion, currentDistrict, currentHomeGround, currentHomeGroundAddress]);
+  }, [isOpen, currentRegion, currentDistrict, currentLevel, currentHomeGround, currentHomeGroundAddress]);
 
   if (!isOpen) return null;
 
@@ -55,6 +60,7 @@ export function TeamSettingsModal({
       const updates: Record<string, string | null> = {
         region: region || null,
         district: district || null,
+        level: level,
         home_ground_name: homeGround || null,
         home_ground_address: homeGroundAddress || null,
       };
@@ -150,6 +156,37 @@ export function TeamSettingsModal({
                 📍 {region} {district}
               </div>
             )}
+          </div>
+
+          {/* 팀 레벨 */}
+          <div>
+            <label className="font-pixel text-[9px] text-foreground mb-2 block">🏅 팀 레벨</label>
+            <div className="grid grid-cols-2 gap-2">
+              {[
+                { lv: '1', name: '풋린이', emoji: '🌱', desc: '풋살을 막 시작한 팀' },
+                { lv: '2', name: '풋내기', emoji: '⚽', desc: '기본기가 갖춰진 팀' },
+                { lv: '3', name: '풋살러', emoji: '🔥', desc: '경험 많은 팀' },
+                { lv: '4', name: '풋살왕', emoji: '👑', desc: '대회 수준의 경기력' },
+              ].map(opt => (
+                <button
+                  key={opt.lv}
+                  type="button"
+                  onClick={() => setLevel(opt.lv)}
+                  className={`p-2.5 border-2 text-left transition-all flex items-center gap-2 ${
+                    level === opt.lv
+                      ? 'bg-primary/15 border-primary text-primary'
+                      : 'bg-card border-border-dark text-foreground hover:border-primary/50'
+                  }`}
+                  style={{ boxShadow: level === opt.lv ? '2px 2px 0 hsl(var(--primary-dark) / 0.3)' : '1px 1px 0 hsl(var(--pixel-shadow) / 0.3)' }}
+                >
+                  <span className="text-xl">{opt.emoji}</span>
+                  <div>
+                    <span className="font-pixel text-[9px] block">LV.{opt.lv} {opt.name}</span>
+                    <span className="font-pixel text-[6px] text-muted-foreground">{opt.desc}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* 활동 구장 */}

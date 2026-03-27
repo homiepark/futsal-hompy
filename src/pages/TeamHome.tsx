@@ -668,6 +668,7 @@ export default function TeamHome() {
         teamId={teamId || ''}
         currentRegion={teamData.region || ''}
         currentDistrict={teamData.district || ''}
+        currentLevel={teamData.level || '1'}
         currentHomeGround={teamData.home_ground_name || ''}
         currentHomeGroundAddress={teamData.home_ground_address || ''}
         onUpdate={(data) => {
