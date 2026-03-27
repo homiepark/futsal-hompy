@@ -162,24 +162,48 @@ export function TeamSettingsModal({
               placeholder="구장 이름 (예: 강남 풋살파크)"
               className="w-full pixel-input mb-2"
             />
-            <input
-              type="text"
-              value={homeGroundAddress}
-              onChange={(e) => setHomeGroundAddress(e.target.value)}
-              placeholder="구장 주소 (예: 서울 강남구 역삼동 123)"
-              className="w-full pixel-input"
-            />
 
-            {/* 네이버 지도 미리보기 */}
-            {(homeGround || homeGroundAddress) && (
+            {/* 주소 검색 버튼 + 입력 */}
+            <div className="flex gap-2 mb-2">
+              <input
+                type="text"
+                value={homeGroundAddress}
+                onChange={(e) => setHomeGroundAddress(e.target.value)}
+                placeholder="주소 검색을 눌러주세요"
+                className="flex-1 pixel-input"
+                readOnly
+              />
               <button
-                onClick={openNaverMap}
-                className="w-full mt-2 py-2.5 bg-[#03C75A] text-white font-pixel text-[9px] border-2 border-[#02b351] flex items-center justify-center gap-2 hover:brightness-110 transition-all"
-                style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow) / 0.5)' }}
+                type="button"
+                onClick={() => {
+                  const daum = (window as any).daum;
+                  if (!daum?.Postcode) {
+                    toast.error('주소 검색 서비스를 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
+                    return;
+                  }
+                  new daum.Postcode({
+                    oncomplete: (data: any) => {
+                      const fullAddress = data.roadAddress || data.jibunAddress || data.address;
+                      setHomeGroundAddress(fullAddress);
+                      if (!homeGround && data.buildingName) {
+                        setHomeGround(data.buildingName);
+                      }
+                    },
+                  }).open();
+                }}
+                className="shrink-0 px-3 py-2 bg-primary text-primary-foreground font-pixel text-[8px] border-2 border-primary-dark hover:brightness-110 transition-all flex items-center gap-1"
+                style={{ boxShadow: '2px 2px 0 hsl(var(--primary-dark))' }}
               >
-                <Navigation size={12} />
-                네이버 지도에서 보기
+                <MapPin size={10} />
+                주소 검색
               </button>
+            </div>
+
+            {/* 선택된 주소 표시 */}
+            {homeGroundAddress && (
+              <div className="px-2 py-1.5 bg-primary/10 border border-primary/30 font-pixel text-[8px] text-primary mb-2">
+                📍 {homeGroundAddress}
+              </div>
             )}
           </div>
         </div>
