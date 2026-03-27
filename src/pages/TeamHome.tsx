@@ -93,6 +93,7 @@ export default function TeamHome() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isFavorited, setIsFavorited] = useState(false);
+  const [showLevelInfo, setShowLevelInfo] = useState(false);
 
   // Derived state
   const isAdmin = isDevAdmin || (currentUserId != null && teamData?.admin_user_id === currentUserId)
@@ -477,17 +478,27 @@ export default function TeamHome() {
         {/* 4. Quick Stats Row */}
         <div className="flex gap-2 overflow-x-auto pb-1">
           {[
-            { label: '레벨', value: `LV.${teamData.level}`, icon: '🏅' },
-            { label: '매치', value: '23전', icon: '⚔️' },
-            { label: '경력', value: `${avgExp}년`, icon: '⏰' },
-            { label: '매너', value: '4.5', icon: '⭐' },
-            { label: '멤버', value: `${members.length}명`, icon: '👥' },
+            { label: '팀 레벨', value: `LV.${teamData.level}`, icon: '🏅', key: 'level' },
+            { label: '매치 횟수', value: '23전', icon: '⚔️', key: 'match' },
+            { label: '팀원 평균 경력', value: `${avgExp}년`, icon: '⏰', key: 'exp' },
+            { label: '매너 점수', value: '-', icon: '⭐', key: 'manner' },
+            { label: '멤버', value: `${members.length}명`, icon: '👥', key: 'member' },
           ].map(stat => (
-            <div key={stat.label} className="shrink-0 bg-card border-2 border-border-dark px-3 py-2 text-center" style={{boxShadow:'2px 2px 0 hsl(var(--pixel-shadow) / 0.5)'}}>
+            <button
+              key={stat.key}
+              onClick={() => {
+                if (stat.key === 'level') setShowLevelInfo(true);
+                if (stat.key === 'manner') {
+                  toast('매너 점수는 매치 후 상대팀이 평가합니다', { icon: '⭐', description: '매치 결과 입력 시 상대팀에게 별 1~5점을 받아요' });
+                }
+              }}
+              className="shrink-0 bg-card border-2 border-border-dark px-3 py-2 text-center hover:bg-muted transition-colors"
+              style={{boxShadow:'2px 2px 0 hsl(var(--pixel-shadow) / 0.5)'}}
+            >
               <span className="text-base block">{stat.icon}</span>
               <span className="font-pixel text-[10px] text-foreground block">{stat.value}</span>
               <span className="font-pixel text-[6px] text-muted-foreground">{stat.label}</span>
-            </div>
+            </button>
           ))}
         </div>
 
@@ -596,6 +607,48 @@ export default function TeamHome() {
         teamName={teamData.name}
         isTeamInquiry={true}
       />
+
+      {/* Level Info Modal */}
+      {showLevelInfo && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center px-4">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setShowLevelInfo(false)} />
+          <div className="relative w-full max-w-sm bg-card border-4 border-border-dark overflow-hidden"
+            style={{ boxShadow: '6px 6px 0 hsl(var(--pixel-shadow))' }}
+          >
+            <div className="bg-primary text-primary-foreground px-4 py-3 flex items-center justify-between">
+              <span className="font-pixel text-[10px]">🏅 팀 레벨 안내</span>
+              <button onClick={() => setShowLevelInfo(false)} className="hover:opacity-80 font-pixel text-[10px]">✕</button>
+            </div>
+            <div className="p-4 space-y-3">
+              {[
+                { lv: '1', name: '풋린이', emoji: '🌱', color: 'bg-[hsl(var(--level-1))]', desc: '풋살을 막 시작한 팀이에요. 기본기를 익히는 단계!' },
+                { lv: '2', name: '풋내기', emoji: '⚽', color: 'bg-[hsl(var(--level-2))]', desc: '기본기가 갖춰진 팀. 전술 플레이를 시작해요.' },
+                { lv: '3', name: '풋살러', emoji: '🔥', color: 'bg-[hsl(var(--level-3))]', desc: '경험 많은 팀. 조직적인 플레이가 가능해요.' },
+                { lv: '4', name: '풋살왕', emoji: '👑', color: 'bg-[hsl(var(--level-4))]', desc: '최상위 실력의 팀. 대회 수준의 경기력!' },
+              ].map(level => (
+                <div key={level.lv} className={`flex items-center gap-3 p-2.5 border-2 border-border-dark ${teamData.level === level.lv ? 'ring-2 ring-primary' : ''}`}
+                  style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow) / 0.3)' }}
+                >
+                  <div className={`w-10 h-10 ${level.color} flex items-center justify-center text-lg shrink-0 border-2 border-black/20`}>
+                    {level.emoji}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <span className={`px-1.5 py-0.5 ${level.color} text-white font-pixel text-[8px]`}>LV.{level.lv}</span>
+                      <span className="font-pixel text-[9px] text-foreground">{level.name}</span>
+                      {teamData.level === level.lv && <span className="font-pixel text-[7px] text-primary">← 우리 팀</span>}
+                    </div>
+                    <p className="font-pixel text-[7px] text-muted-foreground mt-0.5">{level.desc}</p>
+                  </div>
+                </div>
+              ))}
+              <p className="font-pixel text-[7px] text-muted-foreground text-center pt-2 border-t border-border">
+                💡 팀 레벨은 팀 설정에서 변경할 수 있어요
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Skin Selector Modal */}
       <HompySkinSelector
