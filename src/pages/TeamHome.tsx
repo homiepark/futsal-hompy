@@ -20,7 +20,6 @@ import { PlayerInviteModal } from '@/components/team/PlayerInviteModal';
 import { DirectMessageModal } from '@/components/messages/DirectMessageModal';
 import { BroadcastModal } from '@/components/messages/BroadcastModal';
 import { TeamSettingsModal } from '@/components/team/TeamSettingsModal';
-import { TeamMoodIndicator } from '@/components/team/TeamMoodIndicator';
 import { TeamAchievements } from '@/components/team/TeamAchievements';
 import { FightingButton } from '@/components/team/FightingButton';
 import { supabase } from '@/integrations/supabase/client';
@@ -452,19 +451,19 @@ export default function TeamHome() {
 
       {/* 3. Marquee Notice Bar (전광판) */}
       {notices.length > 0 && (
-        <div className="bg-foreground/90 overflow-hidden border-y-2 border-border-dark">
+        <div className="bg-gradient-to-r from-[#1a0a2e] via-[#16213e] to-[#1a0a2e] overflow-hidden border-y-2 border-[#00ff88]/30">
           <div className="py-2 flex items-center">
             <span className="shrink-0 px-2 font-pixel text-[8px] text-accent bg-accent/20 border-r border-border-dark">📢</span>
             <div className="flex-1 overflow-hidden">
               <div className="animate-marquee whitespace-nowrap">
                 {notices.map((n, i) => (
-                  <span key={n.id} className="font-pixel text-[9px] text-background mx-6">
+                  <span key={n.id} className="font-pixel text-[9px] text-[#00ff88] drop-shadow-[0_0_8px_rgba(0,255,136,0.8)] mx-6">
                     {n.content}
-                    {i < notices.length - 1 && <span className="mx-4 text-accent">◆</span>}
+                    {i < notices.length - 1 && <span className="mx-4 text-[#ff6b9d] drop-shadow-[0_0_6px_rgba(255,107,157,0.8)]">◆</span>}
                   </span>
                 ))}
                 {notices.map((n) => (
-                  <span key={`dup-${n.id}`} className="font-pixel text-[9px] text-background mx-6">
+                  <span key={`dup-${n.id}`} className="font-pixel text-[9px] text-[#00ff88] drop-shadow-[0_0_8px_rgba(0,255,136,0.8)] mx-6">
                     {n.content}
                   </span>
                 ))}
@@ -492,19 +491,27 @@ export default function TeamHome() {
                   toast('매너 점수는 매치 후 상대팀이 평가합니다', { icon: '⭐', description: '매치 결과 입력 시 상대팀에게 별 1~5점을 받아요' });
                 }
               }}
-              className="shrink-0 bg-card border-2 border-border-dark px-2.5 py-1.5 text-center hover:bg-muted transition-colors min-w-[56px]"
+              className="shrink-0 bg-card border-2 border-border-dark px-2 py-1 text-center hover:bg-muted transition-colors min-w-[48px]"
               style={{boxShadow:'2px 2px 0 hsl(var(--pixel-shadow) / 0.5)'}}
             >
-              <span className="text-sm block">{stat.icon}</span>
-              <span className="font-pixel text-[9px] text-foreground block">{stat.value}</span>
+              <span className="text-xs block">{stat.icon}</span>
+              <span className="font-pixel text-[8px] text-foreground block">{stat.value}</span>
               <span className="font-pixel text-[5px] text-muted-foreground">{stat.label}</span>
             </button>
           ))}
         </div>
 
-        {/* 5. Team Mood + Fighting Button */}
+        {/* 5. 오늘의 한마디 + Fighting */}
         <div className="flex items-center gap-2">
-          <TeamMoodIndicator teamId={teamData.id} isAdmin={isAdmin} />
+          <div className="flex-1 bg-card border-2 border-border-dark px-3 py-2 flex items-center gap-2" style={{boxShadow:'2px 2px 0 hsl(var(--pixel-shadow) / 0.5)'}}>
+            <span className="text-lg">💬</span>
+            <div className="flex-1 min-w-0">
+              <p className="font-pixel text-[8px] text-foreground truncate">
+                {teamData.introduction || '오늘도 파이팅! ⚽'}
+              </p>
+              {isAdmin && <span className="font-pixel text-[5px] text-muted-foreground">팀 설정에서 변경</span>}
+            </div>
+          </div>
           <FightingButton teamName={teamData.name} />
         </div>
 
