@@ -681,28 +681,37 @@ export default function TeamHome() {
               <button onClick={() => setShowLevelInfo(false)} className="hover:opacity-80 font-pixel text-[10px]">✕</button>
             </div>
             <div className="p-4 space-y-3">
-              {[
-                { lv: '1', name: '풋린이', emoji: '🌱', color: 'bg-[hsl(var(--level-1))]', desc: '풋살을 막 시작한 팀이에요. 기본기를 익히는 단계!' },
-                { lv: '2', name: '풋내기', emoji: '⚽', color: 'bg-[hsl(var(--level-2))]', desc: '기본기가 갖춰진 팀. 전술 플레이를 시작해요.' },
-                { lv: '3', name: '풋살러', emoji: '🔥', color: 'bg-[hsl(var(--level-3))]', desc: '경험 많은 팀. 조직적인 플레이가 가능해요.' },
-                { lv: '4', name: '풋살왕', emoji: '👑', color: 'bg-[hsl(var(--level-4))]', desc: '최상위 실력의 팀. 대회 수준의 경기력!' },
-              ].map(level => (
-                <div key={level.lv} className={`flex items-center gap-3 p-2.5 border-2 border-border-dark ${teamData.level === level.lv ? 'ring-2 ring-primary' : ''}`}
-                  style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow) / 0.3)' }}
-                >
-                  <div className={`w-10 h-10 ${level.color} flex items-center justify-center text-lg shrink-0 border-2 border-black/20`}>
-                    {level.emoji}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-1.5">
-                      <span className={`px-1.5 py-0.5 ${level.color} text-white font-pixel text-[8px]`}>LV.{level.lv}</span>
-                      <span className="font-pixel text-[9px] text-foreground">{level.name}</span>
-                      {teamData.level === level.lv && <span className="font-pixel text-[7px] text-primary">← 우리 팀</span>}
+              {levelOptions.map(level => {
+                const color = `bg-[hsl(var(--level-${level.value}))]`;
+                return (
+                  <div key={level.value} className={`flex items-start gap-3 p-2.5 border-2 border-border-dark ${teamData.level === level.value ? 'ring-2 ring-primary' : ''}`}
+                    style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow) / 0.3)' }}
+                  >
+                    <div className={`w-10 h-10 ${color} flex items-center justify-center text-lg shrink-0 border-2 border-black/20`}>
+                      {level.icon}
                     </div>
-                    <p className="font-pixel text-[7px] text-muted-foreground mt-0.5">{level.desc}</p>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <span className={`px-1.5 py-0.5 ${color} text-white font-pixel text-[8px]`}>{level.label}</span>
+                        <span className="font-pixel text-[9px] text-foreground">{level.name}</span>
+                        {teamData.level === level.value && <span className="font-pixel text-[7px] text-primary">← 우리 팀</span>}
+                      </div>
+                      <p className="font-pixel text-[7px] text-muted-foreground mt-0.5">{level.desc}</p>
+                      <p className="font-pixel text-[6px] text-muted-foreground/70 mt-0.5">{level.characteristic}</p>
+                      <p className="font-pixel text-[6px] text-muted-foreground/70">{level.operatingStyle}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
+              {(() => {
+                const recommendedLevel = avgExp < 1 ? '1' : avgExp < 3 ? '2' : avgExp < 7 ? '3' : '4';
+                const recOpt = levelOptions.find(l => l.value === recommendedLevel);
+                return recommendedLevel !== (teamData.level || '1') && recOpt ? (
+                  <p className="font-pixel text-[8px] text-amber-500 text-center pt-2 border-t border-border">
+                    💡 팀원 경력 기반 추천: {recOpt.label} {recOpt.name}
+                  </p>
+                ) : null;
+              })()}
               <p className="font-pixel text-[7px] text-muted-foreground text-center pt-2 border-t border-border">
                 💡 팀 레벨은 팀 설정에서 변경할 수 있어요
               </p>
