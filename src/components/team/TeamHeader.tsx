@@ -134,167 +134,122 @@ export function TeamHeader({
   };
 
   return (
-    <div className="relative">
-      {/* Banner */}
-      <div
-        className="h-24 border-b-4 border-border-dark relative overflow-hidden"
-        style={bannerUrl ? {} : {
-          background: `repeating-linear-gradient(45deg, hsl(var(--primary) / 0.2) 0px, hsl(var(--primary) / 0.2) 10px, hsl(var(--accent) / 0.15) 10px, hsl(var(--accent) / 0.15) 20px)`
-        }}
-      >
-        {bannerUrl && <img src={bannerUrl} alt="배너" className="w-full h-full object-cover" />}
+    <div className="bg-card border-b-3 border-border-dark px-4 py-4">
+      <div className="flex items-start gap-4">
+        {/* Team Photo */}
+        <div className="relative shrink-0">
+          <div
+            className="w-20 h-20 bg-muted border-3 border-border-dark overflow-hidden"
+            style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}
+          >
+            {photoUrl ? (
+              <img src={photoUrl} alt={name} className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-primary/20 text-3xl">
+                {emblem}
+              </div>
+            )}
+          </div>
+          {isAdmin && (
+            <>
+              <input ref={photoInputRef} type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
+              <button
+                onClick={() => photoInputRef.current?.click()}
+                disabled={uploading}
+                className="absolute -bottom-1 -right-1 w-6 h-6 bg-accent border-2 border-accent-dark flex items-center justify-center disabled:opacity-50"
+                style={{ boxShadow: '1px 1px 0 hsl(var(--pixel-shadow))' }}
+              >
+                <Camera size={12} className="text-accent-foreground" />
+              </button>
+            </>
+          )}
+        </div>
 
-        {isAdmin && (
-          <>
-            <input ref={bannerInputRef} type="file" accept="image/*" onChange={handleBannerUpload} className="hidden" />
-            <button
-              onClick={() => bannerInputRef.current?.click()}
-              disabled={uploading}
-              className="absolute bottom-2 right-2 w-8 h-8 flex items-center justify-center bg-accent border-2 border-accent-dark hover:brightness-110 disabled:opacity-50"
-              style={{ boxShadow: '2px 2px 0 hsl(var(--accent-dark))' }}
-            >
-              <Camera size={14} className="text-accent-foreground" />
-            </button>
-          </>
-        )}
-      </div>
-
-      {/* Team Info */}
-      <div className="px-3 -mt-6 relative z-10">
-        <div className="flex items-end gap-3">
-          {/* Team Photo */}
-          <div className="relative">
-            <div
-              className="w-20 h-20 bg-muted border-4 border-border-dark overflow-hidden"
-              style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}
-            >
-              {photoUrl ? (
-                <img src={photoUrl} alt={name} className="w-full h-full object-cover" />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center bg-primary/20 text-3xl">
-                  {emblem}
-                </div>
-              )}
-            </div>
-            {isAdmin && (
-              <>
-                <input ref={photoInputRef} type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
-                <button
-                  onClick={() => photoInputRef.current?.click()}
-                  disabled={uploading}
-                  className="absolute -bottom-1 -right-1 w-6 h-6 bg-accent border-2 border-accent-dark flex items-center justify-center disabled:opacity-50"
-                  style={{ boxShadow: '1px 1px 0 hsl(var(--pixel-shadow))' }}
-                >
-                  <Camera size={12} className="text-accent-foreground" />
+        {/* Team Info */}
+        <div className="flex-1 min-w-0">
+          {/* Name Row */}
+          <div className="flex items-center flex-wrap gap-1.5 mb-1.5">
+            {isEditingName ? (
+              <div className="flex items-center gap-1">
+                <input
+                  type="text"
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  className="font-pixel text-sm text-foreground bg-input border-2 border-primary px-2 py-1 w-32"
+                  autoFocus
+                  maxLength={20}
+                />
+                <button onClick={handleNameSave} className="w-6 h-6 bg-primary border-2 border-primary-dark flex items-center justify-center">
+                  <Check size={10} className="text-primary-foreground" />
                 </button>
+                <button onClick={() => { setIsEditingName(false); setEditName(name); }} className="w-6 h-6 bg-secondary border-2 border-border-dark flex items-center justify-center">
+                  <X size={10} />
+                </button>
+              </div>
+            ) : (
+              <>
+                <button onClick={() => onFavoriteToggle?.(!isFavorited)} className="transition-transform active:scale-125">
+                  <Star size={16} className={isFavorited ? 'text-[hsl(45,100%,50%)] fill-[hsl(45,100%,50%)]' : 'text-muted-foreground'} />
+                </button>
+                <h1 className="font-pixel text-sm text-foreground leading-tight">{name}</h1>
+                {isAdmin && (
+                  <button onClick={() => onNameClick ? onNameClick() : setIsEditingName(true)} className="text-muted-foreground hover:text-primary">
+                    <Pencil size={10} />
+                  </button>
+                )}
               </>
+            )}
+            <div className={cn('px-2 py-0.5 border-2 font-pixel text-[8px]', levelColors[level] || 'bg-primary text-primary-foreground')}>
+              LV.{level}
+            </div>
+          </div>
+
+          {/* Location Info */}
+          <div className="space-y-1">
+            {region && (
+              <div className="flex items-center gap-1.5">
+                <span className="font-pixel text-[7px] text-muted-foreground/60 w-10 shrink-0">활동지역</span>
+                <span className="font-pixel text-[9px] text-foreground">📍 {region}</span>
+              </div>
+            )}
+            {homeGroundName && (
+              <div className="flex items-center gap-1.5">
+                <span className="font-pixel text-[7px] text-muted-foreground/60 w-10 shrink-0">홈구장</span>
+                <button
+                  onClick={() => {
+                    const query = homeGroundAddress || homeGroundName;
+                    if (query) window.open(`https://map.naver.com/v5/search/${encodeURIComponent(query)}`, '_blank');
+                  }}
+                  className="font-pixel text-[9px] text-[#03C75A] hover:underline flex items-center gap-0.5"
+                >
+                  <MapPin size={9} />
+                  {homeGroundName}
+                </button>
+              </div>
             )}
           </div>
 
-          {/* Team Name & Info */}
-          <div className="flex-1 pb-1.5 bg-background/90 backdrop-blur-sm px-2 py-1 -mb-1">
-            <div className="flex items-center flex-wrap gap-1.5 mb-0.5">
-              {isEditingName ? (
-                <div className="flex items-center gap-1">
-                  <input
-                    type="text"
-                    value={editName}
-                    onChange={(e) => setEditName(e.target.value)}
-                    className="font-pixel text-xs text-foreground bg-input border-2 border-primary px-2 py-1 w-28"
-                    autoFocus
-                    maxLength={20}
-                  />
-                  <button
-                    onClick={handleNameSave}
-                    className="w-6 h-6 bg-primary border-2 border-primary-dark flex items-center justify-center"
-                  >
-                    <Check size={10} className="text-primary-foreground" />
-                  </button>
-                  <button
-                    onClick={() => { setIsEditingName(false); setEditName(name); }}
-                    className="w-6 h-6 bg-secondary border-2 border-border-dark flex items-center justify-center"
-                  >
-                    <X size={10} />
-                  </button>
-                </div>
-              ) : (
-                <div className="flex items-center gap-1">
-                  <button
-                    onClick={() => onFavoriteToggle?.(!isFavorited)}
-                    className="transition-transform active:scale-125"
-                    title={isFavorited ? '즐겨찾기 해제' : '즐겨찾기'}
-                  >
-                    <Star
-                      size={14}
-                      className={isFavorited ? 'text-[hsl(45,100%,50%)] fill-[hsl(45,100%,50%)]' : 'text-muted-foreground'}
-                    />
-                  </button>
-                  <h1 className="font-pixel text-xs text-foreground leading-tight">{name}</h1>
-                  {isAdmin && (
-                    <button
-                      onClick={() => onNameClick ? onNameClick() : setIsEditingName(true)}
-                      className="w-5 h-5 flex items-center justify-center text-muted-foreground hover:text-primary transition-colors"
-                      title="팀명 변경"
-                    >
-                      <Pencil size={10} />
-                    </button>
-                  )}
-                </div>
+          {/* Social Links */}
+          {(youtubeUrl || instagramUrl) && (
+            <div className="flex items-center gap-1.5 mt-2">
+              {youtubeUrl && (
+                <a href={youtubeUrl} target="_blank" rel="noopener noreferrer"
+                  className="flex items-center gap-1 px-2 py-0.5 bg-secondary border border-border-dark hover:bg-muted transition-colors"
+                >
+                  <span className="text-[10px]">▶️</span>
+                  <span className="font-pixel text-[7px] text-foreground">유튜브</span>
+                </a>
               )}
-              <div className={cn(
-                'px-1.5 py-0.5 border-2 font-pixel text-[8px]',
-                levelColors[level] || 'bg-primary text-primary-foreground'
-              )}>
-                LV.{level}
-              </div>
-
-              {(youtubeUrl || instagramUrl) && (
-                <div className="flex items-center gap-[5px] ml-2">
-                  {youtubeUrl && (
-                    <a href={youtubeUrl} target="_blank" rel="noopener noreferrer"
-                      className="flex items-center gap-1 px-2 py-0.5 bg-card border-2 border-border-dark hover:bg-secondary transition-colors"
-                      style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
-                    >
-                      <span className="text-[10px]">▶️</span>
-                      <span className="font-pixel text-[7px] text-foreground">유튜브</span>
-                    </a>
-                  )}
-                  {instagramUrl && (
-                    <a href={instagramUrl} target="_blank" rel="noopener noreferrer"
-                      className="flex items-center gap-1 px-2 py-0.5 bg-card border-2 border-border-dark hover:bg-secondary transition-colors"
-                      style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
-                    >
-                      <span className="text-[10px]">📸</span>
-                      <span className="font-pixel text-[7px] text-foreground">인스타</span>
-                    </a>
-                  )}
-                </div>
+              {instagramUrl && (
+                <a href={instagramUrl} target="_blank" rel="noopener noreferrer"
+                  className="flex items-center gap-1 px-2 py-0.5 bg-secondary border border-border-dark hover:bg-muted transition-colors"
+                >
+                  <span className="text-[10px]">📸</span>
+                  <span className="font-pixel text-[7px] text-foreground">인스타</span>
+                </a>
               )}
             </div>
-            <div className="flex flex-col gap-1 mt-0.5">
-              {region && (
-                <div className="flex items-center gap-1">
-                  <span className="font-pixel text-[7px] text-muted-foreground/70">활동지역</span>
-                  <span className="font-pixel text-[8px] text-muted-foreground">📍 {region}</span>
-                </div>
-              )}
-              {homeGroundName && (
-                <div className="flex items-center gap-1">
-                  <span className="font-pixel text-[7px] text-muted-foreground/70">홈구장</span>
-                  <button
-                    onClick={() => {
-                      const query = homeGroundAddress || homeGroundName;
-                      if (query) window.open(`https://map.naver.com/v5/search/${encodeURIComponent(query)}`, '_blank');
-                    }}
-                    className="flex items-center gap-0.5 font-pixel text-[7px] text-[#03C75A] hover:underline"
-                  >
-                    <MapPin size={8} />
-                    {homeGroundName}
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
