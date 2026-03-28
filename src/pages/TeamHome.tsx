@@ -93,6 +93,8 @@ export default function TeamHome() {
   const [error, setError] = useState<string | null>(null);
   const [isFavorited, setIsFavorited] = useState(false);
   const [showLevelInfo, setShowLevelInfo] = useState(false);
+  const [showNoticeEdit, setShowNoticeEdit] = useState(false);
+  const [noticeText, setNoticeText] = useState('');
 
   // Derived state
   const isAdmin = isDevAdmin || (currentUserId != null && teamData?.admin_user_id === currentUserId)
@@ -449,12 +451,12 @@ export default function TeamHome() {
         onNameClick={() => { if (isAdmin) { setShowNameEdit(true); setNewTeamName(teamData.name); } }}
       />
 
-      {/* 3. Marquee Notice Bar (전광판) */}
-      {notices.length > 0 && (
-        <div className="bg-gradient-to-r from-[#1a0a2e] via-[#16213e] to-[#1a0a2e] overflow-hidden border-y-2 border-[#00ff88]/30">
-          <div className="py-2 flex items-center">
-            <span className="shrink-0 px-2 font-pixel text-[8px] text-accent bg-accent/20 border-r border-border-dark">📢</span>
-            <div className="flex-1 overflow-hidden">
+      {/* 3. Marquee Notice Bar (전광판) + 수정 버튼 */}
+      <div className="bg-gradient-to-r from-[#1a0a2e] via-[#16213e] to-[#1a0a2e] overflow-hidden border-y-2 border-[#00ff88]/30">
+        <div className="py-2 flex items-center">
+          <span className="shrink-0 px-2 font-pixel text-[8px] text-accent bg-accent/20 border-r border-border-dark">📢</span>
+          <div className="flex-1 overflow-hidden">
+            {notices.length > 0 ? (
               <div className="animate-marquee whitespace-nowrap">
                 {notices.map((n, i) => (
                   <span key={n.id} className="font-pixel text-[9px] text-[#00ff88] drop-shadow-[0_0_8px_rgba(0,255,136,0.8)] mx-6">
@@ -468,10 +470,20 @@ export default function TeamHome() {
                   </span>
                 ))}
               </div>
-            </div>
+            ) : (
+              <span className="font-pixel text-[8px] text-[#00ff88]/50 px-4">공지를 등록해보세요</span>
+            )}
           </div>
+          {isAdmin && (
+            <button
+              onClick={() => setShowNoticeEdit(true)}
+              className="shrink-0 px-2 font-pixel text-[8px] text-[#00ff88] hover:text-white transition-colors"
+            >
+              ✏️
+            </button>
+          )}
         </div>
-      )}
+      </div>
 
       <div className="px-4 py-4 space-y-5">
         {/* 4. Quick Stats Row */}
@@ -501,21 +513,10 @@ export default function TeamHome() {
           ))}
         </div>
 
-        {/* 5. 오늘의 한마디 + Fighting */}
+        {/* 5. Fighting + Achievements */}
         <div className="flex items-center gap-2">
-          <div className="flex-1 bg-card border-2 border-border-dark px-3 py-2 flex items-center gap-2" style={{boxShadow:'2px 2px 0 hsl(var(--pixel-shadow) / 0.5)'}}>
-            <span className="text-lg">💬</span>
-            <div className="flex-1 min-w-0">
-              <p className="font-pixel text-[8px] text-foreground truncate">
-                {teamData.introduction || '오늘도 파이팅! ⚽'}
-              </p>
-              {isAdmin && <span className="font-pixel text-[5px] text-muted-foreground">팀 설정에서 변경</span>}
-            </div>
-          </div>
           <FightingButton teamName={teamData.name} />
         </div>
-
-        {/* 6. Achievements */}
         <TeamAchievements teamId={teamData.id} />
 
         {/* 7. Team Intro */}
@@ -610,6 +611,43 @@ export default function TeamHome() {
         teamName={teamData.name}
         isTeamInquiry={true}
       />
+
+      {/* Notice Edit Modal */}
+      {showNoticeEdit && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center px-4">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setShowNoticeEdit(false)} />
+          <div className="relative w-full max-w-sm bg-card border-4 border-border-dark overflow-hidden"
+            style={{ boxShadow: '6px 6px 0 hsl(var(--pixel-shadow))' }}
+          >
+            <div className="bg-gradient-to-r from-[#1a0a2e] to-[#16213e] text-[#00ff88] px-4 py-3 flex items-center justify-between">
+              <span className="font-pixel text-[10px]">📢 공지 수정</span>
+              <button onClick={() => setShowNoticeEdit(false)} className="hover:opacity-80 font-pixel text-[10px]">✕</button>
+            </div>
+            <div className="p-4 space-y-3">
+              <textarea
+                value={noticeText}
+                onChange={(e) => setNoticeText(e.target.value)}
+                placeholder="전광판에 표시할 공지를 입력하세요"
+                className="w-full pixel-input h-20 resize-none"
+                maxLength={100}
+              />
+              <p className="font-pixel text-[6px] text-muted-foreground text-right">{noticeText.length}/100</p>
+              <button
+                onClick={async () => {
+                  if (!noticeText.trim()) return;
+                  await handleCreateNotice(noticeText.trim());
+                  setNoticeText('');
+                  setShowNoticeEdit(false);
+                }}
+                className="w-full py-2.5 bg-[#00ff88] text-[#1a0a2e] font-pixel text-[9px] border-2 border-[#00cc6a] hover:brightness-110 transition-all"
+                style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow) / 0.5)' }}
+              >
+                공지 등록
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Level Info Modal */}
       {showLevelInfo && (
