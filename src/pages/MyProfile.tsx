@@ -152,11 +152,41 @@ export default function MyProfile() {
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const url = URL.createObjectURL(file);
-      setProfile({ ...profile, avatarUrl: url });
+    if (!file || !user) return;
+
+    // Show local preview immediately
+    const localUrl = URL.createObjectURL(file);
+    setProfile(prev => ({ ...prev, avatarUrl: localUrl }));
+
+    // Upload to Supabase Storage
+    try {
+      const ext = file.name.split('.').pop();
+      const path = `${user.id}/avatar-${Date.now()}.${ext}`;
+      const { error: uploadError } = await supabase.storage
+        .from('archive-images')
+        .upload(path, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data: urlData } = supabase.storage
+        .from('archive-images')
+        .getPublicUrl(path);
+
+      // Update profile with public URL
+      setProfile(prev => ({ ...prev, avatarUrl: urlData.publicUrl }));
+
+      // Save to DB immediately
+      await supabase
+        .from('profiles')
+        .update({ avatar_url: urlData.publicUrl })
+        .eq('user_id', user.id);
+
+      toast.success('프로필 사진이 변경되었습니다!');
+    } catch (err) {
+      console.error('Avatar upload error:', err);
+      toast.error('사진 업로드에 실패했습니다');
     }
   };
 
