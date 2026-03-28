@@ -6,6 +6,7 @@ import { PixelButton } from '@/components/ui/PixelButton';
 import { InvitationCard } from '@/components/messages/InvitationCard';
 import { MessageBadge, getMessageType } from '@/components/messages/MessageBadge';
 import { DirectMessageModal } from '@/components/messages/DirectMessageModal';
+import { RecipientPicker } from '@/components/messages/RecipientPicker';
 import { ApplicantCard } from '@/components/team/ApplicantCard';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
@@ -95,6 +96,7 @@ export default function Messages() {
   const [loadingJoinRequests, setLoadingJoinRequests] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [showDirectMessage, setShowDirectMessage] = useState(false);
+  const [showRecipientPicker, setShowRecipientPicker] = useState(false);
   const [directMessageRecipient, setDirectMessageRecipient] = useState<{
     id: string;
     name: string;
@@ -923,15 +925,28 @@ export default function Messages() {
           <PixelButton
             variant="accent"
             className="w-full flex items-center justify-center gap-2"
-            onClick={() => {
-              setShowDirectMessage(true);
-            }}
+            onClick={() => setShowRecipientPicker(true)}
           >
             <span>✉️</span>
             <span>새 쪽지 보내기</span>
           </PixelButton>
         )}
       </div>
+
+      {/* Recipient Picker */}
+      <RecipientPicker
+        isOpen={showRecipientPicker}
+        onClose={() => setShowRecipientPicker(false)}
+        onSelect={(selected) => {
+          setDirectMessageRecipient({
+            id: selected.id,
+            name: `${selected.nickname}#${selected.tag}`,
+            avatar: selected.avatarUrl,
+          });
+          setShowRecipientPicker(false);
+          setShowDirectMessage(true);
+        }}
+      />
 
       {/* Direct Message Modal */}
       {showDirectMessage && (
