@@ -43,6 +43,10 @@ export function DirectMessageModal({
   }, [isOpen]);
 
   const handleSend = async () => {
+    if (!recipientId) {
+      toast.error('받는 사람을 선택해주세요');
+      return;
+    }
     if (!content.trim()) {
       toast.error('메시지 내용을 입력해주세요');
       return;

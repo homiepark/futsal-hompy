@@ -918,13 +918,12 @@ export default function Messages() {
           </div>
         )}
 
-        {/* New Message Button */}
-        {activeTab !== 'invites' && activeTab !== 'join-requests' && (
+        {/* New Message Button - 개인 쪽지 탭에서만 */}
+        {activeTab === 'personal' && (
           <PixelButton
             variant="accent"
             className="w-full flex items-center justify-center gap-2"
             onClick={() => {
-              setDirectMessageRecipient(null);
               setShowDirectMessage(true);
             }}
           >
@@ -935,7 +934,7 @@ export default function Messages() {
       </div>
 
       {/* Direct Message Modal */}
-      {directMessageRecipient && (
+      {showDirectMessage && (
         <DirectMessageModal
           isOpen={showDirectMessage}
           onClose={() => {
@@ -943,12 +942,12 @@ export default function Messages() {
             setDirectMessageRecipient(null);
             fetchConversations();
           }}
-          recipientId={directMessageRecipient.id}
-          recipientName={directMessageRecipient.name}
-          recipientAvatar={directMessageRecipient.avatar}
-          teamId={directMessageRecipient.teamId}
-          teamName={directMessageRecipient.teamName}
-          isTeamInquiry={directMessageRecipient.isTeamInquiry}
+          recipientId={directMessageRecipient?.id || ''}
+          recipientName={directMessageRecipient?.name || ''}
+          recipientAvatar={directMessageRecipient?.avatar}
+          teamId={directMessageRecipient?.teamId}
+          teamName={directMessageRecipient?.teamName}
+          isTeamInquiry={directMessageRecipient?.isTeamInquiry}
         />
       )}
     </div>
