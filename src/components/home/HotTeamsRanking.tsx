@@ -7,6 +7,7 @@ interface PopularTeam {
   id: string;
   name: string;
   emblem: string;
+  photoUrl: string;
   level: string;
   wins: number;
   memberCount: number;
@@ -29,7 +30,7 @@ export function HotTeamsRanking() {
       try {
         const { data: teamsData, error: teamsError } = await supabase
           .from('teams')
-          .select('id, name, emblem, level')
+          .select('id, name, emblem, photo_url, level')
           .order('created_at', { ascending: false })
           .limit(3);
 
@@ -54,6 +55,7 @@ export function HotTeamsRanking() {
             id: t.id,
             name: t.name,
             emblem: t.emblem || '⚽',
+            photoUrl: (t as any).photo_url || '',
             level: t.level?.toString() || '1',
             wins: 0,
             memberCount: memberCounts[t.id] || 0,
@@ -136,8 +138,14 @@ export function HotTeamsRanking() {
               {index + 1}
             </div>
 
-            {/* Team Info */}
-            <span className="text-xl">{team.emblem}</span>
+            {/* Team Photo or Emblem */}
+            {team.photoUrl ? (
+              <div className="w-8 h-8 border-2 border-border-dark overflow-hidden shrink-0">
+                <img src={team.photoUrl} alt={team.name} className="w-full h-full object-cover" />
+              </div>
+            ) : (
+              <span className="text-xl">{team.emblem}</span>
+            )}
             <div className="flex-1 text-left min-w-0">
               <span className="font-pixel text-[9px] text-foreground block truncate">{team.name}</span>
               <div className="flex items-center gap-2 mt-0.5">

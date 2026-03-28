@@ -270,14 +270,11 @@ const Index = () => {
               </span>
             )}
           </Link>
-          <Link 
-            to="/settings"
+          <Link
+            to="/profile"
             className="w-11 h-11 bg-card/95 backdrop-blur-sm border-3 border-border-dark flex items-center justify-center shadow-[3px_3px_0_hsl(var(--pixel-shadow))] hover:bg-card transition-colors"
           >
             <Settings size={22} className="text-foreground" />
-          </Link>
-          <Link to="/profile">
-            <PixelProfileIcon size={3} />
           </Link>
         </div>
         <img 
