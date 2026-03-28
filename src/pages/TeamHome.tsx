@@ -328,7 +328,7 @@ export default function TeamHome() {
     toast.success('팀 이름이 변경되었습니다');
   };
 
-  // Create a new notice
+  // Replace notice (deactivate old ones, create new)
   const handleCreateNotice = async (content: string) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -337,6 +337,14 @@ export default function TeamHome() {
         return;
       }
 
+      // Deactivate all existing notices for this team
+      await supabase
+        .from('team_notices')
+        .update({ is_active: false })
+        .eq('team_id', teamId)
+        .eq('is_active', true);
+
+      // Insert new notice
       const { error } = await supabase
         .from('team_notices')
         .insert({
@@ -347,7 +355,7 @@ export default function TeamHome() {
 
       if (error) throw error;
 
-      toast.success('공지사항이 등록되었습니다! 📢');
+      toast.success('공지가 변경되었습니다! 📢');
       fetchNotices();
     } catch (error) {
       console.error('Notice creation error:', error);
@@ -513,10 +521,7 @@ export default function TeamHome() {
           ))}
         </div>
 
-        {/* 5. Fighting + Achievements */}
-        <div className="flex items-center gap-2">
-          <FightingButton teamName={teamData.name} />
-        </div>
+        {/* 5. Achievements */}
         <TeamAchievements teamId={teamData.id} />
 
         {/* 7. Team Intro */}
