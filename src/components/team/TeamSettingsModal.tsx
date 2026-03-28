@@ -356,9 +356,9 @@ export function TeamSettingsModal({
             </div>
           </div>
 
-          {/* 활동 시간 */}
+          {/* 훈련 시간 */}
           <div>
-            <label className="font-pixel text-[9px] text-foreground mb-2 block">🕐 활동 시간</label>
+            <label className="font-pixel text-[9px] text-foreground mb-2 block">🕐 훈련 시간</label>
             <div className="flex items-center gap-2">
               <select
                 value={trainingStartTime}

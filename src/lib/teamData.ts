@@ -93,9 +93,10 @@ export const trainingDays = [
 export type DayValue = typeof trainingDays[number]['value'];
 
 // Time options for training schedule
-export const timeOptions = Array.from({ length: 24 }, (_, i) => {
-  const hour = i.toString().padStart(2, '0');
-  return { value: `${hour}:00`, label: `${hour}:00` };
+export const timeOptions = Array.from({ length: 48 }, (_, i) => {
+  const hour = Math.floor(i / 2).toString().padStart(2, '0');
+  const min = i % 2 === 0 ? '00' : '30';
+  return { value: `${hour}:${min}`, label: `${hour}:${min}` };
 });
 
 // Time slot options for filtering

@@ -231,7 +231,7 @@ export function TeamHeader({
             )}
             {trainingInfo && (
               <div className="flex items-center gap-1.5">
-                <span className="font-pixel text-[7px] text-muted-foreground/60 w-10 shrink-0">활동시간</span>
+                <span className="font-pixel text-[7px] text-muted-foreground/60 w-10 shrink-0">훈련시간</span>
                 <span className="font-pixel text-[9px] text-foreground">🕐 {trainingInfo}</span>
               </div>
             )}
