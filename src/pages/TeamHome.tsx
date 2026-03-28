@@ -761,7 +761,7 @@ export default function TeamHome() {
         teamId={teamData.id}
         teamName={teamData.name}
         members={members.map(m => ({
-          id: m.id,
+          id: m.userId || m.id,
           nickname: m.nickname,
           avatarUrl: m.avatarUrl,
         }))}
