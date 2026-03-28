@@ -243,17 +243,17 @@ export function CreateMatchPostModal({
     : '';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[60] flex items-start justify-center pt-8 pb-24 px-4">
       {/* Backdrop */}
-      <div 
+      <div
         className="absolute inset-0 bg-black/70"
         onClick={onClose}
       />
 
       {/* Modal */}
-      <div 
-        className="relative w-full max-w-md max-h-[90vh] overflow-y-auto bg-card border-4 border-border-dark"
-        style={{ boxShadow: '8px 8px 0 hsl(var(--pixel-shadow))' }}
+      <div
+        className="relative w-full max-w-md max-h-full overflow-y-auto overscroll-contain bg-card border-4 border-border-dark"
+        style={{ boxShadow: '8px 8px 0 hsl(var(--pixel-shadow))', WebkitOverflowScrolling: 'touch' }}
       >
         {/* Header */}
         <div className="sticky top-0 z-10 bg-gradient-to-r from-primary to-primary/80 border-b-4 border-primary-dark p-4 flex items-center justify-between">

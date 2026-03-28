@@ -47,15 +47,15 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[60] flex items-start justify-center pt-12 pb-24 px-4">
       {/* Backdrop */}
-      <div 
+      <div
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         onClick={onClose}
       />
 
       {/* Modal */}
-      <div className="relative w-full max-w-sm kairo-panel animate-in fade-in zoom-in-95 duration-200 max-h-[85vh] flex flex-col">
+      <div className="relative w-full max-w-sm kairo-panel animate-in fade-in zoom-in-95 duration-200 max-h-full flex flex-col overflow-hidden">
         {/* Header */}
         <div className="kairo-panel-header justify-between flex-shrink-0">
           <div className="flex items-center gap-2">
