@@ -8,9 +8,11 @@ import { MatchPostCard } from '@/components/matchmaking/MatchPostCard';
 import { MatchBoardFilters } from '@/components/matchmaking/MatchBoardFilters';
 import { CreateMatchPostModal } from '@/components/matchmaking/CreateMatchPostModal';
 import { ChallengeNotification, useChallengeNotifications } from '@/components/matchmaking/ChallengeNotification';
+import { ChallengeModal } from '@/components/matchmaking/ChallengeModal';
 import { MatchTicker } from '@/components/matchmaking/MatchTicker';
 import { RecommendedMatches } from '@/components/matchmaking/RecommendedMatches';
 import { useDev } from '@/contexts/DevContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { format, parseISO, isToday, isTomorrow, isThisWeek } from 'date-fns';
 
 interface MatchPost {
@@ -48,6 +50,7 @@ const initialFilters: BoardFilters = {
 
 export default function Matchmaking() {
   const navigate = useNavigate();
+  const { user: authUser } = useAuth();
   const { isDevAdmin } = useDev();
   const [filters, setFilters] = useState<BoardFilters>(initialFilters);
   const [matchPosts, setMatchPosts] = useState<MatchPost[]>([]);
@@ -63,6 +66,12 @@ export default function Matchmaking() {
   } | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [challengeTarget, setChallengeTarget] = useState<{
+    postId: string;
+    teamName: string;
+    teamEmblem: string;
+    teamAdminId: string;
+  } | null>(null);
   const [recommendedTeams, setRecommendedTeams] = useState<Array<{
     id: string;
     name: string;
@@ -259,43 +268,23 @@ export default function Matchmaking() {
       return;
     }
 
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast.error('로그인이 필요합니다');
-        return;
-      }
+    // Find the post to get team info
+    const post = matchPosts.find(p => p.id === postId);
+    if (!post) return;
 
-      // Check if already applied
-      const { data: existingApp } = await supabase
-        .from('match_applications')
-        .select('id')
-        .eq('match_post_id', postId)
-        .eq('applicant_team_id', userTeam.id)
-        .single();
+    // Get the admin of the target team
+    const { data: targetTeam } = await supabase
+      .from('teams')
+      .select('admin_user_id')
+      .eq('id', post.team_id)
+      .single();
 
-      if (existingApp) {
-        toast.info('이미 도전 신청한 공고입니다', { icon: '📝' });
-        return;
-      }
-
-      // Create application
-      const { error } = await supabase
-        .from('match_applications')
-        .insert({
-          match_post_id: postId,
-          applicant_team_id: userTeam.id,
-          applied_by_user_id: user.id,
-          message: `${userTeam.name}팀이 도전합니다!`,
-        });
-
-      if (error) throw error;
-
-      toast.success('도전 신청이 완료되었습니다!', { icon: '⚔️' });
-    } catch (error) {
-      console.error('Error creating challenge:', error);
-      toast.error('도전 신청에 실패했습니다');
-    }
+    setChallengeTarget({
+      postId,
+      teamName: post.team.name,
+      teamEmblem: post.team.emblem,
+      teamAdminId: targetTeam?.admin_user_id || '',
+    });
   };
 
   const handleCreateSuccess = () => {
@@ -421,6 +410,21 @@ export default function Matchmaking() {
         onSuccess={handleCreateSuccess}
         team={userTeam}
       />
+
+      {/* Challenge Modal */}
+      {challengeTarget && userTeam && (
+        <ChallengeModal
+          isOpen={!!challengeTarget}
+          onClose={() => setChallengeTarget(null)}
+          matchPostId={challengeTarget.postId}
+          targetTeamName={challengeTarget.teamName}
+          targetTeamEmblem={challengeTarget.teamEmblem}
+          targetTeamAdminId={challengeTarget.teamAdminId}
+          myTeam={{ id: userTeam.id, name: userTeam.name, emblem: userTeam.emblem }}
+          myUserId={authUser?.id || ''}
+          onSuccess={loadMatchPosts}
+        />
+      )}
 
       {/* Real-time Challenge Notifications */}
       {notifications.length > 0 && (
