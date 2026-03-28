@@ -510,12 +510,12 @@ export default function TeamHome() {
 
       <div className="px-4 py-4 space-y-5">
         {/* 4. Quick Stats Row */}
-        <div className="flex gap-2 overflow-x-auto pb-1">
+        <div className="grid grid-cols-5 gap-1.5">
           {[
             { label: '팀 레벨', value: `LV.${teamData.level}`, icon: '🏅', key: 'level' },
-            { label: '매치 횟수', value: '23전', icon: '⚔️', key: 'match' },
-            { label: '팀원 평균 경력', value: `${avgExp}년`, icon: '⏰', key: 'exp' },
-            { label: '매너 점수', value: '-', icon: '⭐', key: 'manner' },
+            { label: '매치', value: '23전', icon: '⚔️', key: 'match' },
+            { label: '평균경력', value: `${avgExp}년`, icon: '⏰', key: 'exp' },
+            { label: '매너', value: '-', icon: '⭐', key: 'manner' },
             { label: '멤버', value: `${members.length}명`, icon: '👥', key: 'member' },
           ].map(stat => (
             <button
@@ -526,7 +526,7 @@ export default function TeamHome() {
                   toast('매너 점수는 매치 후 상대팀이 평가합니다', { icon: '⭐', description: '매치 결과 입력 시 상대팀에게 별 1~5점을 받아요' });
                 }
               }}
-              className="shrink-0 bg-card border-2 border-border-dark px-2 py-1 text-center hover:bg-muted transition-colors min-w-[48px]"
+              className="bg-card border-2 border-border-dark py-1.5 text-center hover:bg-muted transition-colors"
               style={{boxShadow:'2px 2px 0 hsl(var(--pixel-shadow) / 0.5)'}}
             >
               <span className="text-xs block">{stat.icon}</span>
