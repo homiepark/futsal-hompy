@@ -7,6 +7,7 @@ import { TeamLevelBadge } from '@/components/team/TeamLevelBadge';
 interface TeamListCardProps {
   id?: string;
   emblem: string;
+  photoUrl?: string;
   name: string;
   region: string;
   level: string;
@@ -22,6 +23,7 @@ interface TeamListCardProps {
 export function TeamListCard({
   id,
   emblem,
+  photoUrl,
   name,
   region,
   level,
@@ -53,11 +55,15 @@ export function TeamListCard({
       style={{ boxShadow: '4px 4px 0 hsl(var(--pixel-shadow))' }}
     >
       <div className="flex items-start gap-3">
-        {/* Pixel Emblem */}
-        <div className="w-12 h-12 bg-field-green border-2 border-border-dark flex items-center justify-center text-2xl"
+        {/* Team Photo or Emblem */}
+        <div className="w-12 h-12 bg-field-green border-2 border-border-dark flex items-center justify-center overflow-hidden shrink-0"
           style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
         >
-          {emblem}
+          {photoUrl ? (
+            <img src={photoUrl} alt={name} className="w-full h-full object-cover" />
+          ) : (
+            <span className="text-2xl">{emblem}</span>
+          )}
         </div>
 
         <div className="flex-1 min-w-0">

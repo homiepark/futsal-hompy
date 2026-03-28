@@ -20,6 +20,7 @@ import topBanner from '@/assets/top-banner.jpg';
 interface Team {
   id: string;
   emblem: string;
+  photo_url: string | null;
   name: string;
   region: string | null;
   district: string | null;
@@ -416,6 +417,7 @@ const Index = () => {
                 key={team.id}
                 id={team.id}
                 emblem={team.emblem}
+                photoUrl={team.photo_url || undefined}
                 name={team.name}
                 region={formatRegion(team)}
                 level={team.level}
