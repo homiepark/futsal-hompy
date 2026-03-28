@@ -104,16 +104,31 @@ export default function Messages() {
     isTeamInquiry?: boolean;
   } | null>(null);
 
-  // Check if user is admin of any team
+  // Check if user is admin of any team (check both teams.admin_user_id AND team_members.role)
   useEffect(() => {
     if (!user) return;
     const checkAdmin = async () => {
-      const { data } = await supabase
+      // Check teams.admin_user_id
+      const { data: ownedTeams } = await supabase
         .from('teams')
         .select('id')
         .eq('admin_user_id', user.id)
         .limit(1);
-      setIsAdmin(!!(data && data.length > 0));
+
+      if (ownedTeams && ownedTeams.length > 0) {
+        setIsAdmin(true);
+        return;
+      }
+
+      // Also check team_members with role='admin'
+      const { data: adminMembers } = await supabase
+        .from('team_members')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('role', 'admin')
+        .limit(1);
+
+      setIsAdmin(!!(adminMembers && adminMembers.length > 0));
     };
     checkAdmin();
   }, [user]);
