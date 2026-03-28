@@ -207,7 +207,7 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
       setVideoUrl('');
       removeVideo();
       setSelectedTags([]);
-      toast.success('추억저장소에 등록되었습니다! 📸');
+      toast.success('팀 스토리에 등록되었습니다! 📸');
       onSubmitSuccess?.();
       onClose();
     } catch (err) {
@@ -227,7 +227,7 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
         <div className="kairo-panel-header justify-between flex-shrink-0">
           <div className="flex items-center gap-2">
             <span>📝</span>
-            <span>추억저장소 글쓰기</span>
+            <span>팀 스토리 글쓰기</span>
           </div>
           <button
             onClick={onClose}

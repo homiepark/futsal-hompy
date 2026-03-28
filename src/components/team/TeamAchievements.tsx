@@ -29,8 +29,8 @@ function getAchievements(
     { id: 'match-20', emoji: '🏅', label: '베테랑', desc: '20번 이상의 매치를 완료하세요!', earned: matchCount >= 20 },
     { id: 'member-5', emoji: '👥', label: '5인 풋살단', desc: '팀원을 5명 이상 모으세요!', earned: memberCount >= 5 },
     { id: 'member-10', emoji: '🏠', label: '대가족', desc: '팀원을 10명 이상 모으세요!', earned: memberCount >= 10 },
-    { id: 'archive-1', emoji: '📸', label: '첫 기록', desc: '추억저장소에 첫 기록을 남기세요!', earned: archiveCount >= 1 },
-    { id: 'archive-10', emoji: '📚', label: '추억 수집가', desc: '추억저장소에 10개 이상 기록하세요!', earned: archiveCount >= 10 },
+    { id: 'archive-1', emoji: '📸', label: '첫 기록', desc: '팀 스토리에 첫 기록을 남기세요!', earned: archiveCount >= 1 },
+    { id: 'archive-10', emoji: '📚', label: '추억 수집가', desc: '팀 스토리에 10개 이상 기록하세요!', earned: archiveCount >= 10 },
   ];
 }
 

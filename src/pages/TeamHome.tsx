@@ -546,7 +546,7 @@ export default function TeamHome() {
           onSave={handleIntroUpdate}
         />
 
-        {/* 8. Latest Archive (추억저장소) */}
+        {/* 8. Latest Archive (팀 스토리) */}
         <LatestArchive
           teamId={teamData.id}
           items={archiveItems}
