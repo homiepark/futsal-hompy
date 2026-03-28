@@ -3,7 +3,7 @@ import { X, MapPin, Navigation, Check } from 'lucide-react';
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { regionData, regions } from '@/lib/teamData';
+import { regionData, regions, genderOptions, GenderValue, trainingDays, DayValue, timeOptions } from '@/lib/teamData';
 
 interface TeamSettingsModalProps {
   isOpen: boolean;
@@ -14,13 +14,15 @@ interface TeamSettingsModalProps {
   currentLevel: string;
   currentHomeGround: string;
   currentHomeGroundAddress: string;
-  onUpdate: (data: {
-    region?: string;
-    district?: string;
-    level?: string;
-    home_ground_name?: string;
-    home_ground_address?: string;
-  }) => void;
+  currentGender: string;
+  currentTrainingDays: string[];
+  currentTrainingStartTime: string;
+  currentTrainingEndTime: string;
+  currentIntroduction: string;
+  currentInstagramUrl: string;
+  currentYoutubeUrl: string;
+  currentEmblem: string;
+  onUpdate: (data: Record<string, any>) => void;
 }
 
 export function TeamSettingsModal({
@@ -32,6 +34,14 @@ export function TeamSettingsModal({
   currentLevel,
   currentHomeGround,
   currentHomeGroundAddress,
+  currentGender,
+  currentTrainingDays,
+  currentTrainingStartTime,
+  currentTrainingEndTime,
+  currentIntroduction,
+  currentInstagramUrl,
+  currentYoutubeUrl,
+  currentEmblem,
   onUpdate,
 }: TeamSettingsModalProps) {
   useBodyScrollLock(isOpen);
@@ -40,6 +50,14 @@ export function TeamSettingsModal({
   const [level, setLevel] = useState(currentLevel || '1');
   const [homeGround, setHomeGround] = useState(currentHomeGround || '');
   const [homeGroundAddress, setHomeGroundAddress] = useState(currentHomeGroundAddress || '');
+  const [gender, setGender] = useState<GenderValue>((currentGender as GenderValue) || 'mixed');
+  const [selectedDays, setSelectedDays] = useState<DayValue[]>(currentTrainingDays as DayValue[] || []);
+  const [trainingStartTime, setTrainingStartTime] = useState(currentTrainingStartTime || '');
+  const [trainingEndTime, setTrainingEndTime] = useState(currentTrainingEndTime || '');
+  const [introduction, setIntroduction] = useState(currentIntroduction || '');
+  const [instagramUrl, setInstagramUrl] = useState(currentInstagramUrl || '');
+  const [youtubeUrl, setYoutubeUrl] = useState(currentYoutubeUrl || '');
+  const [emblem, setEmblem] = useState(currentEmblem || '⚽');
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -49,20 +67,36 @@ export function TeamSettingsModal({
       setLevel(currentLevel || '1');
       setHomeGround(currentHomeGround || '');
       setHomeGroundAddress(currentHomeGroundAddress || '');
+      setGender((currentGender as GenderValue) || 'mixed');
+      setSelectedDays(currentTrainingDays as DayValue[] || []);
+      setTrainingStartTime(currentTrainingStartTime || '');
+      setTrainingEndTime(currentTrainingEndTime || '');
+      setIntroduction(currentIntroduction || '');
+      setInstagramUrl(currentInstagramUrl || '');
+      setYoutubeUrl(currentYoutubeUrl || '');
+      setEmblem(currentEmblem || '⚽');
     }
-  }, [isOpen, currentRegion, currentDistrict, currentLevel, currentHomeGround, currentHomeGroundAddress]);
+  }, [isOpen, currentRegion, currentDistrict, currentLevel, currentHomeGround, currentHomeGroundAddress, currentGender, currentTrainingDays, currentTrainingStartTime, currentTrainingEndTime, currentIntroduction, currentInstagramUrl, currentYoutubeUrl, currentEmblem]);
 
   if (!isOpen) return null;
 
   const handleSave = async () => {
     setSaving(true);
     try {
-      const updates: Record<string, string | null> = {
+      const updates: Record<string, any> = {
         region: region || null,
         district: district || null,
         level: level,
         home_ground_name: homeGround || null,
         home_ground_address: homeGroundAddress || null,
+        gender: gender || null,
+        training_days: selectedDays,
+        training_start_time: trainingStartTime || null,
+        training_end_time: trainingEndTime || null,
+        introduction: introduction || null,
+        instagram_url: instagramUrl || null,
+        youtube_url: youtubeUrl || null,
+        emblem: emblem || '⚽',
       };
 
       const { error } = await supabase
@@ -256,6 +290,138 @@ export function TeamSettingsModal({
             <p className="font-pixel text-[6px] text-muted-foreground mt-1.5">
               💡 구장 이름만 입력해도 OK! 주소는 선택사항이에요
             </p>
+          </div>
+
+          {/* 엠블럼 */}
+          <div>
+            <label className="font-pixel text-[9px] text-foreground mb-2 block">🎨 엠블럼 (이모지)</label>
+            <input
+              type="text"
+              value={emblem}
+              onChange={(e) => setEmblem(e.target.value)}
+              placeholder="⚽"
+              className="w-20 pixel-input text-center text-lg"
+              maxLength={4}
+            />
+          </div>
+
+          {/* 성별 */}
+          <div>
+            <label className="font-pixel text-[9px] text-foreground mb-2 block">👫 성별</label>
+            <div className="flex gap-2">
+              {genderOptions.map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => setGender(opt.value as GenderValue)}
+                  className={`flex-1 py-2 font-pixel text-[9px] border-2 transition-all ${
+                    gender === opt.value
+                      ? 'bg-primary text-primary-foreground border-primary-dark'
+                      : 'bg-card text-foreground border-border-dark hover:border-primary/50'
+                  }`}
+                  style={{ boxShadow: gender === opt.value ? '2px 2px 0 hsl(var(--primary-dark) / 0.3)' : '1px 1px 0 hsl(var(--pixel-shadow) / 0.3)' }}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* 활동 요일 */}
+          <div>
+            <label className="font-pixel text-[9px] text-foreground mb-2 block">📅 활동 요일</label>
+            <div className="flex gap-1">
+              {trainingDays.map((day) => {
+                const isSelected = selectedDays.includes(day.value);
+                return (
+                  <button
+                    key={day.value}
+                    type="button"
+                    onClick={() => {
+                      setSelectedDays(prev =>
+                        isSelected ? prev.filter(d => d !== day.value) : [...prev, day.value]
+                      );
+                    }}
+                    className={`w-9 h-9 font-pixel text-[9px] border-2 transition-all ${
+                      isSelected
+                        ? 'bg-primary text-primary-foreground border-primary-dark'
+                        : 'bg-card text-foreground border-border-dark hover:border-primary/50'
+                    }`}
+                    style={{ boxShadow: isSelected ? '2px 2px 0 hsl(var(--primary-dark) / 0.3)' : '1px 1px 0 hsl(var(--pixel-shadow) / 0.3)' }}
+                  >
+                    {day.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* 활동 시간 */}
+          <div>
+            <label className="font-pixel text-[9px] text-foreground mb-2 block">🕐 활동 시간</label>
+            <div className="flex items-center gap-2">
+              <select
+                value={trainingStartTime}
+                onChange={(e) => setTrainingStartTime(e.target.value)}
+                className="flex-1 pixel-input font-pixel text-[8px]"
+              >
+                <option value="">시작 시간</option>
+                {timeOptions.map((t) => (
+                  <option key={t.value} value={t.value}>{t.label}</option>
+                ))}
+              </select>
+              <span className="font-pixel text-[9px] text-muted-foreground">~</span>
+              <select
+                value={trainingEndTime}
+                onChange={(e) => setTrainingEndTime(e.target.value)}
+                className="flex-1 pixel-input font-pixel text-[8px]"
+              >
+                <option value="">종료 시간</option>
+                {timeOptions.map((t) => (
+                  <option key={t.value} value={t.value}>{t.label}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* 팀 소개 */}
+          <div>
+            <label className="font-pixel text-[9px] text-foreground mb-2 block">📝 팀 소개</label>
+            <textarea
+              value={introduction}
+              onChange={(e) => setIntroduction(e.target.value)}
+              placeholder="팀을 소개해주세요"
+              className="w-full pixel-input h-20 resize-none font-pixel text-[8px]"
+              maxLength={500}
+            />
+            <p className="font-pixel text-[6px] text-muted-foreground text-right">{introduction.length}/500</p>
+          </div>
+
+          {/* SNS 링크 */}
+          <div>
+            <label className="font-pixel text-[9px] text-foreground mb-2 block">🔗 SNS 링크</label>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <span className="text-sm shrink-0">📸</span>
+                <input
+                  type="text"
+                  value={instagramUrl}
+                  onChange={(e) => setInstagramUrl(e.target.value)}
+                  placeholder="인스타그램 URL"
+                  className="w-full pixel-input font-pixel text-[8px]"
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm shrink-0">▶️</span>
+                <input
+                  type="text"
+                  value={youtubeUrl}
+                  onChange={(e) => setYoutubeUrl(e.target.value)}
+                  placeholder="유튜브 URL"
+                  className="w-full pixel-input font-pixel text-[8px]"
+                />
+              </div>
+            </div>
           </div>
         </div>
 

@@ -21,9 +21,9 @@ import { DirectMessageModal } from '@/components/messages/DirectMessageModal';
 import { BroadcastModal } from '@/components/messages/BroadcastModal';
 import { TeamSettingsModal } from '@/components/team/TeamSettingsModal';
 import { TeamAchievements } from '@/components/team/TeamAchievements';
-import { FightingButton } from '@/components/team/FightingButton';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { levelOptions } from '@/lib/teamData';
 
 interface TeamData {
   id: string;
@@ -40,6 +40,10 @@ interface TeamData {
   admin_user_id: string | null;
   home_ground_name: string | null;
   home_ground_address: string | null;
+  gender: string | null;
+  training_days: string[] | null;
+  training_start_time: string | null;
+  training_end_time: string | null;
 }
 
 interface MemberData {
@@ -392,6 +396,16 @@ export default function TeamHome() {
   }
 
   const regionDisplay = [teamData.region, teamData.district].filter(Boolean).join(' ');
+  const trainingInfo = (() => {
+    const days = teamData.training_days;
+    const start = teamData.training_start_time;
+    const end = teamData.training_end_time;
+    if (!days || days.length === 0) return '';
+    let info = days.join(',');
+    if (start && end) info += ` ${start}-${end}`;
+    else if (start) info += ` ${start}~`;
+    return info;
+  })();
   const avgExp = members.length > 0
     ? Math.round(
         (members.reduce((sum, m) => sum + (m.yearsOfExperience ?? 0), 0) / members.length) * 10
@@ -444,6 +458,7 @@ export default function TeamHome() {
         region={regionDisplay}
         homeGroundName={teamData.home_ground_name ?? ''}
         homeGroundAddress={teamData.home_ground_address ?? ''}
+        trainingInfo={trainingInfo}
         instagramUrl={teamData.instagram_url ?? ''}
         youtubeUrl={teamData.youtube_url ?? ''}
         teamId={teamId}
@@ -717,6 +732,14 @@ export default function TeamHome() {
         currentLevel={teamData.level || '1'}
         currentHomeGround={teamData.home_ground_name || ''}
         currentHomeGroundAddress={teamData.home_ground_address || ''}
+        currentGender={teamData.gender || 'mixed'}
+        currentTrainingDays={teamData.training_days || []}
+        currentTrainingStartTime={teamData.training_start_time || ''}
+        currentTrainingEndTime={teamData.training_end_time || ''}
+        currentIntroduction={teamData.introduction || ''}
+        currentInstagramUrl={teamData.instagram_url || ''}
+        currentYoutubeUrl={teamData.youtube_url || ''}
+        currentEmblem={teamData.emblem || '⚽'}
         onUpdate={(data) => {
           setTeamData(prev => prev ? { ...prev, ...data } as TeamData : prev);
         }}

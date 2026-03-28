@@ -15,6 +15,7 @@ interface TeamHeaderProps {
   homeGroundName?: string;
   homeGroundAddress?: string;
   instagramUrl?: string;
+  trainingInfo?: string;
   youtubeUrl?: string;
   teamId?: string;
   isAdmin?: boolean;
@@ -45,6 +46,7 @@ export function TeamHeader({
   region,
   homeGroundName,
   homeGroundAddress,
+  trainingInfo,
   instagramUrl,
   youtubeUrl,
   teamId,
@@ -225,6 +227,12 @@ export function TeamHeader({
                   <MapPin size={9} />
                   {homeGroundName}
                 </button>
+              </div>
+            )}
+            {trainingInfo && (
+              <div className="flex items-center gap-1.5">
+                <span className="font-pixel text-[7px] text-muted-foreground/60 w-10 shrink-0">활동시간</span>
+                <span className="font-pixel text-[9px] text-foreground">🕐 {trainingInfo}</span>
               </div>
             )}
           </div>
