@@ -42,6 +42,7 @@ export function TeamSwitcher({ className }: TeamSwitcherProps) {
               id: t.id,
               name: t.name,
               emblem: t.emblem,
+              photoUrl: t.photo_url || undefined,
               level: t.level || '1',
               favorites: 0,
               region: [t.region, t.district].filter(Boolean).join(' ') || undefined,
@@ -71,7 +72,13 @@ export function TeamSwitcher({ className }: TeamSwitcherProps) {
         className="flex items-center gap-2 px-3 py-2 bg-card border-3 border-border-dark hover:translate-x-[-1px] hover:translate-y-[-1px] transition-all"
         style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}
       >
-        <span className="text-lg">{activeTeam.emblem}</span>
+        <div className="w-6 h-6 flex items-center justify-center overflow-hidden rounded-sm shrink-0">
+          {activeTeam.photoUrl ? (
+            <img src={activeTeam.photoUrl} alt="" className="w-full h-full object-cover" />
+          ) : (
+            <span className="text-lg">{activeTeam.emblem}</span>
+          )}
+        </div>
         <span className="font-pixel text-[10px] text-foreground">{activeTeam.name}</span>
         <span className={`px-1.5 py-0.5 text-[8px] font-pixel ${levelColors[activeTeam.level] || ''}`}>
           {activeTeam.level}
@@ -103,7 +110,13 @@ export function TeamSwitcher({ className }: TeamSwitcherProps) {
                 onClick={() => handleTeamSwitch(team)}
                 className="w-full flex items-center gap-2 px-3 py-3 text-left hover:bg-muted transition-colors border-b-2 border-border last:border-b-0"
               >
-                <span className="text-lg">{team.emblem}</span>
+                <div className="w-6 h-6 flex items-center justify-center overflow-hidden rounded-sm shrink-0">
+                  {team.photoUrl ? (
+                    <img src={team.photoUrl} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-lg">{team.emblem}</span>
+                  )}
+                </div>
                 <span className="font-pixel text-[10px] text-foreground flex-1">{team.name}</span>
                 <span className={`px-1.5 py-0.5 text-[8px] font-pixel ${levelColors[team.level] || ''}`}>
                   LV.{team.level}

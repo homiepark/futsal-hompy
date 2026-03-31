@@ -9,6 +9,7 @@ interface ActivityItem {
   type: 'match_result' | 'new_team' | 'court_booking' | 'archive_post';
   teamName: string;
   teamEmblem: string;
+  teamPhotoUrl?: string;
   description: string;
   timeAgo: string;
 }
@@ -42,13 +43,13 @@ export function RecentActivityFeed() {
         const teamIds = [...new Set(postsData.map((p) => p.team_id))];
         const { data: teamsData } = await supabase
           .from('teams')
-          .select('id, name, emblem')
+          .select('id, name, emblem, photo_url')
           .in('id', teamIds);
 
-        const teamsMap: Record<string, { name: string; emblem: string }> = {};
+        const teamsMap: Record<string, { name: string; emblem: string; photoUrl?: string }> = {};
         if (teamsData) {
           for (const t of teamsData) {
-            teamsMap[t.id] = { name: t.name, emblem: t.emblem || '⚽' };
+            teamsMap[t.id] = { name: t.name, emblem: t.emblem || '⚽', photoUrl: t.photo_url || undefined };
           }
         }
 
@@ -60,6 +61,7 @@ export function RecentActivityFeed() {
               type: 'archive_post' as const,
               teamName: team.name,
               teamEmblem: team.emblem,
+              teamPhotoUrl: team.photoUrl,
               description: p.content ? p.content.slice(0, 30) + (p.content.length > 30 ? '...' : '') : '',
               timeAgo: formatDistanceToNow(new Date(p.created_at), { addSuffix: true, locale: ko }),
             };
@@ -126,8 +128,14 @@ export function RecentActivityFeed() {
               className="px-3 py-2.5 flex items-center gap-3 hover:bg-muted/50 transition-colors cursor-pointer"
               onClick={() => navigate(`/team/${activity.id}`)}
             >
-              {/* Team Emblem */}
-              <span className="text-lg shrink-0">{activity.teamEmblem}</span>
+              {/* Team Emblem / Photo */}
+              <div className="w-8 h-8 flex items-center justify-center overflow-hidden rounded-sm shrink-0">
+                {activity.teamPhotoUrl ? (
+                  <img src={activity.teamPhotoUrl} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-lg">{activity.teamEmblem}</span>
+                )}
+              </div>
 
               {/* Content */}
               <div className="flex-1 min-w-0">

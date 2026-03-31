@@ -12,6 +12,7 @@ interface MatchPostCardProps {
   id: string;
   teamName: string;
   teamEmblem: string;
+  teamPhotoUrl?: string;
   teamLevel: string;
   teamMembers?: number;
   teamMannerScore?: number;
@@ -44,6 +45,7 @@ export function MatchPostCard({
   id,
   teamName,
   teamEmblem,
+  teamPhotoUrl,
   teamLevel,
   teamMembers = 10,
   teamMannerScore = 4.5,
@@ -78,11 +80,15 @@ export function MatchPostCard({
           {/* Team Info */}
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">
-              <div 
-                className="w-14 h-14 bg-field-green border-3 border-primary-dark flex items-center justify-center"
+              <div
+                className="w-14 h-14 bg-field-green border-3 border-primary-dark flex items-center justify-center overflow-hidden"
                 style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}
               >
-                <span className="text-2xl">{teamEmblem}</span>
+                {teamPhotoUrl ? (
+                  <img src={teamPhotoUrl} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-2xl">{teamEmblem}</span>
+                )}
               </div>
               <div>
                 <h3 className="font-pixel text-[11px] text-foreground font-bold">{teamName}</h3>

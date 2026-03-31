@@ -9,6 +9,7 @@ interface RecommendedTeam {
   id: string;
   name: string;
   emblem: string;
+  photoUrl?: string;
   region: string;
   district: string;
   level: string;
@@ -84,8 +85,12 @@ export function RecommendedMatches({ teams, userDistricts }: RecommendedMatchesP
             >
               {/* Team Header */}
               <div className="flex items-center gap-2 mb-2">
-                <div className="w-10 h-10 bg-field-green border-2 border-primary-dark flex items-center justify-center">
-                  <span className="text-lg">{team.emblem}</span>
+                <div className="w-10 h-10 bg-field-green border-2 border-primary-dark flex items-center justify-center overflow-hidden">
+                  {team.photoUrl ? (
+                    <img src={team.photoUrl} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-lg">{team.emblem}</span>
+                  )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-pixel text-[9px] text-foreground truncate">{team.name}</p>

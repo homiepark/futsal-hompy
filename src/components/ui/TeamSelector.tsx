@@ -6,6 +6,7 @@ interface Team {
   id: string;
   name: string;
   emblem: string;
+  photoUrl?: string;
 }
 
 interface TeamSelectorProps {
@@ -30,7 +31,13 @@ export function TeamSelector({ teams, selectedTeam, onSelect, showAllOption = tr
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 px-4 py-2 bg-card border-4 border-border-dark shadow-[4px_4px_0_hsl(var(--pixel-shadow))] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_hsl(var(--pixel-shadow))] transition-all"
       >
-        <span className="text-lg">{currentTeam.emblem}</span>
+        <div className="w-6 h-6 flex items-center justify-center overflow-hidden rounded-sm shrink-0">
+          {currentTeam.photoUrl ? (
+            <img src={currentTeam.photoUrl} alt="" className="w-full h-full object-cover" />
+          ) : (
+            <span className="text-lg">{currentTeam.emblem}</span>
+          )}
+        </div>
         <span className="font-body font-bold text-foreground">{currentTeam.name}</span>
         <ChevronDown 
           size={16} 
@@ -60,7 +67,13 @@ export function TeamSelector({ teams, selectedTeam, onSelect, showAllOption = tr
                   selectedTeam === team.id && 'bg-primary/10'
                 )}
               >
-                <span className="text-lg">{team.emblem}</span>
+                <div className="w-6 h-6 flex items-center justify-center overflow-hidden rounded-sm shrink-0">
+                  {team.photoUrl ? (
+                    <img src={team.photoUrl} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-lg">{team.emblem}</span>
+                  )}
+                </div>
                 <span className="font-body text-foreground">{team.name}</span>
                 {selectedTeam === team.id && (
                   <span className="ml-auto text-primary font-pixel text-[8px]">✓</span>

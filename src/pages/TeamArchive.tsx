@@ -51,7 +51,7 @@ export default function TeamArchive() {
   const [showWriteModal, setShowWriteModal] = useState(false);
   const [showFolderModal, setShowFolderModal] = useState(false);
   const [posts, setPosts] = useState<ArchivePost[]>([]);
-  const [myTeams, setMyTeams] = useState<{ id: string; name: string; emblem: string }[]>([]);
+  const [myTeams, setMyTeams] = useState<{ id: string; name: string; emblem: string; photoUrl?: string }[]>([]);
   const [loading, setLoading] = useState(true);
 
   const isAdmin = true; // TODO: check real admin status
