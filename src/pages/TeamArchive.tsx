@@ -27,6 +27,7 @@ interface ArchivePost {
   comments: number;
   folderId: string;
   authorUserId?: string;
+  authorAvatarUrl?: string;
 }
 
 const defaultFolders = [
@@ -99,10 +100,10 @@ export default function TeamArchive() {
         const authorIds = [...new Set(data.map(p => p.author_user_id))];
         const { data: profiles } = await supabase
           .from('profiles')
-          .select('user_id, nickname')
+          .select('user_id, nickname, avatar_url')
           .in('user_id', authorIds);
 
-        const profileMap = new Map(profiles?.map(p => [p.user_id, p.nickname]) || []);
+        const profileMap = new Map(profiles?.map(p => [p.user_id, { nickname: p.nickname, avatarUrl: p.avatar_url }]) || []);
 
         // Fetch like counts
         const postIds = data.map(p => p.id);
@@ -129,7 +130,7 @@ export default function TeamArchive() {
 
         const mappedPosts: ArchivePost[] = data.map(post => ({
           id: post.id,
-          author: profileMap.get(post.author_user_id) || '알 수 없음',
+          author: profileMap.get(post.author_user_id)?.nickname || '알 수 없음',
           date: format(new Date(post.created_at), 'yyyy.MM.dd'),
           content: post.content,
           imageUrl: post.image_url || undefined,
@@ -140,6 +141,7 @@ export default function TeamArchive() {
           comments: commentMap.get(post.id) || 0,
           folderId: post.folder_id || 'all',
           authorUserId: post.author_user_id || undefined,
+          authorAvatarUrl: profileMap.get(post.author_user_id)?.avatarUrl || undefined,
         }));
 
         setPosts(mappedPosts);
@@ -265,6 +267,7 @@ export default function TeamArchive() {
                   key={post.id}
                   id={post.id}
                   imageUrl={post.imageUrl || ''}
+                  content={post.content}
                   likes={post.likes}
                   onClick={() => handleGridItemClick(post.id)}
                 />

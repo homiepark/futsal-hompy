@@ -23,6 +23,7 @@ interface TimelinePostProps {
   comments?: number;
   isMock?: boolean;
   authorUserId?: string;
+  authorAvatarUrl?: string;
 }
 
 export function TimelinePost({
@@ -38,6 +39,7 @@ export function TimelinePost({
   comments: mockComments = 0,
   isMock = true,
   authorUserId,
+  authorAvatarUrl,
 }: TimelinePostProps) {
   const { user } = useAuth();
   const { likesCount, isLiked, toggleLike, loading: likeLoading } = useArchiveLikes(id);
@@ -98,8 +100,12 @@ export function TimelinePost({
     <PixelCard className="space-y-3">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 bg-primary border-2 border-primary-dark flex items-center justify-center shadow-pixel-sm">
-          <span className="font-pixel text-[10px] text-primary-foreground">FC</span>
+        <div className="w-10 h-10 bg-primary border-2 border-primary-dark flex items-center justify-center shadow-pixel-sm overflow-hidden">
+          {authorAvatarUrl ? (
+            <img src={authorAvatarUrl} alt={author} className="w-full h-full object-cover" />
+          ) : (
+            <span className="font-pixel text-[10px] text-primary-foreground">{author.charAt(0)}</span>
+          )}
         </div>
         <div className="flex-1">
           <p className="font-pixel text-[10px] text-foreground">{author}</p>
@@ -122,8 +128,8 @@ export function TimelinePost({
           <textarea
             value={editContent}
             onChange={(e) => setEditContent(e.target.value)}
-            className="pixel-input w-full text-sm p-2 min-h-[80px] resize-y"
-            rows={3}
+            className="pixel-input w-full text-sm p-3 min-h-[150px] resize-y"
+            rows={6}
           />
           <div className="flex gap-2 justify-end">
             <button
@@ -142,17 +148,34 @@ export function TimelinePost({
           </div>
         </div>
       ) : (
-        <p className="font-body text-sm text-foreground whitespace-pre-wrap break-words">
-          {displayContent.split(/(https?:\/\/[^\s]+)/g).map((part, i) =>
-            part.match(/^https?:\/\//) ? (
-              <a key={i} href={part} target="_blank" rel="noopener noreferrer"
-                className="text-primary hover:underline break-all">
-                {part.includes('youtube.com') || part.includes('youtu.be') ? '🎬 YouTube 링크' :
-                 part.includes('instagram.com') ? '📸 Instagram 링크' : part}
-              </a>
-            ) : part
-          )}
-        </p>
+        <div className="space-y-2">
+          <p className="font-body text-sm text-foreground whitespace-pre-wrap break-words">
+            {displayContent.split(/(https?:\/\/[^\s]+)/g).map((part, i) =>
+              part.match(/^https?:\/\//) ? (
+                <a key={i} href={part} target="_blank" rel="noopener noreferrer"
+                  className="text-primary hover:underline break-all">
+                  {part.includes('youtube.com') || part.includes('youtu.be') ? '🎬 YouTube 링크' :
+                   part.includes('instagram.com') ? '📸 Instagram 링크' : part}
+                </a>
+              ) : part
+            )}
+          </p>
+          {/* YouTube embeds */}
+          {displayContent.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/g)?.map((match, i) => {
+            const videoId = match.replace(/.*(?:youtube\.com\/watch\?v=|youtu\.be\/)/,'');
+            return (
+              <div key={`yt-${i}`} className="border-3 border-border-dark overflow-hidden" style={{boxShadow:'2px 2px 0 hsl(var(--pixel-shadow) / 0.5)'}}>
+                <iframe
+                  src={`https://www.youtube.com/embed/${videoId}`}
+                  className="w-full aspect-video"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  title="YouTube video"
+                />
+              </div>
+            );
+          })}
+        </div>
       )}
 
       {/* Video Player */}
