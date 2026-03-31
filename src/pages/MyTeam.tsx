@@ -156,9 +156,13 @@ export default function MyTeam() {
           >
             <PixelCard className="hover:border-primary transition-colors group">
               <div className="flex items-center gap-4">
-                {/* Team Emblem */}
-                <div className="w-16 h-16 bg-muted border-4 border-border-dark flex items-center justify-center text-3xl shrink-0">
-                  {team.emblem}
+                {/* Team Photo or Emblem */}
+                <div className="w-16 h-16 bg-muted border-4 border-border-dark flex items-center justify-center text-3xl shrink-0 overflow-hidden">
+                  {(team as any).photoUrl ? (
+                    <img src={(team as any).photoUrl} alt={team.name} className="w-full h-full object-cover" />
+                  ) : (
+                    team.emblem
+                  )}
                 </div>
 
                 {/* Team Info */}

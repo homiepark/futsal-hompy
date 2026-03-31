@@ -30,7 +30,7 @@ export function TeamSwitcher({ className }: TeamSwitcherProps) {
     async function fetchTeams() {
       const { data, error } = await supabase
         .from('team_members')
-        .select('team_id, teams(id, name, emblem, level, region, district)')
+        .select('team_id, teams(id, name, emblem, photo_url, level, region, district)')
         .eq('user_id', user!.id);
 
       if (!error && data) {

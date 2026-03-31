@@ -178,25 +178,36 @@ export function TimelinePost({
         </div>
       )}
 
-      {/* Video Player */}
-      {(isVideo || videoUrl) && (
-        <div className="relative border-4 border-border-dark shadow-pixel overflow-hidden rounded-lg">
-          <video
-            src={videoUrl || imageUrl}
-            poster={imageUrl}
-            controls
-            className="w-full aspect-video object-cover bg-black"
-            preload="metadata"
-          >
-            브라우저가 비디오를 지원하지 않습니다.
-          </video>
-          <div className="absolute top-2 left-2 px-2 py-0.5 bg-accent border-2 border-accent-dark font-pixel text-[7px] text-accent-foreground"
-            style={{ boxShadow: '1px 1px 0 hsl(var(--accent-dark))' }}
-          >
-            🎬 VIDEO
+      {/* Video Player - YouTube uses iframe, direct files use video tag */}
+      {(isVideo || videoUrl) && (() => {
+        const url = videoUrl || imageUrl || '';
+        const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
+        if (ytMatch) {
+          return (
+            <div className="border-3 border-border-dark overflow-hidden" style={{boxShadow:'2px 2px 0 hsl(var(--pixel-shadow) / 0.5)'}}>
+              <iframe
+                src={`https://www.youtube.com/embed/${ytMatch[1]}`}
+                className="w-full aspect-video"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                title="YouTube video"
+              />
+            </div>
+          );
+        }
+        // Direct video file
+        return (
+          <div className="relative border-4 border-border-dark shadow-pixel overflow-hidden rounded-lg">
+            <video src={url} poster={imageUrl} controls className="w-full aspect-video object-cover bg-black" preload="metadata">
+              브라우저가 비디오를 지원하지 않습니다.
+            </video>
+            <div className="absolute top-2 left-2 px-2 py-0.5 bg-accent border-2 border-accent-dark font-pixel text-[7px] text-accent-foreground"
+              style={{ boxShadow: '1px 1px 0 hsl(var(--accent-dark))' }}>
+              🎬 VIDEO
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Image Carousel */}
       {!isVideo && !videoUrl && allImages.length > 0 && (
