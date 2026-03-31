@@ -260,11 +260,11 @@ export default function TeamArchive() {
             </div>
           ) : view === 'grid' ? (
             <div className="grid grid-cols-3 gap-1.5">
-              {postsWithImages.map((post) => (
+              {filteredPosts.map((post) => (
                 <PhotoGridItem
                   key={post.id}
                   id={post.id}
-                  imageUrl={post.imageUrl!}
+                  imageUrl={post.imageUrl || ''}
                   likes={post.likes}
                   onClick={() => handleGridItemClick(post.id)}
                 />
