@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Heart, MessageCircle, Share2, Instagram, Send, Trash2, ChevronDown, ChevronUp, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Instagram, Send, Trash2, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Reply } from 'lucide-react';
 import { PixelCard } from '@/components/ui/PixelCard';
 import { toast } from 'sonner';
 import { useArchiveLikes } from '@/hooks/useArchiveLikes';
@@ -47,6 +47,7 @@ export function TimelinePost({
   
   const [showComments, setShowComments] = useState(false);
   const [commentText, setCommentText] = useState('');
+  const [replyingTo, setReplyingTo] = useState<{ id: string; nickname: string } | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(content);
@@ -82,8 +83,9 @@ export function TimelinePost({
 
   const handleSubmitComment = async () => {
     if (!commentText.trim()) return;
-    await addComment(commentText);
+    await addComment(commentText, replyingTo?.id);
     setCommentText('');
+    setReplyingTo(null);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -302,33 +304,86 @@ export function TimelinePost({
         <div className="space-y-2 pt-2 border-t-2 border-border">
           {/* Comment List */}
           {commentList.length > 0 ? (
-            <div className="space-y-2 max-h-48 overflow-y-auto">
+            <div className="space-y-2 max-h-64 overflow-y-auto">
               {commentList.map((comment) => (
-                <div key={comment.id} className="flex items-start gap-2 group">
-                  <div className="w-6 h-6 bg-secondary border border-border-dark flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="font-pixel text-[7px] text-muted-foreground">
-                      {(comment.nickname || '풋').charAt(0)}
-                    </span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="font-pixel text-[9px] text-foreground font-bold">
-                        {comment.nickname}
-                      </span>
-                      <span className="font-pixel text-[7px] text-muted-foreground">
-                        {format(new Date(comment.created_at), 'M.d HH:mm', { locale: ko })}
-                      </span>
-                      {user?.id === comment.user_id && (
-                        <button
-                          onClick={() => deleteComment(comment.id)}
-                          className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
-                        >
-                          <Trash2 size={10} />
-                        </button>
+                <div key={comment.id}>
+                  {/* Parent Comment */}
+                  <div className="flex items-start gap-2 group">
+                    <div className="w-7 h-7 rounded-full bg-secondary border-2 border-border-dark flex items-center justify-center flex-shrink-0 mt-0.5 overflow-hidden">
+                      {comment.avatar_url ? (
+                        <img src={comment.avatar_url} alt="" className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="font-pixel text-[7px] text-muted-foreground">
+                          {(comment.nickname || '풋').charAt(0)}
+                        </span>
                       )}
                     </div>
-                    <p className="font-body text-xs text-foreground break-words">{comment.content}</p>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="font-pixel text-[9px] text-foreground font-bold">
+                          {comment.nickname}
+                        </span>
+                        <span className="font-pixel text-[7px] text-muted-foreground">
+                          {format(new Date(comment.created_at), 'M.d HH:mm', { locale: ko })}
+                        </span>
+                        {user && (
+                          <button
+                            onClick={() => setReplyingTo({ id: comment.id, nickname: comment.nickname || '풋살러' })}
+                            className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-primary"
+                          >
+                            <Reply size={10} />
+                          </button>
+                        )}
+                        {user?.id === comment.user_id && (
+                          <button
+                            onClick={() => deleteComment(comment.id)}
+                            className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
+                          >
+                            <Trash2 size={10} />
+                          </button>
+                        )}
+                      </div>
+                      <p className="font-body text-xs text-foreground break-words">{comment.content}</p>
+                    </div>
                   </div>
+
+                  {/* Replies */}
+                  {comment.replies && comment.replies.length > 0 && (
+                    <div className="ml-6 mt-1 space-y-1.5 pl-3 border-l-2 border-border">
+                      {comment.replies.map((reply) => (
+                        <div key={reply.id} className="flex items-start gap-2 group">
+                          <div className="w-5 h-5 rounded-full bg-secondary border border-border-dark flex items-center justify-center flex-shrink-0 mt-0.5 overflow-hidden">
+                            {reply.avatar_url ? (
+                              <img src={reply.avatar_url} alt="" className="w-full h-full object-cover" />
+                            ) : (
+                              <span className="font-pixel text-[6px] text-muted-foreground">
+                                {(reply.nickname || '풋').charAt(0)}
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <span className="font-pixel text-[8px] text-foreground font-bold">
+                                {reply.nickname}
+                              </span>
+                              <span className="font-pixel text-[6px] text-muted-foreground">
+                                {format(new Date(reply.created_at), 'M.d HH:mm', { locale: ko })}
+                              </span>
+                              {user?.id === reply.user_id && (
+                                <button
+                                  onClick={() => deleteComment(reply.id)}
+                                  className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
+                                >
+                                  <Trash2 size={9} />
+                                </button>
+                              )}
+                            </div>
+                            <p className="font-body text-[11px] text-foreground break-words">{reply.content}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -336,6 +391,22 @@ export function TimelinePost({
             <p className="font-pixel text-[8px] text-muted-foreground text-center py-2">
               아직 댓글이 없습니다
             </p>
+          )}
+
+          {/* Reply indicator */}
+          {replyingTo && (
+            <div className="flex items-center gap-2 px-2 py-1 bg-muted border-2 border-border-dark">
+              <Reply size={10} className="text-primary" />
+              <span className="font-pixel text-[8px] text-muted-foreground">
+                {replyingTo.nickname}에게 답글
+              </span>
+              <button
+                onClick={() => setReplyingTo(null)}
+                className="ml-auto text-muted-foreground hover:text-destructive"
+              >
+                <Trash2 size={10} />
+              </button>
+            </div>
           )}
 
           {/* Comment Input */}
@@ -346,7 +417,7 @@ export function TimelinePost({
                 value={commentText}
                 onChange={(e) => setCommentText(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="댓글을 입력하세요..."
+                placeholder={replyingTo ? `${replyingTo.nickname}에게 답글...` : "댓글을 입력하세요..."}
                 className="pixel-input flex-1 text-xs py-1.5 px-2"
                 maxLength={200}
               />
