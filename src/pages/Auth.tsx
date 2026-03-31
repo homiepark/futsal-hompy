@@ -129,6 +129,7 @@ export default function Auth() {
         provider: 'kakao',
         options: {
           redirectTo: `${window.location.origin}/profile-setup`,
+          scopes: 'profile_nickname profile_image',
         },
       });
       if (error) throw error;
