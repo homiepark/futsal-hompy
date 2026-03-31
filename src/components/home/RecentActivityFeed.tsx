@@ -6,6 +6,7 @@ import { ko } from 'date-fns/locale';
 
 interface ActivityItem {
   id: string;
+  teamId: string;
   type: 'match_result' | 'new_team' | 'court_booking' | 'archive_post';
   teamName: string;
   teamEmblem: string;
@@ -58,6 +59,7 @@ export function RecentActivityFeed() {
             const team = teamsMap[p.team_id] || { name: '알 수 없음', emblem: '⚽' };
             return {
               id: p.id,
+              teamId: p.team_id,
               type: 'archive_post' as const,
               teamName: team.name,
               teamEmblem: team.emblem,
@@ -126,7 +128,7 @@ export function RecentActivityFeed() {
             <div
               key={activity.id}
               className="px-3 py-2.5 flex items-center gap-3 hover:bg-muted/50 transition-colors cursor-pointer"
-              onClick={() => navigate(`/team/${activity.id}`)}
+              onClick={() => navigate(`/team/${activity.teamId}`)}
             >
               {/* Team Emblem / Photo */}
               <div className="w-8 h-8 flex items-center justify-center overflow-hidden rounded-sm shrink-0">
