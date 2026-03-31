@@ -2,7 +2,6 @@ import { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Settings, UserPlus, Palette, MapPin } from 'lucide-react';
 import { useTeam } from '@/contexts/TeamContext';
-import { useDev } from '@/contexts/DevContext';
 import { TeamHeader } from '@/components/team/TeamHeader';
 import { TeamSwitcher } from '@/components/team/TeamSwitcher';
 import { TeamAnnouncement } from '@/components/team/TeamAnnouncement';
@@ -78,7 +77,6 @@ export default function TeamHome() {
   const { teamId } = useParams<{ teamId: string }>();
   const navigate = useNavigate();
   const { setActiveTeam, clearActiveTeam } = useTeam();
-  const { isDevAdmin } = useDev();
   const [showAdminTransfer, setShowAdminTransfer] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [showDirectMessage, setShowDirectMessage] = useState(false);
@@ -102,7 +100,7 @@ export default function TeamHome() {
   const [noticeText, setNoticeText] = useState('');
 
   // Derived state
-  const isAdmin = isDevAdmin || (currentUserId != null && teamData?.admin_user_id === currentUserId)
+  const isAdmin = (currentUserId != null && teamData?.admin_user_id === currentUserId)
     || members.some(m => m.userId === currentUserId && m.isAdmin);
   const isMember = currentUserId != null && members.some(m => m.userId === currentUserId);
   const adminUserId = teamData?.admin_user_id ?? '';

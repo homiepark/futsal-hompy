@@ -11,7 +11,6 @@ import { ChallengeNotification, useChallengeNotifications } from '@/components/m
 import { ChallengeModal } from '@/components/matchmaking/ChallengeModal';
 import { MatchTicker } from '@/components/matchmaking/MatchTicker';
 import { RecommendedMatches } from '@/components/matchmaking/RecommendedMatches';
-import { useDev } from '@/contexts/DevContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { format, parseISO, isToday, isTomorrow, isThisWeek } from 'date-fns';
 
@@ -51,7 +50,6 @@ const initialFilters: BoardFilters = {
 export default function Matchmaking() {
   const navigate = useNavigate();
   const { user: authUser } = useAuth();
-  const { isDevAdmin } = useDev();
   const [filters, setFilters] = useState<BoardFilters>(initialFilters);
   const [matchPosts, setMatchPosts] = useState<MatchPost[]>([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -87,8 +85,7 @@ export default function Matchmaking() {
     matchScore: number;
   }>>([]);
 
-  // Combine real admin status with dev admin toggle
-  const canCreatePost = isAdmin || isDevAdmin;
+  const canCreatePost = isAdmin;
 
   // Load user's team and check if they're admin
   useEffect(() => {

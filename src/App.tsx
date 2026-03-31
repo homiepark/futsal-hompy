@@ -7,9 +7,7 @@ import { Component, ReactNode } from "react";
 
 import { AuthProvider } from "@/contexts/AuthContext";
 import { TeamProvider } from "@/contexts/TeamContext";
-import { DevProvider } from "@/contexts/DevContext";
 import { BottomNav } from "@/components/layout/BottomNav";
-import { DevToggleButton } from "@/components/dev/DevToggleButton";
 import { ScrollRestoration } from "@/components/layout/ScrollRestoration";
 import Index from "./pages/Index";
 import TeamHome from "./pages/TeamHome";
@@ -85,7 +83,6 @@ const AppContent = () => (
         </Routes>
       </main>
       <BottomNav />
-      <DevToggleButton />
     </div>
   </BrowserRouter>
 );
@@ -98,11 +95,9 @@ const App = () => {
           <TooltipProvider>
             <AuthProvider>
               <TeamProvider>
-                <DevProvider>
                   <Toaster />
                   <Sonner />
                   <AppContent />
-                </DevProvider>
               </TeamProvider>
             </AuthProvider>
           </TooltipProvider>
