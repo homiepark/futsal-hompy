@@ -197,7 +197,7 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
         image_url: imageUrls[0] || null,
         image_urls: imageUrls,
         video_url: finalVideoUrl,
-        folder_id: selectedFolder,
+        folder_id: selectedFolder === 'all' ? null : selectedFolder,
       });
 
       if (error) throw error;
