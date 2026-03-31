@@ -26,6 +26,7 @@ interface ArchivePost {
   likes: number;
   comments: number;
   folderId: string;
+  authorUserId?: string;
 }
 
 const defaultFolders = [
@@ -138,6 +139,7 @@ export default function TeamArchive() {
           likes: likeMap.get(post.id) || 0,
           comments: commentMap.get(post.id) || 0,
           folderId: post.folder_id || 'all',
+          authorUserId: post.author_user_id || undefined,
         }));
 
         setPosts(mappedPosts);

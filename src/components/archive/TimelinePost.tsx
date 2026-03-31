@@ -8,6 +8,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
+import { supabase } from '@/integrations/supabase/client';
 
 interface TimelinePostProps {
   id: string;
@@ -21,6 +22,7 @@ interface TimelinePostProps {
   likes?: number;
   comments?: number;
   isMock?: boolean;
+  authorUserId?: string;
 }
 
 export function TimelinePost({
@@ -35,6 +37,7 @@ export function TimelinePost({
   likes: mockLikes = 0,
   comments: mockComments = 0,
   isMock = true,
+  authorUserId,
 }: TimelinePostProps) {
   const { user } = useAuth();
   const { likesCount, isLiked, toggleLike, loading: likeLoading } = useArchiveLikes(id);
@@ -43,6 +46,31 @@ export function TimelinePost({
   const [showComments, setShowComments] = useState(false);
   const [commentText, setCommentText] = useState('');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editContent, setEditContent] = useState(content);
+  const [displayContent, setDisplayContent] = useState(content);
+
+  const isAuthor = !!user && !!authorUserId && user.id === authorUserId;
+
+  const handleSaveEdit = async () => {
+    if (!editContent.trim()) return;
+    const { error } = await supabase
+      .from('archive_posts')
+      .update({ content: editContent })
+      .eq('id', id);
+    if (error) {
+      toast.error('수정에 실패했습니다.');
+      return;
+    }
+    setDisplayContent(editContent);
+    setIsEditing(false);
+    toast.success('게시물이 수정되었습니다.');
+  };
+
+  const handleCancelEdit = () => {
+    setEditContent(displayContent);
+    setIsEditing(false);
+  };
 
   // Build the effective image list: prefer imageUrls array, fallback to single imageUrl
   const allImages = imageUrls.length > 0 ? imageUrls : (imageUrl ? [imageUrl] : []);
@@ -73,14 +101,59 @@ export function TimelinePost({
         <div className="w-10 h-10 bg-primary border-2 border-primary-dark flex items-center justify-center shadow-pixel-sm">
           <span className="font-pixel text-[10px] text-primary-foreground">FC</span>
         </div>
-        <div>
+        <div className="flex-1">
           <p className="font-pixel text-[10px] text-foreground">{author}</p>
           <p className="font-body text-xs text-muted-foreground">{date}</p>
         </div>
+        {isAuthor && !isEditing && (
+          <button
+            onClick={() => setIsEditing(true)}
+            className="text-muted-foreground hover:text-foreground transition-colors p-1"
+            aria-label="게시물 수정"
+          >
+            <span className="text-sm">✏️</span>
+          </button>
+        )}
       </div>
 
       {/* Content */}
-      <p className="font-body text-sm text-foreground">{content}</p>
+      {isEditing ? (
+        <div className="space-y-2">
+          <textarea
+            value={editContent}
+            onChange={(e) => setEditContent(e.target.value)}
+            className="pixel-input w-full text-sm p-2 min-h-[80px] resize-y"
+            rows={3}
+          />
+          <div className="flex gap-2 justify-end">
+            <button
+              onClick={handleCancelEdit}
+              className="font-pixel text-[9px] px-3 py-1.5 border-2 border-border-dark bg-muted text-muted-foreground hover:bg-muted/80 transition-colors"
+            >
+              취소
+            </button>
+            <button
+              onClick={handleSaveEdit}
+              disabled={!editContent.trim()}
+              className="font-pixel text-[9px] px-3 py-1.5 border-2 border-primary-dark bg-primary text-primary-foreground hover:brightness-110 transition-colors disabled:opacity-50"
+            >
+              저장
+            </button>
+          </div>
+        </div>
+      ) : (
+        <p className="font-body text-sm text-foreground whitespace-pre-wrap break-words">
+          {displayContent.split(/(https?:\/\/[^\s]+)/g).map((part, i) =>
+            part.match(/^https?:\/\//) ? (
+              <a key={i} href={part} target="_blank" rel="noopener noreferrer"
+                className="text-primary hover:underline break-all">
+                {part.includes('youtube.com') || part.includes('youtu.be') ? '🎬 YouTube 링크' :
+                 part.includes('instagram.com') ? '📸 Instagram 링크' : part}
+              </a>
+            ) : part
+          )}
+        </p>
+      )}
 
       {/* Video Player */}
       {(isVideo || videoUrl) && (

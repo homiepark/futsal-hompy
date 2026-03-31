@@ -23,11 +23,17 @@ export function PhotoGridItem({ imageUrl, likes, onClick }: PhotoGridItemProps) 
     >
       {/* Image */}
       <div className="w-full h-full border-2 border-border-dark shadow-pixel-sm overflow-hidden">
-        <img 
-          src={imageUrl} 
-          alt="팀 사진" 
-          className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
-        />
+        {imageUrl ? (
+          <img
+            src={imageUrl}
+            alt="팀 사진"
+            className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
+          />
+        ) : (
+          <div className="w-full h-full bg-muted flex items-center justify-center">
+            <span className="text-2xl">📷</span>
+          </div>
+        )}
       </div>
       
       {/* Overlay on hover */}
