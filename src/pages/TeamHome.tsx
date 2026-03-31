@@ -59,6 +59,7 @@ interface MemberData {
 interface ArchiveItem {
   id: string;
   imageUrl: string;
+  content?: string;
   isVideo?: boolean;
   date: string;
 }
@@ -155,7 +156,7 @@ export default function TeamHome() {
 
           supabase
             .from('archive_posts')
-            .select('id, image_url, video_url, created_at')
+            .select('id, image_url, video_url, content, created_at')
             .eq('team_id', teamId)
             .order('created_at', { ascending: false })
             .limit(4),
@@ -230,6 +231,7 @@ export default function TeamHome() {
           const mapped: ArchiveItem[] = archiveRes.data.map((a: any) => ({
             id: a.id,
             imageUrl: a.image_url ?? '',
+            content: a.content ?? '',
             isVideo: !!a.video_url,
             date: new Date(a.created_at).toLocaleDateString('ko-KR', {
               year: 'numeric',
