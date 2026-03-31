@@ -25,7 +25,7 @@ export function BottomNav() {
       {/* Active Team Indicator */}
       {activeTeam && (
         <div className="bg-primary/10 border-b-2 border-primary/30 px-3 py-1 flex items-center justify-center gap-2">
-          <span className="text-sm">{activeTeam.emblem}</span>
+          <span className="text-sm">{activeTeam.emblem || '⚽'}</span>
           <span className="font-pixel text-[8px] text-primary">{activeTeam.name}</span>
           <span className="font-body text-[10px] text-muted-foreground">활성 팀</span>
         </div>
