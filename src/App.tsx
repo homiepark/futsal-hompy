@@ -22,6 +22,7 @@ import PlayerRegistration from "./pages/PlayerRegistration";
 import MyProfile from "./pages/MyProfile";
 import ProfileSetup from "./pages/ProfileSetup";
 import Auth from "./pages/Auth";
+import AuthCallback from "./pages/AuthCallback";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Messages from "./pages/Messages";
@@ -76,6 +77,7 @@ const AppContent = () => (
           <Route path="/profile" element={<MyProfile />} />
           <Route path="/profile-setup" element={<ProfileSetup />} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/messages" element={<Messages />} />
