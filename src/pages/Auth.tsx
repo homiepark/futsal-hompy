@@ -128,7 +128,7 @@ export default function Auth() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'kakao',
         options: {
-          redirectTo: `${window.location.origin}/profile-setup`,
+          redirectTo: 'https://xn--299a1v27nvthhrj.com/profile-setup',
           scopes: 'profile_nickname profile_image',
         },
       });
