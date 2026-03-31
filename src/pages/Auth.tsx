@@ -60,7 +60,7 @@ export default function Auth() {
           email: email.trim(),
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/profile-setup`,
+            data: { display_name: email.split('@')[0] },
           },
         });
 

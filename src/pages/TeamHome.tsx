@@ -754,6 +754,9 @@ export default function TeamHome() {
         onUpdate={(data) => {
           setTeamData(prev => prev ? { ...prev, ...data } as TeamData : prev);
         }}
+        onDelete={() => {
+          navigate('/my-team');
+        }}
       />
 
       {/* Broadcast Modal (for admins) */}

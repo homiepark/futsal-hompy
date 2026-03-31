@@ -23,6 +23,7 @@ interface TeamSettingsModalProps {
   currentYoutubeUrl: string;
   currentEmblem: string;
   onUpdate: (data: Record<string, any>) => void;
+  onDelete?: () => void;
 }
 
 export function TeamSettingsModal({
@@ -43,6 +44,7 @@ export function TeamSettingsModal({
   currentYoutubeUrl,
   currentEmblem,
   onUpdate,
+  onDelete,
 }: TeamSettingsModalProps) {
   useBodyScrollLock(isOpen);
   const [region, setRegion] = useState(currentRegion || '');
@@ -50,6 +52,8 @@ export function TeamSettingsModal({
   const [level, setLevel] = useState(currentLevel || '1');
   const [homeGround, setHomeGround] = useState(currentHomeGround || '');
   const [homeGroundAddress, setHomeGroundAddress] = useState(currentHomeGroundAddress || '');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [gender, setGender] = useState<GenderValue>((currentGender as GenderValue) || 'mixed');
   const [selectedDays, setSelectedDays] = useState<DayValue[]>(currentTrainingDays as DayValue[] || []);
   const [trainingStartTime, setTrainingStartTime] = useState(currentTrainingStartTime || '');
@@ -426,7 +430,7 @@ export function TeamSettingsModal({
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t-2 border-border shrink-0">
+        <div className="p-4 border-t-2 border-border shrink-0 space-y-2">
           <button
             onClick={handleSave}
             disabled={saving}
@@ -435,6 +439,62 @@ export function TeamSettingsModal({
           >
             {saving ? '저장 중...' : '💾 저장하기'}
           </button>
+
+          {/* Team Delete */}
+          {onDelete && !showDeleteConfirm && (
+            <button
+              onClick={() => setShowDeleteConfirm(true)}
+              className="w-full py-2 font-pixel text-[8px] text-destructive hover:text-destructive/80 transition-colors"
+            >
+              팀 삭제하기
+            </button>
+          )}
+          {showDeleteConfirm && (
+            <div className="bg-destructive/10 border-2 border-destructive/30 p-3 space-y-2">
+              <p className="font-pixel text-[9px] text-destructive text-center">
+                ⚠️ 정말 팀을 삭제하시겠습니까?
+              </p>
+              <p className="font-pixel text-[7px] text-muted-foreground text-center">
+                팀 삭제 시 모든 데이터(멤버, 공지, 스토리)가 삭제되며 복구할 수 없습니다.
+              </p>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setShowDeleteConfirm(false)}
+                  className="flex-1 py-2 bg-secondary text-foreground font-pixel text-[9px] border-2 border-border-dark"
+                >
+                  취소
+                </button>
+                <button
+                  onClick={async () => {
+                    setDeleting(true);
+                    try {
+                      // Delete related data first
+                      await supabase.from('team_members').delete().eq('team_id', teamId);
+                      await supabase.from('team_notices').delete().eq('team_id', teamId);
+                      await supabase.from('archive_posts').delete().eq('team_id', teamId);
+                      await supabase.from('match_posts').delete().eq('team_id', teamId);
+                      await supabase.from('team_join_requests').delete().eq('team_id', teamId);
+                      await supabase.from('team_invitations').delete().eq('team_id', teamId);
+                      // Delete team
+                      const { error } = await supabase.from('teams').delete().eq('id', teamId);
+                      if (error) throw error;
+                      toast.success('팀이 삭제되었습니다');
+                      onDelete();
+                    } catch (err) {
+                      console.error('Team delete error:', err);
+                      toast.error('팀 삭제에 실패했습니다');
+                    } finally {
+                      setDeleting(false);
+                    }
+                  }}
+                  disabled={deleting}
+                  className="flex-1 py-2 bg-destructive text-destructive-foreground font-pixel text-[9px] border-2 border-destructive disabled:opacity-50"
+                >
+                  {deleting ? '삭제 중...' : '삭제 확인'}
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
