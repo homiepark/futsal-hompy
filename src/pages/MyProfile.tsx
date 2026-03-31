@@ -38,6 +38,7 @@ export default function MyProfile() {
   const [saving, setSaving] = useState(false);
   const [profile, setProfile] = useState({
     nickname: '풋살러',
+    realName: '',
     avatarUrl: '',
     yearsOfExperience: 0,
     monthsOfExperience: 0,
@@ -70,6 +71,7 @@ export default function MyProfile() {
         if (data) {
           setProfile({
             nickname: data.nickname || '풋살러',
+            realName: data.real_name || '',
             avatarUrl: data.avatar_url || '',
             yearsOfExperience: data.years_of_experience || 0,
             monthsOfExperience: (data as any).months_of_experience || 0,
@@ -233,6 +235,7 @@ export default function MyProfile() {
         .from('profiles')
         .update({
           nickname: profile.nickname,
+          real_name: profile.realName,
           years_of_experience: profile.yearsOfExperience,
           months_of_experience: profile.monthsOfExperience,
           is_pro_elite: profile.isProElite,
@@ -321,6 +324,25 @@ export default function MyProfile() {
               경력 {profile.yearsOfExperience}년 {profile.monthsOfExperience > 0 ? `${profile.monthsOfExperience}개월` : ''} · {getPositionLabels(profile.preferredPositions)}
             </p>
           </div>
+        </PixelCard>
+
+        {/* Real Name */}
+        <PixelCard>
+          <h2 className="text-foreground mb-2 flex items-center gap-2">
+            <span className="text-primary">🔒</span>
+            실명
+          </h2>
+          <input
+            type="text"
+            value={profile.realName}
+            onChange={(e) => setProfile({ ...profile, realName: e.target.value })}
+            placeholder="본인 실명을 입력하세요"
+            className="w-full pixel-input"
+            maxLength={20}
+          />
+          <p className="font-pixel text-[8px] text-muted-foreground mt-2">
+            팀 관리자에게만 공개됩니다 (입단 신청 시 본인 확인용)
+          </p>
         </PixelCard>
 
         {/* Activity Regions - Multi-select with Tags */}
