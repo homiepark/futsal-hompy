@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, Calendar, Trophy, Send, Heart, Pencil, Check } from 'lucide-react';
+import { X, Calendar, Trophy, Send, Heart, Pencil, Check, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { usePlayerGuestbook } from '@/hooks/usePlayerGuestbook';
 import { useAuth } from '@/contexts/AuthContext';
@@ -40,7 +40,9 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
   const [bioText, setBioText] = useState('');
   const [displayBio, setDisplayBio] = useState('');
   const { user } = useAuth();
-  const { entries: guestbookEntries, submitEntry, toggleLike } = usePlayerGuestbook(player?.userId);
+  const { entries: guestbookEntries, submitEntry, toggleLike, deleteEntry, updateEntry } = usePlayerGuestbook(player?.userId);
+  const [editingEntryId, setEditingEntryId] = useState<string | null>(null);
+  const [editingEntryText, setEditingEntryText] = useState('');
 
   const isOwnProfile = !!user && !!player?.userId && user.id === player.userId;
 
@@ -273,9 +275,44 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
                 >
                   <div className="flex items-center justify-between mb-0.5">
                     <span className="font-pixel text-[8px] text-primary">{entry.authorNickname}</span>
-                    <span className="font-pixel text-[7px] text-muted-foreground">{entry.date}</span>
+                    <div className="flex items-center gap-1">
+                      <span className="font-pixel text-[7px] text-muted-foreground">{entry.date}</span>
+                      {user?.id === entry.authorUserId && (
+                        <>
+                          <button
+                            onClick={() => { setEditingEntryId(entry.id); setEditingEntryText(entry.message); }}
+                            className="text-muted-foreground hover:text-primary transition-colors"
+                          >
+                            <Pencil size={8} />
+                          </button>
+                          <button
+                            onClick={() => deleteEntry(entry.id)}
+                            className="text-muted-foreground hover:text-destructive transition-colors"
+                          >
+                            <Trash2 size={8} />
+                          </button>
+                        </>
+                      )}
+                    </div>
                   </div>
-                  <p className="font-pixel text-[9px] text-foreground mb-1 leading-tight">{entry.message}</p>
+                  {editingEntryId === entry.id ? (
+                    <div className="flex gap-1 mb-1">
+                      <input
+                        value={editingEntryText}
+                        onChange={(e) => setEditingEntryText(e.target.value)}
+                        className="flex-1 px-1.5 py-0.5 bg-input border border-border-dark font-pixel text-[9px] focus:outline-none focus:border-primary"
+                        maxLength={50}
+                        autoFocus
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') { updateEntry(entry.id, editingEntryText); setEditingEntryId(null); }
+                        }}
+                      />
+                      <button onClick={() => { updateEntry(entry.id, editingEntryText); setEditingEntryId(null); }} className="text-primary"><Check size={10} /></button>
+                      <button onClick={() => setEditingEntryId(null)} className="text-muted-foreground"><X size={10} /></button>
+                    </div>
+                  ) : (
+                    <p className="font-pixel text-[9px] text-foreground mb-1 leading-tight">{entry.message}</p>
+                  )}
                   <button
                     onClick={() => toggleLike(entry.id)}
                     className={cn(

@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 
 interface GuestbookEntry {
   id: string;
+  authorUserId: string;
   authorNickname: string;
   message: string;
   date: string;
@@ -67,14 +68,19 @@ export function usePlayerGuestbook(targetUserId: string | undefined) {
       myLikes = new Set((myLikeData || []).map(l => l.entry_id));
     }
 
-    setEntries(rawEntries.map(e => ({
-      id: e.id,
-      authorNickname: profileMap.get(e.author_user_id) || '풋살러',
-      message: e.message,
-      date: new Date(e.created_at).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\. /g, '.').replace('.', ''),
-      likes: likeCountMap.get(e.id) || 0,
-      isLikedByMe: myLikes.has(e.id),
-    })));
+    setEntries(rawEntries.map(e => {
+      const d = new Date(e.created_at);
+      const dateStr = `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
+      return {
+        id: e.id,
+        authorUserId: e.author_user_id,
+        authorNickname: profileMap.get(e.author_user_id) || '풋살러',
+        message: e.message,
+        date: dateStr,
+        likes: likeCountMap.get(e.id) || 0,
+        isLikedByMe: myLikes.has(e.id),
+      };
+    }));
     setLoading(false);
   }, [targetUserId, user]);
 
@@ -111,5 +117,20 @@ export function usePlayerGuestbook(targetUserId: string | undefined) {
     await fetchEntries();
   };
 
-  return { entries, loading, submitEntry, toggleLike };
+  const deleteEntry = async (entryId: string) => {
+    if (!user) return;
+    await supabase.from('player_guestbook_entries').delete().eq('id', entryId);
+    setEntries(prev => prev.filter(e => e.id !== entryId));
+  };
+
+  const updateEntry = async (entryId: string, newMessage: string) => {
+    if (!user || !newMessage.trim()) return;
+    await supabase
+      .from('player_guestbook_entries')
+      .update({ message: newMessage.trim() })
+      .eq('id', entryId);
+    setEntries(prev => prev.map(e => e.id === entryId ? { ...e, message: newMessage.trim() } : e));
+  };
+
+  return { entries, loading, submitEntry, toggleLike, deleteEntry, updateEntry };
 }
