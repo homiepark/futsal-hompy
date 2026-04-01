@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Search, User, Send } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PixelButton } from '@/components/ui/PixelButton';
@@ -25,17 +25,16 @@ interface UserProfile {
 const positionFilters = [
   { key: 'all', label: '전체' },
   { key: 'pivo', label: '피보' },
-  { key: 'ala', label: '알라' },
+  { key: 'ala', label: '아라' },
   { key: 'fixo', label: '픽소' },
-  { key: 'goleiro', label: '골레이루' },
+  { key: 'goleiro', label: '골레이로' },
 ];
 
 const positionLabels: Record<string, string> = {
   pivo: '피보',
-  ala: '알라',
+  ala: '아라',
   fixo: '픽소',
-  goleiro: '골레이루',
-  MF: '미드필더',
+  goleiro: '골레이로',
 };
 
 export function PlayerInviteModal({ isOpen, onClose, teamId, teamName }: PlayerInviteModalProps) {
@@ -48,11 +47,13 @@ export function PlayerInviteModal({ isOpen, onClose, teamId, teamName }: PlayerI
   const [loading, setLoading] = useState(false);
   const [searching, setSearching] = useState(false);
 
-  const handleSearch = async () => {
-    if (!searchQuery.trim() && positionFilter === 'all') {
-      toast.error('검색어 또는 포지션을 선택해주세요');
-      return;
-    }
+  // 모달 열릴 때 전체 유저 로드
+  useEffect(() => {
+    if (isOpen) handleSearch('all');
+  }, [isOpen]);
+
+  const handleSearch = async (overridePosition?: string) => {
+    const pos = overridePosition ?? positionFilter;
 
     setSearching(true);
     try {
@@ -65,8 +66,8 @@ export function PlayerInviteModal({ isOpen, onClose, teamId, teamName }: PlayerI
         query = query.ilike('nickname', `%${searchQuery.trim()}%`);
       }
 
-      if (positionFilter !== 'all') {
-        query = query.eq('preferred_position', positionFilter);
+      if (pos !== 'all') {
+        query = query.eq('preferred_position', pos);
       }
 
       const { data, error } = await query;
@@ -79,6 +80,11 @@ export function PlayerInviteModal({ isOpen, onClose, teamId, teamName }: PlayerI
     } finally {
       setSearching(false);
     }
+  };
+
+  const handlePositionFilter = (key: string) => {
+    setPositionFilter(key);
+    handleSearch(key);
   };
 
   const handleSelectUser = (user: UserProfile) => {
@@ -206,7 +212,7 @@ export function PlayerInviteModal({ isOpen, onClose, teamId, teamName }: PlayerI
                 {positionFilters.map((pos) => (
                   <button
                     key={pos.key}
-                    onClick={() => setPositionFilter(pos.key)}
+                    onClick={() => handlePositionFilter(pos.key)}
                     className={cn(
                       'px-2 py-1 text-[9px] font-pixel border-2 transition-colors',
                       positionFilter === pos.key
