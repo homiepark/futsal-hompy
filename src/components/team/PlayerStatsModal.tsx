@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { DirectMessageModal } from '@/components/messages/DirectMessageModal';
 
 interface PlayerStats {
   id: string;
@@ -43,6 +44,7 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
   const { entries: guestbookEntries, submitEntry, toggleLike, deleteEntry, updateEntry } = usePlayerGuestbook(player?.userId);
   const [editingEntryId, setEditingEntryId] = useState<string | null>(null);
   const [editingEntryText, setEditingEntryText] = useState('');
+  const [showDM, setShowDM] = useState(false);
 
   const isOwnProfile = !!user && !!player?.userId && user.id === player.userId;
 
@@ -343,13 +345,25 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
               닫기
             </button>
             <button
-              className="flex-1 py-2 bg-primary border-3 border-primary-dark font-pixel text-[9px] text-primary-foreground hover:brightness-110 transition-all"
+              onClick={() => setShowDM(true)}
+              disabled={!user || isOwnProfile}
+              className="flex-1 py-2 bg-primary border-3 border-primary-dark font-pixel text-[9px] text-primary-foreground hover:brightness-110 transition-all disabled:opacity-50"
               style={{ boxShadow: '2px 2px 0 hsl(var(--primary-dark))' }}
             >
               쪽지 보내기
             </button>
           </div>
         </div>
+
+        {/* Direct Message Modal */}
+        {player?.userId && (
+          <DirectMessageModal
+            isOpen={showDM}
+            onClose={() => setShowDM(false)}
+            recipientId={player.userId}
+            recipientName={player.nickname}
+          />
+        )}
       </div>
     </div>
   );
