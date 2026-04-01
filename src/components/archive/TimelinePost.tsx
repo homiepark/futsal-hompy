@@ -24,6 +24,8 @@ interface TimelinePostProps {
   isMock?: boolean;
   authorUserId?: string;
   authorAvatarUrl?: string;
+  isAdmin?: boolean;
+  onDelete?: (postId: string) => void;
 }
 
 export function TimelinePost({
@@ -40,6 +42,8 @@ export function TimelinePost({
   isMock = true,
   authorUserId,
   authorAvatarUrl,
+  isAdmin = false,
+  onDelete,
 }: TimelinePostProps) {
   const { user } = useAuth();
   const { likesCount, isLiked, toggleLike, loading: likeLoading } = useArchiveLikes(id);
@@ -54,6 +58,21 @@ export function TimelinePost({
   const [displayContent, setDisplayContent] = useState(content);
 
   const isAuthor = !!user && !!authorUserId && user.id === authorUserId;
+  const canDelete = isAuthor || isAdmin;
+
+  const handleDeletePost = async () => {
+    if (!confirm('게시글을 삭제하시겠습니까?')) return;
+    const { error } = await supabase
+      .from('archive_posts')
+      .delete()
+      .eq('id', id);
+    if (error) {
+      toast.error('삭제에 실패했습니다.');
+      return;
+    }
+    toast.success('게시글이 삭제되었습니다.');
+    onDelete?.(id);
+  };
 
   const handleSaveEdit = async () => {
     if (!editContent.trim()) return;
@@ -113,15 +132,26 @@ export function TimelinePost({
           <p className="font-pixel text-[10px] text-foreground">{author}</p>
           <p className="font-body text-xs text-muted-foreground">{date}</p>
         </div>
-        {isAuthor && !isEditing && (
-          <button
-            onClick={() => setIsEditing(true)}
-            className="text-muted-foreground hover:text-foreground transition-colors p-1"
-            aria-label="게시물 수정"
-          >
-            <span className="text-sm">✏️</span>
-          </button>
-        )}
+        <div className="flex items-center gap-1">
+          {isAuthor && !isEditing && (
+            <button
+              onClick={() => setIsEditing(true)}
+              className="text-muted-foreground hover:text-foreground transition-colors p-1"
+              aria-label="게시물 수정"
+            >
+              <span className="text-sm">✏️</span>
+            </button>
+          )}
+          {canDelete && !isEditing && (
+            <button
+              onClick={handleDeletePost}
+              className="text-muted-foreground hover:text-destructive transition-colors p-1"
+              aria-label="게시물 삭제"
+            >
+              <Trash2 size={14} />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Content */}

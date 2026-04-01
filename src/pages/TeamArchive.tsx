@@ -54,7 +54,7 @@ export default function TeamArchive() {
   const [myTeams, setMyTeams] = useState<{ id: string; name: string; emblem: string; photoUrl?: string }[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const isAdmin = true; // TODO: check real admin status
+  const [isAdmin, setIsAdmin] = useState(false);
 
   // Fetch user's teams
   useEffect(() => {
@@ -62,7 +62,7 @@ export default function TeamArchive() {
       if (!user) return;
       const { data } = await supabase
         .from('team_members')
-        .select('team_id, teams(id, name, emblem)')
+        .select('team_id, role, teams(id, name, emblem)')
         .eq('user_id', user.id);
 
       if (data) {
@@ -73,6 +73,9 @@ export default function TeamArchive() {
         if (teams.length > 0 && !teamParam) {
           setSelectedTeam(teams[0].id);
         }
+        // Check admin status for selected team
+        const adminEntry = data.find((d: any) => d.role === 'admin');
+        if (adminEntry) setIsAdmin(true);
       }
     }
     fetchTeams();
@@ -276,7 +279,13 @@ export default function TeamArchive() {
           ) : (
             <div className="space-y-3">
               {filteredPosts.map((post) => (
-                <TimelinePost key={post.id} {...post} isMock={false} />
+                <TimelinePost
+                  key={post.id}
+                  {...post}
+                  isMock={false}
+                  isAdmin={isAdmin}
+                  onDelete={(postId) => setPosts(prev => prev.filter(p => p.id !== postId))}
+                />
               ))}
             </div>
           )}

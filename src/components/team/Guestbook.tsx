@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Send, Heart, Loader2 } from 'lucide-react';
+import { Send, Heart, Loader2, Trash2, Pencil, Check, X } from 'lucide-react';
 import { PixelButton } from '@/components/ui/PixelButton';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -145,6 +145,37 @@ export function Guestbook({ teamId }: GuestbookProps) {
     ));
   };
 
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editText, setEditText] = useState('');
+
+  const handleDelete = async (entryId: string) => {
+    const { error } = await supabase
+      .from('player_guestbook_entries')
+      .delete()
+      .eq('id', entryId);
+    if (error) {
+      toast.error('삭제에 실패했습니다');
+    } else {
+      setEntries(prev => prev.filter(e => e.id !== entryId));
+      toast.success('삭제되었습니다');
+    }
+  };
+
+  const handleEditSave = async (entryId: string) => {
+    if (!editText.trim()) return;
+    const { error } = await supabase
+      .from('player_guestbook_entries')
+      .update({ message: editText.trim() })
+      .eq('id', entryId);
+    if (error) {
+      toast.error('수정에 실패했습니다');
+    } else {
+      setEntries(prev => prev.map(e => e.id === entryId ? { ...e, message: editText.trim() } : e));
+      setEditingId(null);
+      toast.success('수정되었습니다');
+    }
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -204,9 +235,42 @@ export function Guestbook({ teamId }: GuestbookProps) {
               >
                 <div className="flex items-center justify-between mb-0.5">
                   <span className="font-pixel text-[8px] text-primary">{entry.author}</span>
-                  <span className="font-pixel text-[7px] text-muted-foreground">{entry.date}</span>
+                  <div className="flex items-center gap-1">
+                    <span className="font-pixel text-[7px] text-muted-foreground">{entry.date}</span>
+                    {user?.id === entry.authorUserId && (
+                      <>
+                        <button
+                          onClick={() => { setEditingId(entry.id); setEditText(entry.message); }}
+                          className="text-muted-foreground hover:text-primary transition-colors"
+                        >
+                          <Pencil size={9} />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(entry.id)}
+                          className="text-muted-foreground hover:text-destructive transition-colors"
+                        >
+                          <Trash2 size={9} />
+                        </button>
+                      </>
+                    )}
+                  </div>
                 </div>
-                <p className="font-pixel text-[9px] text-foreground mb-1 leading-tight">{entry.message}</p>
+                {editingId === entry.id ? (
+                  <div className="flex gap-1 mb-1">
+                    <input
+                      value={editText}
+                      onChange={(e) => setEditText(e.target.value)}
+                      className="flex-1 px-1.5 py-1 bg-input border-2 border-border-dark font-pixel text-[9px] focus:outline-none focus:border-primary"
+                      maxLength={200}
+                      autoFocus
+                      onKeyDown={(e) => e.key === 'Enter' && handleEditSave(entry.id)}
+                    />
+                    <button onClick={() => handleEditSave(entry.id)} className="text-primary"><Check size={12} /></button>
+                    <button onClick={() => setEditingId(null)} className="text-muted-foreground"><X size={12} /></button>
+                  </div>
+                ) : (
+                  <p className="font-pixel text-[9px] text-foreground mb-1 leading-tight">{entry.message}</p>
+                )}
                 <button
                   onClick={() => handleLike(entry.id, entry.isLiked)}
                   className={`flex items-center gap-0.5 transition-transform hover:scale-110 ${

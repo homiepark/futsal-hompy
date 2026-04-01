@@ -46,6 +46,7 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
   const [showVideoInput, setShowVideoInput] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [selectedFolder, setSelectedFolder] = useState(folders[0]?.id || 'all');
+  const [visibility, setVisibility] = useState<'public' | 'members'>('members');
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -198,6 +199,7 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
         image_urls: imageUrls,
         video_url: finalVideoUrl,
         folder_id: selectedFolder === 'all' ? null : selectedFolder,
+        visibility: visibility,
       });
 
       if (error) throw error;
@@ -258,6 +260,37 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
                   {folder.emoji} {folder.name}
                 </button>
               ))}
+            </div>
+          </div>
+
+          {/* Visibility Selection */}
+          <div>
+            <label className="block font-pixel text-[8px] text-muted-foreground uppercase mb-1.5">공개 범위</label>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setVisibility('members')}
+                className={cn(
+                  'flex-1 py-1.5 border-2 font-pixel text-[8px] transition-all',
+                  visibility === 'members'
+                    ? 'bg-primary border-primary-dark text-primary-foreground'
+                    : 'bg-muted border-border-dark text-foreground hover:border-primary'
+                )}
+                style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow) / 0.5)' }}
+              >
+                🔒 팀원만
+              </button>
+              <button
+                onClick={() => setVisibility('public')}
+                className={cn(
+                  'flex-1 py-1.5 border-2 font-pixel text-[8px] transition-all',
+                  visibility === 'public'
+                    ? 'bg-accent border-accent-dark text-accent-foreground'
+                    : 'bg-muted border-border-dark text-foreground hover:border-accent'
+                )}
+                style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow) / 0.5)' }}
+              >
+                🌐 전체 공개
+              </button>
             </div>
           </div>
 
