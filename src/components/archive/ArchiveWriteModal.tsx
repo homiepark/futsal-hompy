@@ -47,6 +47,7 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [selectedFolder, setSelectedFolder] = useState(folders[0]?.id || 'all');
   const [visibility, setVisibility] = useState<'public' | 'members'>('members');
+  const [activityDate, setActivityDate] = useState('');
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -199,6 +200,7 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
         image_urls: imageUrls,
         video_url: finalVideoUrl,
         folder_id: selectedFolder === 'all' ? null : selectedFolder,
+        activity_date: activityDate || null,
         visibility: visibility,
       });
 
@@ -292,6 +294,19 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
                 🌐 전체 공개
               </button>
             </div>
+          </div>
+
+          {/* Activity Date */}
+          <div>
+            <label className="block font-pixel text-[8px] text-muted-foreground uppercase mb-1.5">📅 활동 날짜 (선택)</label>
+            <input
+              type="date"
+              value={activityDate}
+              onChange={(e) => setActivityDate(e.target.value)}
+              className="w-full px-3 py-1.5 bg-input border-2 border-border-dark font-pixel text-[10px] focus:outline-none focus:border-primary"
+              style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow) / 0.5)' }}
+            />
+            <p className="font-pixel text-[7px] text-muted-foreground mt-1">설정하면 팀 캘린더에 자동 표시돼요</p>
           </div>
 
           {/* Content Input */}
