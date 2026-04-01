@@ -542,19 +542,19 @@ export default function TeamHome() {
             {notices.length > 0 ? (
               <div className="animate-marquee whitespace-nowrap">
                 {notices.map((n, i) => (
-                  <span key={n.id} className="font-pixel text-[9px] text-[#00ff88] drop-shadow-[0_0_8px_rgba(0,255,136,0.8)] mx-6">
+                  <span key={n.id} className="font-pixel text-xs text-[#00ff88] drop-shadow-[0_0_8px_rgba(0,255,136,0.8)] mx-6">
                     {n.content}
                     {i < notices.length - 1 && <span className="mx-4 text-[#ff6b9d] drop-shadow-[0_0_6px_rgba(255,107,157,0.8)]">◆</span>}
                   </span>
                 ))}
                 {notices.map((n) => (
-                  <span key={`dup-${n.id}`} className="font-pixel text-[9px] text-[#00ff88] drop-shadow-[0_0_8px_rgba(0,255,136,0.8)] mx-6">
+                  <span key={`dup-${n.id}`} className="font-pixel text-xs text-[#00ff88] drop-shadow-[0_0_8px_rgba(0,255,136,0.8)] mx-6">
                     {n.content}
                   </span>
                 ))}
               </div>
             ) : (
-              <span className="font-pixel text-[8px] text-[#00ff88]/50 px-4">공지를 등록해보세요</span>
+              <span className="font-pixel text-xs text-[#00ff88]/50 px-4">공지를 등록해보세요</span>
             )}
           </div>
           {isAdmin && (
