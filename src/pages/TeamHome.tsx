@@ -11,7 +11,7 @@ import { LatestArchive } from '@/components/team/LatestArchive';
 import { MemberRoster } from '@/components/team/MemberRoster';
 import { Guestbook } from '@/components/team/Guestbook';
 
-import { HompySkinSelector } from '@/components/team/HompySkinSelector';
+import { HompySkinSelector, skins } from '@/components/team/HompySkinSelector';
 import { PixelButton } from '@/components/ui/PixelButton';
 import { PixelBackButton } from '@/components/ui/PixelBackButton';
 import { JoinRequestButton } from '@/components/team/JoinRequestButton';
@@ -183,6 +183,7 @@ export default function TeamHome() {
 
         const team = teamRes.data as TeamData;
         setTeamData(team);
+        setCurrentSkin((team as any).skin || 'default');
 
         // Set active team in context
         setActiveTeam({
@@ -418,8 +419,26 @@ export default function TeamHome() {
       ) / 10
     : 0;
 
+  // Apply skin CSS variables
+  const activeSkin = skins.find(s => s.id === currentSkin);
+  const skinStyle = activeSkin && activeSkin.id !== 'default' ? (() => {
+    // Parse HSL values from skin colors for CSS variable override
+    const parseHSL = (hsl: string) => {
+      const match = hsl.match(/hsl\((\d+)\s+(\d+)%\s+(\d+)%\)/);
+      return match ? `${match[1]} ${match[2]}% ${match[3]}%` : '';
+    };
+    return {
+      '--primary': parseHSL(activeSkin.headerBg),
+      '--primary-dark': parseHSL(activeSkin.borderColor),
+      '--accent': parseHSL(activeSkin.accentColor),
+      '--accent-dark': parseHSL(activeSkin.accentColor).replace(/(\d+)%\)?\s*$/, (_, p) => `${Math.max(0, parseInt(p) - 15)}%`),
+      '--background': parseHSL(activeSkin.bgColor),
+      background: activeSkin.bgColor,
+    } as React.CSSProperties;
+  })() : {};
+
   return (
-    <div className="pb-24 max-w-lg mx-auto">
+    <div className="pb-24 max-w-lg mx-auto" style={skinStyle}>
       {/* 1. Sticky Header with Team Switcher */}
       <div className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b-2 border-border-dark">
         <div className="px-4 py-3 flex items-center justify-between">
@@ -731,8 +750,11 @@ export default function TeamHome() {
         isOpen={showSkinSelector}
         onClose={() => setShowSkinSelector(false)}
         currentSkin={currentSkin}
-        onSkinChange={(skinId) => {
+        onSkinChange={async (skinId) => {
           setCurrentSkin(skinId);
+          if (teamId) {
+            await supabase.from('teams').update({ skin: skinId } as any).eq('id', teamId);
+          }
           toast.success('스킨이 변경되었습니다! ✨');
         }}
       />
