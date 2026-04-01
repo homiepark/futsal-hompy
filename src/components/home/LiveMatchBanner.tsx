@@ -91,30 +91,11 @@ export function LiveMatchBanner() {
   }, [matches.length]);
 
   if (loading) {
-    return (
-      <div className="px-4 py-3">
-        <div className="w-full h-32 bg-muted animate-pulse border-3 border-border-dark" />
-      </div>
-    );
+    return null;
   }
 
   if (matches.length === 0) {
-    return (
-      <div className="px-4 py-3">
-        <div
-          className="w-full bg-card border-3 border-border-dark overflow-hidden"
-          style={{ boxShadow: '4px 4px 0 hsl(var(--pixel-shadow))' }}
-        >
-          <div className="bg-primary/10 border-b-2 border-border px-3 py-1.5 flex items-center gap-1.5">
-            <Swords size={12} className="text-primary" />
-            <span className="font-pixel text-[8px] text-primary">매치 현황</span>
-          </div>
-          <div className="px-4 py-6 text-center">
-            <span className="font-pixel text-[9px] text-muted-foreground">현재 등록된 매치가 없습니다</span>
-          </div>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   const match = matches[currentIndex];

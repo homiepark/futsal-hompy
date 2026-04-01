@@ -7,20 +7,15 @@ import { ko } from 'date-fns/locale';
 interface ActivityItem {
   id: string;
   teamId: string;
-  type: 'match_result' | 'new_team' | 'court_booking' | 'archive_post';
+  type: 'archive_post';
   teamName: string;
   teamEmblem: string;
   teamPhotoUrl?: string;
+  imageUrl?: string;
   description: string;
+  folderName?: string;
   timeAgo: string;
 }
-
-const typeConfig = {
-  match_result: { icon: '⚽', label: '경기결과' },
-  new_team: { icon: '🆕', label: '신규팀' },
-  court_booking: { icon: '📍', label: '구장예약' },
-  archive_post: { icon: '📸', label: '아카이브' },
-};
 
 export function RecentActivityFeed() {
   const navigate = useNavigate();
@@ -32,7 +27,7 @@ export function RecentActivityFeed() {
       try {
         const { data: postsData, error: postsError } = await supabase
           .from('archive_posts')
-          .select('id, team_id, content, created_at')
+          .select('id, team_id, content, created_at, image_url, folder_id')
           .order('created_at', { ascending: false })
           .limit(4);
 
@@ -44,19 +39,25 @@ export function RecentActivityFeed() {
         const teamIds = [...new Set(postsData.map((p) => p.team_id))];
         const { data: teamsData } = await supabase
           .from('teams')
-          .select('id, name, emblem, photo_url')
+          .select('id, name, emblem, photo_url, archive_folders')
           .in('id', teamIds);
 
-        const teamsMap: Record<string, { name: string; emblem: string; photoUrl?: string }> = {};
+        const teamsMap: Record<string, { name: string; emblem: string; photoUrl?: string; folders?: any[] }> = {};
         if (teamsData) {
           for (const t of teamsData) {
-            teamsMap[t.id] = { name: t.name, emblem: t.emblem || '⚽', photoUrl: t.photo_url || undefined };
+            teamsMap[t.id] = {
+              name: t.name,
+              emblem: t.emblem || '⚽',
+              photoUrl: t.photo_url || undefined,
+              folders: (t as any).archive_folders || [],
+            };
           }
         }
 
         setActivities(
           postsData.map((p) => {
-            const team = teamsMap[p.team_id] || { name: '알 수 없음', emblem: '⚽' };
+            const team = teamsMap[p.team_id] || { name: '알 수 없음', emblem: '⚽', folders: [] };
+            const folder = team.folders?.find((f: any) => f.id === p.folder_id);
             return {
               id: p.id,
               teamId: p.team_id,
@@ -64,7 +65,9 @@ export function RecentActivityFeed() {
               teamName: team.name,
               teamEmblem: team.emblem,
               teamPhotoUrl: team.photoUrl,
+              imageUrl: p.image_url || undefined,
               description: p.content ? p.content.slice(0, 30) + (p.content.length > 30 ? '...' : '') : '',
+              folderName: folder?.name || undefined,
               timeAgo: formatDistanceToNow(new Date(p.created_at), { addSuffix: true, locale: ko }),
             };
           })
@@ -87,7 +90,7 @@ export function RecentActivityFeed() {
         </h3>
         <div className="space-y-1">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="w-full h-12 bg-muted animate-pulse border-3 border-border-dark" />
+            <div key={i} className="w-full h-14 bg-muted animate-pulse border-3 border-border-dark" />
           ))}
         </div>
       </div>
@@ -122,43 +125,42 @@ export function RecentActivityFeed() {
         className="bg-card border-3 border-border-dark divide-y divide-border"
         style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}
       >
-        {activities.map((activity) => {
-          const config = typeConfig[activity.type];
-          return (
-            <div
-              key={activity.id}
-              className="px-3 py-2.5 flex items-center gap-3 hover:bg-muted/50 transition-colors cursor-pointer"
-              onClick={() => navigate(`/team/${activity.teamId}`)}
-            >
-              {/* Team Emblem / Photo */}
-              <div className="w-8 h-8 flex items-center justify-center overflow-hidden rounded-sm shrink-0">
-                {activity.teamPhotoUrl ? (
-                  <img src={activity.teamPhotoUrl} alt="" className="w-full h-full object-cover" />
-                ) : (
-                  <span className="text-lg">{activity.teamEmblem}</span>
-                )}
-              </div>
-
-              {/* Content */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-1.5">
-                  <span className="font-pixel text-[9px] text-foreground">{activity.teamName}</span>
-                  <span className="px-1 py-0.5 bg-primary/10 border border-primary/20 font-pixel text-[6px] text-primary">
-                    {config.label}
-                  </span>
-                </div>
-                <p className="font-pixel text-[7px] text-muted-foreground mt-0.5 truncate">
-                  {config.icon} {activity.description}
-                </p>
-              </div>
-
-              {/* Time */}
-              <span className="font-pixel text-[7px] text-muted-foreground shrink-0">
-                {activity.timeAgo}
-              </span>
+        {activities.map((activity) => (
+          <div
+            key={activity.id}
+            className="px-3 py-2.5 flex items-center gap-3 hover:bg-muted/50 transition-colors cursor-pointer"
+            onClick={() => navigate(`/archive?team=${activity.teamId}`)}
+          >
+            {/* Thumbnail: image or team photo */}
+            <div className="w-10 h-10 flex items-center justify-center overflow-hidden rounded-sm shrink-0 border-2 border-border-dark bg-muted">
+              {activity.imageUrl ? (
+                <img src={activity.imageUrl} alt="" className="w-full h-full object-cover" />
+              ) : activity.teamPhotoUrl ? (
+                <img src={activity.teamPhotoUrl} alt="" className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-lg">{activity.teamEmblem}</span>
+              )}
             </div>
-          );
-        })}
+
+            {/* Content */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-1.5">
+                <span className="font-pixel text-[9px] text-foreground">{activity.teamName}</span>
+                <span className="px-1 py-0.5 bg-primary/10 border border-primary/20 font-pixel text-[6px] text-primary">
+                  {activity.folderName || '게시글'}
+                </span>
+              </div>
+              <p className="font-pixel text-[7px] text-muted-foreground mt-0.5 truncate">
+                📸 {activity.description}
+              </p>
+            </div>
+
+            {/* Time */}
+            <span className="font-pixel text-[7px] text-muted-foreground shrink-0">
+              {activity.timeAgo}
+            </span>
+          </div>
+        ))}
       </div>
     </div>
   );
