@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils';
 import { useState, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { shareToKakao } from '@/lib/kakaoShare';
 
 interface TeamHeaderProps {
   name: string;
@@ -204,6 +205,18 @@ export function TeamHeader({
             <div className={cn('px-2 py-0.5 border-2 font-pixel text-[8px]', levelColors[level] || 'bg-primary text-primary-foreground')}>
               LV.{level}
             </div>
+            <button
+              onClick={() => shareToKakao({
+                title: name,
+                imageUrl: photoUrl || bannerUrl || undefined,
+                linkUrl: `https://xn--oy2bq2kj9eita652c.com/team/${teamId}`,
+              })}
+              className="w-7 h-7 flex items-center justify-center bg-[#FEE500] border-2 border-[#E5CF00] hover:brightness-95 transition-all"
+              style={{ boxShadow: '1px 1px 0 hsl(var(--pixel-shadow))' }}
+              title="카카오톡 공유"
+            >
+              <span className="text-sm">💬</span>
+            </button>
           </div>
 
           {/* Location Info */}
