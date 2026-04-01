@@ -73,13 +73,37 @@ export default function TeamArchive() {
         if (teams.length > 0 && !teamParam) {
           setSelectedTeam(teams[0].id);
         }
-        // Check admin status for selected team
-        const adminEntry = data.find((d: any) => d.role === 'admin');
+        const adminEntry = data.find((d: any) => d.role === 'admin' || d.role === 'owner');
         if (adminEntry) setIsAdmin(true);
       }
     }
     fetchTeams();
   }, [user, teamParam]);
+
+  // Load folders from DB when team changes
+  useEffect(() => {
+    async function loadFolders() {
+      if (!selectedTeam || selectedTeam === 'all') {
+        setFolders(defaultFolders);
+        return;
+      }
+      const { data } = await supabase
+        .from('teams')
+        .select('archive_folders')
+        .eq('id', selectedTeam)
+        .single();
+
+      const saved = (data as any)?.archive_folders;
+      if (saved && Array.isArray(saved) && saved.length > 0) {
+        // Always include "전체보기" as first
+        const hasAll = saved.some((f: any) => f.id === 'all');
+        setFolders(hasAll ? saved : [defaultFolders[0], ...saved]);
+      } else {
+        setFolders(defaultFolders);
+      }
+    }
+    loadFolders();
+  }, [selectedTeam]);
 
   // Fetch archive posts
   const fetchPosts = useCallback(async () => {
@@ -180,8 +204,14 @@ export default function TeamArchive() {
     }
   };
 
-  const handleFoldersSave = (newFolders: typeof folders) => {
+  const handleFoldersSave = async (newFolders: typeof folders) => {
     setFolders(newFolders);
+    if (selectedTeam && selectedTeam !== 'all') {
+      await supabase
+        .from('teams')
+        .update({ archive_folders: JSON.parse(JSON.stringify(newFolders)) } as any)
+        .eq('id', selectedTeam);
+    }
   };
 
   const currentTeam = myTeams.find(t => t.id === selectedTeam);
