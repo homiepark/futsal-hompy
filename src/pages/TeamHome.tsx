@@ -98,6 +98,7 @@ export default function TeamHome() {
   const [teamData, setTeamData] = useState<TeamData | null>(null);
   const [members, setMembers] = useState<MemberData[]>([]);
   const [archiveItems, setArchiveItems] = useState<ArchiveItem[]>([]);
+  const [archiveTotalCount, setArchiveTotalCount] = useState(0);
   const [notices, setNotices] = useState<Array<{ id: string; content: string; created_at: string }>>([]);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -149,7 +150,7 @@ export default function TeamHome() {
         }
 
         // Fetch team, members, archive, notices in parallel
-        const [teamRes, membersRes, archiveRes, noticesRes] = await Promise.all([
+        const [teamRes, membersRes, archiveRes, noticesRes, archiveCountRes] = await Promise.all([
           supabase
             .from('teams')
             .select('*')
@@ -175,6 +176,11 @@ export default function TeamHome() {
             .eq('is_active', true)
             .order('created_at', { ascending: false })
             .limit(20),
+
+          supabase
+            .from('archive_posts')
+            .select('id', { count: 'exact', head: true })
+            .eq('team_id', teamId),
         ]);
 
         if (cancelled) return;
@@ -267,6 +273,9 @@ export default function TeamHome() {
           }));
           setArchiveItems(mapped);
         }
+
+        // Handle archive total count
+        setArchiveTotalCount(archiveCountRes.count || 0);
 
         // Handle notices
         if (!noticesRes.error && noticesRes.data) {
@@ -587,7 +596,11 @@ export default function TeamHome() {
         </div>
 
         {/* 5. Achievements */}
-        <TeamAchievements teamId={teamData.id} />
+        <TeamAchievements
+          matchCount={0}
+          memberCount={members.length}
+          archiveCount={archiveTotalCount}
+        />
 
         {/* 7. Team Intro */}
         <TeamIntro
