@@ -40,6 +40,7 @@ export function TeamAchievements({
   archiveCount,
 }: TeamAchievementsProps) {
   const achievements = getAchievements(matchCount, memberCount, archiveCount);
+  const sorted = [...achievements.filter(a => a.earned), ...achievements.filter(a => !a.earned)];
   const [selectedAchievement, setSelectedAchievement] = useState<{name: string; emoji: string; desc: string; earned: boolean} | null>(null);
 
   return (
@@ -51,7 +52,7 @@ export function TeamAchievements({
         팀 업적
       </p>
       <div className="flex overflow-x-auto gap-2 pb-1 scrollbar-hide">
-        {achievements.map((achievement) => (
+        {sorted.map((achievement) => (
           <div
             key={achievement.id}
             onClick={() => setSelectedAchievement({ name: achievement.label, emoji: achievement.emoji, desc: achievement.desc, earned: achievement.earned })}
