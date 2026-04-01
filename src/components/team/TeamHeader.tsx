@@ -211,11 +211,12 @@ export function TeamHeader({
                 imageUrl: photoUrl || bannerUrl || undefined,
                 linkUrl: `https://xn--oy2bq2kj9eita652c.com/team/${teamId}`,
               })}
-              className="w-7 h-7 flex items-center justify-center bg-[#FEE500] border-2 border-[#E5CF00] hover:brightness-95 transition-all"
-              style={{ boxShadow: '1px 1px 0 hsl(var(--pixel-shadow))' }}
+              className="w-7 h-7 flex items-center justify-center bg-[#FEE500] rounded-md hover:brightness-90 transition-all"
               title="카카오톡 공유"
             >
-              <span className="text-sm">💬</span>
+              <svg width="18" height="18" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+                <path d="M128 36C70.562 36 24 72.713 24 118c0 29.279 19.466 54.97 48.748 69.477-1.593 5.494-10.237 35.344-10.581 37.689 0 0-.207 1.726.914 2.382 1.121.656 2.436.126 2.436.126 3.217-.453 37.272-24.266 43.151-28.373A175.896 175.896 0 00128 200c57.438 0 104-36.713 104-82S185.438 36 128 36z" fill="#191919"/>
+              </svg>
             </button>
           </div>
 
