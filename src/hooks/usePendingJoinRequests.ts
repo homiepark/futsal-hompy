@@ -41,25 +41,35 @@ export function usePendingJoinRequests() {
     if (!user) return;
 
     try {
-      // Get teams where user is admin
+      // Get teams where user is admin (owner or admin role)
       const { data: adminTeams } = await supabase
         .from('teams')
         .select('id')
         .eq('admin_user_id', user.id);
 
-      if (!adminTeams || adminTeams.length === 0) {
+      const { data: adminMemberTeams } = await supabase
+        .from('team_members')
+        .select('team_id')
+        .eq('user_id', user.id)
+        .eq('role', 'admin');
+
+      const teamIds = [
+        ...(adminTeams || []).map(t => t.id),
+        ...(adminMemberTeams || []).map(t => t.team_id),
+      ];
+      const uniqueTeamIds = [...new Set(teamIds)];
+
+      if (uniqueTeamIds.length === 0) {
         setPendingCount(0);
         setLoading(false);
         return;
       }
 
-      const teamIds = adminTeams.map(t => t.id);
-
       // Count pending requests for those teams
       const { count, error } = await supabase
         .from('team_join_requests')
         .select('*', { count: 'exact', head: true })
-        .in('team_id', teamIds)
+        .in('team_id', uniqueTeamIds)
         .eq('status', 'pending');
 
       if (error) throw error;

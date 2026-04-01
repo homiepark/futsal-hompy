@@ -17,6 +17,7 @@ import { PixelBackButton } from '@/components/ui/PixelBackButton';
 import { JoinRequestButton } from '@/components/team/JoinRequestButton';
 import { AdminTransferModal } from '@/components/team/AdminTransferModal';
 import { AdminManageModal } from '@/components/team/AdminManageModal';
+import { JoinRequestNotification } from '@/components/team/JoinRequestNotification';
 import { PlayerInviteModal } from '@/components/team/PlayerInviteModal';
 import { DirectMessageModal } from '@/components/messages/DirectMessageModal';
 import { BroadcastModal } from '@/components/messages/BroadcastModal';
@@ -537,6 +538,9 @@ export default function TeamHome() {
           )}
         </div>
       </div>
+
+      {/* Join Request Notification */}
+      <JoinRequestNotification teamId={teamData.id} isAdmin={isAdmin} />
 
       <div className="px-4 py-4 space-y-5">
         {/* 4. Quick Stats Row */}
