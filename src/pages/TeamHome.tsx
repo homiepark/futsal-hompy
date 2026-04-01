@@ -535,9 +535,9 @@ export default function TeamHome() {
       />
 
       {/* 3. Marquee Notice Bar (전광판) + 수정 버튼 */}
-      <div className="bg-gradient-to-r from-[#1a0a2e] via-[#16213e] to-[#1a0a2e] overflow-hidden border-y-2 border-[#00ff88]/30">
+      <div className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 overflow-hidden border-y-2 border-primary/30">
         <div className="py-2 flex items-center">
-          <span className="shrink-0 px-2 font-pixel text-[8px] text-accent bg-accent/20 border-r border-border-dark">📢</span>
+          <span className="shrink-0 px-2 text-base">📢</span>
           <div className="flex-1 overflow-hidden">
             {notices.length > 0 ? (
               <div className="animate-marquee whitespace-nowrap">
