@@ -109,7 +109,10 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
       />
 
       {/* Modal */}
-      <div className="relative w-full max-w-sm kairo-panel animate-in fade-in zoom-in-95 duration-200 max-h-full flex flex-col overflow-hidden">
+      <div
+        className="relative w-full max-w-sm kairo-panel animate-in fade-in zoom-in-95 duration-200 max-h-full flex flex-col overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="kairo-panel-header justify-between flex-shrink-0">
           <div className="flex items-center gap-2">
