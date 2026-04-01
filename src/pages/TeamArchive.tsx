@@ -113,7 +113,7 @@ export default function TeamArchive() {
     try {
       let query = supabase
         .from('archive_posts')
-        .select('id, content, image_url, image_urls, video_url, folder_id, created_at, author_user_id')
+        .select('id, content, image_url, image_urls, video_url, folder_id, created_at, author_user_id, activity_date')
         .order('created_at', { ascending: false });
 
       if (selectedTeam && selectedTeam !== 'all') {
@@ -169,6 +169,7 @@ export default function TeamArchive() {
           likes: likeMap.get(post.id) || 0,
           comments: commentMap.get(post.id) || 0,
           folderId: post.folder_id || 'all',
+          activityDate: (post as any).activity_date || undefined,
           authorUserId: post.author_user_id || undefined,
           authorAvatarUrl: profileMap.get(post.author_user_id)?.avatarUrl || undefined,
         }));
@@ -322,6 +323,9 @@ export default function TeamArchive() {
                   onDelete={(postId) => setPosts(prev => prev.filter(p => p.id !== postId))}
                   folderName={folders.find(f => f.id === post.folderId)?.name}
                   folderEmoji={folders.find(f => f.id === post.folderId)?.emoji}
+                  folderId={post.folderId}
+                  activityDate={(post as any).activityDate}
+                  folders={folders.filter(f => !f.isDefault)}
                 />
                 </div>
               ))}

@@ -28,6 +28,9 @@ interface TimelinePostProps {
   onDelete?: (postId: string) => void;
   folderName?: string;
   folderEmoji?: string;
+  folderId?: string;
+  activityDate?: string;
+  folders?: { id: string; name: string; emoji: string }[];
 }
 
 export function TimelinePost({
@@ -48,6 +51,9 @@ export function TimelinePost({
   onDelete,
   folderName,
   folderEmoji,
+  folderId,
+  activityDate,
+  folders = [],
 }: TimelinePostProps) {
   const { user } = useAuth();
   const { likesCount, isLiked, toggleLike, loading: likeLoading } = useArchiveLikes(id);
@@ -60,6 +66,10 @@ export function TimelinePost({
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(content);
   const [displayContent, setDisplayContent] = useState(content);
+  const [editActivityDate, setEditActivityDate] = useState(activityDate || '');
+  const [editFolderId, setEditFolderId] = useState(folderId || '');
+  const [displayFolderName, setDisplayFolderName] = useState(folderName);
+  const [displayFolderEmoji, setDisplayFolderEmoji] = useState(folderEmoji);
 
   const isAuthor = !!user && !!authorUserId && user.id === authorUserId;
   const canDelete = isAuthor || isAdmin;
@@ -80,15 +90,24 @@ export function TimelinePost({
 
   const handleSaveEdit = async () => {
     if (!editContent.trim()) return;
+    const updateData: any = { content: editContent };
+    if (editActivityDate) updateData.activity_date = editActivityDate;
+    else updateData.activity_date = null;
+    if (editFolderId && editFolderId !== 'all') updateData.folder_id = editFolderId;
+    else updateData.folder_id = null;
+
     const { error } = await supabase
       .from('archive_posts')
-      .update({ content: editContent })
+      .update(updateData)
       .eq('id', id);
     if (error) {
       toast.error('수정에 실패했습니다.');
       return;
     }
     setDisplayContent(editContent);
+    const newFolder = folders.find(f => f.id === editFolderId);
+    setDisplayFolderName(newFolder?.name);
+    setDisplayFolderEmoji(newFolder?.emoji);
     setIsEditing(false);
     toast.success('게시물이 수정되었습니다.');
   };
@@ -133,9 +152,9 @@ export function TimelinePost({
           )}
         </div>
         <div className="flex-1">
-          {folderName && folderName !== '전체보기' && (
+          {displayFolderName && displayFolderName !== '전체보기' && (
             <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-primary/10 border border-primary/30 font-pixel text-[7px] text-primary mb-0.5">
-              {folderEmoji || '📁'} {folderName}
+              {displayFolderEmoji || '📁'} {displayFolderName}
             </span>
           )}
           <p className="font-pixel text-[10px] text-foreground">{author}</p>
@@ -165,13 +184,48 @@ export function TimelinePost({
 
       {/* Content */}
       {isEditing ? (
-        <div className="space-y-2">
+        <div className="space-y-3">
           <textarea
             value={editContent}
             onChange={(e) => setEditContent(e.target.value)}
-            className="pixel-input w-full text-sm p-3 min-h-[150px] resize-y"
-            rows={6}
+            className="pixel-input w-full text-sm p-3 min-h-[120px] resize-y"
+            rows={4}
           />
+
+          {/* Activity Date */}
+          <div>
+            <label className="block font-pixel text-[8px] text-muted-foreground mb-1">📅 활동 날짜</label>
+            <input
+              type="date"
+              value={editActivityDate}
+              onChange={(e) => setEditActivityDate(e.target.value)}
+              className="w-full px-2 py-1.5 bg-input border-2 border-border-dark font-pixel text-[10px] focus:outline-none focus:border-primary"
+            />
+          </div>
+
+          {/* Folder Selection */}
+          {folders.length > 0 && (
+            <div>
+              <label className="block font-pixel text-[8px] text-muted-foreground mb-1">📁 폴더 변경</label>
+              <div className="flex flex-wrap gap-1.5">
+                {folders.map(f => (
+                  <button
+                    key={f.id}
+                    type="button"
+                    onClick={() => setEditFolderId(f.id)}
+                    className={`px-2 py-1 border-2 font-pixel text-[8px] transition-all ${
+                      editFolderId === f.id
+                        ? 'bg-primary border-primary-dark text-primary-foreground'
+                        : 'bg-muted border-border-dark text-foreground hover:border-primary'
+                    }`}
+                  >
+                    {f.emoji} {f.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="flex gap-2 justify-end">
             <button
               onClick={handleCancelEdit}
