@@ -12,6 +12,7 @@ interface Member {
   yearsOfExperience: number;
   monthsOfExperience?: number;
   isAdmin?: boolean;
+  role?: string;
   joinDate?: string;
   mannerRating?: number;
   matchesPlayed?: number;
@@ -100,7 +101,7 @@ export function MemberRoster({ members, teamId }: MemberRosterProps) {
                           </div>
                         )}
                         {member.isAdmin && (
-                          <div className="absolute -top-0.5 -right-0.5 text-[8px]">👑</div>
+                          <div className="absolute -top-0.5 -right-0.5 text-[8px]">{member.role === 'owner' ? '👑' : '🛡️'}</div>
                         )}
                       </div>
                       

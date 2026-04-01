@@ -16,6 +16,7 @@ import { PixelButton } from '@/components/ui/PixelButton';
 import { PixelBackButton } from '@/components/ui/PixelBackButton';
 import { JoinRequestButton } from '@/components/team/JoinRequestButton';
 import { AdminTransferModal } from '@/components/team/AdminTransferModal';
+import { AdminManageModal } from '@/components/team/AdminManageModal';
 import { PlayerInviteModal } from '@/components/team/PlayerInviteModal';
 import { DirectMessageModal } from '@/components/messages/DirectMessageModal';
 import { BroadcastModal } from '@/components/messages/BroadcastModal';
@@ -55,6 +56,7 @@ interface MemberData {
   yearsOfExperience?: number;
   monthsOfExperience?: number;
   isAdmin?: boolean;
+  role?: string;
   joinDate?: string;
 }
 
@@ -81,6 +83,7 @@ export default function TeamHome() {
   const navigate = useNavigate();
   const { setActiveTeam, clearActiveTeam } = useTeam();
   const [showAdminTransfer, setShowAdminTransfer] = useState(false);
+  const [showAdminManage, setShowAdminManage] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [showDirectMessage, setShowDirectMessage] = useState(false);
   const [showBroadcast, setShowBroadcast] = useState(false);
@@ -103,8 +106,9 @@ export default function TeamHome() {
   const [noticeText, setNoticeText] = useState('');
 
   // Derived state
-  const isAdmin = (currentUserId != null && teamData?.admin_user_id === currentUserId)
-    || members.some(m => m.userId === currentUserId && m.isAdmin);
+  const isOwner = currentUserId != null && teamData?.admin_user_id === currentUserId;
+  const isAdmin = isOwner
+    || members.some(m => m.userId === currentUserId && (m.role === 'admin' || m.role === 'owner'));
   const isMember = currentUserId != null && members.some(m => m.userId === currentUserId);
   const adminUserId = teamData?.admin_user_id ?? '';
 
@@ -224,7 +228,8 @@ export default function TeamHome() {
               position: toPosition(positions[0]),
               yearsOfExperience: profile?.years_of_experience ?? 0,
               monthsOfExperience: (profile as any)?.months_of_experience ?? 0,
-              isAdmin: m.role === 'admin' || m.user_id === team.admin_user_id,
+              isAdmin: m.role === 'admin' || m.role === 'owner' || m.user_id === team.admin_user_id,
+              role: m.user_id === team.admin_user_id ? 'owner' : m.role,
               joinDate: m.joined_at ? new Date(m.joined_at).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }) : undefined,
             };
           });
@@ -586,18 +591,40 @@ export default function TeamHome() {
         {/* 10. Guestbook */}
         <Guestbook teamId={teamId} />
 
-        {/* 11. Admin Actions - compact horizontal icon row */}
+        {/* 11. Admin Actions */}
         {isAdmin && (
-          <div className="flex gap-2">
-            <button onClick={() => setShowBroadcast(true)} className="flex-1 py-2.5 bg-card border-2 border-border-dark font-pixel text-[8px] text-foreground flex items-center justify-center gap-1 hover:bg-muted" style={{boxShadow:'2px 2px 0 hsl(var(--pixel-shadow) / 0.5)'}}>
-              📢 메시지
-            </button>
-            <button onClick={() => setShowInviteModal(true)} className="flex-1 py-2.5 bg-card border-2 border-border-dark font-pixel text-[8px] text-foreground flex items-center justify-center gap-1 hover:bg-muted" style={{boxShadow:'2px 2px 0 hsl(var(--pixel-shadow) / 0.5)'}}>
-              👥 초대
-            </button>
-            <button onClick={() => navigate('/messages', { state: { tab: 'join-requests' } })} className="flex-1 py-2.5 bg-card border-2 border-border-dark font-pixel text-[8px] text-foreground flex items-center justify-center gap-1 hover:bg-muted" style={{boxShadow:'2px 2px 0 hsl(var(--pixel-shadow) / 0.5)'}}>
-              📋 입단관리
-            </button>
+          <div className="space-y-2">
+            <div className="flex gap-2">
+              <button onClick={() => setShowBroadcast(true)} className="flex-1 py-2.5 bg-card border-2 border-border-dark font-pixel text-[8px] text-foreground flex items-center justify-center gap-1 hover:bg-muted" style={{boxShadow:'2px 2px 0 hsl(var(--pixel-shadow) / 0.5)'}}>
+                📢 메시지
+              </button>
+              <button onClick={() => setShowInviteModal(true)} className="flex-1 py-2.5 bg-card border-2 border-border-dark font-pixel text-[8px] text-foreground flex items-center justify-center gap-1 hover:bg-muted" style={{boxShadow:'2px 2px 0 hsl(var(--pixel-shadow) / 0.5)'}}>
+                👥 초대
+              </button>
+              <button onClick={() => navigate('/messages', { state: { tab: 'join-requests' } })} className="flex-1 py-2.5 bg-card border-2 border-border-dark font-pixel text-[8px] text-foreground flex items-center justify-center gap-1 hover:bg-muted" style={{boxShadow:'2px 2px 0 hsl(var(--pixel-shadow) / 0.5)'}}>
+                📋 입단관리
+              </button>
+            </div>
+
+            {/* Owner-only actions */}
+            {isOwner && (
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setShowAdminManage(true)}
+                  className="flex-1 py-2.5 bg-card border-2 border-border-dark font-pixel text-[8px] text-foreground flex items-center justify-center gap-1 hover:bg-muted"
+                  style={{boxShadow:'2px 2px 0 hsl(var(--pixel-shadow) / 0.5)'}}
+                >
+                  🛡️ 관리자 관리
+                </button>
+                <button
+                  onClick={() => setShowAdminTransfer(true)}
+                  className="flex-1 py-2.5 bg-card border-2 border-border-dark font-pixel text-[8px] text-foreground flex items-center justify-center gap-1 hover:bg-muted"
+                  style={{boxShadow:'2px 2px 0 hsl(var(--pixel-shadow) / 0.5)'}}
+                >
+                  👑 팀장 이전
+                </button>
+              </div>
+            )}
           </div>
         )}
 
@@ -636,6 +663,22 @@ export default function TeamHome() {
         members={members}
         currentAdminId={members.find(m => m.userId === teamData.admin_user_id)?.id ?? ''}
         onTransfer={handleAdminTransfer}
+      />
+
+      {/* Admin Manage Modal */}
+      <AdminManageModal
+        isOpen={showAdminManage}
+        onClose={() => setShowAdminManage(false)}
+        members={members}
+        teamId={teamData.id}
+        ownerId={teamData.admin_user_id || ''}
+        onRoleChange={(memberId, newRole) => {
+          setMembers(prev => prev.map(m =>
+            m.id === memberId
+              ? { ...m, role: newRole, isAdmin: newRole === 'admin' || newRole === 'owner' }
+              : m
+          ));
+        }}
       />
 
       {/* Player Invite Modal */}
