@@ -261,12 +261,12 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
 
           {/* Player Guestbook Section */}
           <div className="kairo-section">
-            <p className="font-pixel text-[8px] text-muted-foreground uppercase mb-2">📝 선수 방명록</p>
+            <p className="font-pixel text-[10px] text-muted-foreground uppercase mb-2">📝 선수 방명록</p>
 
             {/* Guestbook Input */}
-            <div className="flex gap-1.5 mb-3">
+            <div className="flex gap-2 mb-3">
               <input
-                className="flex-1 px-2 py-1.5 bg-input border-2 border-border-dark font-pixel text-[9px] placeholder:text-muted-foreground focus:outline-none focus:border-primary"
+                className="flex-1 px-3 py-2 bg-input border-2 border-border-dark font-pixel text-[11px] placeholder:text-muted-foreground focus:outline-none focus:border-primary"
                 placeholder="응원 메시지를 남겨주세요..."
                 value={guestbookMessage}
                 onChange={(e) => setGuestbookMessage(e.target.value)}
@@ -275,102 +275,102 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
               />
               <button
                 onClick={handleSubmitGuestbook}
-                className="px-2 py-1.5 bg-primary border-2 border-primary-dark hover:brightness-110 transition-all"
+                className="px-3 py-2 bg-primary border-2 border-primary-dark hover:brightness-110 transition-all"
                 style={{ boxShadow: '2px 2px 0 hsl(var(--primary-dark))' }}
               >
-                <Send size={12} className="text-primary-foreground" />
+                <Send size={14} className="text-primary-foreground" />
               </button>
             </div>
 
-            {/* Guestbook Entries - Show latest 3 */}
-            <div className="space-y-2 max-h-48 overflow-y-auto pixel-scrollbar">
+            {/* Guestbook Entries */}
+            <div className="space-y-2.5 max-h-56 overflow-y-auto pixel-scrollbar">
               {guestbookEntries.map((entry) => (
                 <div
                   key={entry.id}
-                  className="bg-muted/50 p-2 border-2 border-border-dark"
+                  className="bg-muted/50 p-3 border-2 border-border-dark"
                   style={{ boxShadow: '1px 1px 0 hsl(var(--pixel-shadow) / 0.3)' }}
                 >
-                  <div className="flex items-center justify-between mb-0.5">
-                    <span className="font-pixel text-[8px] text-primary">{entry.authorNickname}</span>
-                    <div className="flex items-center gap-1">
-                      <span className="font-pixel text-[7px] text-muted-foreground">{entry.date}</span>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="font-pixel text-[10px] text-primary">{entry.authorNickname}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="font-pixel text-[8px] text-muted-foreground">{entry.date}</span>
                       {user?.id === entry.authorUserId && (
                         <>
                           <button
                             onClick={() => { setEditingEntryId(entry.id); setEditingEntryText(entry.message); }}
-                            className="text-muted-foreground hover:text-primary transition-colors"
+                            className="text-muted-foreground hover:text-primary transition-colors p-1"
                           >
-                            <Pencil size={8} />
+                            <Pencil size={12} />
                           </button>
                           <button
                             onClick={() => deleteEntry(entry.id)}
-                            className="text-muted-foreground hover:text-destructive transition-colors"
+                            className="text-muted-foreground hover:text-destructive transition-colors p-1"
                           >
-                            <Trash2 size={8} />
+                            <Trash2 size={12} />
                           </button>
                         </>
                       )}
                     </div>
                   </div>
                   {editingEntryId === entry.id ? (
-                    <div className="flex gap-1 mb-1">
+                    <div className="flex gap-1.5 mb-1">
                       <input
                         value={editingEntryText}
                         onChange={(e) => setEditingEntryText(e.target.value)}
-                        className="flex-1 px-1.5 py-0.5 bg-input border border-border-dark font-pixel text-[9px] focus:outline-none focus:border-primary"
+                        className="flex-1 px-2 py-1 bg-input border-2 border-border-dark font-pixel text-[11px] focus:outline-none focus:border-primary"
                         maxLength={50}
                         autoFocus
                         onKeyDown={(e) => {
                           if (e.key === 'Enter') { updateEntry(entry.id, editingEntryText); setEditingEntryId(null); }
                         }}
                       />
-                      <button onClick={() => { updateEntry(entry.id, editingEntryText); setEditingEntryId(null); }} className="text-primary"><Check size={10} /></button>
-                      <button onClick={() => setEditingEntryId(null)} className="text-muted-foreground"><X size={10} /></button>
+                      <button onClick={() => { updateEntry(entry.id, editingEntryText); setEditingEntryId(null); }} className="text-primary p-1"><Check size={14} /></button>
+                      <button onClick={() => setEditingEntryId(null)} className="text-muted-foreground p-1"><X size={14} /></button>
                     </div>
                   ) : (
-                    <p className="font-pixel text-[9px] text-foreground mb-1 leading-tight">{entry.message}</p>
+                    <p className="font-pixel text-[11px] text-foreground mb-1.5 leading-relaxed">{entry.message}</p>
                   )}
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-4">
                     <button
                       onClick={() => toggleLike(entry.id)}
                       className={cn(
-                        "flex items-center gap-0.5 hover:scale-110 transition-transform",
+                        "flex items-center gap-1 p-1 hover:scale-110 transition-transform",
                         entry.isLikedByMe ? "text-accent" : "text-muted-foreground"
                       )}
                     >
-                      <Heart size={10} fill={entry.isLikedByMe ? "currentColor" : "none"} />
-                      <span className="font-pixel text-[7px]">{entry.likes}</span>
+                      <Heart size={14} fill={entry.isLikedByMe ? "currentColor" : "none"} />
+                      <span className="font-pixel text-[9px]">{entry.likes}</span>
                     </button>
                     <button
                       onClick={() => setReplyingToId(replyingToId === entry.id ? null : entry.id)}
                       className={cn(
-                        "flex items-center gap-0.5 transition-colors",
+                        "flex items-center gap-1 p-1 transition-colors",
                         replyingToId === entry.id ? "text-primary" : "text-muted-foreground hover:text-primary"
                       )}
                     >
-                      <MessageCircle size={10} />
-                      <span className="font-pixel text-[7px]">{entry.replies.length || ''}</span>
+                      <MessageCircle size={14} />
+                      <span className="font-pixel text-[9px]">{entry.replies.length ? entry.replies.length : '댓글'}</span>
                     </button>
                   </div>
 
                   {/* Replies */}
                   {entry.replies.length > 0 && (
-                    <div className="mt-1.5 pl-2 border-l-2 border-border space-y-1">
+                    <div className="mt-2 pl-3 border-l-2 border-border space-y-1.5">
                       {entry.replies.map(reply => (
-                        <div key={reply.id} className="flex items-start gap-1">
-                          <div className="flex-1 min-w-0">
-                            <span className="font-pixel text-[7px] text-primary">{reply.authorNickname}</span>
-                            <span className="font-pixel text-[6px] text-muted-foreground ml-1">{reply.date}</span>
+                        <div key={reply.id}>
+                          <div className="flex items-center gap-2">
+                            <span className="font-pixel text-[9px] text-primary">{reply.authorNickname}</span>
+                            <span className="font-pixel text-[7px] text-muted-foreground">{reply.date}</span>
                             {user?.id === reply.authorUserId && (
                               <button
                                 onClick={() => deleteEntry(reply.id)}
-                                className="ml-1 text-muted-foreground hover:text-destructive inline-flex"
+                                className="text-muted-foreground hover:text-destructive p-0.5"
                               >
-                                <Trash2 size={7} />
+                                <Trash2 size={10} />
                               </button>
                             )}
-                            <p className="font-pixel text-[8px] text-foreground leading-tight">{reply.message}</p>
                           </div>
+                          <p className="font-pixel text-[10px] text-foreground leading-tight">{reply.message}</p>
                         </div>
                       ))}
                     </div>
@@ -378,12 +378,12 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
 
                   {/* Reply Input */}
                   {replyingToId === entry.id && user && (
-                    <div className="flex gap-1 mt-1.5">
+                    <div className="flex gap-1.5 mt-2">
                       <input
                         value={replyText}
                         onChange={(e) => setReplyText(e.target.value)}
                         placeholder="댓글 입력..."
-                        className="flex-1 px-1.5 py-0.5 bg-input border border-border-dark font-pixel text-[8px] focus:outline-none focus:border-primary"
+                        className="flex-1 px-2 py-1.5 bg-input border-2 border-border-dark font-pixel text-[10px] focus:outline-none focus:border-primary"
                         maxLength={100}
                         autoFocus
                         onKeyDown={(e) => {
@@ -402,9 +402,9 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
                             setReplyingToId(null);
                           }
                         }}
-                        className="text-primary"
+                        className="text-primary p-1"
                       >
-                        <Send size={10} />
+                        <Send size={14} />
                       </button>
                     </div>
                   )}
