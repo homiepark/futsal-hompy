@@ -106,10 +106,7 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
 
       {/* Modal */}
-      <div
-        className="relative w-full max-w-sm kairo-panel animate-in fade-in zoom-in-95 duration-200 max-h-full flex flex-col overflow-hidden"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="relative w-full max-w-sm kairo-panel animate-in fade-in zoom-in-95 duration-200 max-h-full flex flex-col overflow-hidden">
         {/* Header */}
         <div className="kairo-panel-header justify-between flex-shrink-0">
           <div className="flex items-center gap-2">
@@ -117,7 +114,13 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
             <span>선수 카드</span>
           </div>
           <button
-            onClick={onClose}
+            onClick={() => {
+              setReplyingToId(null);
+              setReplyText('');
+              setEditingEntryId(null);
+              setShowDM(false);
+              onClose();
+            }}
             className="w-6 h-6 flex items-center justify-center bg-primary-dark/50 hover:bg-destructive transition-colors"
           >
             <X size={12} className="text-primary-foreground" />
@@ -418,7 +421,13 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
           {/* Actions */}
           <div className="flex gap-2">
             <button
-              onClick={onClose}
+              onClick={() => {
+                setReplyingToId(null);
+                setReplyText('');
+                setEditingEntryId(null);
+                setShowDM(false);
+                onClose();
+              }}
               className="flex-1 py-2 bg-muted border-3 border-border-dark font-pixel text-[9px] text-foreground hover:bg-secondary transition-colors"
               style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
             >
