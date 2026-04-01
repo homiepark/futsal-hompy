@@ -4,14 +4,15 @@ declare global {
   }
 }
 
-let initialized = false;
-
 export function initKakao() {
-  if (initialized) return;
-  if (window.Kakao && !window.Kakao.isInitialized()) {
+  if (!window.Kakao) {
+    console.error('Kakao SDK not loaded');
+    return false;
+  }
+  if (!window.Kakao.isInitialized()) {
     window.Kakao.init('5d705929d0b639a044d263edf8e1b90d');
   }
-  initialized = true;
+  return window.Kakao.isInitialized();
 }
 
 interface KakaoShareParams {
@@ -23,32 +24,43 @@ interface KakaoShareParams {
 }
 
 export function shareToKakao({ title, description, imageUrl, linkUrl, buttonTitle = '팀 보러가기' }: KakaoShareParams) {
-  initKakao();
-
-  if (!window.Kakao?.Share) {
-    alert('카카오톡 공유 기능을 사용할 수 없습니다.');
+  if (!initKakao()) {
+    // SDK 미로드 시 URL 공유로 대체
+    if (navigator.share) {
+      navigator.share({ title, text: description, url: linkUrl });
+    } else {
+      navigator.clipboard.writeText(linkUrl);
+      alert('팀 링크가 복사되었습니다!');
+    }
     return;
   }
 
-  window.Kakao.Share.sendDefault({
-    objectType: 'feed',
-    content: {
-      title,
-      description,
-      imageUrl: imageUrl || 'https://xn--oy2bq2kj9eita652c.com/assets/top-banner-ME2I35U_.jpg',
-      link: {
-        mobileWebUrl: linkUrl,
-        webUrl: linkUrl,
-      },
-    },
-    buttons: [
-      {
-        title: buttonTitle,
+  try {
+    window.Kakao.Share.sendDefault({
+      objectType: 'feed',
+      content: {
+        title,
+        description,
+        imageUrl: imageUrl || 'https://xn--oy2bq2kj9eita652c.com/assets/top-banner-ME2I35U_.jpg',
         link: {
           mobileWebUrl: linkUrl,
           webUrl: linkUrl,
         },
       },
-    ],
-  });
+      buttons: [
+        {
+          title: buttonTitle,
+          link: {
+            mobileWebUrl: linkUrl,
+            webUrl: linkUrl,
+          },
+        },
+      ],
+    });
+  } catch (e) {
+    console.error('Kakao share error:', e);
+    // 실패 시 URL 복사로 대체
+    navigator.clipboard.writeText(linkUrl);
+    alert('카카오 공유 실패 - 팀 링크가 복사되었습니다!');
+  }
 }
