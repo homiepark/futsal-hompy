@@ -413,10 +413,11 @@ export default function ProfileSetup() {
           <span className="text-primary">⚽</span>
           포지션 선택 <span className="text-accent">*</span>
         </label>
-        <p className="font-pixel text-[8px] text-muted-foreground mb-3">복수 선택 가능</p>
+        <p className="font-pixel text-[8px] text-muted-foreground mb-3">복수 선택 가능 · 첫 번째 선택이 대표 포지션</p>
         <div className="grid grid-cols-2 gap-3">
           {positions.map((pos) => {
             const isSelected = selectedPositions.includes(pos.id);
+            const isPrimary = selectedPositions[0] === pos.id;
             return (
               <button
                 key={pos.id}
@@ -442,7 +443,7 @@ export default function ProfileSetup() {
               >
                 {isSelected && (
                   <div className="absolute top-1 right-1 w-4 h-4 bg-accent border-2 border-accent-dark flex items-center justify-center">
-                    <span className="text-[8px] text-accent-foreground">✓</span>
+                    <span className="text-[8px] text-accent-foreground">{isPrimary ? '★' : '✓'}</span>
                   </div>
                 )}
                 <span className="text-xl block mb-1">{pos.emoji}</span>
@@ -452,6 +453,38 @@ export default function ProfileSetup() {
             );
           })}
         </div>
+
+        {/* Primary position selector */}
+        {selectedPositions.length > 1 && (
+          <div className="mt-3 p-2 bg-muted border-2 border-border-dark">
+            <p className="font-pixel text-[8px] text-muted-foreground mb-2">★ 대표 포지션 설정</p>
+            <div className="flex flex-wrap gap-1.5">
+              {selectedPositions.map((posId) => {
+                const pos = positions.find(p => p.id === posId);
+                if (!pos) return null;
+                const isPrimary = selectedPositions[0] === posId;
+                return (
+                  <button
+                    key={posId}
+                    type="button"
+                    onClick={() => {
+                      const others = selectedPositions.filter(p => p !== posId);
+                      setSelectedPositions([posId, ...others]);
+                    }}
+                    className={cn(
+                      'px-2.5 py-1 border-2 font-pixel text-[9px] transition-all',
+                      isPrimary
+                        ? 'bg-accent border-accent-dark text-accent-foreground'
+                        : 'bg-secondary border-border-dark text-foreground hover:border-accent'
+                    )}
+                  >
+                    {isPrimary ? '★ ' : ''}{pos.emoji} {pos.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </PixelCard>
 
       {/* Experience & Status */}

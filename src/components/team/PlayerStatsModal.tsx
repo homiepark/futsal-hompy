@@ -14,6 +14,7 @@ interface PlayerStats {
   nickname: string;
   avatarUrl?: string;
   position: 'pivo' | 'ala' | 'fixo' | 'goleiro';
+  positions?: string[];
   yearsOfExperience: number;
   monthsOfExperience?: number;
   isAdmin?: boolean;
@@ -152,13 +153,22 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
               <h3 className="font-pixel text-sm text-foreground truncate mb-1">
                 {player.nickname}
               </h3>
-              <div className={cn(
-                'inline-flex items-center gap-1 px-2 py-1 mb-2',
-                'border-2 text-[9px] font-pixel',
-                info.color
-              )}>
-                <span>{info.emoji}</span>
-                <span>{info.label}</span>
+              <div className="flex flex-wrap gap-1 mb-2">
+                {(player.positions?.length ? player.positions : [player.position]).map((pos, i) => {
+                  const posInfo = positionInfo[pos as keyof typeof positionInfo];
+                  if (!posInfo) return null;
+                  return (
+                    <div key={pos} className={cn(
+                      'inline-flex items-center gap-1 px-2 py-1',
+                      'border-2 text-[9px] font-pixel',
+                      posInfo.color
+                    )}>
+                      {i === 0 && <span className="text-[7px]">★</span>}
+                      <span>{posInfo.emoji}</span>
+                      <span>{posInfo.label}</span>
+                    </div>
+                  );
+                })}
               </div>
               <p className="font-pixel text-[8px] text-muted-foreground">
                 {info.fullName}
