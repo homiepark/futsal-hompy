@@ -49,7 +49,23 @@ export function PlayerInviteModal({ isOpen, onClose, teamId, teamName }: PlayerI
 
   // 모달 열릴 때 전체 유저 로드
   useEffect(() => {
-    if (isOpen) handleSearch('all');
+    if (!isOpen) return;
+    const loadInitial = async () => {
+      setSearching(true);
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('id, user_id, nickname, avatar_url, years_of_experience, preferred_position')
+          .limit(20);
+        if (error) throw error;
+        setSearchResults(data || []);
+      } catch (e) {
+        console.error('Initial load error:', e);
+      } finally {
+        setSearching(false);
+      }
+    };
+    loadInitial();
   }, [isOpen]);
 
   const handleSearch = async (overridePosition?: string) => {
@@ -59,7 +75,7 @@ export function PlayerInviteModal({ isOpen, onClose, teamId, teamName }: PlayerI
     try {
       let query = supabase
         .from('profiles')
-        .select('*')
+        .select('id, user_id, nickname, avatar_url, years_of_experience, preferred_position')
         .limit(20);
 
       if (searchQuery.trim()) {
