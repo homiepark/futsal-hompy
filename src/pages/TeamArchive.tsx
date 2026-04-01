@@ -62,13 +62,14 @@ export default function TeamArchive() {
       if (!user) return;
       const { data } = await supabase
         .from('team_members')
-        .select('team_id, role, teams(id, name, emblem)')
+        .select('team_id, role, teams(id, name, emblem, photo_url)')
         .eq('user_id', user.id);
 
       if (data) {
         const teams = data
           .map((d: any) => d.teams)
-          .filter(Boolean);
+          .filter(Boolean)
+          .map((t: any) => ({ id: t.id, name: t.name, emblem: t.emblem, photoUrl: t.photo_url || undefined }));
         setMyTeams(teams);
         if (teams.length > 0 && !teamParam) {
           setSelectedTeam(teams[0].id);
