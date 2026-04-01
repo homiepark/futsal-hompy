@@ -3,6 +3,7 @@ import { ArrowLeft, Save, Camera, Mail, X, Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { PixelButton } from '@/components/ui/PixelButton';
 import { PixelCard } from '@/components/ui/PixelCard';
+import { calculateCurrentExperience } from '@/lib/experience';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -69,12 +70,17 @@ export default function MyProfile() {
         if (error) throw error;
 
         if (data) {
+          const exp = calculateCurrentExperience(
+            data.years_of_experience || 0,
+            (data as any).months_of_experience || 0,
+            (data as any).experience_set_at
+          );
           setProfile({
             nickname: data.nickname || '풋살러',
             realName: data.real_name || '',
             avatarUrl: data.avatar_url || '',
-            yearsOfExperience: data.years_of_experience || 0,
-            monthsOfExperience: (data as any).months_of_experience || 0,
+            yearsOfExperience: exp.years,
+            monthsOfExperience: exp.months,
             isProElite: data.is_pro_elite || false,
             preferredPositions: (data as any).preferred_positions?.length > 0 
               ? (data as any).preferred_positions 
@@ -238,6 +244,7 @@ export default function MyProfile() {
           real_name: profile.realName,
           years_of_experience: profile.yearsOfExperience,
           months_of_experience: profile.monthsOfExperience,
+          experience_set_at: new Date().toISOString(),
           is_pro_elite: profile.isProElite,
           preferred_position: profile.preferredPositions[0] || 'ala',
           preferred_positions: profile.preferredPositions,

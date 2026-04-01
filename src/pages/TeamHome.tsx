@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Settings, UserPlus, Palette, MapPin, Share2 } from 'lucide-react';
 import { useTeam } from '@/contexts/TeamContext';
 import { shareToKakao } from '@/lib/kakaoShare';
+import { calculateCurrentExperience } from '@/lib/experience';
 import { TeamHeader } from '@/components/team/TeamHeader';
 import { TeamSwitcher } from '@/components/team/TeamSwitcher';
 import { TeamAnnouncement } from '@/components/team/TeamAnnouncement';
@@ -211,7 +212,7 @@ export default function TeamHome() {
           const userIds = membersRes.data.map((m: any) => m.user_id);
           const { data: profilesData } = await supabase
             .from('profiles')
-            .select('user_id, nickname, avatar_url, preferred_positions, years_of_experience, months_of_experience')
+            .select('user_id, nickname, avatar_url, preferred_positions, years_of_experience, months_of_experience, experience_set_at')
             .in('user_id', userIds);
 
           const profileMap = new Map(
@@ -227,8 +228,22 @@ export default function TeamHome() {
               nickname: profile?.nickname ?? '팀원',
               avatarUrl: profile?.avatar_url ?? '',
               position: toPosition(positions[0]),
-              yearsOfExperience: profile?.years_of_experience ?? 0,
-              monthsOfExperience: (profile as any)?.months_of_experience ?? 0,
+              yearsOfExperience: (() => {
+                const exp = calculateCurrentExperience(
+                  profile?.years_of_experience ?? 0,
+                  (profile as any)?.months_of_experience ?? 0,
+                  (profile as any)?.experience_set_at
+                );
+                return exp.years;
+              })(),
+              monthsOfExperience: (() => {
+                const exp = calculateCurrentExperience(
+                  profile?.years_of_experience ?? 0,
+                  (profile as any)?.months_of_experience ?? 0,
+                  (profile as any)?.experience_set_at
+                );
+                return exp.months;
+              })(),
               isAdmin: m.role === 'admin' || m.role === 'owner' || m.user_id === team.admin_user_id,
               role: m.user_id === team.admin_user_id ? 'owner' : m.role,
               joinDate: m.joined_at ? new Date(m.joined_at).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }) : undefined,

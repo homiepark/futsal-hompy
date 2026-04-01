@@ -166,6 +166,7 @@ export default function ProfileSetup() {
           preferred_positions: selectedPositions,
           years_of_experience: yearsOfExperience,
           months_of_experience: monthsOfExperience,
+          experience_set_at: new Date().toISOString(),
           is_pro_elite: isProElite,
           avatar_url: uploadedAvatarUrl,
           preferred_regions: JSON.parse(JSON.stringify(preferredRegions)),
