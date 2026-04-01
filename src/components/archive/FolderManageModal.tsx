@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Plus, Trash2, GripVertical, Edit2, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -26,6 +26,16 @@ export function FolderManageModal({ isOpen, onClose, folders, onSave }: FolderMa
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState('');
   const [showEmojiPicker, setShowEmojiPicker] = useState<string | null>(null);
+
+  // Sync folders when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setEditableFolders(folders);
+      setEditingId(null);
+      setEditingName('');
+      setShowEmojiPicker(null);
+    }
+  }, [isOpen, folders]);
 
   if (!isOpen) return null;
 

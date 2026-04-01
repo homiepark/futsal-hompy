@@ -503,6 +503,7 @@ export default function TeamHome() {
         onBannerUpdate={handleBannerUpdate}
         onNameUpdate={(newName) => setTeamData(prev => prev ? { ...prev, name: newName } : prev)}
         onNameClick={() => { if (isAdmin) { setShowNameEdit(true); setNewTeamName(teamData.name); } }}
+        onLevelClick={() => setShowLevelInfo(true)}
       />
 
       {/* 3. Marquee Notice Bar (전광판) + 수정 버튼 */}

@@ -26,6 +26,7 @@ interface TeamHeaderProps {
   onBannerUpdate?: (url: string) => void;
   onNameUpdate?: (name: string) => void;
   onNameClick?: () => void;
+  onLevelClick?: () => void;
   /** @deprecated use onPhotoUpdate */
   onPhotoEdit?: () => void;
 }
@@ -56,6 +57,7 @@ export function TeamHeader({
   onBannerUpdate,
   onNameUpdate,
   onNameClick,
+  onLevelClick,
   isFavorited = false,
   onFavoriteToggle,
 }: TeamHeaderProps) {
@@ -202,9 +204,12 @@ export function TeamHeader({
                 )}
               </>
             )}
-            <div className={cn('px-2 py-0.5 border-2 font-pixel text-[8px]', levelColors[level] || 'bg-primary text-primary-foreground')}>
+            <button
+              onClick={onLevelClick}
+              className={cn('px-2 py-0.5 border-2 font-pixel text-[8px] hover:brightness-110 transition-all cursor-pointer', levelColors[level] || 'bg-primary text-primary-foreground')}
+            >
               LV.{level}
-            </div>
+            </button>
           </div>
 
           {/* Location Info */}
