@@ -11,6 +11,7 @@ interface Skin {
   headerBg: string;
   accentColor: string;
   preview: string;
+  animation?: string;
 }
 
 const skins: Skin[] = [
@@ -33,6 +34,7 @@ const skins: Skin[] = [
     headerBg: 'hsl(0 72% 55%)',
     accentColor: 'hsl(30 90% 55%)',
     preview: 'linear-gradient(135deg, hsl(0 72% 55%), hsl(30 90% 55%))',
+    animation: 'fire',
   },
   {
     id: 'ocean',
@@ -43,6 +45,7 @@ const skins: Skin[] = [
     headerBg: 'hsl(210 70% 50%)',
     accentColor: 'hsl(190 80% 45%)',
     preview: 'linear-gradient(135deg, hsl(210 70% 50%), hsl(190 80% 45%))',
+    animation: 'bubbles',
   },
   {
     id: 'sunset',
@@ -63,6 +66,7 @@ const skins: Skin[] = [
     headerBg: 'hsl(45 80% 50%)',
     accentColor: 'hsl(25 80% 50%)',
     preview: 'linear-gradient(135deg, hsl(45 80% 50%), hsl(25 80% 50%))',
+    animation: 'sparkle',
   },
   {
     id: 'midnight',
@@ -73,6 +77,71 @@ const skins: Skin[] = [
     headerBg: 'hsl(230 40% 30%)',
     accentColor: 'hsl(50 80% 55%)',
     preview: 'linear-gradient(135deg, hsl(230 40% 30%), hsl(260 30% 20%))',
+    animation: 'sparkle',
+  },
+  {
+    id: 'cherry',
+    name: '벚꽃 핑크',
+    emoji: '🌸',
+    bgColor: 'hsl(340 40% 97%)',
+    borderColor: 'hsl(340 40% 55%)',
+    headerBg: 'hsl(340 60% 65%)',
+    accentColor: 'hsl(350 70% 55%)',
+    preview: 'linear-gradient(135deg, hsl(340 60% 65%), hsl(350 50% 80%))',
+    animation: 'sakura',
+  },
+  {
+    id: 'clover',
+    name: '클로버 민트',
+    emoji: '🍀',
+    bgColor: 'hsl(150 40% 97%)',
+    borderColor: 'hsl(150 40% 40%)',
+    headerBg: 'hsl(150 50% 45%)',
+    accentColor: 'hsl(130 60% 45%)',
+    preview: 'linear-gradient(135deg, hsl(150 50% 45%), hsl(130 60% 55%))',
+  },
+  {
+    id: 'rainbow',
+    name: '레인보우',
+    emoji: '🌈',
+    bgColor: 'hsl(0 0% 98%)',
+    borderColor: 'hsl(280 50% 50%)',
+    headerBg: 'hsl(280 60% 55%)',
+    accentColor: 'hsl(30 90% 55%)',
+    preview: 'linear-gradient(135deg, hsl(0 80% 60%), hsl(60 80% 55%), hsl(120 60% 50%), hsl(200 70% 55%), hsl(280 60% 55%))',
+  },
+  {
+    id: 'dark',
+    name: '다크 네온',
+    emoji: '⚫',
+    bgColor: 'hsl(0 0% 10%)',
+    borderColor: 'hsl(160 100% 40%)',
+    headerBg: 'hsl(0 0% 15%)',
+    accentColor: 'hsl(160 100% 50%)',
+    preview: 'linear-gradient(135deg, hsl(0 0% 10%), hsl(0 0% 20%))',
+    animation: 'sparkle',
+  },
+  {
+    id: 'christmas',
+    name: '크리스마스',
+    emoji: '🎄',
+    bgColor: 'hsl(120 20% 96%)',
+    borderColor: 'hsl(0 60% 45%)',
+    headerBg: 'hsl(0 70% 50%)',
+    accentColor: 'hsl(120 60% 40%)',
+    preview: 'linear-gradient(135deg, hsl(0 70% 50%), hsl(120 60% 35%))',
+    animation: 'snow',
+  },
+  {
+    id: 'football',
+    name: '축구공',
+    emoji: '⚽',
+    bgColor: 'hsl(120 30% 96%)',
+    borderColor: 'hsl(120 40% 35%)',
+    headerBg: 'hsl(120 50% 38%)',
+    accentColor: 'hsl(45 90% 50%)',
+    preview: 'linear-gradient(135deg, hsl(120 50% 38%), hsl(120 40% 28%))',
+    animation: 'football',
   },
 ];
 
@@ -94,16 +163,18 @@ export function HompySkinSelector({ isOpen, onClose, currentSkin, onSkinChange }
     onClose();
   };
 
+  const selectedSkin = skins.find(s => s.id === previewSkin);
+
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center px-4">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div
-        className="relative w-full max-w-sm bg-card border-4 border-border-dark overflow-hidden animate-slide-up"
+        className="relative w-full max-w-sm bg-card border-4 border-border-dark overflow-hidden animate-slide-up max-h-[80vh] flex flex-col"
         style={{ boxShadow: '6px 6px 0 hsl(var(--pixel-shadow))' }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 bg-primary text-primary-foreground">
+        <div className="flex items-center justify-between px-4 py-3 bg-primary text-primary-foreground flex-shrink-0">
           <div className="flex items-center gap-2">
             <Palette size={14} />
             <span className="font-pixel text-[10px]">홈피 스킨 변경</span>
@@ -113,9 +184,9 @@ export function HompySkinSelector({ isOpen, onClose, currentSkin, onSkinChange }
           </button>
         </div>
 
-        {/* Skin Grid - scrollable with proper touch */}
+        {/* Skin Grid - scrollable */}
         <div
-          className="p-4 grid grid-cols-3 gap-3 max-h-[60vh] overflow-y-auto overscroll-contain"
+          className="p-4 grid grid-cols-3 gap-3 overflow-y-auto flex-1"
           style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-y' }}
         >
           {skins.map((skin) => (
@@ -130,9 +201,14 @@ export function HompySkinSelector({ isOpen, onClose, currentSkin, onSkinChange }
               style={{ boxShadow: previewSkin === skin.id ? '3px 3px 0 hsl(var(--primary-dark))' : '2px 2px 0 hsl(var(--pixel-shadow))' }}
             >
               <div
-                className="w-full aspect-square rounded-sm mb-2 border border-black/10"
+                className="w-full aspect-square rounded-sm mb-2 border border-black/10 relative overflow-hidden"
                 style={{ background: skin.preview }}
-              />
+              >
+                {/* Animation preview indicator */}
+                {skin.animation && (
+                  <div className="absolute bottom-0.5 right-0.5 text-[8px]">✨</div>
+                )}
+              </div>
               <div className="text-center">
                 <span className="text-lg block">{skin.emoji}</span>
                 <span className="font-pixel text-[7px] text-foreground block mt-1">{skin.name}</span>
@@ -146,8 +222,25 @@ export function HompySkinSelector({ isOpen, onClose, currentSkin, onSkinChange }
           ))}
         </div>
 
+        {/* Preview info */}
+        {selectedSkin?.animation && (
+          <div className="px-4 py-2 bg-muted/50 border-t border-border text-center">
+            <span className="font-pixel text-[8px] text-muted-foreground">
+              ✨ 이 스킨은 {
+                selectedSkin.animation === 'sakura' ? '벚꽃 날리기' :
+                selectedSkin.animation === 'snow' ? '눈 내리기' :
+                selectedSkin.animation === 'sparkle' ? '반짝이' :
+                selectedSkin.animation === 'bubbles' ? '물방울' :
+                selectedSkin.animation === 'fire' ? '불꽃' :
+                selectedSkin.animation === 'football' ? '축구공 튀기기' :
+                ''
+              } 효과가 포함되어 있어요
+            </span>
+          </div>
+        )}
+
         {/* Apply Button */}
-        <div className="p-4 border-t-2 border-border">
+        <div className="p-4 border-t-2 border-border flex-shrink-0">
           <button
             onClick={handleApply}
             className="w-full py-3 bg-primary text-primary-foreground font-pixel text-[10px] border-3 border-primary-dark hover:brightness-110 transition-all"

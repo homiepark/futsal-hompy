@@ -13,6 +13,7 @@ import { MemberRoster } from '@/components/team/MemberRoster';
 import { Guestbook } from '@/components/team/Guestbook';
 
 import { HompySkinSelector, skins } from '@/components/team/HompySkinSelector';
+import { SkinAnimation } from '@/components/team/SkinAnimation';
 import { PixelButton } from '@/components/ui/PixelButton';
 import { PixelBackButton } from '@/components/ui/PixelBackButton';
 import { JoinRequestButton } from '@/components/team/JoinRequestButton';
@@ -468,7 +469,10 @@ export default function TeamHome() {
   })() : {};
 
   return (
-    <div className="pb-24 max-w-lg mx-auto" style={skinStyle}>
+    <div className="pb-24 max-w-lg mx-auto relative" style={skinStyle}>
+      {/* Skin Animation */}
+      <SkinAnimation animation={activeSkin?.animation} />
+
       {/* 1. Sticky Header with Team Switcher */}
       <div className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b-2 border-border-dark">
         <div className="px-4 py-3 flex items-center justify-between">

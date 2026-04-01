@@ -566,4 +566,63 @@
   .animate-emoji-float {
     animation: emoji-float 1s ease-out forwards;
   }
+
+  /* Skin Animations */
+  @keyframes sakura-fall {
+    0% { transform: translateY(-20px) rotate(0deg) translateX(0); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 0.6; }
+    100% { transform: translateY(100vh) rotate(720deg) translateX(80px); opacity: 0; }
+  }
+  .animate-sakura-fall {
+    animation: sakura-fall linear infinite;
+  }
+
+  @keyframes snow-fall {
+    0% { transform: translateY(-10px) translateX(0); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 0.8; }
+    100% { transform: translateY(100vh) translateX(30px); opacity: 0; }
+  }
+  .animate-snow-fall {
+    animation: snow-fall linear infinite;
+  }
+
+  @keyframes sparkle-twinkle {
+    0%, 100% { opacity: 0; transform: scale(0.5); }
+    50% { opacity: 0.8; transform: scale(1.2); }
+  }
+  .animate-sparkle-twinkle {
+    animation: sparkle-twinkle ease-in-out infinite;
+    color: rgba(255, 215, 0, 0.7);
+  }
+
+  @keyframes bubble-rise {
+    0% { transform: translateY(0) scale(0.5); opacity: 0; }
+    10% { opacity: 0.6; }
+    90% { opacity: 0.3; }
+    100% { transform: translateY(-100vh) scale(1.2); opacity: 0; }
+  }
+  .animate-bubble-rise {
+    animation: bubble-rise linear infinite;
+  }
+
+  @keyframes fire-rise {
+    0% { transform: translateY(0) scale(1); opacity: 0.8; }
+    50% { transform: translateY(-60px) scale(1.2); opacity: 0.5; }
+    100% { transform: translateY(-120px) scale(0.3); opacity: 0; }
+  }
+  .animate-fire-rise {
+    animation: fire-rise ease-out infinite;
+  }
+
+  @keyframes football-bounce {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    25% { transform: translateY(-30px) rotate(90deg); }
+    50% { transform: translateY(0) rotate(180deg); }
+    75% { transform: translateY(-15px) rotate(270deg); }
+  }
+  .animate-football-bounce {
+    animation: football-bounce ease-in-out infinite;
+  }
 }
