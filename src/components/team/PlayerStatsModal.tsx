@@ -102,11 +102,8 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
 
   return (
     <div className="fixed inset-0 z-[60] flex items-start justify-center pt-12 pb-24 px-4">
-      {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-        onClick={onClose}
-      />
+      {/* Backdrop - no close on click */}
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
 
       {/* Modal */}
       <div
@@ -445,6 +442,7 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
             onClose={() => setShowDM(false)}
             recipientId={player.userId}
             recipientName={player.nickname}
+            recipientAvatar={player.avatarUrl}
           />
         )}
       </div>

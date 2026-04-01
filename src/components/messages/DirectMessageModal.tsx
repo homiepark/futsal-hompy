@@ -169,10 +169,14 @@ export function DirectMessageModal({
             <span className="font-pixel text-[9px] text-muted-foreground">받는 사람:</span>
             <div className="flex items-center gap-2">
               <div 
-                className="w-8 h-8 bg-secondary border-2 border-border-dark flex items-center justify-center text-sm"
+                className="w-8 h-8 bg-secondary border-2 border-border-dark flex items-center justify-center text-sm overflow-hidden"
                 style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
               >
-                {recipientAvatar || '👤'}
+                {recipientAvatar ? (
+                  <img src={recipientAvatar} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <span>👤</span>
+                )}
               </div>
               <span className="font-pixel text-xs text-foreground">{recipientName}</span>
               {teamName && (
