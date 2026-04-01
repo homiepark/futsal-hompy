@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Heart, MessageCircle, Share2, Instagram, Send, Trash2, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Reply } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Send, Trash2, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Reply } from 'lucide-react';
 import { PixelCard } from '@/components/ui/PixelCard';
 import { toast } from 'sonner';
 import { useArchiveLikes } from '@/hooks/useArchiveLikes';
@@ -294,18 +294,6 @@ export function TimelinePost({
             </>
           )}
 
-          {/* Instagram Share */}
-          <button 
-            onClick={() => {
-              toast.success('인스타그램 공유 준비 중...', {
-                description: '곧 연동 기능이 추가됩니다!',
-              });
-            }}
-            className="absolute top-2 right-2 w-8 h-8 bg-accent border-2 border-accent-dark shadow-pixel-sm flex items-center justify-center hover:scale-110 transition-transform"
-            aria-label="인스타그램 공유"
-          >
-            <Instagram size={16} className="text-accent-foreground" />
-          </button>
         </div>
       )}
 
