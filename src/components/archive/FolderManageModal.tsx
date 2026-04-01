@@ -184,6 +184,7 @@ export function FolderManageModal({ isOpen, onClose, folders, onSave }: FolderMa
                       onChange={(e) => setEditingName(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && handleSaveEdit()}
                       className="w-full px-2 py-1 bg-input border-2 border-primary font-pixel text-[9px] focus:outline-none"
+                      maxLength={20}
                       autoFocus
                     />
                   ) : (

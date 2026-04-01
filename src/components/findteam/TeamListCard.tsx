@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { FavoriteStarButton } from '@/components/ui/FavoriteStarButton';
-import { LevelInfoButton } from '@/components/ui/LevelGuideModal';
 import { TeamLevelBadge } from '@/components/team/TeamLevelBadge';
 
 interface TeamListCardProps {
@@ -74,7 +73,14 @@ export function TeamListCard({
               onToggle={onFavoriteToggle}
             />
             <h3 className="font-body font-bold text-foreground truncate">{name}</h3>
-            <LevelInfoButton />
+            <div className={cn('px-1.5 py-0.5 border font-pixel text-[7px] shrink-0',
+              level === '4' ? 'bg-[hsl(var(--level-4))] text-white border-[hsl(var(--level-4))]' :
+              level === '3' ? 'bg-[hsl(var(--level-3))] text-white border-[hsl(var(--level-3))]' :
+              level === '2' ? 'bg-[hsl(var(--level-2))] text-white border-[hsl(var(--level-2))]' :
+              'bg-[hsl(var(--level-1))] text-white border-[hsl(var(--level-1))]'
+            )}>
+              LV.{level}
+            </div>
           </div>
 
           {/* Level Badge (compact) with match count & avg experience */}

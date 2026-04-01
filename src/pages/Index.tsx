@@ -65,7 +65,12 @@ const Index = () => {
   const [unreadCount, setUnreadCount] = useState(0);
   const [filters, setFilters] = useState<FilterState>(initialFilterState);
   const [listView, setListView] = useState<'all' | 'favorites'>('all');
-  const [favorites, setFavorites] = useState<Set<string>>(new Set());
+  const [favorites, setFavorites] = useState<Set<string>>(() => {
+    try {
+      const saved = localStorage.getItem('team-favorites');
+      return saved ? new Set(JSON.parse(saved)) : new Set();
+    } catch { return new Set(); }
+  });
   const [userRegions, setUserRegions] = useState<PreferredRegion[]>([]);
 
   // Fetch unread message count
@@ -159,9 +164,10 @@ const Index = () => {
       } else {
         next.delete(teamId);
       }
+      localStorage.setItem('team-favorites', JSON.stringify([...next]));
       return next;
     });
-    setTeams(prev => prev.map(team => 
+    setTeams(prev => prev.map(team =>
       team.id === teamId ? { ...team, isFavorited } : team
     ));
   };

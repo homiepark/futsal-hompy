@@ -825,6 +825,41 @@ export default function TeamHome() {
         </div>
       )}
 
+      {/* Team Name Edit Modal */}
+      {showNameEdit && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center px-4">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setShowNameEdit(false)} />
+          <div className="relative w-full max-w-sm bg-card border-4 border-border-dark overflow-hidden"
+            style={{ boxShadow: '6px 6px 0 hsl(var(--pixel-shadow))' }}
+          >
+            <div className="bg-primary text-primary-foreground px-4 py-3 flex items-center justify-between">
+              <span className="font-pixel text-[10px]">✏️ 팀 이름 수정</span>
+              <button onClick={() => setShowNameEdit(false)} className="hover:opacity-80 font-pixel text-[10px]">✕</button>
+            </div>
+            <div className="p-4 space-y-3">
+              <input
+                type="text"
+                value={newTeamName}
+                onChange={(e) => setNewTeamName(e.target.value)}
+                className="w-full pixel-input"
+                maxLength={30}
+                autoFocus
+                onKeyDown={(e) => e.key === 'Enter' && handleNameSave()}
+              />
+              <p className="font-pixel text-[8px] text-muted-foreground text-right">{newTeamName.length}/30</p>
+              <button
+                onClick={handleNameSave}
+                disabled={!newTeamName.trim()}
+                className="w-full py-2.5 bg-primary text-primary-foreground font-pixel text-[10px] border-3 border-primary-dark hover:brightness-110 disabled:opacity-50"
+                style={{ boxShadow: '2px 2px 0 hsl(var(--primary-dark))' }}
+              >
+                저장
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Skin Selector Modal */}
       <HompySkinSelector
         isOpen={showSkinSelector}
