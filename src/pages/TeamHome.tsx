@@ -1,7 +1,8 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Settings, UserPlus, Palette, MapPin } from 'lucide-react';
+import { Settings, UserPlus, Palette, MapPin, Share2 } from 'lucide-react';
 import { useTeam } from '@/contexts/TeamContext';
+import { shareToKakao } from '@/lib/kakaoShare';
 import { TeamHeader } from '@/components/team/TeamHeader';
 import { TeamSwitcher } from '@/components/team/TeamSwitcher';
 import { TeamAnnouncement } from '@/components/team/TeamAnnouncement';
@@ -540,6 +541,21 @@ export default function TeamHome() {
             </button>
           ))}
         </div>
+
+        {/* 카카오톡 공유 버튼 */}
+        <button
+          onClick={() => shareToKakao({
+            title: `⚽ ${teamData.name}`,
+            description: teamData.introduction || `${teamData.name} 팀에 합류해보세요!`,
+            imageUrl: teamData.photo_url || teamData.banner_url || undefined,
+            linkUrl: `https://xn--oy2bq2kj9eita652c.com/team/${teamData.id}`,
+          })}
+          className="w-full flex items-center justify-center gap-2 py-2.5 border-3 border-[#FEE500] bg-[#FEE500] text-[#191919] font-pixel text-[10px] hover:brightness-95 transition-all"
+          style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}
+        >
+          <span className="text-base">💬</span>
+          카카오톡으로 팀 공유하기
+        </button>
 
         {/* 5. Achievements */}
         <TeamAchievements teamId={teamData.id} />
