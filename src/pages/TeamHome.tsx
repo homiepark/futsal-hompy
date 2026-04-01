@@ -172,6 +172,7 @@ export default function TeamHome() {
 
         // Handle team data
         if (teamRes.error) {
+          console.error('Team fetch error:', teamRes.error);
           setError('팀 정보를 불러올 수 없습니다.');
           setLoading(false);
           return;
