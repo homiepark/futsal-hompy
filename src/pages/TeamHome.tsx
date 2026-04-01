@@ -52,7 +52,9 @@ interface MemberData {
   avatarUrl?: string;
   position: 'pivo' | 'ala' | 'fixo' | 'goleiro';
   yearsOfExperience?: number;
+  monthsOfExperience?: number;
   isAdmin?: boolean;
+  joinDate?: string;
 }
 
 interface ArchiveItem {
@@ -149,7 +151,7 @@ export default function TeamHome() {
 
           supabase
             .from('team_members')
-            .select('id, user_id, role')
+            .select('id, user_id, role, joined_at')
             .eq('team_id', teamId),
 
           supabase
@@ -202,7 +204,7 @@ export default function TeamHome() {
           const userIds = membersRes.data.map((m: any) => m.user_id);
           const { data: profilesData } = await supabase
             .from('profiles')
-            .select('user_id, nickname, avatar_url, preferred_positions, years_of_experience')
+            .select('user_id, nickname, avatar_url, preferred_positions, years_of_experience, months_of_experience')
             .in('user_id', userIds);
 
           const profileMap = new Map(
@@ -219,7 +221,9 @@ export default function TeamHome() {
               avatarUrl: profile?.avatar_url ?? '',
               position: toPosition(positions[0]),
               yearsOfExperience: profile?.years_of_experience ?? 0,
+              monthsOfExperience: (profile as any)?.months_of_experience ?? 0,
               isAdmin: m.role === 'admin' || m.user_id === team.admin_user_id,
+              joinDate: m.joined_at ? new Date(m.joined_at).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }) : undefined,
             };
           });
           setMembers(mapped);
