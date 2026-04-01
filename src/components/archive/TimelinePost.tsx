@@ -356,9 +356,10 @@ export function TimelinePost({
                         {user && (
                           <button
                             onClick={() => setReplyingTo({ id: comment.id, nickname: comment.nickname || '풋살러' })}
-                            className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-primary"
+                            className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-0.5"
                           >
                             <Reply size={10} />
+                            <span className="font-pixel text-[7px]">답글</span>
                           </button>
                         )}
                         {user?.id === comment.user_id && (
