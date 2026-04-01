@@ -316,6 +316,8 @@ export default function TeamArchive() {
                   isMock={false}
                   isAdmin={isAdmin}
                   onDelete={(postId) => setPosts(prev => prev.filter(p => p.id !== postId))}
+                  folderName={folders.find(f => f.id === post.folderId)?.name}
+                  folderEmoji={folders.find(f => f.id === post.folderId)?.emoji}
                 />
               ))}
             </div>

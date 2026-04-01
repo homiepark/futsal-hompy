@@ -26,6 +26,8 @@ interface TimelinePostProps {
   authorAvatarUrl?: string;
   isAdmin?: boolean;
   onDelete?: (postId: string) => void;
+  folderName?: string;
+  folderEmoji?: string;
 }
 
 export function TimelinePost({
@@ -44,6 +46,8 @@ export function TimelinePost({
   authorAvatarUrl,
   isAdmin = false,
   onDelete,
+  folderName,
+  folderEmoji,
 }: TimelinePostProps) {
   const { user } = useAuth();
   const { likesCount, isLiked, toggleLike, loading: likeLoading } = useArchiveLikes(id);
@@ -129,6 +133,11 @@ export function TimelinePost({
           )}
         </div>
         <div className="flex-1">
+          {folderName && folderName !== '전체보기' && (
+            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-primary/10 border border-primary/30 font-pixel text-[7px] text-primary mb-0.5">
+              {folderEmoji || '📁'} {folderName}
+            </span>
+          )}
           <p className="font-pixel text-[10px] text-foreground">{author}</p>
           <p className="font-body text-xs text-muted-foreground">{date}</p>
         </div>
