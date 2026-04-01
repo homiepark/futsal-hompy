@@ -600,12 +600,12 @@ export default function TeamHome() {
                   toast('매너 점수는 매치 후 상대팀이 평가합니다', { icon: '⭐', description: '매치 결과 입력 시 상대팀에게 별 1~5점을 받아요' });
                 }
               }}
-              className="bg-card border-2 border-border-dark py-1.5 text-center hover:bg-muted transition-colors"
+              className="bg-card border-2 border-border-dark py-2 text-center hover:bg-muted transition-colors"
               style={{boxShadow:'2px 2px 0 hsl(var(--pixel-shadow) / 0.5)'}}
             >
-              <span className="text-xs block">{stat.icon}</span>
-              <span className="font-pixel text-[8px] text-foreground block">{stat.value}</span>
-              <span className="font-pixel text-[5px] text-muted-foreground">{stat.label}</span>
+              <span className="text-sm block">{stat.icon}</span>
+              <span className="font-pixel text-[10px] text-foreground block mt-0.5">{stat.value}</span>
+              <span className="font-pixel text-[7px] text-muted-foreground">{stat.label}</span>
             </button>
           ))}
         </div>
