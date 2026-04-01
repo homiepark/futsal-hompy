@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { FavoriteStarButton } from '@/components/ui/FavoriteStarButton';
-import { TeamLevelBadge } from '@/components/team/TeamLevelBadge';
 
 interface TeamListCardProps {
   id?: string;
@@ -82,14 +81,6 @@ export function TeamListCard({
               LV.{level}
             </div>
           </div>
-
-          {/* Level Badge (compact) with match count & avg experience */}
-          <TeamLevelBadge
-            level={level}
-            matchCount={matchCount}
-            avgExperience={avgExperience}
-            compact
-          />
 
           {/* Region & Training */}
           <div className="mt-1.5 flex items-center gap-2 text-sm text-muted-foreground font-body">

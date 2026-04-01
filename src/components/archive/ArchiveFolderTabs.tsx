@@ -24,7 +24,8 @@ export function ArchiveFolderTabs({
   onManageFolders 
 }: ArchiveFolderTabsProps) {
   return (
-    <div className="flex items-center gap-1.5 overflow-x-auto pb-2 scrollbar-hide">
+    <div className="relative">
+    <div className="flex items-center gap-1.5 overflow-x-auto pb-2 scrollbar-hide" style={{ WebkitOverflowScrolling: 'touch' }}>
       {folders.map((folder) => (
         <button
           key={folder.id}
@@ -57,6 +58,7 @@ export function ArchiveFolderTabs({
           <Settings size={14} className="text-accent-foreground" />
         </button>
       )}
+    </div>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Plus, Image, Video } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { PixelButton } from '@/components/ui/PixelButton';
 import { PixelBackButton } from '@/components/ui/PixelBackButton';
 import { TimelinePost } from '@/components/archive/TimelinePost';
@@ -264,17 +264,9 @@ export default function TeamArchive() {
           />
         </div>
 
-        {/* View Toggle & Filter Row */}
-        <div className="flex items-center justify-between gap-2 mb-3">
+        {/* View Toggle */}
+        <div className="flex items-center mb-3">
           <ViewToggle view={view} onViewChange={setView} />
-          <div className="flex gap-1.5">
-            <button className="pixel-mini-btn">
-              <Image size={14} />
-            </button>
-            <button className="pixel-mini-btn">
-              <Video size={14} />
-            </button>
-          </div>
         </div>
 
         {/* Content based on view */}

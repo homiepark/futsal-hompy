@@ -104,7 +104,12 @@ export default function TeamHome() {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isFavorited, setIsFavorited] = useState(false);
+  const [isFavorited, setIsFavorited] = useState(() => {
+    try {
+      const saved = localStorage.getItem('team-favorites');
+      return saved ? new Set(JSON.parse(saved)).has(teamId) : false;
+    } catch { return false; }
+  });
   const [showLevelInfo, setShowLevelInfo] = useState(false);
   const [showNoticeEdit, setShowNoticeEdit] = useState(false);
   const [noticeText, setNoticeText] = useState('');
@@ -525,6 +530,12 @@ export default function TeamHome() {
         isFavorited={isFavorited}
         onFavoriteToggle={(val) => {
           setIsFavorited(val);
+          try {
+            const saved = localStorage.getItem('team-favorites');
+            const favs = saved ? new Set(JSON.parse(saved)) : new Set();
+            if (val) { favs.add(teamId); } else { favs.delete(teamId); }
+            localStorage.setItem('team-favorites', JSON.stringify([...favs]));
+          } catch {}
           toast.success(val ? '즐겨찾기에 추가했습니다 ⭐' : '즐겨찾기를 해제했습니다');
         }}
         onPhotoUpdate={(url) => setTeamData(prev => prev ? { ...prev, photo_url: url } : prev)}
