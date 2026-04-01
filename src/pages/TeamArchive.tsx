@@ -41,6 +41,7 @@ export default function TeamArchive() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const teamParam = searchParams.get('team');
+  const postParam = searchParams.get('post');
   const { user } = useAuth();
 
   const [view, setView] = useState<'grid' | 'single'>('single');
@@ -192,6 +193,17 @@ export default function TeamArchive() {
 
   const postsWithImages = filteredPosts.filter(post => post.imageUrl);
 
+  // Auto-scroll to specific post if postParam is set
+  useEffect(() => {
+    if (postParam && posts.length > 0) {
+      setView('single');
+      setTimeout(() => {
+        const el = document.getElementById(`post-${postParam}`);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 300);
+    }
+  }, [postParam, posts]);
+
   const handleGridItemClick = (postId: string) => {
     setSelectedPostId(postId);
     setView('single');
@@ -302,8 +314,8 @@ export default function TeamArchive() {
           ) : (
             <div className="space-y-3">
               {filteredPosts.map((post) => (
+                <div key={post.id} id={`post-${post.id}`}>
                 <TimelinePost
-                  key={post.id}
                   {...post}
                   isMock={false}
                   isAdmin={isAdmin}
@@ -311,6 +323,7 @@ export default function TeamArchive() {
                   folderName={folders.find(f => f.id === post.folderId)?.name}
                   folderEmoji={folders.find(f => f.id === post.folderId)?.emoji}
                 />
+                </div>
               ))}
             </div>
           )}

@@ -129,7 +129,7 @@ export function RecentActivityFeed() {
           <div
             key={activity.id}
             className="px-3 py-2.5 flex items-center gap-3 hover:bg-muted/50 transition-colors cursor-pointer"
-            onClick={() => navigate(`/archive?team=${activity.teamId}`)}
+            onClick={() => navigate(`/archive?team=${activity.teamId}&post=${activity.id}`)}
           >
             {/* Thumbnail: image or team photo */}
             <div className="w-10 h-10 flex items-center justify-center overflow-hidden rounded-sm shrink-0 border-2 border-border-dark bg-muted">
