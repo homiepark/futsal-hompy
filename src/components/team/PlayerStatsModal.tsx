@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, Calendar, Trophy, Send, Heart, Pencil, Check, Trash2 } from 'lucide-react';
+import { X, Calendar, Trophy, Send, Heart, Pencil, Check, Trash2, MessageCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { usePlayerGuestbook } from '@/hooks/usePlayerGuestbook';
 import { useAuth } from '@/contexts/AuthContext';
@@ -45,6 +45,8 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
   const { entries: guestbookEntries, submitEntry, toggleLike, deleteEntry, updateEntry } = usePlayerGuestbook(player?.userId);
   const [editingEntryId, setEditingEntryId] = useState<string | null>(null);
   const [editingEntryText, setEditingEntryText] = useState('');
+  const [replyingToId, setReplyingToId] = useState<string | null>(null);
+  const [replyText, setReplyText] = useState('');
   const [showDM, setShowDM] = useState(false);
 
   const isOwnProfile = !!user && !!player?.userId && user.id === player.userId;
@@ -278,8 +280,8 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
             </div>
 
             {/* Guestbook Entries - Show latest 3 */}
-            <div className="space-y-1.5 max-h-28 overflow-y-auto pixel-scrollbar">
-              {guestbookEntries.slice(0, 3).map((entry) => (
+            <div className="space-y-2 max-h-48 overflow-y-auto pixel-scrollbar">
+              {guestbookEntries.map((entry) => (
                 <div
                   key={entry.id}
                   className="bg-muted/50 p-2 border-2 border-border-dark"
@@ -325,16 +327,84 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
                   ) : (
                     <p className="font-pixel text-[9px] text-foreground mb-1 leading-tight">{entry.message}</p>
                   )}
-                  <button
-                    onClick={() => toggleLike(entry.id)}
-                    className={cn(
-                      "flex items-center gap-0.5 hover:scale-110 transition-transform",
-                      entry.isLikedByMe ? "text-accent" : "text-muted-foreground"
-                    )}
-                  >
-                    <Heart size={10} fill={entry.isLikedByMe ? "currentColor" : "none"} />
-                    <span className="font-pixel text-[7px]">{entry.likes}</span>
-                  </button>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => toggleLike(entry.id)}
+                      className={cn(
+                        "flex items-center gap-0.5 hover:scale-110 transition-transform",
+                        entry.isLikedByMe ? "text-accent" : "text-muted-foreground"
+                      )}
+                    >
+                      <Heart size={10} fill={entry.isLikedByMe ? "currentColor" : "none"} />
+                      <span className="font-pixel text-[7px]">{entry.likes}</span>
+                    </button>
+                    <button
+                      onClick={() => setReplyingToId(replyingToId === entry.id ? null : entry.id)}
+                      className={cn(
+                        "flex items-center gap-0.5 transition-colors",
+                        replyingToId === entry.id ? "text-primary" : "text-muted-foreground hover:text-primary"
+                      )}
+                    >
+                      <MessageCircle size={10} />
+                      <span className="font-pixel text-[7px]">{entry.replies.length || ''}</span>
+                    </button>
+                  </div>
+
+                  {/* Replies */}
+                  {entry.replies.length > 0 && (
+                    <div className="mt-1.5 pl-2 border-l-2 border-border space-y-1">
+                      {entry.replies.map(reply => (
+                        <div key={reply.id} className="flex items-start gap-1">
+                          <div className="flex-1 min-w-0">
+                            <span className="font-pixel text-[7px] text-primary">{reply.authorNickname}</span>
+                            <span className="font-pixel text-[6px] text-muted-foreground ml-1">{reply.date}</span>
+                            {user?.id === reply.authorUserId && (
+                              <button
+                                onClick={() => deleteEntry(reply.id)}
+                                className="ml-1 text-muted-foreground hover:text-destructive inline-flex"
+                              >
+                                <Trash2 size={7} />
+                              </button>
+                            )}
+                            <p className="font-pixel text-[8px] text-foreground leading-tight">{reply.message}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Reply Input */}
+                  {replyingToId === entry.id && user && (
+                    <div className="flex gap-1 mt-1.5">
+                      <input
+                        value={replyText}
+                        onChange={(e) => setReplyText(e.target.value)}
+                        placeholder="댓글 입력..."
+                        className="flex-1 px-1.5 py-0.5 bg-input border border-border-dark font-pixel text-[8px] focus:outline-none focus:border-primary"
+                        maxLength={100}
+                        autoFocus
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && replyText.trim()) {
+                            submitEntry(replyText, entry.id);
+                            setReplyText('');
+                            setReplyingToId(null);
+                          }
+                        }}
+                      />
+                      <button
+                        onClick={() => {
+                          if (replyText.trim()) {
+                            submitEntry(replyText, entry.id);
+                            setReplyText('');
+                            setReplyingToId(null);
+                          }
+                        }}
+                        className="text-primary"
+                      >
+                        <Send size={10} />
+                      </button>
+                    </div>
+                  )}
                 </div>
               ))}
               {guestbookEntries.length === 0 && (
