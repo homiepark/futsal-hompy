@@ -1,9 +1,11 @@
-import { useState } from 'react';
-import { X, Calendar, Trophy, Send, Heart } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { X, Calendar, Trophy, Send, Heart, Pencil, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { usePlayerGuestbook } from '@/hooks/usePlayerGuestbook';
 import { useAuth } from '@/contexts/AuthContext';
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface PlayerStats {
   id: string;
@@ -12,6 +14,7 @@ interface PlayerStats {
   avatarUrl?: string;
   position: 'pivo' | 'ala' | 'fixo' | 'goleiro';
   yearsOfExperience: number;
+  monthsOfExperience?: number;
   isAdmin?: boolean;
   joinDate?: string;
   bio?: string;
@@ -33,8 +36,29 @@ const positionInfo = {
 export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalProps) {
   useBodyScrollLock(isOpen);
   const [guestbookMessage, setGuestbookMessage] = useState('');
+  const [isEditingBio, setIsEditingBio] = useState(false);
+  const [bioText, setBioText] = useState('');
+  const [displayBio, setDisplayBio] = useState('');
   const { user } = useAuth();
   const { entries: guestbookEntries, submitEntry, toggleLike } = usePlayerGuestbook(player?.userId);
+
+  const isOwnProfile = !!user && !!player?.userId && user.id === player.userId;
+
+  // Load bio from profile
+  useEffect(() => {
+    if (!player?.userId) return;
+    const loadBio = async () => {
+      const { data } = await supabase
+        .from('profiles')
+        .select('bio')
+        .eq('user_id', player.userId!)
+        .single();
+      const bio = (data as any)?.bio || '';
+      setDisplayBio(bio);
+      setBioText(bio);
+    };
+    loadBio();
+  }, [player?.userId]);
 
   if (!isOpen || !player) return null;
 
@@ -45,6 +69,29 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
     await submitEntry(guestbookMessage);
     setGuestbookMessage('');
   };
+
+  const handleSaveBio = async () => {
+    if (!user || !player.userId) return;
+    const { error } = await supabase
+      .from('profiles')
+      .update({ bio: bioText.trim() } as any)
+      .eq('user_id', player.userId);
+
+    if (error) {
+      toast.error('저장에 실패했습니다');
+      return;
+    }
+    setDisplayBio(bioText.trim());
+    setIsEditingBio(false);
+    toast.success('한줄 소개가 저장되었습니다!');
+  };
+
+  // Format experience string
+  const expStr = player.yearsOfExperience > 0
+    ? `${player.yearsOfExperience}년${player.monthsOfExperience ? ` ${player.monthsOfExperience}개월` : ''}`
+    : player.monthsOfExperience
+      ? `${player.monthsOfExperience}개월`
+      : '입문';
 
   return (
     <div className="fixed inset-0 z-[60] flex items-start justify-center pt-12 pb-24 px-4">
@@ -62,7 +109,7 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
             <span>👤</span>
             <span>선수 카드</span>
           </div>
-          <button 
+          <button
             onClick={onClose}
             className="w-6 h-6 flex items-center justify-center bg-primary-dark/50 hover:bg-destructive transition-colors"
           >
@@ -78,8 +125,8 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
             <div className="relative flex-shrink-0">
               <div className="w-20 h-20 bg-secondary border-4 border-border-dark overflow-hidden">
                 {player.avatarUrl ? (
-                  <img 
-                    src={player.avatarUrl} 
+                  <img
+                    src={player.avatarUrl}
                     alt={player.nickname}
                     className="w-full h-full object-cover"
                   />
@@ -117,15 +164,55 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
 
           {/* Personal Bio Section */}
           <div className="kairo-section">
-            <p className="font-pixel text-[8px] text-muted-foreground uppercase mb-1.5">💬 한줄 소개</p>
-            <div 
-              className="bg-muted/50 border-2 border-border-dark p-2"
-              style={{ boxShadow: 'inset 1px 1px 0 hsl(var(--pixel-shadow) / 0.3)' }}
-            >
-              <p className="font-pixel text-[10px] text-foreground leading-relaxed">
-                {player.bio || '아직 자기소개가 없습니다 ✨'}
-              </p>
+            <div className="flex items-center justify-between mb-1.5">
+              <p className="font-pixel text-[8px] text-muted-foreground uppercase">💬 한줄 소개</p>
+              {isOwnProfile && !isEditingBio && (
+                <button
+                  onClick={() => { setBioText(displayBio); setIsEditingBio(true); }}
+                  className="text-muted-foreground hover:text-primary transition-colors"
+                >
+                  <Pencil size={10} />
+                </button>
+              )}
             </div>
+            {isEditingBio ? (
+              <div className="space-y-1.5">
+                <input
+                  type="text"
+                  value={bioText}
+                  onChange={(e) => setBioText(e.target.value)}
+                  placeholder="한줄 소개를 입력하세요..."
+                  className="w-full px-2 py-1.5 bg-input border-2 border-border-dark font-pixel text-[10px] focus:outline-none focus:border-primary"
+                  maxLength={50}
+                  autoFocus
+                  onKeyDown={(e) => e.key === 'Enter' && handleSaveBio()}
+                />
+                <div className="flex gap-1.5 justify-end">
+                  <button
+                    onClick={() => setIsEditingBio(false)}
+                    className="px-2 py-1 border-2 border-border-dark bg-muted font-pixel text-[8px] text-muted-foreground"
+                  >
+                    취소
+                  </button>
+                  <button
+                    onClick={handleSaveBio}
+                    className="px-2 py-1 border-2 border-primary-dark bg-primary font-pixel text-[8px] text-primary-foreground flex items-center gap-1"
+                  >
+                    <Check size={8} />
+                    저장
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div
+                className="bg-muted/50 border-2 border-border-dark p-2"
+                style={{ boxShadow: 'inset 1px 1px 0 hsl(var(--pixel-shadow) / 0.3)' }}
+              >
+                <p className="font-pixel text-[10px] text-foreground leading-relaxed">
+                  {displayBio || (isOwnProfile ? '한줄 소개를 작성해보세요! ✏️' : '아직 자기소개가 없습니다 ✨')}
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Stats Grid - Simplified: Only Join Date & Career */}
@@ -136,7 +223,7 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
               <div className="min-w-0">
                 <p className="font-pixel text-[7px] text-muted-foreground uppercase">가입일</p>
                 <p className="font-pixel text-[9px] text-foreground truncate">
-                  {player.joinDate || '2024.01.15'}
+                  {player.joinDate || '-'}
                 </p>
               </div>
             </div>
@@ -147,7 +234,7 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
               <div className="min-w-0">
                 <p className="font-pixel text-[7px] text-muted-foreground uppercase">경력</p>
                 <p className="font-pixel text-[9px] text-foreground">
-                  {player.yearsOfExperience}년차
+                  {expStr}
                 </p>
               </div>
             </div>
@@ -156,7 +243,7 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
           {/* Player Guestbook Section */}
           <div className="kairo-section">
             <p className="font-pixel text-[8px] text-muted-foreground uppercase mb-2">📝 선수 방명록</p>
-            
+
             {/* Guestbook Input */}
             <div className="flex gap-1.5 mb-3">
               <input
@@ -167,7 +254,7 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
                 onKeyDown={(e) => e.key === 'Enter' && handleSubmitGuestbook()}
                 maxLength={50}
               />
-              <button 
+              <button
                 onClick={handleSubmitGuestbook}
                 className="px-2 py-1.5 bg-primary border-2 border-primary-dark hover:brightness-110 transition-all"
                 style={{ boxShadow: '2px 2px 0 hsl(var(--primary-dark))' }}
@@ -179,8 +266,8 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
             {/* Guestbook Entries - Show latest 3 */}
             <div className="space-y-1.5 max-h-28 overflow-y-auto pixel-scrollbar">
               {guestbookEntries.slice(0, 3).map((entry) => (
-                <div 
-                  key={entry.id} 
+                <div
+                  key={entry.id}
                   className="bg-muted/50 p-2 border-2 border-border-dark"
                   style={{ boxShadow: '1px 1px 0 hsl(var(--pixel-shadow) / 0.3)' }}
                 >
@@ -189,7 +276,7 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
                     <span className="font-pixel text-[7px] text-muted-foreground">{entry.date}</span>
                   </div>
                   <p className="font-pixel text-[9px] text-foreground mb-1 leading-tight">{entry.message}</p>
-                  <button 
+                  <button
                     onClick={() => toggleLike(entry.id)}
                     className={cn(
                       "flex items-center gap-0.5 hover:scale-110 transition-transform",
