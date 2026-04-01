@@ -11,6 +11,8 @@ interface UserProfile {
   nickname_tag: string | null;
   preferred_position: string | null;
   years_of_experience: number;
+  months_of_experience: number;
+  real_name: string | null;
 }
 
 interface JoinRequestModalProps {
@@ -69,7 +71,7 @@ export function JoinRequestModal({
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select('nickname, nickname_tag, preferred_position, years_of_experience')
+        .select('nickname, nickname_tag, preferred_position, years_of_experience, months_of_experience, real_name')
         .eq('user_id', user.id)
         .single();
 
@@ -132,7 +134,7 @@ export function JoinRequestModal({
           sender_id: user.id,
           receiver_id: teamData.admin_user_id,
           team_id: teamId,
-          content: `새로운 입단 신청이 도착했습니다! ✉️\n\n신청자: ${profile.nickname}\n포지션: ${profile.preferred_position || '미설정'}\n경력: ${profile.years_of_experience}년\n\n"${message.trim()}"`,
+          content: `새로운 입단 신청이 도착했습니다! ✉️\n\n신청자: ${profile.nickname}${profile.real_name ? ` (실명: ${profile.real_name})` : ''}\n포지션: ${profile.preferred_position || '미설정'}\n경력: ${profile.years_of_experience}년${profile.months_of_experience ? ` ${profile.months_of_experience}개월` : ''}\n\n"${message.trim()}"`,
           is_read: false,
         });
       }
@@ -256,7 +258,7 @@ export function JoinRequestModal({
                     {position.emoji} {position.label}
                   </span>
                   <span className="font-pixel text-[9px] text-foreground bg-secondary px-2 py-1 border border-border-dark">
-                    {profile.years_of_experience}년차
+                    {profile.years_of_experience}년{profile.months_of_experience ? ` ${profile.months_of_experience}개월` : ''}차
                   </span>
                 </div>
               </div>
