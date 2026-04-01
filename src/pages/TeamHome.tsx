@@ -545,8 +545,7 @@ export default function TeamHome() {
         {/* 카카오톡 공유 버튼 */}
         <button
           onClick={() => shareToKakao({
-            title: `⚽ ${teamData.name}`,
-            description: teamData.introduction || `${teamData.name} 팀에 합류해보세요!`,
+            title: teamData.name,
             imageUrl: teamData.photo_url || teamData.banner_url || undefined,
             linkUrl: `https://xn--oy2bq2kj9eita652c.com/team/${teamData.id}`,
           })}

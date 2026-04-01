@@ -17,17 +17,16 @@ export function initKakao() {
 
 interface KakaoShareParams {
   title: string;
-  description: string;
   imageUrl?: string;
   linkUrl: string;
   buttonTitle?: string;
 }
 
-export function shareToKakao({ title, description, imageUrl, linkUrl, buttonTitle = '팀 보러가기' }: KakaoShareParams) {
+export function shareToKakao({ title, imageUrl, linkUrl, buttonTitle = '팀 보러가기' }: KakaoShareParams) {
   if (!initKakao()) {
     // SDK 미로드 시 URL 공유로 대체
     if (navigator.share) {
-      navigator.share({ title, text: description, url: linkUrl });
+      navigator.share({ title: `⚽ ${title}`, text: `${title}에 초대합니다!`, url: linkUrl });
     } else {
       navigator.clipboard.writeText(linkUrl);
       alert('팀 링크가 복사되었습니다!');
@@ -39,8 +38,8 @@ export function shareToKakao({ title, description, imageUrl, linkUrl, buttonTitl
     window.Kakao.Share.sendDefault({
       objectType: 'feed',
       content: {
-        title,
-        description,
+        title: `⚽ ${title}`,
+        description: `${title}에 초대합니다! 우리의풋살에서 함께 뛰어요!`,
         imageUrl: imageUrl || 'https://xn--oy2bq2kj9eita652c.com/assets/top-banner-ME2I35U_.jpg',
         link: {
           mobileWebUrl: linkUrl,
