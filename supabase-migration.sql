@@ -61,7 +61,9 @@ create table public.team_members (
   id uuid default uuid_generate_v4() primary key,
   team_id uuid references public.teams(id) on delete cascade not null,
   user_id uuid references auth.users(id) on delete cascade not null,
-  role text not null default 'member',
+  role text not null default 'member',  -- owner, admin, manager, coach, member
+  staff_career_years integer,           -- 감독/코치 경력 연수 (선택)
+  staff_career_note text,               -- 경력 한줄 설명 (선택, 예: "전 K리그 OO FC 코치")
   joined_at timestamptz default now() not null,
   unique(team_id, user_id)
 );

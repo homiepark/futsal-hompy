@@ -61,6 +61,8 @@ interface MemberData {
   isAdmin?: boolean;
   role?: string;
   joinDate?: string;
+  staffCareerYears?: number | null;
+  staffCareerNote?: string | null;
 }
 
 interface ArchiveItem {
@@ -165,7 +167,7 @@ export default function TeamHome() {
 
           supabase
             .from('team_members')
-            .select('id, user_id, role, joined_at')
+            .select('id, user_id, role, joined_at, staff_career_years, staff_career_note')
             .eq('team_id', teamId),
 
           supabase
@@ -259,6 +261,8 @@ export default function TeamHome() {
               isAdmin: m.role === 'admin' || m.role === 'owner' || m.user_id === team.admin_user_id,
               role: m.user_id === team.admin_user_id ? 'owner' : m.role,
               joinDate: m.joined_at ? new Date(m.joined_at).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }) : undefined,
+              staffCareerYears: m.staff_career_years ?? null,
+              staffCareerNote: m.staff_career_note ?? null,
             };
           });
           setMembers(mapped);
@@ -449,9 +453,11 @@ export default function TeamHome() {
     else if (start) info += ` ${start}~`;
     return info;
   })();
-  const avgExp = members.length > 0
+  // 감독/코치 제외한 선수만 평균 경력 계산
+  const playerMembers = members.filter(m => m.role !== 'manager' && m.role !== 'coach');
+  const avgExp = playerMembers.length > 0
     ? Math.round(
-        (members.reduce((sum, m) => sum + (m.yearsOfExperience ?? 0), 0) / members.length) * 10
+        (playerMembers.reduce((sum, m) => sum + (m.yearsOfExperience ?? 0), 0) / playerMembers.length) * 10
       ) / 10
     : 0;
 
@@ -662,7 +668,7 @@ export default function TeamHome() {
                   className="flex-1 py-2.5 bg-card border-2 border-border-dark font-pixel text-[8px] text-foreground flex items-center justify-center gap-1 hover:bg-muted"
                   style={{boxShadow:'2px 2px 0 hsl(var(--pixel-shadow) / 0.5)'}}
                 >
-                  🛡️ 관리자 관리
+                  🛡️ 멤버 역할 관리
                 </button>
                 <button
                   onClick={() => setShowAdminTransfer(true)}

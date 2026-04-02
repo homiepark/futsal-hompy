@@ -18,6 +18,8 @@ interface Member {
   matchesPlayed?: number;
   goals?: number;
   assists?: number;
+  staffCareerYears?: number | null;
+  staffCareerNote?: string | null;
 }
 
 interface MemberRosterProps {
@@ -36,8 +38,12 @@ export function MemberRoster({ members, teamId }: MemberRosterProps) {
   const [selectedPlayer, setSelectedPlayer] = useState<Member | null>(null);
   const [showModal, setShowModal] = useState(false);
 
-  // Group by position (members with multiple positions appear in each group)
-  const groupedMembers = members.reduce((acc, member) => {
+  // 감독/코치 분리
+  const staffMembers = members.filter(m => m.role === 'manager' || m.role === 'coach');
+  const playerMembers = members.filter(m => m.role !== 'manager' && m.role !== 'coach');
+
+  // Group players by position
+  const groupedMembers = playerMembers.reduce((acc, member) => {
     const memberPositions = member.positions?.length ? member.positions : [member.position];
     memberPositions.forEach(pos => {
       if (!acc[pos]) acc[pos] = [];
@@ -53,14 +59,69 @@ export function MemberRoster({ members, teamId }: MemberRosterProps) {
     setShowModal(true);
   };
 
+  const getStaffIcon = (role?: string) => role === 'manager' ? '👔' : '📋';
+  const getStaffLabel = (role?: string) => role === 'manager' ? '감독' : '코치';
+
   return (
     <>
+      {/* 감독 & 코치 섹션 (있을 때만 표시) */}
+      {staffMembers.length > 0 && (
+        <div className="kairo-panel">
+          <div className="kairo-panel-header">
+            <span className="text-sm">👔</span>
+            <span>감독 & 코치</span>
+          </div>
+
+          <div className="p-3 space-y-2">
+            {staffMembers.map((staff) => (
+              <button
+                key={staff.id}
+                onClick={() => handleMemberClick(staff)}
+                className="w-full flex items-center gap-3 p-2.5 bg-muted border-2 border-border-dark hover:border-primary transition-colors text-left"
+                style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow) / 0.3)' }}
+              >
+                {/* Avatar */}
+                <div className="w-10 h-10 bg-secondary border-2 border-border-dark overflow-hidden flex-shrink-0 relative">
+                  {staff.avatarUrl ? (
+                    <img src={staff.avatarUrl} alt={staff.nickname} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-lg bg-muted">👤</div>
+                  )}
+                  <div className="absolute -top-0.5 -right-0.5 text-[10px]">{getStaffIcon(staff.role)}</div>
+                </div>
+
+                {/* Info */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="font-pixel text-[10px] text-foreground truncate">{staff.nickname}</span>
+                    <span className="px-1.5 py-0.5 bg-primary/20 border border-primary/40 font-pixel text-[8px] text-primary shrink-0">
+                      {getStaffLabel(staff.role)}
+                    </span>
+                  </div>
+                  <div className="font-pixel text-[8px] text-muted-foreground mt-0.5">
+                    {staff.staffCareerYears ? (
+                      <span>지도 경력 {staff.staffCareerYears}년</span>
+                    ) : (
+                      <span>경력 미입력</span>
+                    )}
+                    {staff.staffCareerNote && (
+                      <span className="ml-1 text-foreground/60">· {staff.staffCareerNote}</span>
+                    )}
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 선수 목록 */}
       <div className="kairo-panel">
         {/* Panel Header */}
         <div className="kairo-panel-header">
-          <span className="text-sm">👥</span>
-          <span>팀원 현황</span>
-          <span className="text-muted-foreground ml-1">({members.length})</span>
+          <span className="text-sm">⚽</span>
+          <span>선수 ({playerMembers.length})</span>
+          <span className="text-muted-foreground ml-1">/ 전체 {members.length}명</span>
         </div>
 
         {/* Dense Member Grid */}
@@ -68,9 +129,9 @@ export function MemberRoster({ members, teamId }: MemberRosterProps) {
           {positionOrder.map((position) => {
             const positionMembers = groupedMembers[position];
             if (!positionMembers || positionMembers.length === 0) return null;
-            
+
             const info = positionInfo[position];
-            
+
             return (
               <div key={position}>
                 {/* Position Tag */}
@@ -104,7 +165,7 @@ export function MemberRoster({ members, teamId }: MemberRosterProps) {
                           <div className="absolute -top-0.5 -right-0.5 text-[8px]">{member.role === 'owner' ? '👑' : '🛡️'}</div>
                         )}
                       </div>
-                      
+
                       {/* Info */}
                       <div className="flex flex-col min-w-0">
                         <span className="font-pixel text-[8px] text-foreground truncate leading-tight">
@@ -114,7 +175,6 @@ export function MemberRoster({ members, teamId }: MemberRosterProps) {
                           <span className="font-pixel text-[7px] text-muted-foreground leading-tight">
                             {member.yearsOfExperience}년{member.monthsOfExperience ? `${member.monthsOfExperience}개월` : ''}
                           </span>
-                          {/* Show all position badges */}
                           {(member.positions?.length ?? 0) > 1 && (
                             <div className="flex gap-0.5">
                               {member.positions?.filter(p => p !== position).map(p => (
