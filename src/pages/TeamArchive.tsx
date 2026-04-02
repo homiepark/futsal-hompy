@@ -203,7 +203,7 @@ export default function TeamArchive() {
       setView('single');
       setTimeout(() => {
         const el = document.getElementById(`post-${postParam}`);
-        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 300);
     }
   }, [postParam, posts]);
