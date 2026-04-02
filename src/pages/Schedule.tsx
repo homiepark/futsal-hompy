@@ -235,31 +235,31 @@ export default function Schedule() {
 
         {/* Legend */}
         <div className="flex items-center gap-4 px-1">
-          <div className="flex items-center gap-1">
-            <span className="text-[10px]">⭐</span>
-            <span className="font-pixel text-[8px] text-muted-foreground">매치/자체전</span>
+          <div className="flex items-center gap-1.5">
+            <span className="text-sm">⭐</span>
+            <span className="font-pixel text-[10px] text-muted-foreground">매치/자체전</span>
           </div>
-          <div className="flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-red-400 inline-block"></span>
-            <span className="font-pixel text-[8px] text-muted-foreground">훈련</span>
+          <div className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-red-400 inline-block"></span>
+            <span className="font-pixel text-[10px] text-muted-foreground">훈련</span>
           </div>
-          <div className="flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-accent inline-block"></span>
-            <span className="font-pixel text-[8px] text-muted-foreground">게시글</span>
+          <div className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-accent inline-block"></span>
+            <span className="font-pixel text-[10px] text-muted-foreground">게시글</span>
           </div>
         </div>
 
         {/* Calendar */}
-        <div className="bg-card border-3 border-border-dark p-3" style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}>
-          <div className="flex items-center justify-between mb-3">
-            <button onClick={prevMonth} className="w-8 h-8 flex items-center justify-center hover:bg-muted transition-colors"><ChevronLeft size={16} /></button>
-            <span className="font-pixel text-[11px] text-foreground">{format(currentMonth, 'yyyy년 M월', { locale: ko })}</span>
-            <button onClick={nextMonth} className="w-8 h-8 flex items-center justify-center hover:bg-muted transition-colors"><ChevronRight size={16} /></button>
+        <div className="bg-card border-3 border-border-dark p-4" style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}>
+          <div className="flex items-center justify-between mb-4">
+            <button onClick={prevMonth} className="w-10 h-10 flex items-center justify-center hover:bg-muted transition-colors"><ChevronLeft size={20} /></button>
+            <span className="font-pixel text-sm text-foreground">{format(currentMonth, 'yyyy년 M월', { locale: ko })}</span>
+            <button onClick={nextMonth} className="w-10 h-10 flex items-center justify-center hover:bg-muted transition-colors"><ChevronRight size={20} /></button>
           </div>
 
-          <div className="grid grid-cols-7 gap-1 mb-1">
+          <div className="grid grid-cols-7 gap-1 mb-2">
             {weekDays.map((day, i) => (
-              <div key={day} className={cn('text-center font-pixel text-[8px] py-1',
+              <div key={day} className={cn('text-center font-pixel text-[10px] py-1.5',
                 i === 0 ? 'text-red-400' : i === 6 ? 'text-blue-400' : 'text-muted-foreground'
               )}>{day}</div>
             ))}
@@ -286,12 +286,12 @@ export default function Schedule() {
                     dayOfWeek === 6 && !isSelected ? 'text-blue-400' : '',
                   )}
                 >
-                  <span className="font-pixel text-[10px]">{format(day, 'd')}</span>
+                  <span className="font-pixel text-xs">{format(day, 'd')}</span>
                   {/* Indicators below number */}
-                  <div className="flex items-center gap-0.5 mt-0.5 h-2">
-                    {hasMatch && <span className="text-[6px] leading-none">⭐</span>}
-                    {hasTraining && <span className={cn('w-1.5 h-1.5 rounded-full', isSelected ? 'bg-primary-foreground' : 'bg-red-400')}></span>}
-                    {hasPosts && <span className={cn('w-1 h-1 rounded-full', isSelected ? 'bg-primary-foreground' : 'bg-accent')}></span>}
+                  <div className="flex items-center gap-0.5 mt-0.5 h-3">
+                    {hasMatch && <span className="text-[8px] leading-none">⭐</span>}
+                    {hasTraining && <span className={cn('w-2 h-2 rounded-full', isSelected ? 'bg-primary-foreground' : 'bg-red-400')}></span>}
+                    {hasPosts && <span className={cn('w-1.5 h-1.5 rounded-full', isSelected ? 'bg-primary-foreground' : 'bg-accent')}></span>}
                   </div>
                 </button>
               );
@@ -302,14 +302,14 @@ export default function Schedule() {
         {/* Selected Date */}
         {selectedDate && (
           <div className="space-y-3">
-            <h3 className="font-pixel text-[10px] text-foreground">
+            <h3 className="font-pixel text-xs text-foreground">
               📅 {format(selectedDate, 'M월 d일 (EEEE)', { locale: ko })}
             </h3>
 
             {/* Schedules */}
             {selectedSchedules.length > 0 && (
               <div className="space-y-2">
-                <p className="font-pixel text-[8px] text-muted-foreground uppercase">팀 일정</p>
+                <p className="font-pixel text-[10px] text-muted-foreground uppercase">팀 일정</p>
                 {selectedSchedules.map(s => (
                   <div key={s.id} className="bg-card border-3 border-border-dark p-3 flex items-center gap-3"
                     style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
@@ -320,8 +320,8 @@ export default function Schedule() {
                       {s.eventType === 'match' ? '⭐' : '🏃'}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-pixel text-[10px] text-foreground">{s.title}</p>
-                      <div className="flex items-center gap-2 mt-0.5 font-pixel text-[8px] text-muted-foreground">
+                      <p className="font-pixel text-[11px] text-foreground">{s.title}</p>
+                      <div className="flex items-center gap-2 mt-0.5 font-pixel text-[9px] text-muted-foreground">
                         {s.time && <span>⏰ {s.time}</span>}
                         {s.location && <span>📍 {s.location}</span>}
                         <span className={cn('px-1 py-0.5 border text-[7px]',
@@ -344,7 +344,7 @@ export default function Schedule() {
             {/* Post Events */}
             {selectedPosts.length > 0 && (
               <div className="space-y-2">
-                <p className="font-pixel text-[8px] text-muted-foreground uppercase">📸 팀 스토리</p>
+                <p className="font-pixel text-[10px] text-muted-foreground uppercase">📸 팀 스토리</p>
                 {selectedPosts.map(event => (
                   <button key={event.id}
                     onClick={() => navigate(`/archive?team=${event.teamId}&post=${event.postId}`)}
