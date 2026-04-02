@@ -231,7 +231,7 @@ begin
 end;
 $$;
 
--- is_team_admin
+-- is_team_admin (owner, admin, manager, coach 포함)
 create or replace function public.is_team_admin(_team_id uuid, _user_id uuid)
 returns boolean
 language sql
@@ -241,7 +241,11 @@ as $$
     select 1 from public.team_members
     where team_id = _team_id
     and user_id = _user_id
-    and role in ('admin', 'owner')
+    and role in ('admin', 'owner', 'manager', 'coach')
+  ) or exists (
+    select 1 from public.teams
+    where id = _team_id
+    and admin_user_id = _user_id
   );
 $$;
 

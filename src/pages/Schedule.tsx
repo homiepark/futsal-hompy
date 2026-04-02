@@ -58,6 +58,7 @@ export default function Schedule() {
 
   // team membership data for admin check
   const [teamRoles, setTeamRoles] = useState<Record<string, string>>({});
+  const [teamOwners, setTeamOwners] = useState<Record<string, string>>({});
 
   // Fetch teams
   useEffect(() => {
@@ -65,15 +66,22 @@ export default function Schedule() {
     const fetchTeams = async () => {
       const { data } = await supabase
         .from('team_members')
-        .select('team_id, role, teams(id, name, emblem, photo_url)')
+        .select('team_id, role, teams(id, name, emblem, photo_url, admin_user_id)')
         .eq('user_id', user.id);
       if (data && data.length > 0) {
         const teams = data.filter((d: any) => d.teams).map((d: any) => ({
           id: d.teams.id, name: d.teams.name, emblem: d.teams.emblem, photoUrl: d.teams.photo_url || undefined
         }));
         const roles: Record<string, string> = {};
-        data.forEach((d: any) => { if (d.teams) roles[d.teams.id] = d.role; });
+        const owners: Record<string, string> = {};
+        data.forEach((d: any) => {
+          if (d.teams) {
+            roles[d.teams.id] = d.role;
+            owners[d.teams.id] = d.teams.admin_user_id;
+          }
+        });
         setTeamRoles(roles);
+        setTeamOwners(owners);
         setMyTeams(teams);
         setSelectedTeam(teams[0]?.id || '');
       }
@@ -83,12 +91,16 @@ export default function Schedule() {
   }, [user]);
 
   // 선택된 팀에 대한 admin 여부 (팀 전환 시 갱신)
+  // owner, admin, manager, coach + teams.admin_user_id 체크
   useEffect(() => {
-    if (selectedTeam) {
+    if (selectedTeam && user) {
       const role = teamRoles[selectedTeam];
-      setIsAdmin(role === 'admin' || role === 'owner');
+      const isTeamOwner = teamOwners[selectedTeam] === user.id;
+      setIsAdmin(
+        role === 'admin' || role === 'owner' || role === 'manager' || role === 'coach' || isTeamOwner
+      );
     }
-  }, [selectedTeam, teamRoles]);
+  }, [selectedTeam, teamRoles, teamOwners, user]);
 
   // 일정 페이지 진입 시 seen 갱신 (뱃지 초기화)
   useEffect(() => {
