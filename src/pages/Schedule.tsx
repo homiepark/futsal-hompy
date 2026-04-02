@@ -326,7 +326,7 @@ export default function Schedule() {
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
             {myTeams.map(team => (
               <button key={team.id} onClick={() => setSelectedTeam(team.id)}
-                className={cn('flex-shrink-0 flex items-center gap-2 px-3 py-2 border-3 font-pixel text-[9px] transition-all',
+                className={cn('flex-shrink-0 flex items-center gap-2 px-3 py-2 border-3 font-pixel text-[10px] transition-all',
                   selectedTeam === team.id ? 'bg-primary border-primary-dark text-primary-foreground' : 'bg-card border-border-dark text-foreground hover:border-primary'
                 )} style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
               >
@@ -407,31 +407,31 @@ export default function Schedule() {
         {/* Selected Date */}
         {selectedDate && (
           <div className="space-y-3">
-            <h3 className="font-pixel text-xs text-foreground">
+            <h3 className="font-pixel text-[14px] text-foreground">
               📅 {format(selectedDate, 'M월 d일 (EEEE)', { locale: ko })}
             </h3>
 
             {/* Schedules */}
             {selectedSchedules.length > 0 && (
               <div className="space-y-2">
-                <p className="font-pixel text-[10px] text-muted-foreground uppercase">팀 일정</p>
+                <p className="font-pixel text-[12px] text-muted-foreground">팀 일정</p>
                 {selectedSchedules.map(s => (
-                  <div key={s.id} className="bg-card border-3 border-border-dark p-3 flex items-center gap-3"
+                  <div key={s.id} className="bg-card border-3 border-border-dark p-4 flex items-center gap-3"
                     style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
                   >
-                    <div className={cn('w-10 h-10 flex items-center justify-center border-2 shrink-0 text-lg',
+                    <div className={cn('w-12 h-12 flex items-center justify-center border-2 shrink-0 text-xl',
                       s.eventType === 'match' ? 'bg-yellow-100 border-yellow-400' : 'bg-lime-50 border-lime-400'
                     )}>
                       {s.eventType === 'match' ? '⭐' : '🏃'}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-pixel text-[11px] text-foreground">{s.title}</p>
-                      <div className="flex items-center gap-2 mt-0.5 font-pixel text-[8px] text-muted-foreground flex-wrap">
+                      <p className="font-pixel text-[12px] text-foreground">{s.title}</p>
+                      <div className="flex items-center gap-2 mt-1 font-pixel text-[10px] text-muted-foreground flex-wrap">
                         {(s.timeStart || s.timeEnd) && (
                           <span>⏰ {s.timeStart || ''}{s.timeEnd ? ` ~ ${s.timeEnd}` : ''}</span>
                         )}
                         {s.location && <span>📍 {s.location}</span>}
-                        <span className={cn('px-1 py-0.5 border text-[8px]',
+                        <span className={cn('px-1.5 py-0.5 border text-[8px]',
                           s.eventType === 'match' ? 'bg-yellow-100 border-yellow-400 text-yellow-700' : 'bg-lime-50 border-lime-400 text-lime-600'
                         )}>
                           {s.eventType === 'match' ? '매치' : '훈련'}
@@ -456,7 +456,7 @@ export default function Schedule() {
             {/* Post Events */}
             {selectedPosts.length > 0 && (
               <div className="space-y-2">
-                <p className="font-pixel text-[10px] text-muted-foreground uppercase">📸 팀 스토리</p>
+                <p className="font-pixel text-[12px] text-muted-foreground">📸 팀 스토리</p>
                 {selectedPosts.map(event => (
                   <button key={event.id}
                     onClick={() => navigate(`/archive?team=${event.teamId}&post=${event.postId}`)}
@@ -468,8 +468,8 @@ export default function Schedule() {
                         <div className="w-full h-full flex items-center justify-center text-lg">📸</div>}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-pixel text-[10px] text-foreground truncate">{event.title}</p>
-                      <span className="font-pixel text-[8px] text-muted-foreground">👤 {event.author}</span>
+                      <p className="font-pixel text-[12px] text-foreground truncate">{event.title}</p>
+                      <span className="font-pixel text-[10px] text-muted-foreground">👤 {event.author}</span>
                     </div>
                     <ChevronRight size={14} className="text-muted-foreground shrink-0" />
                   </button>
@@ -479,7 +479,7 @@ export default function Schedule() {
 
             {selectedSchedules.length === 0 && selectedPosts.length === 0 && (
               <div className="bg-card border-3 border-border-dark p-6 text-center" style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}>
-                <p className="font-pixel text-[9px] text-muted-foreground">이 날의 기록이 없습니다</p>
+                <p className="font-pixel text-[10px] text-muted-foreground">이 날의 기록이 없습니다</p>
                 {isAdmin && (
                   <button onClick={() => { setShowAddModal(true); setNewDate(format(selectedDate, 'yyyy-MM-dd')); }}
                     className="mt-2 px-4 py-1.5 bg-accent border-2 border-accent-dark font-pixel text-[8px] text-accent-foreground hover:brightness-110">
@@ -503,10 +503,10 @@ export default function Schedule() {
               <span className="font-pixel text-[10px]">📅 {editingSchedule ? '일정 수정' : '일정 등록'}</span>
               <button onClick={() => { setShowAddModal(false); resetForm(); }} className="hover:opacity-80 font-pixel text-[10px]">✕</button>
             </div>
-            <div className="p-4 space-y-3">
+            <div className="px-5 py-4 space-y-3">
               {/* Event Type */}
               <div>
-                <label className="block font-pixel text-[8px] text-muted-foreground mb-1">유형 *</label>
+                <label className="block font-pixel text-[10px] text-muted-foreground mb-1">유형 *</label>
                 <div className="flex gap-2">
                   <button type="button" onClick={() => setNewEventType('match')}
                     className={cn('flex-1 py-2 border-3 font-pixel text-[10px] flex items-center justify-center gap-1 transition-all',
@@ -521,27 +521,27 @@ export default function Schedule() {
                 </div>
               </div>
               <div>
-                <label className="block font-pixel text-[8px] text-muted-foreground mb-1">제목 *</label>
+                <label className="block font-pixel text-[10px] text-muted-foreground mb-1">제목 *</label>
                 <input type="text" value={newTitle} onChange={(e) => setNewTitle(e.target.value)}
                   placeholder="예: 정기 훈련, 친선 경기..." className="w-full pixel-input" maxLength={50} />
               </div>
               <div>
-                <label className="block font-pixel text-[8px] text-muted-foreground mb-1">날짜 *</label>
+                <label className="block font-pixel text-[10px] text-muted-foreground mb-1">날짜 *</label>
                 <input type="date" value={newDate} onChange={(e) => setNewDate(e.target.value)}
-                  className="w-full pixel-input text-[10px]" style={{ minWidth: 0 }} />
+                  className="w-full pixel-input text-[10px]" style={{ boxSizing: 'border-box', paddingRight: '8px' }} />
               </div>
               <div>
-                <label className="block font-pixel text-[8px] text-muted-foreground mb-1">시간</label>
+                <label className="block font-pixel text-[10px] text-muted-foreground mb-1">시간</label>
                 <div className="flex items-center gap-2">
                   <input type="time" value={newTimeStart} onChange={(e) => setNewTimeStart(e.target.value)}
-                    className="flex-1 pixel-input text-[10px]" style={{ minWidth: 0 }} placeholder="시작" />
+                    className="flex-1 pixel-input text-[10px] min-w-0" style={{ paddingRight: '4px' }} />
                   <span className="font-pixel text-[10px] text-muted-foreground shrink-0">~</span>
                   <input type="time" value={newTimeEnd} onChange={(e) => setNewTimeEnd(e.target.value)}
-                    className="flex-1 pixel-input text-[10px]" style={{ minWidth: 0 }} placeholder="종료" />
+                    className="flex-1 pixel-input text-[10px] min-w-0" style={{ paddingRight: '4px' }} />
                 </div>
               </div>
               <div>
-                <label className="block font-pixel text-[8px] text-muted-foreground mb-1">장소</label>
+                <label className="block font-pixel text-[10px] text-muted-foreground mb-1">장소</label>
                 <input type="text" value={newLocation} onChange={(e) => setNewLocation(e.target.value)}
                   placeholder="예: OO 풋살장" className="w-full pixel-input" maxLength={50} />
               </div>
