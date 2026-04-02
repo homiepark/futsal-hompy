@@ -568,6 +568,7 @@ export default function TeamHome() {
         teamId={teamId}
         isAdmin={isAdmin}
         isFavorited={isFavorited}
+        skinId={currentSkin}
         onFavoriteToggle={(val) => {
           setIsFavorited(val);
           try {

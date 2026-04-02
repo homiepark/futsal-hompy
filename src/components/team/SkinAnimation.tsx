@@ -316,6 +316,100 @@ function SambaBall({ size = 12 }: { size?: number }) {
   );
 }
 
+// 코치 캐릭터 (캡모자, 남색+초록+노랑 패턴 유니폼, 검은 반바지, 흰 축구화)
+function SambaCoach({ scale = 1, pose = 'stand' }: { scale?: number; pose?: 'stand' | 'lifting' }) {
+  const s = 2 * scale;
+  const cap = '#1A1A1A';
+  const capBrim = '#333';
+  const skin = '#C8A882';
+  const jerseyDark = '#1A237E';
+  const jerseyGreen = '#2E7D32';
+  const jerseyYellow = '#FDD835';
+  const shortColor = '#1A1A1A';
+  const shoeColor = '#EEEEEE';
+
+  if (pose === 'lifting') {
+    // 리프팅 포즈: 한 발로 공을 올리는 모습
+    return (
+      <svg width={16*s} height={26*s} viewBox={`0 0 ${16*s} ${26*s}`} style={{ imageRendering: 'pixelated' }}>
+        {/* Cap */}
+        <rect x={4*s} y={0} width={7*s} height={2*s} fill={cap} />
+        <rect x={3*s} y={2*s} width={9*s} height={s} fill={capBrim} />
+        {/* Face */}
+        <rect x={5*s} y={3*s} width={6*s} height={4*s} fill={skin} />
+        <rect x={6*s} y={4*s} width={s} height={s} fill="#333" />
+        <rect x={9*s} y={4*s} width={s} height={s} fill="#333" />
+        <rect x={7*s} y={6*s} width={2*s} height={0.5*s} fill="#888" /> {/* smile */}
+        {/* Jersey - pattern stripes */}
+        <rect x={3*s} y={7*s} width={10*s} height={7*s} fill={jerseyDark} />
+        <rect x={3*s} y={8*s} width={10*s} height={s} fill={jerseyGreen} />
+        <rect x={3*s} y={10*s} width={10*s} height={s} fill={jerseyYellow} />
+        <rect x={3*s} y={12*s} width={10*s} height={s} fill={jerseyGreen} />
+        {/* "Futsal" text area */}
+        <rect x={5*s} y={9*s} width={6*s} height={s} fill={jerseyYellow} opacity={0.8} />
+        {/* Arms */}
+        <rect x={1*s} y={8*s} width={2*s} height={4*s} fill={jerseyDark} />
+        <rect x={13*s} y={8*s} width={2*s} height={4*s} fill={jerseyDark} />
+        <rect x={1*s} y={12*s} width={2*s} height={s} fill={skin} />
+        <rect x={13*s} y={12*s} width={2*s} height={s} fill={skin} />
+        {/* Shorts */}
+        <rect x={4*s} y={14*s} width={8*s} height={3*s} fill={shortColor} />
+        {/* Standing leg */}
+        <rect x={5*s} y={17*s} width={2*s} height={5*s} fill={skin} />
+        <rect x={4*s} y={22*s} width={3*s} height={2*s} fill={shoeColor} />
+        {/* Lifting leg - raised with ball */}
+        <rect x={9*s} y={15*s} width={2*s} height={3*s} fill={skin} />
+        <rect x={10*s} y={13*s} width={3*s} height={2*s} fill={shoeColor} /> {/* foot up */}
+        {/* Ball on foot */}
+        <circle cx={12.5*s} cy={12*s} r={1.5*s} fill="white" stroke="#333" strokeWidth={0.3*s} />
+        <path d={`M${12*s} ${11*s} L${13*s} ${12*s} L${12*s} ${13*s}`} fill="#333" opacity={0.5} />
+      </svg>
+    );
+  }
+
+  // stand pose
+  return (
+    <svg width={14*s} height={24*s} viewBox={`0 0 ${14*s} ${24*s}`} style={{ imageRendering: 'pixelated' }}>
+      {/* Cap */}
+      <rect x={3*s} y={0} width={7*s} height={2*s} fill={cap} />
+      <rect x={2*s} y={2*s} width={9*s} height={s} fill={capBrim} />
+      {/* Face */}
+      <rect x={4*s} y={3*s} width={6*s} height={4*s} fill={skin} />
+      <rect x={5*s} y={4*s} width={s} height={s} fill="#333" />
+      <rect x={8*s} y={4*s} width={s} height={s} fill="#333" />
+      {/* Jersey */}
+      <rect x={3*s} y={7*s} width={8*s} height={7*s} fill={jerseyDark} />
+      <rect x={3*s} y={8*s} width={8*s} height={s} fill={jerseyGreen} />
+      <rect x={3*s} y={10*s} width={8*s} height={s} fill={jerseyYellow} />
+      <rect x={3*s} y={12*s} width={8*s} height={s} fill={jerseyGreen} />
+      <rect x={5*s} y={9*s} width={4*s} height={s} fill={jerseyYellow} opacity={0.8} />
+      {/* Arms */}
+      <rect x={1*s} y={8*s} width={2*s} height={4*s} fill={jerseyDark} />
+      <rect x={11*s} y={8*s} width={2*s} height={4*s} fill={jerseyDark} />
+      <rect x={1*s} y={12*s} width={2*s} height={s} fill={skin} />
+      <rect x={11*s} y={12*s} width={2*s} height={s} fill={skin} />
+      {/* Wristband */}
+      <rect x={0} y={11*s} width={s} height={s} fill="#333" />
+      {/* Shorts */}
+      <rect x={3*s} y={14*s} width={8*s} height={3*s} fill={shortColor} />
+      {/* Legs */}
+      <rect x={4*s} y={17*s} width={2*s} height={4*s} fill={skin} />
+      <rect x={8*s} y={17*s} width={2*s} height={4*s} fill={skin} />
+      <rect x={3*s} y={21*s} width={3*s} height={2*s} fill={shoeColor} />
+      <rect x={8*s} y={21*s} width={3*s} height={2*s} fill={shoeColor} />
+    </svg>
+  );
+}
+
+// 리프팅 코치를 export해서 TeamHome에서도 사용 가능
+export function SambaLiftingCoach({ scale = 1.5 }: { scale?: number }) {
+  return (
+    <div className="animate-samba-lifting inline-block">
+      <SambaCoach scale={scale} pose="lifting" />
+    </div>
+  );
+}
+
 // Samba Special Animation
 function SambaAnimation() {
   const confetti = Array.from({ length: 8 }, (_, i) => ({
@@ -340,7 +434,7 @@ function SambaAnimation() {
             width: `${c.size}px`,
             height: `${c.size}px`,
             backgroundColor: c.color,
-            opacity: 0.4,
+            opacity: 0.6,
             animationDuration: `${c.duration}s`,
             animationDelay: `${c.delay}s`,
           }}
@@ -352,7 +446,7 @@ function SambaAnimation() {
         className="absolute animate-samba-run"
         style={{
           top: '68%',
-          opacity: 0.55,
+          opacity: 0.75,
           ['--start-x' as any]: '-10vw',
           ['--end-x' as any]: '110vw',
           animationDuration: '14s',
@@ -368,7 +462,7 @@ function SambaAnimation() {
         className="absolute animate-samba-run"
         style={{
           top: '80%',
-          opacity: 0.5,
+          opacity: 0.7,
           ['--start-x' as any]: '-6vw',
           ['--end-x' as any]: '114vw',
           animationDuration: '14s',
@@ -385,7 +479,7 @@ function SambaAnimation() {
         className="absolute animate-samba-run"
         style={{
           top: '45%',
-          opacity: 0.45,
+          opacity: 0.65,
           ['--start-x' as any]: '110vw',
           ['--end-x' as any]: '-10vw',
           animationDuration: '18s',
@@ -403,7 +497,7 @@ function SambaAnimation() {
         className="absolute animate-samba-run"
         style={{
           top: '58%',
-          opacity: 0.5,
+          opacity: 0.7,
           ['--start-x' as any]: '-15vw',
           ['--end-x' as any]: '115vw',
           animationDuration: '20s',
@@ -420,7 +514,7 @@ function SambaAnimation() {
         className="absolute animate-samba-run"
         style={{
           top: '30%',
-          opacity: 0.35,
+          opacity: 0.55,
           ['--start-x' as any]: '105vw',
           ['--end-x' as any]: '-10vw',
           animationDuration: '22s',
@@ -434,7 +528,7 @@ function SambaAnimation() {
         className="absolute animate-samba-run"
         style={{
           top: '38%',
-          opacity: 0.4,
+          opacity: 0.6,
           ['--start-x' as any]: '108vw',
           ['--end-x' as any]: '-8vw',
           animationDuration: '22s',
@@ -447,12 +541,28 @@ function SambaAnimation() {
         </div>
       </div>
 
+      {/* Coach - 코치가 천천히 걸어감 */}
+      <div
+        className="absolute animate-samba-run"
+        style={{
+          top: '62%',
+          opacity: 0.6,
+          ['--start-x' as any]: '115vw',
+          ['--end-x' as any]: '-15vw',
+          animationDuration: '25s',
+          animationDelay: '7s',
+          transform: 'scaleX(-1)',
+        }}
+      >
+        <SambaCoach scale={1.1} pose="stand" />
+      </div>
+
       {/* 하단 잔디 라인 */}
       <div
-        className="absolute bottom-0 left-0 right-0 h-1.5 animate-samba-grass"
+        className="absolute bottom-0 left-0 right-0 h-2 animate-samba-grass"
         style={{
           background: 'repeating-linear-gradient(90deg, #2E7D32 0px, #2E7D32 8px, #4CAF50 8px, #4CAF50 16px)',
-          opacity: 0.3,
+          opacity: 0.4,
         }}
       />
     </div>

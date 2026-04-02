@@ -678,4 +678,17 @@
   .animate-samba-celebrate {
     animation: samba-celebrate 0.8s ease-in-out infinite;
   }
+
+  @keyframes samba-lifting {
+    0%, 100% { transform: translateY(0); }
+    15% { transform: translateY(-2px); }
+    30% { transform: translateY(0); }
+    45% { transform: translateY(-4px); }
+    60% { transform: translateY(0); }
+    75% { transform: translateY(-2px); }
+    90% { transform: translateY(0); }
+  }
+  .animate-samba-lifting {
+    animation: samba-lifting 2s ease-in-out infinite;
+  }
 }

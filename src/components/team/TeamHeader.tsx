@@ -4,6 +4,7 @@ import { useState, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { shareToKakao } from '@/lib/kakaoShare';
+import { SambaLiftingCoach } from '@/components/team/SkinAnimation';
 
 interface TeamHeaderProps {
   name: string;
@@ -21,6 +22,7 @@ interface TeamHeaderProps {
   teamId?: string;
   isAdmin?: boolean;
   isFavorited?: boolean;
+  skinId?: string;
   onFavoriteToggle?: (isFavorited: boolean) => void;
   onPhotoUpdate?: (url: string) => void;
   onBannerUpdate?: (url: string) => void;
@@ -53,6 +55,7 @@ export function TeamHeader({
   youtubeUrl,
   teamId,
   isAdmin = false,
+  skinId,
   onPhotoUpdate,
   onBannerUpdate,
   onNameUpdate,
@@ -197,6 +200,9 @@ export function TeamHeader({
                   <Star size={16} className={isFavorited ? 'text-[hsl(45,100%,50%)] fill-[hsl(45,100%,50%)]' : 'text-muted-foreground'} />
                 </button>
                 <h1 className="font-pixel text-sm text-foreground leading-tight">{name}</h1>
+                {skinId === 'samba' && (
+                  <SambaLiftingCoach scale={1} />
+                )}
                 {isAdmin && (
                   <button onClick={() => onNameClick ? onNameClick() : setIsEditingName(true)} className="text-muted-foreground hover:text-primary">
                     <Pencil size={10} />
