@@ -81,7 +81,7 @@ export function HomeGroundSelector({
           </button>
         </div>
 
-        <p className="font-pixel text-[6px] text-muted-foreground">
+        <p className="font-pixel text-[8px] text-muted-foreground">
           💡 구장 이름만 입력해도 OK! 주소는 선택사항이에요
         </p>
       </div>

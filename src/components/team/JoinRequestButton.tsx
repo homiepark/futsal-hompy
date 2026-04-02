@@ -76,7 +76,7 @@ export function JoinRequestButton({
 
       // If no profile exists at all, redirect to register
       if (error || !profile) {
-        navigate('/register', { state: { returnTo: window.location.pathname } });
+        navigate('/profile-setup', { state: { returnTo: window.location.pathname } });
         return;
       }
 

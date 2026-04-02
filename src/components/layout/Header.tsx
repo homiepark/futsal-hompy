@@ -82,7 +82,7 @@ export function Header() {
           />
           <button className="relative">
             <PixelIcon icon={Bell} size="sm" />
-            <span className="absolute -top-1 -right-1 w-3 h-3 bg-accent border border-accent-dark text-[6px] font-pixel text-accent-foreground flex items-center justify-center">
+            <span className="absolute -top-1 -right-1 w-3 h-3 bg-accent border border-accent-dark text-[7px] font-pixel text-accent-foreground flex items-center justify-center">
               3
             </span>
           </button>
