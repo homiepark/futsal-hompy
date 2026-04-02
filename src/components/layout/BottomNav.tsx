@@ -22,9 +22,10 @@ export function BottomNav() {
   const { user } = useAuth();
   const { pendingCount } = usePendingJoinRequests();
   const [unreadMessages, setUnreadMessages] = useState(0);
+  const [pendingInvitations, setPendingInvitations] = useState(0);
 
   useEffect(() => {
-    if (!user) { setUnreadMessages(0); return; }
+    if (!user) { setUnreadMessages(0); setPendingInvitations(0); return; }
 
     const fetchUnread = async () => {
       const { count } = await supabase
@@ -35,14 +36,29 @@ export function BottomNav() {
       setUnreadMessages(count || 0);
     };
 
-    fetchUnread();
+    const fetchInvitations = async () => {
+      const { count } = await supabase
+        .from('team_invitations')
+        .select('id', { count: 'exact', head: true })
+        .eq('invited_user_id', user.id)
+        .eq('status', 'pending');
+      setPendingInvitations(count || 0);
+    };
 
-    const channel = supabase
+    fetchUnread();
+    fetchInvitations();
+
+    const msgChannel = supabase
       .channel('unread-messages-nav')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, () => fetchUnread())
       .subscribe();
 
-    return () => { supabase.removeChannel(channel); };
+    const invChannel = supabase
+      .channel('pending-invitations-nav')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'team_invitations', filter: `invited_user_id=eq.${user.id}` }, () => fetchInvitations())
+      .subscribe();
+
+    return () => { supabase.removeChannel(msgChannel); supabase.removeChannel(invChannel); };
   }, [user]);
 
   return (
@@ -71,7 +87,7 @@ export function BottomNav() {
             ? `${path}?team=${activeTeam.id}`
             : path;
 
-          const badgeCount = path === '/my-team' ? pendingCount : path === '/messages' ? unreadMessages : 0;
+          const badgeCount = path === '/my-team' ? pendingCount : path === '/messages' ? (unreadMessages + pendingInvitations) : 0;
           const showBadge = badgeCount > 0;
             
           return (
