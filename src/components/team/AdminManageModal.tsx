@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { X, Shield, ShieldOff } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 import { cn } from '@/lib/utils';
 
 interface Member {
@@ -24,7 +23,6 @@ interface AdminManageModalProps {
 }
 
 export function AdminManageModal({ isOpen, onClose, members, teamId, ownerId, onRoleChange }: AdminManageModalProps) {
-  useBodyScrollLock(isOpen);
   const [loading, setLoading] = useState<string | null>(null);
 
   if (!isOpen) return null;
@@ -67,6 +65,7 @@ export function AdminManageModal({ isOpen, onClose, members, teamId, ownerId, on
       <div
         className="relative w-full max-w-sm bg-card border-4 border-border-dark overflow-hidden animate-in fade-in zoom-in-95"
         style={{ boxShadow: '6px 6px 0 hsl(var(--pixel-shadow))' }}
+        onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 bg-primary text-primary-foreground">
