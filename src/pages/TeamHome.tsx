@@ -585,15 +585,15 @@ export default function TeamHome() {
         onLevelClick={() => setShowLevelInfo(true)}
       />
 
-      {/* Samba lifting player - 공지 위 */}
-      {currentSkin === 'samba' && (
-        <div className="flex justify-center py-2">
-          <SambaLiftingPlayer scale={1.3} />
-        </div>
-      )}
-
       {/* 3. Marquee Notice Bar (전광판) + 수정 버튼 */}
-      <div className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 overflow-hidden border-y-2 border-primary/30">
+      <div className="relative">
+        {/* Samba lifting player - 전광판 우측 위 겹침 */}
+        {currentSkin === 'samba' && (
+          <div className="absolute -top-10 right-3 z-10">
+            <SambaLiftingPlayer scale={0.9} />
+          </div>
+        )}
+        <div className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 overflow-hidden border-y-2 border-primary/30">
         <div className="py-2 flex items-center">
           <span className="shrink-0 px-2 text-base">📢</span>
           <div className="flex-1 overflow-hidden">
@@ -624,6 +624,7 @@ export default function TeamHome() {
             </button>
           )}
         </div>
+      </div>
       </div>
 
       {/* Join Request Notification */}
