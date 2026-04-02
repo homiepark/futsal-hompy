@@ -174,6 +174,79 @@ function FootballAnimation() {
   );
 }
 
+// Samba Special Animation - 픽셀 캐릭터들이 드리블하며 움직임
+function SambaAnimation() {
+  const characters = [
+    { id: 0, emoji: '🏃', startX: -10, endX: 110, y: 75, duration: 12, delay: 0, size: 22, flip: false },
+    { id: 1, emoji: '⚽', startX: -5, endX: 115, y: 78, duration: 12, delay: 0.3, size: 14, flip: false },
+    { id: 2, emoji: '🏃', startX: 110, endX: -10, y: 55, duration: 15, delay: 4, size: 18, flip: true },
+    { id: 3, emoji: '⚽', startX: 115, endX: -5, y: 58, duration: 15, delay: 4.2, size: 12, flip: true },
+    { id: 4, emoji: '🤸', startX: -15, endX: 115, y: 40, duration: 18, delay: 8, size: 16, flip: false },
+    { id: 5, emoji: '🥅', startX: 88, endX: 88, y: 72, duration: 0, delay: 0, size: 20, flip: false },
+  ];
+
+  const confetti = Array.from({ length: 8 }, (_, i) => ({
+    id: i,
+    x: Math.random() * 100,
+    delay: Math.random() * 10,
+    duration: Math.random() * 4 + 6,
+    size: Math.random() * 6 + 4,
+    color: i % 2 === 0 ? '#FDD835' : '#2E7D32',
+  }));
+
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+      {/* Confetti particles - 노랑/초록 */}
+      {confetti.map(c => (
+        <div
+          key={`confetti-${c.id}`}
+          className="absolute animate-samba-confetti"
+          style={{
+            left: `${c.x}%`,
+            top: '-8px',
+            width: `${c.size}px`,
+            height: `${c.size}px`,
+            backgroundColor: c.color,
+            opacity: 0.25,
+            animationDuration: `${c.duration}s`,
+            animationDelay: `${c.delay}s`,
+          }}
+        />
+      ))}
+
+      {/* Characters running across */}
+      {characters.map(char => (
+        <div
+          key={`char-${char.id}`}
+          className={char.duration > 0 ? 'absolute animate-samba-run' : 'absolute'}
+          style={{
+            top: `${char.y}%`,
+            left: char.duration > 0 ? undefined : `${char.startX}%`,
+            fontSize: `${char.size}px`,
+            opacity: 0.2,
+            transform: char.flip ? 'scaleX(-1)' : 'none',
+            ['--start-x' as any]: `${char.startX}vw`,
+            ['--end-x' as any]: `${char.endX}vw`,
+            animationDuration: char.duration > 0 ? `${char.duration}s` : undefined,
+            animationDelay: char.duration > 0 ? `${char.delay}s` : undefined,
+          }}
+        >
+          {char.emoji}
+        </div>
+      ))}
+
+      {/* 하단 잔디 라인 */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-1 animate-samba-grass"
+        style={{
+          background: 'repeating-linear-gradient(90deg, #2E7D32 0px, #2E7D32 8px, #4CAF50 8px, #4CAF50 16px)',
+          opacity: 0.15,
+        }}
+      />
+    </div>
+  );
+}
+
 interface SkinAnimationProps {
   animation?: string;
 }
@@ -188,6 +261,7 @@ export function SkinAnimation({ animation }: SkinAnimationProps) {
     case 'bubbles': return <BubbleAnimation />;
     case 'fire': return <FireAnimation />;
     case 'football': return <FootballAnimation />;
+    case 'samba': return <SambaAnimation />;
     default: return null;
   }
 }

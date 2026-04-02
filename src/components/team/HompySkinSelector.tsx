@@ -111,6 +111,17 @@ const skins: Skin[] = [
     preview: 'linear-gradient(135deg, hsl(0 80% 60%), hsl(60 80% 55%), hsl(120 60% 50%), hsl(200 70% 55%), hsl(280 60% 55%))',
   },
   {
+    id: 'samba',
+    name: '쌈바 스페셜🤙',
+    emoji: '🇧🇷',
+    bgColor: 'hsl(48 80% 96%)',
+    borderColor: 'hsl(120 50% 30%)',
+    headerBg: 'hsl(48 90% 52%)',
+    accentColor: 'hsl(120 60% 35%)',
+    preview: 'linear-gradient(135deg, hsl(48 90% 52%), hsl(120 60% 35%))',
+    animation: 'samba',
+  },
+  {
     id: 'dark',
     name: '다크 네온',
     emoji: '⚫',
@@ -233,6 +244,7 @@ export function HompySkinSelector({ isOpen, onClose, currentSkin, onSkinChange }
                 selectedSkin.animation === 'bubbles' ? '물방울' :
                 selectedSkin.animation === 'fire' ? '불꽃' :
                 selectedSkin.animation === 'football' ? '축구공 튀기기' :
+                selectedSkin.animation === 'samba' ? '쌈바 캐릭터 🤙' :
                 ''
               } 효과가 포함되어 있어요
             </span>

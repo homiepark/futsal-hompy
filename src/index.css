@@ -625,4 +625,31 @@
   .animate-football-bounce {
     animation: football-bounce ease-in-out infinite;
   }
+
+  /* Samba Special */
+  @keyframes samba-run {
+    0% { left: var(--start-x); opacity: 0; }
+    5% { opacity: 0.2; }
+    90% { opacity: 0.2; }
+    100% { left: var(--end-x); opacity: 0; }
+  }
+  .animate-samba-run {
+    animation: samba-run linear infinite;
+  }
+
+  @keyframes samba-confetti {
+    0% { transform: translateY(0) rotate(0deg); opacity: 0.25; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+  .animate-samba-confetti {
+    animation: samba-confetti linear infinite;
+  }
+
+  @keyframes samba-grass {
+    0% { background-position: 0 0; }
+    100% { background-position: 16px 0; }
+  }
+  .animate-samba-grass {
+    animation: samba-grass 1s linear infinite;
+  }
 }
