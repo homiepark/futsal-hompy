@@ -355,31 +355,31 @@ export function TimelinePost({
       )}
 
       {/* Actions */}
-      <div className="flex items-center gap-4 pt-2 border-t-2 border-border">
-        <button 
+      <div className="flex items-center gap-5 pt-2 border-t-2 border-border">
+        <button
           onClick={toggleLike}
           disabled={likeLoading}
           className={cn(
-            "flex items-center gap-1 transition-colors",
+            "flex items-center gap-1.5 p-1.5 transition-colors",
             isLiked ? "text-red-500" : "text-muted-foreground hover:text-red-400"
           )}
         >
-          <Heart size={16} className={cn(isLiked && "fill-current")} />
-          <span className="font-pixel text-[8px]">{displayLikes}</span>
+          <Heart size={22} className={cn(isLiked && "fill-current")} />
+          <span className="font-pixel text-[10px]">{displayLikes}</span>
         </button>
-        <button 
+        <button
           onClick={() => setShowComments(!showComments)}
           className={cn(
-            "flex items-center gap-1 transition-colors",
+            "flex items-center gap-1.5 p-1.5 transition-colors",
             showComments ? "text-primary" : "text-muted-foreground hover:text-primary"
           )}
         >
-          <MessageCircle size={16} className={cn(showComments && "fill-primary/20")} />
-          <span className="font-pixel text-[8px]">{displayComments}</span>
-          {showComments ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+          <MessageCircle size={22} className={cn(showComments && "fill-primary/20")} />
+          <span className="font-pixel text-[10px]">{displayComments}</span>
+          {showComments ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
         </button>
-        <button className="text-muted-foreground hover:text-primary transition-colors ml-auto">
-          <Share2 size={16} />
+        <button className="text-muted-foreground hover:text-primary transition-colors ml-auto p-1.5">
+          <Share2 size={20} />
         </button>
       </div>
 

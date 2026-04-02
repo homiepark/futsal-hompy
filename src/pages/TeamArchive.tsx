@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Plus } from 'lucide-react';
+import { toast } from 'sonner';
 import { PixelButton } from '@/components/ui/PixelButton';
 import { PixelBackButton } from '@/components/ui/PixelBackButton';
 import { TimelinePost } from '@/components/archive/TimelinePost';
@@ -224,10 +225,14 @@ export default function TeamArchive() {
   const handleFoldersSave = async (newFolders: typeof folders) => {
     setFolders(newFolders);
     if (selectedTeam && selectedTeam !== 'all') {
-      await supabase
+      const { error } = await supabase
         .from('teams')
         .update({ archive_folders: JSON.parse(JSON.stringify(newFolders)) } as any)
         .eq('id', selectedTeam);
+      if (error) {
+        console.error('Folder save error:', error);
+        toast.error('폴더 저장에 실패했습니다. DB 컬럼을 확인해주세요.');
+      }
     }
   };
 
