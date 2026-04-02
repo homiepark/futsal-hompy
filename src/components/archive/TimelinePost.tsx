@@ -348,36 +348,32 @@ export function TimelinePost({
             </button>
           </div>
 
-          {/* Image */}
-          <div className="flex-1 flex items-center justify-center px-4" onClick={(e) => e.stopPropagation()}>
+          {/* Image with swipe */}
+          <div
+            className="flex-1 flex items-center justify-center px-4 select-none"
+            onClick={(e) => e.stopPropagation()}
+            onTouchStart={(e) => {
+              const touch = e.touches[0];
+              (e.currentTarget as any)._touchStartX = touch.clientX;
+            }}
+            onTouchEnd={(e) => {
+              const startX = (e.currentTarget as any)._touchStartX;
+              if (startX === undefined) return;
+              const endX = e.changedTouches[0].clientX;
+              const diff = startX - endX;
+              if (diff > 50 && currentImageIndex < allImages.length - 1) {
+                setCurrentImageIndex(i => i + 1);
+              } else if (diff < -50 && currentImageIndex > 0) {
+                setCurrentImageIndex(i => i - 1);
+              }
+            }}
+          >
             <img
               src={allImages[currentImageIndex]}
               alt=""
-              className="max-w-full max-h-full object-contain"
+              className="max-w-full max-h-full object-contain pointer-events-none"
             />
           </div>
-
-          {/* Navigation */}
-          {allImages.length > 1 && (
-            <>
-              {currentImageIndex > 0 && (
-                <button
-                  onClick={(e) => { e.stopPropagation(); setCurrentImageIndex(i => i - 1); }}
-                  className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20"
-                >
-                  <ChevronLeft size={24} className="text-white" />
-                </button>
-              )}
-              {currentImageIndex < allImages.length - 1 && (
-                <button
-                  onClick={(e) => { e.stopPropagation(); setCurrentImageIndex(i => i + 1); }}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20"
-                >
-                  <ChevronRight size={24} className="text-white" />
-                </button>
-              )}
-            </>
-          )}
 
           {/* Dots */}
           {allImages.length > 1 && (
