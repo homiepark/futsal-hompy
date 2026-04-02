@@ -279,7 +279,7 @@ export default function Schedule() {
               return (
                 <button key={day.toISOString()} onClick={() => setSelectedDate(day)}
                   className={cn(
-                    'aspect-square flex items-center justify-center relative transition-all',
+                    'aspect-square flex flex-col items-center justify-center relative transition-all',
                     isSelected ? 'bg-primary text-primary-foreground border-2 border-primary-dark' : 'hover:bg-muted',
                     isToday(day) && !isSelected && 'border-2 border-accent',
                     dayOfWeek === 0 && !isSelected ? 'text-red-400' : '',
@@ -287,10 +287,11 @@ export default function Schedule() {
                   )}
                 >
                   <span className="font-pixel text-xs">{format(day, 'd')}</span>
-                  {/* Indicators - overlay top-right */}
-                  {hasMatch && <span className="absolute top-0 right-0 text-[10px] leading-none">⭐</span>}
-                  {hasTraining && <span className={cn('absolute bottom-0.5 right-0.5 w-2 h-2 rounded-full', isSelected ? 'bg-primary-foreground' : 'bg-red-400')}></span>}
-                  {hasPosts && <span className={cn('absolute bottom-0.5 left-0.5 w-1.5 h-1.5 rounded-full', isSelected ? 'bg-primary-foreground' : 'bg-accent')}></span>}
+                  <div className="flex items-center gap-0.5 mt-0.5 h-3">
+                    {hasMatch && <span className="text-[10px] leading-none drop-shadow-[0_0_3px_rgba(255,200,0,0.8)]">⭐</span>}
+                    {hasTraining && <span className={cn('w-2 h-2 rounded-full', isSelected ? 'bg-primary-foreground' : 'bg-red-400')}></span>}
+                    {hasPosts && <span className={cn('w-1.5 h-1.5 rounded-full', isSelected ? 'bg-primary-foreground' : 'bg-accent')}></span>}
+                  </div>
                 </button>
               );
             })}

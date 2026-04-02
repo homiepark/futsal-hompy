@@ -56,6 +56,7 @@ export default function TeamArchive() {
   const [loading, setLoading] = useState(true);
 
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isOwner, setIsOwner] = useState(false);
 
   // Fetch user's teams
   useEffect(() => {
@@ -77,6 +78,8 @@ export default function TeamArchive() {
         }
         const adminEntry = data.find((d: any) => d.role === 'admin' || d.role === 'owner');
         if (adminEntry) setIsAdmin(true);
+        const ownerEntry = data.find((d: any) => d.role === 'owner');
+        if (ownerEntry) setIsOwner(true);
       }
     }
     fetchTeams();
@@ -320,6 +323,7 @@ export default function TeamArchive() {
                   {...post}
                   isMock={false}
                   isAdmin={isAdmin}
+                  isOwner={isOwner}
                   onDelete={(postId) => setPosts(prev => prev.filter(p => p.id !== postId))}
                   folderName={folders.find(f => f.id === post.folderId)?.name}
                   folderEmoji={folders.find(f => f.id === post.folderId)?.emoji}

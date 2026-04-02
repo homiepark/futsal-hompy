@@ -25,6 +25,7 @@ interface TimelinePostProps {
   authorUserId?: string;
   authorAvatarUrl?: string;
   isAdmin?: boolean;
+  isOwner?: boolean;
   onDelete?: (postId: string) => void;
   folderName?: string;
   folderEmoji?: string;
@@ -48,6 +49,7 @@ export function TimelinePost({
   authorUserId,
   authorAvatarUrl,
   isAdmin = false,
+  isOwner = false,
   onDelete,
   folderName,
   folderEmoji,
@@ -72,7 +74,8 @@ export function TimelinePost({
   const [displayFolderEmoji, setDisplayFolderEmoji] = useState(folderEmoji);
 
   const isAuthor = !!user && !!authorUserId && user.id === authorUserId;
-  const canDelete = isAuthor || isAdmin;
+  const canEdit = isAuthor || isOwner;
+  const canDelete = isAuthor || isAdmin || isOwner;
 
   const handleDeletePost = async () => {
     if (!confirm('게시글을 삭제하시겠습니까?')) return;
@@ -161,7 +164,7 @@ export function TimelinePost({
           <p className="font-body text-xs text-muted-foreground">{date}</p>
         </div>
         <div className="flex items-center gap-1">
-          {isAuthor && !isEditing && (
+          {canEdit && !isEditing && (
             <button
               onClick={() => setIsEditing(true)}
               className="text-muted-foreground hover:text-foreground transition-colors p-1"
