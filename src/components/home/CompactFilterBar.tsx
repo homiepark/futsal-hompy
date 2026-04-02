@@ -125,63 +125,63 @@ export function CompactFilterBar({ filters, onFiltersChange }: CompactFilterBarP
           <button
             onClick={() => toggleFilter('level')}
             className={cn(
-              "flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 font-pixel text-[10px] border-3 transition-all",
+              "flex-1 flex items-center justify-center gap-1 px-2 py-2.5 font-pixel text-[10px] border-3 transition-all whitespace-nowrap min-w-0",
               expandedFilter === 'level' || filters.levels.length > 0
                 ? "bg-primary text-primary-foreground border-primary-dark"
                 : "bg-secondary text-secondary-foreground border-border-dark hover:border-primary"
             )}
             style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
           >
-            <Medal size={14} />
+            <Medal size={12} />
             레벨
             {filters.levels.length > 0 && (
-              <span className="px-1.5 py-0.5 bg-accent text-accent-foreground text-[8px]">
+              <span className="w-4 h-4 flex items-center justify-center bg-accent text-accent-foreground text-[8px] shrink-0">
                 {filters.levels.length}
               </span>
             )}
-            <ChevronDown size={12} className={cn(expandedFilter === 'level' && "rotate-180 transition-transform")} />
+            <ChevronDown size={10} className={cn("shrink-0", expandedFilter === 'level' && "rotate-180 transition-transform")} />
           </button>
 
           {/* Gender Filter */}
           <button
             onClick={() => toggleFilter('gender')}
             className={cn(
-              "flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 font-pixel text-[10px] border-3 transition-all",
+              "flex-1 flex items-center justify-center gap-1 px-2 py-2.5 font-pixel text-[10px] border-3 transition-all whitespace-nowrap min-w-0",
               expandedFilter === 'gender' || filters.genders.length > 0
                 ? "bg-primary text-primary-foreground border-primary-dark"
                 : "bg-secondary text-secondary-foreground border-border-dark hover:border-primary"
             )}
             style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
           >
-            <Users size={14} />
+            <Users size={12} />
             성별
             {filters.genders.length > 0 && (
-              <span className="px-1.5 py-0.5 bg-accent text-accent-foreground text-[8px]">
+              <span className="w-4 h-4 flex items-center justify-center bg-accent text-accent-foreground text-[8px] shrink-0">
                 {filters.genders.length}
               </span>
             )}
-            <ChevronDown size={12} className={cn(expandedFilter === 'gender' && "rotate-180 transition-transform")} />
+            <ChevronDown size={10} className={cn("shrink-0", expandedFilter === 'gender' && "rotate-180 transition-transform")} />
           </button>
 
           {/* Region Filter */}
           <button
             onClick={() => toggleFilter('region')}
             className={cn(
-              "flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 font-pixel text-[10px] border-3 transition-all",
+              "flex-1 flex items-center justify-center gap-1 px-2 py-2.5 font-pixel text-[10px] border-3 transition-all whitespace-nowrap min-w-0",
               expandedFilter === 'region' || filters.selectedRegions.length > 0
                 ? "bg-primary text-primary-foreground border-primary-dark"
                 : "bg-secondary text-secondary-foreground border-border-dark hover:border-primary"
             )}
             style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
           >
-            <MapPin size={14} />
+            <MapPin size={12} />
             지역
             {filters.selectedRegions.length > 0 && (
-              <span className="px-1.5 py-0.5 bg-accent text-accent-foreground text-[8px]">
+              <span className="w-4 h-4 flex items-center justify-center bg-accent text-accent-foreground text-[8px] shrink-0">
                 {filters.selectedRegions.length}
               </span>
             )}
-            <ChevronDown size={12} className={cn(expandedFilter === 'region' && "rotate-180 transition-transform")} />
+            <ChevronDown size={10} className={cn("shrink-0", expandedFilter === 'region' && "rotate-180 transition-transform")} />
           </button>
         </div>
 

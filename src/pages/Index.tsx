@@ -140,8 +140,21 @@ const Index = () => {
 
         if (error) throw error;
 
+        // Fetch member counts
+        const { data: membersData } = await supabase
+          .from('team_members')
+          .select('team_id');
+
+        const memberCounts: Record<string, number> = {};
+        if (membersData) {
+          for (const m of membersData) {
+            memberCounts[m.team_id] = (memberCounts[m.team_id] || 0) + 1;
+          }
+        }
+
         const teamsWithFavorites = (data || []).map(team => ({
           ...team,
+          memberCount: memberCounts[team.id] || 0,
           isFavorited: favorites.has(team.id),
         }));
 

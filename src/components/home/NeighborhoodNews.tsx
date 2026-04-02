@@ -16,7 +16,7 @@ interface NewsItem {
   teamEmblem: string;
   teamLevel: string;
   district: string;
-  type: 'photo' | 'intro' | 'match' | 'recruit';
+  type: 'post' | 'notice';
   content: string;
   tags: string[];
   updatedAt: string;
@@ -50,9 +50,10 @@ export function NeighborhoodNews({ userRegions, userId, isGuest = false, onGuest
       }
 
       try {
+        // 동네 팀 목록 가져오기
         const { data: teams, error } = await supabase
           .from('teams')
-          .select('id, name, emblem, level, district, region, banner_url, photo_url, introduction, updated_at')
+          .select('id, name, emblem, level, district, region')
           .order('updated_at', { ascending: false });
 
         if (error) throw error;
@@ -62,78 +63,39 @@ export function NeighborhoodNews({ userRegions, userId, isGuest = false, onGuest
         );
 
         const items: NewsItem[] = [];
-
-        matchingTeams.forEach(team => {
-          const baseTags = [`#${team.district}`];
-          
-          // Add photo news
-          if (team.banner_url || team.photo_url) {
-            items.push({
-              id: `photo-${team.id}`,
-              teamId: team.id,
-              teamName: team.name,
-              teamEmblem: team.emblem,
-              teamLevel: team.level,
-              district: team.district || '',
-              type: 'photo',
-              content: team.banner_url || team.photo_url || '',
-              tags: [...baseTags, '#새사진'],
-              updatedAt: team.updated_at,
-            });
-          }
-
-          // Add intro news
-          if (team.introduction) {
-            items.push({
-              id: `intro-${team.id}`,
-              teamId: team.id,
-              teamName: team.name,
-              teamEmblem: team.emblem,
-              teamLevel: team.level,
-              district: team.district || '',
-              type: 'intro',
-              content: team.introduction,
-              tags: [...baseTags, '#팀소개'],
-              updatedAt: team.updated_at,
-            });
-          }
-
-        });
-
-        // Fetch real match posts for matching teams
         const matchingTeamIds = matchingTeams.map(t => t.id);
+
         if (matchingTeamIds.length > 0) {
-          const { data: matchPosts } = await supabase
-            .from('match_posts')
-            .select('id, team_id, location_name, match_date, status, created_at')
+          const teamMap = new Map(matchingTeams.map(t => [t.id, t]));
+
+          // 새 게시글 (archive_posts)
+          const { data: posts } = await supabase
+            .from('archive_posts')
+            .select('id, team_id, content, image_url, created_at')
             .in('team_id', matchingTeamIds)
             .order('created_at', { ascending: false })
             .limit(10);
 
-          if (matchPosts) {
-            const teamMap = new Map(matchingTeams.map(t => [t.id, t]));
-            matchPosts.forEach(post => {
+          if (posts) {
+            posts.forEach(post => {
               const team = teamMap.get(post.team_id);
               if (!team) return;
-              const baseTags = [`#${team.district}`];
               items.push({
-                id: `match-${post.id}`,
+                id: `post-${post.id}`,
                 teamId: team.id,
                 teamName: team.name,
                 teamEmblem: team.emblem,
                 teamLevel: team.level,
                 district: team.district || '',
-                type: 'match',
-                content: post.status === 'matched'
-                  ? `LV.${team.level} 매치 성사!`
-                  : `${post.location_name}에서 매치 상대 모집중`,
-                tags: [...baseTags, post.status === 'matched' ? `#LV${team.level}_매치성사` : '#매치모집'],
+                type: 'post',
+                content: post.image_url || (post.content ? post.content.slice(0, 50) : '새 게시글'),
+                tags: [],
                 updatedAt: post.created_at,
               });
             });
           }
 
-          // Fetch real team notices for matching teams
+          // 팀 공지 (team_notices)
           const { data: notices } = await supabase
             .from('team_notices')
             .select('id, team_id, content, created_at')
@@ -143,11 +105,9 @@ export function NeighborhoodNews({ userRegions, userId, isGuest = false, onGuest
             .limit(10);
 
           if (notices) {
-            const teamMap = new Map(matchingTeams.map(t => [t.id, t]));
             notices.forEach(notice => {
               const team = teamMap.get(notice.team_id);
               if (!team) return;
-              const baseTags = [`#${team.district}`];
               items.push({
                 id: `notice-${notice.id}`,
                 teamId: team.id,
@@ -155,9 +115,9 @@ export function NeighborhoodNews({ userRegions, userId, isGuest = false, onGuest
                 teamEmblem: team.emblem,
                 teamLevel: team.level,
                 district: team.district || '',
-                type: 'recruit',
+                type: 'notice',
                 content: notice.content,
-                tags: [...baseTags, '#팀공지'],
+                tags: [],
                 updatedAt: notice.created_at,
               });
             });
@@ -199,19 +159,15 @@ export function NeighborhoodNews({ userRegions, userId, isGuest = false, onGuest
 
   const getTypeLabel = (type: NewsItem['type']) => {
     switch (type) {
-      case 'photo': return '📸 새 사진';
-      case 'intro': return '📝 팀 소개';
-      case 'match': return '⚔️ 매치';
-      case 'recruit': return '📢 공지';
+      case 'post': return '📸 새 게시글';
+      case 'notice': return '📢 공지';
     }
   };
 
   const getTypeBg = (type: NewsItem['type']) => {
     switch (type) {
-      case 'photo': return 'bg-primary text-primary-foreground border-primary-dark';
-      case 'intro': return 'bg-accent text-accent-foreground border-accent-dark';
-      case 'match': return 'bg-green-600 text-white border-green-700';
-      case 'recruit': return 'bg-purple-600 text-white border-purple-700';
+      case 'post': return 'bg-primary text-primary-foreground border-primary-dark';
+      case 'notice': return 'bg-accent text-accent-foreground border-accent-dark';
     }
   };
 
@@ -324,7 +280,7 @@ export function NeighborhoodNews({ userRegions, userId, isGuest = false, onGuest
               >
                 {/* Content Area */}
                 <div className="relative h-20 overflow-hidden bg-muted">
-                  {item.type === 'photo' ? (
+                  {item.type === 'post' && item.content.startsWith('http') ? (
                     <img
                       src={item.content}
                       alt={`${item.teamName} 소식`}
