@@ -240,7 +240,7 @@ export default function Schedule() {
             <span className="font-pixel text-[10px] text-muted-foreground">매치/자체전</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-red-400 inline-block"></span>
+            <span className="w-2.5 h-2.5 rounded-full bg-lime-400 inline-block"></span>
             <span className="font-pixel text-[10px] text-muted-foreground">훈련</span>
           </div>
           <div className="flex items-center gap-1.5">
@@ -289,7 +289,7 @@ export default function Schedule() {
                   <span className="font-pixel text-xs">{format(day, 'd')}</span>
                   <div className="flex items-center gap-0.5 mt-0.5 h-3">
                     {hasMatch && <span className="text-[10px] leading-none drop-shadow-[0_0_3px_rgba(255,200,0,0.8)]">⭐</span>}
-                    {hasTraining && <span className={cn('w-2 h-2 rounded-full', isSelected ? 'bg-primary-foreground' : 'bg-red-400')}></span>}
+                    {hasTraining && <span className={cn('w-2 h-2 rounded-full', isSelected ? 'bg-primary-foreground' : 'bg-lime-400')}></span>}
                     {hasPosts && <span className={cn('w-1.5 h-1.5 rounded-full', isSelected ? 'bg-primary-foreground' : 'bg-accent')}></span>}
                   </div>
                 </button>
@@ -314,7 +314,7 @@ export default function Schedule() {
                     style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
                   >
                     <div className={cn('w-10 h-10 flex items-center justify-center border-2 shrink-0 text-lg',
-                      s.eventType === 'match' ? 'bg-yellow-100 border-yellow-400' : 'bg-red-50 border-red-300'
+                      s.eventType === 'match' ? 'bg-yellow-100 border-yellow-400' : 'bg-lime-50 border-lime-400'
                     )}>
                       {s.eventType === 'match' ? '⭐' : '🏃'}
                     </div>
@@ -324,7 +324,7 @@ export default function Schedule() {
                         {s.time && <span>⏰ {s.time}</span>}
                         {s.location && <span>📍 {s.location}</span>}
                         <span className={cn('px-1 py-0.5 border text-[7px]',
-                          s.eventType === 'match' ? 'bg-yellow-100 border-yellow-400 text-yellow-700' : 'bg-red-50 border-red-300 text-red-600'
+                          s.eventType === 'match' ? 'bg-yellow-100 border-yellow-400 text-yellow-700' : 'bg-lime-50 border-lime-400 text-lime-600'
                         )}>
                           {s.eventType === 'match' ? '매치/자체전' : '훈련'}
                         </span>
@@ -402,7 +402,7 @@ export default function Schedule() {
                   >⭐ 매치/자체전</button>
                   <button type="button" onClick={() => setNewEventType('training')}
                     className={cn('flex-1 py-2 border-3 font-pixel text-[9px] flex items-center justify-center gap-1 transition-all',
-                      newEventType === 'training' ? 'bg-red-50 border-red-300 text-red-600' : 'bg-muted border-border-dark text-foreground hover:border-red-300'
+                      newEventType === 'training' ? 'bg-lime-50 border-lime-400 text-lime-600' : 'bg-muted border-border-dark text-foreground hover:border-lime-400'
                     )} style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow) / 0.5)' }}
                   >🏃 훈련</button>
                 </div>
