@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { X, Search, User, Send } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PixelButton } from '@/components/ui/PixelButton';
@@ -80,6 +80,15 @@ export function PlayerInviteModal({ isOpen, onClose, teamId, teamName }: PlayerI
     loadInitial();
   }, [isOpen, teamId]);
 
+  // 닉네임 입력 시 자동 검색 (디바운스)
+  useEffect(() => {
+    if (!isOpen) return;
+    const timer = setTimeout(() => {
+      handleSearchRef.current();
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery, isOpen]);
+
   const handleSearch = async (overridePosition?: string) => {
     const pos = overridePosition ?? positionFilter;
 
@@ -111,6 +120,10 @@ export function PlayerInviteModal({ isOpen, onClose, teamId, teamName }: PlayerI
     }
   };
 
+  // useEffect에서 최신 handleSearch를 참조하기 위한 ref
+  const handleSearchRef = useRef(handleSearch);
+  handleSearchRef.current = handleSearch;
+
   const handlePositionFilter = (key: string) => {
     setPositionFilter(key);
     handleSearch(key);
@@ -132,20 +145,6 @@ export function PlayerInviteModal({ isOpen, onClose, teamId, teamName }: PlayerI
         return;
       }
 
-      // Check if already invited (pending only)
-      const { data: existing } = await supabase
-        .from('team_invitations')
-        .select('id')
-        .eq('team_id', teamId)
-        .eq('invited_user_id', selectedUser.user_id)
-        .eq('status', 'pending')
-        .maybeSingle();
-
-      if (existing) {
-        toast.error('이미 초대한 선수입니다');
-        return;
-      }
-
       // Check if already a member
       const { data: existingMember } = await supabase
         .from('team_members')
@@ -156,6 +155,33 @@ export function PlayerInviteModal({ isOpen, onClose, teamId, teamName }: PlayerI
 
       if (existingMember) {
         toast.error('이미 팀원입니다');
+        return;
+      }
+
+      // 해당 선수에게 보낸 총 초대 횟수 확인 (최대 3번)
+      const MAX_INVITES = 3;
+      const { count: totalInviteCount } = await supabase
+        .from('team_invitations')
+        .select('id', { count: 'exact', head: true })
+        .eq('team_id', teamId)
+        .eq('invited_user_id', selectedUser.user_id);
+
+      if ((totalInviteCount || 0) >= MAX_INVITES) {
+        toast.error(`이 선수에게는 최대 ${MAX_INVITES}번까지만 초대할 수 있습니다`);
+        return;
+      }
+
+      // 현재 pending 중인 초대가 있으면 차단
+      const { data: pendingInvite } = await supabase
+        .from('team_invitations')
+        .select('id')
+        .eq('team_id', teamId)
+        .eq('invited_user_id', selectedUser.user_id)
+        .eq('status', 'pending')
+        .maybeSingle();
+
+      if (pendingInvite) {
+        toast.error('아직 응답하지 않은 초대가 있습니다');
         return;
       }
 
@@ -171,7 +197,8 @@ export function PlayerInviteModal({ isOpen, onClose, teamId, teamName }: PlayerI
 
       if (error) throw error;
 
-      toast.success(`${selectedUser.nickname}님에게 초대를 보냈습니다!`);
+      const remaining = MAX_INVITES - (totalInviteCount || 0) - 1;
+      toast.success(`${selectedUser.nickname}님에게 초대를 보냈습니다!${remaining > 0 ? ` (남은 초대: ${remaining}회)` : ' (마지막 초대)'}`);
       onClose();
       resetState();
     } catch (error) {
