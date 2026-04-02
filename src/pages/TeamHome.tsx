@@ -316,9 +316,9 @@ export default function TeamHome() {
 
   // 새 일정 팝업 체크
   useEffect(() => {
-    if (!teamId || !user) return;
+    if (!teamId || !currentUserId) return;
     const checkNewSchedule = async () => {
-      const seenKey = `schedule_seen_${teamId}_${user.id}`;
+      const seenKey = `schedule_seen_${teamId}_${currentUserId}`;
       const lastSeen = localStorage.getItem(seenKey);
       const { data } = await supabase
         .from('team_schedules')
@@ -343,7 +343,7 @@ export default function TeamHome() {
       }
     };
     checkNewSchedule();
-  }, [teamId, user]);
+  }, [teamId, currentUserId]);
 
   const handleBack = () => {
     clearActiveTeam();
