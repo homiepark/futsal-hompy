@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, Image, FileText, Users, Trophy } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -30,10 +30,10 @@ interface NeighborhoodNewsProps {
 }
 
 const levelColors: Record<string, string> = {
-  'S': 'bg-accent text-accent-foreground border-accent-dark',
-  'A': 'bg-primary text-primary-foreground border-primary-dark',
-  'B': 'bg-primary/70 text-primary-foreground border-primary-dark/70',
-  'C': 'bg-primary/50 text-primary-foreground border-primary-dark/50',
+  '1': 'bg-[hsl(var(--level-1))] text-white border-[hsl(var(--level-1))]',
+  '2': 'bg-[hsl(var(--level-2))] text-white border-[hsl(var(--level-2))]',
+  '3': 'bg-[hsl(var(--level-3))] text-white border-[hsl(var(--level-3))]',
+  '4': 'bg-[hsl(var(--level-4))] text-white border-[hsl(var(--level-4))]',
 };
 
 export function NeighborhoodNews({ userRegions, userId, isGuest = false, onGuestClick }: NeighborhoodNewsProps) {
@@ -125,9 +125,9 @@ export function NeighborhoodNews({ userRegions, userId, isGuest = false, onGuest
                 district: team.district || '',
                 type: 'match',
                 content: post.status === 'matched'
-                  ? `${team.level}급 매치 성사!`
+                  ? `LV.${team.level} 매치 성사!`
                   : `${post.location_name}에서 매치 상대 모집중`,
-                tags: [...baseTags, post.status === 'matched' ? `#${team.level}급_매치성사` : '#매치모집'],
+                tags: [...baseTags, post.status === 'matched' ? `#LV${team.level}_매치성사` : '#매치모집'],
                 updatedAt: post.created_at,
               });
             });
@@ -197,21 +197,21 @@ export function NeighborhoodNews({ userRegions, userId, isGuest = false, onGuest
     navigate(`/team/${teamId}`);
   };
 
-  const getTypeIcon = (type: NewsItem['type']) => {
+  const getTypeLabel = (type: NewsItem['type']) => {
     switch (type) {
-      case 'photo': return <Image size={10} />;
-      case 'intro': return <FileText size={10} />;
-      case 'match': return <Trophy size={10} />;
-      case 'recruit': return <Users size={10} />;
+      case 'photo': return '📸 새 사진';
+      case 'intro': return '📝 팀 소개';
+      case 'match': return '⚔️ 매치';
+      case 'recruit': return '📢 공지';
     }
   };
 
   const getTypeBg = (type: NewsItem['type']) => {
     switch (type) {
-      case 'photo': return 'bg-primary/80';
-      case 'intro': return 'bg-accent/80';
-      case 'match': return 'bg-green-500/80';
-      case 'recruit': return 'bg-purple-500/80';
+      case 'photo': return 'bg-primary text-primary-foreground border-primary-dark';
+      case 'intro': return 'bg-accent text-accent-foreground border-accent-dark';
+      case 'match': return 'bg-green-600 text-white border-green-700';
+      case 'recruit': return 'bg-purple-600 text-white border-purple-700';
     }
   };
 
@@ -325,8 +325,8 @@ export function NeighborhoodNews({ userRegions, userId, isGuest = false, onGuest
                 {/* Content Area */}
                 <div className="relative h-20 overflow-hidden bg-muted">
                   {item.type === 'photo' ? (
-                    <img 
-                      src={item.content} 
+                    <img
+                      src={item.content}
                       alt={`${item.teamName} 소식`}
                       className="w-full h-full object-cover"
                       style={{ imageRendering: 'auto' }}
@@ -336,40 +336,18 @@ export function NeighborhoodNews({ userRegions, userId, isGuest = false, onGuest
                     />
                   ) : (
                     <div className="p-2 h-full flex items-center justify-center bg-gradient-to-br from-secondary to-muted">
-                      <p className="font-pixel text-[10px] text-foreground text-center line-clamp-3 leading-relaxed">
+                      <p className="font-pixel text-[8px] text-foreground text-center line-clamp-3 leading-relaxed">
                         {item.content}
                       </p>
                     </div>
                   )}
 
-                  {/* Type Badge */}
-                  <div className={cn(
-                    "absolute top-1 right-1 w-5 h-5 flex items-center justify-center border border-border-dark text-white",
-                    getTypeBg(item.type)
-                  )}>
-                    {getTypeIcon(item.type)}
-                  </div>
-
-                  {/* Level Badge */}
+                  {/* Type Label */}
                   <div className={cn(
                     "absolute top-1 left-1 px-1.5 py-0.5 font-pixel text-[8px] border",
-                    levelColors[item.teamLevel]
+                    getTypeBg(item.type)
                   )}>
-                    {item.teamLevel}급
-                  </div>
-                </div>
-
-                {/* Tags */}
-                <div className="px-2 py-1.5 bg-muted/50 border-t-2 border-border-dark overflow-hidden">
-                  <div className="flex gap-1 overflow-x-auto scrollbar-hide">
-                    {item.tags.slice(0, 2).map((tag, i) => (
-                      <span 
-                        key={i}
-                        className="flex-shrink-0 px-1.5 py-0.5 bg-primary/20 text-primary font-pixel text-[8px] border border-primary/40"
-                      >
-                        {tag}
-                      </span>
-                    ))}
+                    {getTypeLabel(item.type)}
                   </div>
                 </div>
 
@@ -377,9 +355,17 @@ export function NeighborhoodNews({ userRegions, userId, isGuest = false, onGuest
                 <div className="p-2 border-t-2 border-border-dark bg-card">
                   <div className="flex items-center gap-2">
                     <span className="text-base flex-shrink-0">{item.teamEmblem}</span>
-                    <p className="font-pixel text-[10px] text-foreground truncate flex-1">
-                      {item.teamName}
-                    </p>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-pixel text-[10px] text-foreground truncate">{item.teamName}</p>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <span className={`px-1 py-0.5 font-pixel text-[8px] ${levelColors[item.teamLevel] || 'bg-muted text-muted-foreground'}`}>
+                          LV.{item.teamLevel}
+                        </span>
+                        <span className="font-pixel text-[8px] text-muted-foreground">
+                          {item.district}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </button>

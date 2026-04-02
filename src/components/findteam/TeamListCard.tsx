@@ -71,8 +71,8 @@ export function TeamListCard({
               initialFavorited={isFavorited}
               onToggle={onFavoriteToggle}
             />
-            <h3 className="font-body font-bold text-foreground truncate">{name}</h3>
-            <div className={cn('px-1.5 py-0.5 border font-pixel text-[7px] shrink-0',
+            <h3 className="font-pixel text-[10px] text-foreground truncate">{name}</h3>
+            <div className={cn('px-1.5 py-0.5 border font-pixel text-[8px] shrink-0',
               level === '4' ? 'bg-[hsl(var(--level-4))] text-white border-[hsl(var(--level-4))]' :
               level === '3' ? 'bg-[hsl(var(--level-3))] text-white border-[hsl(var(--level-3))]' :
               level === '2' ? 'bg-[hsl(var(--level-2))] text-white border-[hsl(var(--level-2))]' :
@@ -83,14 +83,14 @@ export function TeamListCard({
           </div>
 
           {/* Region & Training */}
-          <div className="mt-1.5 flex items-center gap-2 text-sm text-muted-foreground font-body">
+          <div className="mt-1.5 flex items-center gap-2 font-pixel text-[8px] text-muted-foreground">
             <span>📍 {region}</span>
             <span>•</span>
             <span>⏰ {trainingTime}</span>
           </div>
 
           {/* Member Count */}
-          <div className="mt-0.5 text-xs text-muted-foreground font-body">
+          <div className="mt-0.5 font-pixel text-[8px] text-muted-foreground">
             👥 {memberCount}명 활동중
           </div>
         </div>
