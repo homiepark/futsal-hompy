@@ -815,7 +815,7 @@ export default function TeamHome() {
                 className="w-full pixel-input h-20 resize-none"
                 maxLength={100}
               />
-              <p className="font-pixel text-[6px] text-muted-foreground text-right">{noticeText.length}/100</p>
+              <p className="font-pixel text-[8px] text-muted-foreground text-right">{noticeText.length}/100</p>
               <button
                 onClick={async () => {
                   if (!noticeText.trim()) return;
@@ -860,9 +860,9 @@ export default function TeamHome() {
                         <span className="font-pixel text-[9px] text-foreground">{level.name}</span>
                         {teamData.level === level.value && <span className="font-pixel text-[7px] text-primary">← 우리 팀</span>}
                       </div>
-                      <p className="font-pixel text-[7px] text-muted-foreground mt-0.5">{level.desc}</p>
-                      <p className="font-pixel text-[6px] text-muted-foreground/70 mt-0.5">{level.characteristic}</p>
-                      <p className="font-pixel text-[6px] text-muted-foreground/70">{level.operatingStyle}</p>
+                      <p className="font-pixel text-[8px] text-muted-foreground mt-0.5">{level.desc}</p>
+                      <p className="font-pixel text-[8px] text-muted-foreground/70 mt-0.5">{level.characteristic}</p>
+                      <p className="font-pixel text-[8px] text-muted-foreground/70">{level.operatingStyle}</p>
                     </div>
                   </div>
                 );

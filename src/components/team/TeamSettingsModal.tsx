@@ -220,7 +220,7 @@ export function TeamSettingsModal({
                   <span className="text-xl">{opt.emoji}</span>
                   <div>
                     <span className="font-pixel text-[9px] block">LV.{opt.lv} {opt.name}</span>
-                    <span className="font-pixel text-[6px] text-muted-foreground">{opt.desc}</span>
+                    <span className="font-pixel text-[8px] text-muted-foreground">{opt.desc}</span>
                   </div>
                 </button>
               ))}
@@ -291,7 +291,7 @@ export function TeamSettingsModal({
               </button>
             </div>
 
-            <p className="font-pixel text-[6px] text-muted-foreground mt-1.5">
+            <p className="font-pixel text-[8px] text-muted-foreground mt-1.5">
               💡 구장 이름만 입력해도 OK! 주소는 선택사항이에요
             </p>
           </div>
@@ -398,7 +398,7 @@ export function TeamSettingsModal({
               className="w-full pixel-input h-20 resize-none font-pixel text-[8px]"
               maxLength={500}
             />
-            <p className="font-pixel text-[6px] text-muted-foreground text-right">{introduction.length}/500</p>
+            <p className="font-pixel text-[8px] text-muted-foreground text-right">{introduction.length}/500</p>
           </div>
 
           {/* SNS 링크 */}

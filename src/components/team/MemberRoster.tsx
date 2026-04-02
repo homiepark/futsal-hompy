@@ -172,13 +172,13 @@ export function MemberRoster({ members, teamId }: MemberRosterProps) {
                           {member.nickname}
                         </span>
                         <div className="flex items-center gap-1">
-                          <span className="font-pixel text-[7px] text-muted-foreground leading-tight">
+                          <span className="font-pixel text-[8px] text-muted-foreground leading-tight">
                             {member.yearsOfExperience}년{member.monthsOfExperience ? `${member.monthsOfExperience}개월` : ''}
                           </span>
                           {(member.positions?.length ?? 0) > 1 && (
                             <div className="flex gap-0.5">
                               {member.positions?.filter(p => p !== position).map(p => (
-                                <span key={p} className="font-pixel text-[6px] px-1 bg-primary/20 border border-primary text-primary">
+                                <span key={p} className="font-pixel text-[7px] px-1 bg-primary/20 border border-primary text-primary">
                                   {positionInfo[p as keyof typeof positionInfo]?.emoji}
                                 </span>
                               ))}

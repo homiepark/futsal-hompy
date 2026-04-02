@@ -49,10 +49,10 @@ export function LatestArchive({ teamId, items }: LatestArchiveProps) {
                 </>
               ) : (
                 <div className="w-full h-full bg-card p-1.5 flex flex-col justify-between">
-                  <p className="font-body text-[7px] text-foreground leading-tight line-clamp-4 overflow-hidden">
+                  <p className="font-body text-[8px] text-foreground leading-tight line-clamp-4 overflow-hidden">
                     {item.content || ''}
                   </p>
-                  <span className="font-pixel text-[5px] text-muted-foreground">📝</span>
+                  <span className="font-pixel text-[7px] text-muted-foreground">📝</span>
                 </div>
               )}
             </Link>

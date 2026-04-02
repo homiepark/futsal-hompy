@@ -127,7 +127,7 @@ export function TeamLevelBadge({
           >
             <Clock size={12} className="mx-auto text-primary mb-1" />
             <span className="font-pixel text-[10px] text-foreground block">{avgExperience.toFixed(1)}년</span>
-            <span className="font-pixel text-[6px] text-muted-foreground">평균 경력</span>
+            <span className="font-pixel text-[8px] text-muted-foreground">평균 경력</span>
           </div>
         )}
 
@@ -137,7 +137,7 @@ export function TeamLevelBadge({
         >
           <Swords size={12} className="mx-auto text-accent mb-1" />
           <span className="font-pixel text-[10px] text-foreground block">{matchCount}</span>
-          <span className="font-pixel text-[6px] text-muted-foreground">총 매치</span>
+          <span className="font-pixel text-[8px] text-muted-foreground">총 매치</span>
         </div>
 
         {/* Manner Score */}
@@ -147,7 +147,7 @@ export function TeamLevelBadge({
           >
             <Star size={12} className="mx-auto text-accent mb-1" />
             <span className="font-pixel text-[10px] text-foreground block">{mannerScore.toFixed(1)}</span>
-            <span className="font-pixel text-[6px] text-muted-foreground">매너 점수</span>
+            <span className="font-pixel text-[8px] text-muted-foreground">매너 점수</span>
           </div>
         )}
       </div>

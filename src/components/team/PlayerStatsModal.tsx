@@ -18,8 +18,11 @@ interface PlayerStats {
   yearsOfExperience: number;
   monthsOfExperience?: number;
   isAdmin?: boolean;
+  role?: string;
   joinDate?: string;
   bio?: string;
+  staffCareerYears?: number | null;
+  staffCareerNote?: string | null;
 }
 
 interface PlayerStatsModalProps {
@@ -181,6 +184,28 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
             </div>
           </div>
 
+          {/* Staff Role Badge (감독/코치) */}
+          {(player.role === 'manager' || player.role === 'coach') && (
+            <div className="bg-primary/10 border-2 border-primary/30 p-3">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-sm">{player.role === 'manager' ? '👔' : '📋'}</span>
+                <span className="font-pixel text-[10px] text-primary">
+                  {player.role === 'manager' ? '감독' : '코치'}
+                </span>
+              </div>
+              <div className="font-pixel text-[9px] text-muted-foreground">
+                {player.staffCareerYears ? (
+                  <span>지도 경력 {player.staffCareerYears}년</span>
+                ) : (
+                  <span>지도 경력 미입력</span>
+                )}
+                {player.staffCareerNote && (
+                  <span className="ml-1 text-foreground/70">· {player.staffCareerNote}</span>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Personal Bio Section */}
           <div className="kairo-section">
             <div className="flex items-center justify-between mb-1.5">
@@ -240,7 +265,7 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
             <div className="kairo-section flex items-center gap-2">
               <Calendar size={14} className="text-primary flex-shrink-0" />
               <div className="min-w-0">
-                <p className="font-pixel text-[7px] text-muted-foreground uppercase">가입일</p>
+                <p className="font-pixel text-[8px] text-muted-foreground uppercase">가입일</p>
                 <p className="font-pixel text-[9px] text-foreground truncate">
                   {player.joinDate || '-'}
                 </p>
@@ -251,7 +276,7 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
             <div className="kairo-section flex items-center gap-2">
               <Trophy size={14} className="text-accent flex-shrink-0" />
               <div className="min-w-0">
-                <p className="font-pixel text-[7px] text-muted-foreground uppercase">경력</p>
+                <p className="font-pixel text-[8px] text-muted-foreground uppercase">경력</p>
                 <p className="font-pixel text-[9px] text-foreground">
                   {expStr}
                 </p>
