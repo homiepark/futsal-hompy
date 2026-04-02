@@ -490,6 +490,27 @@ export default function Messages() {
     }
   }, [activeTab, user, isAdmin, fetchConversations, fetchInvitations, fetchJoinRequests]);
 
+  // Always fetch invitation count for badge + realtime subscription
+  useEffect(() => {
+    if (!user) return;
+
+    fetchInvitations();
+
+    const invChannel = supabase
+      .channel('messages-page-invitations')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'team_invitations',
+        filter: `invited_user_id=eq.${user.id}`,
+      }, () => {
+        fetchInvitations();
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(invChannel); };
+  }, [user, fetchInvitations]);
+
   // Handle approve join request
   const handleApproveRequest = async (requestId: string) => {
     const request = joinRequests.find(r => r.id === requestId);

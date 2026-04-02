@@ -2,6 +2,8 @@ import { Bell, Settings } from 'lucide-react';
 import { PixelIcon } from '@/components/ui/PixelIcon';
 import { MailIcon } from '@/components/layout/MailIcon';
 import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 function GoalIcon() {
   return (
@@ -20,17 +22,48 @@ function GoalIcon() {
 }
 
 export function Header() {
-  // Mock state - in real app would come from context/API
-  const [unreadCount, setUnreadCount] = useState(3);
-  const [hasBroadcast, setHasBroadcast] = useState(true); // Demo: true to show blinking
+  const { user } = useAuth();
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [hasBroadcast, setHasBroadcast] = useState(false);
 
-  // Demo: Stop blinking after 5 seconds
   useEffect(() => {
-    if (hasBroadcast) {
-      const timer = setTimeout(() => setHasBroadcast(false), 10000);
-      return () => clearTimeout(timer);
-    }
-  }, [hasBroadcast]);
+    if (!user) { setUnreadCount(0); setHasBroadcast(false); return; }
+
+    const fetchCounts = async () => {
+      const { count: msgCount } = await supabase
+        .from('messages')
+        .select('id', { count: 'exact', head: true })
+        .eq('receiver_id', user.id)
+        .eq('is_read', false);
+
+      const { count: invCount } = await supabase
+        .from('team_invitations')
+        .select('id', { count: 'exact', head: true })
+        .eq('invited_user_id', user.id)
+        .eq('status', 'pending');
+
+      const total = (msgCount || 0) + (invCount || 0);
+      setUnreadCount(total);
+      setHasBroadcast(total > 0);
+    };
+
+    fetchCounts();
+
+    const msgChannel = supabase
+      .channel('header-messages')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, () => fetchCounts())
+      .subscribe();
+
+    const invChannel = supabase
+      .channel('header-invitations')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'team_invitations', filter: `invited_user_id=eq.${user.id}` }, () => fetchCounts())
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(msgChannel);
+      supabase.removeChannel(invChannel);
+    };
+  }, [user]);
 
   return (
     <header className="sticky top-0 z-40 bg-card border-b-4 border-border-dark shadow-pixel">
