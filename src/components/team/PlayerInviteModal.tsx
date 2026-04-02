@@ -47,18 +47,30 @@ export function PlayerInviteModal({ isOpen, onClose, teamId, teamName }: PlayerI
   const [loading, setLoading] = useState(false);
   const [searching, setSearching] = useState(false);
 
-  // 모달 열릴 때 전체 유저 로드
+  // 이미 팀원인 유저 ID 목록
+  const [teamMemberIds, setTeamMemberIds] = useState<Set<string>>(new Set());
+
+  // 모달 열릴 때 팀원 목록 + 전체 유저 로드
   useEffect(() => {
     if (!isOpen) return;
     const loadInitial = async () => {
       setSearching(true);
       try {
+        // 현재 팀원 목록 가져오기
+        const { data: members } = await supabase
+          .from('team_members')
+          .select('user_id')
+          .eq('team_id', teamId);
+        const memberIds = new Set((members || []).map(m => m.user_id));
+        setTeamMemberIds(memberIds);
+
         const { data, error } = await supabase
           .from('profiles')
           .select('id, user_id, nickname, avatar_url, years_of_experience, preferred_position')
-          .limit(20);
+          .limit(50);
         if (error) throw error;
-        setSearchResults(data || []);
+        // 이미 팀원인 유저 제외
+        setSearchResults((data || []).filter(u => !memberIds.has(u.user_id)));
       } catch (e) {
         console.error('Initial load error:', e);
       } finally {
@@ -66,7 +78,7 @@ export function PlayerInviteModal({ isOpen, onClose, teamId, teamName }: PlayerI
       }
     };
     loadInitial();
-  }, [isOpen]);
+  }, [isOpen, teamId]);
 
   const handleSearch = async (overridePosition?: string) => {
     const pos = overridePosition ?? positionFilter;
@@ -76,7 +88,7 @@ export function PlayerInviteModal({ isOpen, onClose, teamId, teamName }: PlayerI
       let query = supabase
         .from('profiles')
         .select('id, user_id, nickname, avatar_url, years_of_experience, preferred_position')
-        .limit(20);
+        .limit(50);
 
       if (searchQuery.trim()) {
         query = query.ilike('nickname', `%${searchQuery.trim()}%`);
@@ -89,7 +101,8 @@ export function PlayerInviteModal({ isOpen, onClose, teamId, teamName }: PlayerI
       const { data, error } = await query;
 
       if (error) throw error;
-      setSearchResults(data || []);
+      // 이미 팀원인 유저 제외
+      setSearchResults((data || []).filter(u => !teamMemberIds.has(u.user_id)));
     } catch (error) {
       console.error('Search error:', error);
       toast.error('검색 중 오류가 발생했습니다');
@@ -119,14 +132,14 @@ export function PlayerInviteModal({ isOpen, onClose, teamId, teamName }: PlayerI
         return;
       }
 
-      // Check if already invited
+      // Check if already invited (pending only)
       const { data: existing } = await supabase
         .from('team_invitations')
         .select('id')
         .eq('team_id', teamId)
         .eq('invited_user_id', selectedUser.user_id)
         .eq('status', 'pending')
-        .single();
+        .maybeSingle();
 
       if (existing) {
         toast.error('이미 초대한 선수입니다');
@@ -139,7 +152,7 @@ export function PlayerInviteModal({ isOpen, onClose, teamId, teamName }: PlayerI
         .select('id')
         .eq('team_id', teamId)
         .eq('user_id', selectedUser.user_id)
-        .single();
+        .maybeSingle();
 
       if (existingMember) {
         toast.error('이미 팀원입니다');
