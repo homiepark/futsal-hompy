@@ -193,7 +193,7 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
                   {player.role === 'manager' ? '감독' : '코치'}
                 </span>
               </div>
-              <div className="font-pixel text-[9px] text-muted-foreground">
+              <div className="font-pixel text-[11px] text-muted-foreground">
                 {player.staffCareerYears ? (
                   <span>지도 경력 {player.staffCareerYears}년</span>
                 ) : (
