@@ -194,7 +194,7 @@ export function Guestbook({ teamId }: GuestbookProps) {
         {/* Message Input */}
         <div className="flex gap-1.5 mb-2">
           <input
-            className="flex-1 px-2 py-1.5 bg-input border-2 border-border-dark font-pixel text-[9px] placeholder:text-muted-foreground focus:outline-none focus:border-primary"
+            className="flex-1 px-2 py-1.5 bg-input border-2 border-border-dark font-pixel text-[11px] placeholder:text-muted-foreground focus:outline-none focus:border-primary"
             placeholder={user ? '메시지를 남겨주세요...' : '로그인 후 작성 가능'}
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
@@ -234,9 +234,9 @@ export function Guestbook({ teamId }: GuestbookProps) {
                 style={{ boxShadow: '1px 1px 0 hsl(var(--pixel-shadow) / 0.4)' }}
               >
                 <div className="flex items-center justify-between mb-0.5">
-                  <span className="font-pixel text-[8px] text-primary">{entry.author}</span>
+                  <span className="font-pixel text-[10px] text-primary">{entry.author}</span>
                   <div className="flex items-center gap-1">
-                    <span className="font-pixel text-[7px] text-muted-foreground">{entry.date}</span>
+                    <span className="font-pixel text-[9px] text-muted-foreground">{entry.date}</span>
                     {user?.id === entry.authorUserId && (
                       <>
                         <button
@@ -260,7 +260,7 @@ export function Guestbook({ teamId }: GuestbookProps) {
                     <input
                       value={editText}
                       onChange={(e) => setEditText(e.target.value)}
-                      className="flex-1 px-1.5 py-1 bg-input border-2 border-border-dark font-pixel text-[9px] focus:outline-none focus:border-primary"
+                      className="flex-1 px-1.5 py-1 bg-input border-2 border-border-dark font-pixel text-[11px] focus:outline-none focus:border-primary"
                       maxLength={200}
                       autoFocus
                       onKeyDown={(e) => e.key === 'Enter' && handleEditSave(entry.id)}
@@ -269,7 +269,7 @@ export function Guestbook({ teamId }: GuestbookProps) {
                     <button onClick={() => setEditingId(null)} className="text-muted-foreground"><X size={12} /></button>
                   </div>
                 ) : (
-                  <p className="font-pixel text-[9px] text-foreground mb-1 leading-tight">{entry.message}</p>
+                  <p className="font-pixel text-[11px] text-foreground mb-1 leading-relaxed">{entry.message}</p>
                 )}
                 <button
                   onClick={() => handleLike(entry.id, entry.isLiked)}
@@ -278,7 +278,7 @@ export function Guestbook({ teamId }: GuestbookProps) {
                   }`}
                 >
                   <Heart size={10} fill={entry.isLiked ? 'currentColor' : 'none'} />
-                  <span className="font-pixel text-[7px]">{entry.likes}</span>
+                  <span className="font-pixel text-[9px]">{entry.likes}</span>
                 </button>
               </div>
             ))

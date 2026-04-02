@@ -285,9 +285,9 @@
 
   /* Kairosoft Panel Header - Title bar */
   .kairo-panel-header {
-    @apply flex items-center gap-1.5 px-2 py-1.5;
+    @apply flex items-center gap-2 px-3 py-2;
     @apply bg-primary text-primary-foreground;
-    @apply font-pixel text-[9px] uppercase tracking-wide;
+    @apply font-pixel text-xs uppercase tracking-wide;
     @apply border-b-3 border-primary-dark;
   }
 
