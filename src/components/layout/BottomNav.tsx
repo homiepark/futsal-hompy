@@ -23,9 +23,10 @@ export function BottomNav() {
   const { pendingCount } = usePendingJoinRequests();
   const [unreadMessages, setUnreadMessages] = useState(0);
   const [pendingInvitations, setPendingInvitations] = useState(0);
+  const [newSchedules, setNewSchedules] = useState(0);
 
   useEffect(() => {
-    if (!user) { setUnreadMessages(0); setPendingInvitations(0); return; }
+    if (!user) { setUnreadMessages(0); setPendingInvitations(0); setNewSchedules(0); return; }
 
     const fetchUnread = async () => {
       const { count } = await supabase
@@ -45,8 +46,35 @@ export function BottomNav() {
       setPendingInvitations(count || 0);
     };
 
+    const fetchNewSchedules = async () => {
+      // 사용자의 모든 팀에서 새 일정 확인
+      const { data: teams } = await supabase
+        .from('team_members')
+        .select('team_id')
+        .eq('user_id', user.id);
+      if (!teams || teams.length === 0) { setNewSchedules(0); return; }
+
+      let count = 0;
+      for (const t of teams) {
+        const seenKey = `schedule_seen_${t.team_id}_${user.id}`;
+        const lastSeen = localStorage.getItem(seenKey);
+        const query = supabase
+          .from('team_schedules')
+          .select('id', { count: 'exact', head: true })
+          .eq('team_id', t.team_id)
+          .gte('date', new Date().toISOString().split('T')[0]);
+        if (lastSeen) {
+          query.gt('created_at', lastSeen);
+        }
+        const { count: c } = await query;
+        count += c || 0;
+      }
+      setNewSchedules(count);
+    };
+
     fetchUnread();
     fetchInvitations();
+    fetchNewSchedules();
 
     const msgChannel = supabase
       .channel('unread-messages-nav')
@@ -87,7 +115,7 @@ export function BottomNav() {
             ? `${path}?team=${activeTeam.id}`
             : path;
 
-          const badgeCount = path === '/my-team' ? pendingCount : path === '/messages' ? (unreadMessages + pendingInvitations) : 0;
+          const badgeCount = path === '/my-team' ? pendingCount : path === '/messages' ? (unreadMessages + pendingInvitations) : path === '/schedule' ? newSchedules : 0;
           const showBadge = badgeCount > 0;
             
           return (

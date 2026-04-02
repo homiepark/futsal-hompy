@@ -119,9 +119,9 @@ export function MemberRoster({ members, teamId }: MemberRosterProps) {
       <div className="kairo-panel">
         {/* Panel Header */}
         <div className="kairo-panel-header">
-          <span className="text-sm">⚽</span>
-          <span>선수 ({playerMembers.length})</span>
-          <span className="text-muted-foreground ml-1">/ 전체 {members.length}명</span>
+          <span className="text-sm">👥</span>
+          <span>팀원 현황</span>
+          <span className="text-muted-foreground ml-1">({playerMembers.length}명)</span>
         </div>
 
         {/* Dense Member Grid */}

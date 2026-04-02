@@ -68,6 +68,21 @@ create table public.team_members (
   unique(team_id, user_id)
 );
 
+-- team_schedules
+create table public.team_schedules (
+  id uuid default uuid_generate_v4() primary key,
+  team_id uuid references public.teams(id) on delete cascade not null,
+  created_by uuid references auth.users(id) on delete set null,
+  title text not null,
+  date date not null,
+  time_start text,
+  time_end text,
+  location text,
+  event_type text not null default 'match',
+  created_at timestamptz default now() not null,
+  updated_at timestamptz default now() not null
+);
+
 -- team_join_requests
 create table public.team_join_requests (
   id uuid default uuid_generate_v4() primary key,

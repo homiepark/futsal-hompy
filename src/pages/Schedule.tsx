@@ -12,7 +12,8 @@ interface ScheduleEvent {
   id: string;
   title: string;
   date: string;
-  time?: string;
+  timeStart?: string;
+  timeEnd?: string;
   location?: string;
   eventType: 'match' | 'training';
 }
@@ -47,9 +48,11 @@ export default function Schedule() {
   const [isAdmin, setIsAdmin] = useState(false);
 
   const [showAddModal, setShowAddModal] = useState(false);
+  const [editingSchedule, setEditingSchedule] = useState<ScheduleEvent | null>(null);
   const [newTitle, setNewTitle] = useState('');
   const [newDate, setNewDate] = useState('');
-  const [newTime, setNewTime] = useState('');
+  const [newTimeStart, setNewTimeStart] = useState('');
+  const [newTimeEnd, setNewTimeEnd] = useState('');
   const [newLocation, setNewLocation] = useState('');
   const [newEventType, setNewEventType] = useState<'match' | 'training'>('match');
 
@@ -74,6 +77,13 @@ export default function Schedule() {
     fetchTeams();
   }, [user]);
 
+  // 일정 페이지 진입 시 seen 갱신 (뱃지 초기화)
+  useEffect(() => {
+    if (user && selectedTeam) {
+      localStorage.setItem(`schedule_seen_${selectedTeam}_${user.id}`, new Date().toISOString());
+    }
+  }, [user, selectedTeam]);
+
   // Fetch schedules + post events
   const fetchData = useCallback(async () => {
     if (!selectedTeam) return;
@@ -93,7 +103,8 @@ export default function Schedule() {
       id: s.id,
       title: s.title,
       date: s.date,
-      time: s.time || undefined,
+      timeStart: s.time_start || s.time || undefined,
+      timeEnd: s.time_end || undefined,
       location: s.location || undefined,
       eventType: s.event_type || 'match',
     })));
@@ -149,27 +160,59 @@ export default function Schedule() {
   const selectedSchedules = selectedDate ? getSchedulesForDate(selectedDate) : [];
   const selectedPosts = selectedDate ? getPostsForDate(selectedDate) : [];
 
-  const handleAddSchedule = async () => {
+  const resetForm = () => {
+    setNewTitle(''); setNewDate(''); setNewTimeStart(''); setNewTimeEnd(''); setNewLocation(''); setNewEventType('match');
+    setEditingSchedule(null);
+  };
+
+  const handleSaveSchedule = async () => {
     if (!newTitle.trim() || !newDate || !selectedTeam || !user) return;
-    const { error } = await supabase.from('team_schedules').insert({
+
+    const payload = {
       team_id: selectedTeam,
       created_by: user.id,
       title: newTitle.trim(),
       date: newDate,
-      time: newTime || null,
+      time_start: newTimeStart || null,
+      time_end: newTimeEnd || null,
       location: newLocation || null,
       event_type: newEventType,
-    });
-    if (error) { toast.error('일정 등록에 실패했습니다'); return; }
-    toast.success('일정이 등록되었습니다! 📅');
+    };
+
+    if (editingSchedule) {
+      // 수정
+      const { error } = await supabase.from('team_schedules')
+        .update(payload)
+        .eq('id', editingSchedule.id);
+      if (error) { toast.error('일정 수정에 실패했습니다'); return; }
+      toast.success('일정이 수정되었습니다! ✏️');
+    } else {
+      // 등록
+      const { error } = await supabase.from('team_schedules').insert(payload);
+      if (error) { toast.error('일정 등록에 실패했습니다'); return; }
+      toast.success('일정이 등록되었습니다! 📅');
+    }
+
     setShowAddModal(false);
-    setNewTitle(''); setNewDate(''); setNewTime(''); setNewLocation(''); setNewEventType('match');
+    resetForm();
     fetchData();
+  };
+
+  const handleEditSchedule = (s: ScheduleEvent) => {
+    setEditingSchedule(s);
+    setNewTitle(s.title);
+    setNewDate(s.date);
+    setNewTimeStart(s.timeStart || '');
+    setNewTimeEnd(s.timeEnd || '');
+    setNewLocation(s.location || '');
+    setNewEventType(s.eventType);
+    setShowAddModal(true);
   };
 
   const handleDeleteSchedule = async (id: string) => {
     if (!confirm('일정을 삭제하시겠습니까?')) return;
-    await supabase.from('team_schedules').delete().eq('id', id);
+    const { error } = await supabase.from('team_schedules').delete().eq('id', id);
+    if (error) { toast.error('일정 삭제에 실패했습니다'); return; }
     setSchedules(prev => prev.filter(s => s.id !== id));
     toast.success('일정이 삭제되었습니다');
   };
@@ -205,7 +248,7 @@ export default function Schedule() {
         <h1 className="font-pixel text-sm text-primary-foreground">📅 팀 일정</h1>
         {isAdmin && (
           <button
-            onClick={() => { setShowAddModal(true); setNewDate(selectedDate ? format(selectedDate, 'yyyy-MM-dd') : ''); }}
+            onClick={() => { resetForm(); setShowAddModal(true); setNewDate(selectedDate ? format(selectedDate, 'yyyy-MM-dd') : ''); }}
             className="w-8 h-8 bg-accent border-2 border-accent-dark flex items-center justify-center"
             style={{ boxShadow: '2px 2px 0 hsl(var(--accent-dark))' }}
           >
@@ -320,20 +363,27 @@ export default function Schedule() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-pixel text-[11px] text-foreground">{s.title}</p>
-                      <div className="flex items-center gap-2 mt-0.5 font-pixel text-[9px] text-muted-foreground">
-                        {s.time && <span>⏰ {s.time}</span>}
+                      <div className="flex items-center gap-2 mt-0.5 font-pixel text-[8px] text-muted-foreground flex-wrap">
+                        {(s.timeStart || s.timeEnd) && (
+                          <span>⏰ {s.timeStart || ''}{s.timeEnd ? ` ~ ${s.timeEnd}` : ''}</span>
+                        )}
                         {s.location && <span>📍 {s.location}</span>}
-                        <span className={cn('px-1 py-0.5 border text-[7px]',
+                        <span className={cn('px-1 py-0.5 border text-[8px]',
                           s.eventType === 'match' ? 'bg-yellow-100 border-yellow-400 text-yellow-700' : 'bg-lime-50 border-lime-400 text-lime-600'
                         )}>
-                          {s.eventType === 'match' ? '매치/자체전' : '훈련'}
+                          {s.eventType === 'match' ? '매치' : '훈련'}
                         </span>
                       </div>
                     </div>
                     {isAdmin && (
-                      <button onClick={() => handleDeleteSchedule(s.id)} className="text-muted-foreground hover:text-destructive p-1">
-                        <Trash2 size={14} />
-                      </button>
+                      <div className="flex flex-col gap-1 shrink-0">
+                        <button onClick={() => handleEditSchedule(s)} className="text-muted-foreground hover:text-primary p-1" title="수정">
+                          ✏️
+                        </button>
+                        <button onClick={() => handleDeleteSchedule(s.id)} className="text-muted-foreground hover:text-destructive p-1" title="삭제">
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
                     )}
                   </div>
                 ))}
@@ -379,56 +429,63 @@ export default function Schedule() {
         )}
       </div>
 
-      {/* Add Schedule Modal */}
+      {/* Add/Edit Schedule Modal */}
       {showAddModal && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center px-4">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setShowAddModal(false)} />
+          <div className="absolute inset-0 bg-black/50" onClick={() => { setShowAddModal(false); resetForm(); }} />
           <div className="relative w-full max-w-sm bg-card border-4 border-border-dark overflow-hidden"
             style={{ boxShadow: '6px 6px 0 hsl(var(--pixel-shadow))' }}
           >
             <div className="bg-primary text-primary-foreground px-4 py-3 flex items-center justify-between">
-              <span className="font-pixel text-[10px]">📅 일정 등록</span>
-              <button onClick={() => setShowAddModal(false)} className="hover:opacity-80 font-pixel text-[10px]">✕</button>
+              <span className="font-pixel text-[10px]">📅 {editingSchedule ? '일정 수정' : '일정 등록'}</span>
+              <button onClick={() => { setShowAddModal(false); resetForm(); }} className="hover:opacity-80 font-pixel text-[10px]">✕</button>
             </div>
             <div className="p-4 space-y-3">
               {/* Event Type */}
               <div>
-                <label className="block font-pixel text-[9px] text-muted-foreground mb-1">유형 *</label>
+                <label className="block font-pixel text-[8px] text-muted-foreground mb-1">유형 *</label>
                 <div className="flex gap-2">
                   <button type="button" onClick={() => setNewEventType('match')}
-                    className={cn('flex-1 py-2 border-3 font-pixel text-[9px] flex items-center justify-center gap-1 transition-all',
+                    className={cn('flex-1 py-2 border-3 font-pixel text-[10px] flex items-center justify-center gap-1 transition-all',
                       newEventType === 'match' ? 'bg-yellow-100 border-yellow-400 text-yellow-700' : 'bg-muted border-border-dark text-foreground hover:border-yellow-400'
                     )} style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow) / 0.5)' }}
-                  >⭐ 매치/자체전</button>
+                  >⭐ 매치</button>
                   <button type="button" onClick={() => setNewEventType('training')}
-                    className={cn('flex-1 py-2 border-3 font-pixel text-[9px] flex items-center justify-center gap-1 transition-all',
+                    className={cn('flex-1 py-2 border-3 font-pixel text-[10px] flex items-center justify-center gap-1 transition-all',
                       newEventType === 'training' ? 'bg-lime-50 border-lime-400 text-lime-600' : 'bg-muted border-border-dark text-foreground hover:border-lime-400'
                     )} style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow) / 0.5)' }}
                   >🏃 훈련</button>
                 </div>
               </div>
               <div>
-                <label className="block font-pixel text-[9px] text-muted-foreground mb-1">제목 *</label>
+                <label className="block font-pixel text-[8px] text-muted-foreground mb-1">제목 *</label>
                 <input type="text" value={newTitle} onChange={(e) => setNewTitle(e.target.value)}
                   placeholder="예: 정기 훈련, 친선 경기..." className="w-full pixel-input" maxLength={50} />
               </div>
               <div>
-                <label className="block font-pixel text-[9px] text-muted-foreground mb-1">날짜 *</label>
-                <input type="date" value={newDate} onChange={(e) => setNewDate(e.target.value)} className="w-full pixel-input" />
+                <label className="block font-pixel text-[8px] text-muted-foreground mb-1">날짜 *</label>
+                <input type="date" value={newDate} onChange={(e) => setNewDate(e.target.value)}
+                  className="w-full pixel-input text-[10px]" style={{ minWidth: 0 }} />
               </div>
               <div>
-                <label className="block font-pixel text-[9px] text-muted-foreground mb-1">시간</label>
-                <input type="time" value={newTime} onChange={(e) => setNewTime(e.target.value)} className="w-full pixel-input" />
+                <label className="block font-pixel text-[8px] text-muted-foreground mb-1">시간</label>
+                <div className="flex items-center gap-2">
+                  <input type="time" value={newTimeStart} onChange={(e) => setNewTimeStart(e.target.value)}
+                    className="flex-1 pixel-input text-[10px]" style={{ minWidth: 0 }} placeholder="시작" />
+                  <span className="font-pixel text-[10px] text-muted-foreground shrink-0">~</span>
+                  <input type="time" value={newTimeEnd} onChange={(e) => setNewTimeEnd(e.target.value)}
+                    className="flex-1 pixel-input text-[10px]" style={{ minWidth: 0 }} placeholder="종료" />
+                </div>
               </div>
               <div>
-                <label className="block font-pixel text-[9px] text-muted-foreground mb-1">장소</label>
+                <label className="block font-pixel text-[8px] text-muted-foreground mb-1">장소</label>
                 <input type="text" value={newLocation} onChange={(e) => setNewLocation(e.target.value)}
                   placeholder="예: OO 풋살장" className="w-full pixel-input" maxLength={50} />
               </div>
-              <button onClick={handleAddSchedule} disabled={!newTitle.trim() || !newDate}
+              <button onClick={handleSaveSchedule} disabled={!newTitle.trim() || !newDate}
                 className="w-full py-2.5 bg-primary text-primary-foreground font-pixel text-[10px] border-3 border-primary-dark hover:brightness-110 disabled:opacity-50"
                 style={{ boxShadow: '2px 2px 0 hsl(var(--primary-dark))' }}
-              >등록하기</button>
+              >{editingSchedule ? '수정하기' : '등록하기'}</button>
             </div>
           </div>
         </div>

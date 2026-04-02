@@ -113,6 +113,9 @@ export default function TeamHome() {
     } catch { return false; }
   });
   const [showLevelInfo, setShowLevelInfo] = useState(false);
+  const [newSchedulePopup, setNewSchedulePopup] = useState<{
+    title: string; date: string; timeStart?: string; timeEnd?: string; location?: string; eventType: string;
+  } | null>(null);
   const [showNoticeEdit, setShowNoticeEdit] = useState(false);
   const [noticeText, setNoticeText] = useState('');
 
@@ -310,6 +313,37 @@ export default function TeamHome() {
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [teamId]);
+
+  // 새 일정 팝업 체크
+  useEffect(() => {
+    if (!teamId || !user) return;
+    const checkNewSchedule = async () => {
+      const seenKey = `schedule_seen_${teamId}_${user.id}`;
+      const lastSeen = localStorage.getItem(seenKey);
+      const { data } = await supabase
+        .from('team_schedules')
+        .select('id, title, date, time_start, time_end, location, event_type, created_at')
+        .eq('team_id', teamId)
+        .gte('date', new Date().toISOString().split('T')[0])
+        .order('created_at', { ascending: false })
+        .limit(1);
+      if (data && data.length > 0) {
+        const latest = data[0];
+        if (!lastSeen || new Date(latest.created_at) > new Date(lastSeen)) {
+          setNewSchedulePopup({
+            title: latest.title,
+            date: latest.date,
+            timeStart: latest.time_start || undefined,
+            timeEnd: latest.time_end || undefined,
+            location: latest.location || undefined,
+            eventType: latest.event_type,
+          });
+          localStorage.setItem(seenKey, new Date().toISOString());
+        }
+      }
+    };
+    checkNewSchedule();
+  }, [teamId, user]);
 
   const handleBack = () => {
     clearActiveTeam();
@@ -610,8 +644,8 @@ export default function TeamHome() {
               style={{boxShadow:'2px 2px 0 hsl(var(--pixel-shadow) / 0.5)'}}
             >
               <span className="text-sm block">{stat.icon}</span>
-              <span className="font-pixel text-[10px] text-foreground block mt-0.5">{stat.value}</span>
-              <span className="font-pixel text-[7px] text-muted-foreground">{stat.label}</span>
+              <span className="font-pixel text-[12px] text-foreground block mt-0.5">{stat.value}</span>
+              <span className="font-pixel text-[8px] text-muted-foreground">{stat.label}</span>
             </button>
           ))}
         </div>
@@ -929,6 +963,52 @@ export default function TeamHome() {
           avatarUrl: m.avatarUrl,
         }))}
       />
+
+      {/* 새 일정 팝업 */}
+      {newSchedulePopup && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center px-6">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setNewSchedulePopup(null)} />
+          <div
+            className="relative w-full max-w-xs bg-card border-4 border-accent overflow-hidden animate-in fade-in zoom-in-95"
+            style={{ boxShadow: '6px 6px 0 hsl(var(--pixel-shadow))' }}
+          >
+            <div className="bg-gradient-to-r from-accent to-accent/80 border-b-3 border-accent-dark px-4 py-3 text-center">
+              <span className="font-pixel text-[12px] text-accent-foreground">📅 새 일정이 등록됐어요!</span>
+            </div>
+            <div className="p-5 text-center space-y-3">
+              <div className="text-4xl">{newSchedulePopup.eventType === 'match' ? '⭐' : '🏃'}</div>
+              <p className="font-pixel text-[12px] text-foreground">{newSchedulePopup.title}</p>
+              <div className="space-y-1">
+                <p className="font-pixel text-[10px] text-muted-foreground">
+                  📅 {newSchedulePopup.date.replace(/-/g, '.')}
+                </p>
+                {(newSchedulePopup.timeStart || newSchedulePopup.timeEnd) && (
+                  <p className="font-pixel text-[10px] text-muted-foreground">
+                    🕐 {newSchedulePopup.timeStart || ''}{newSchedulePopup.timeEnd ? ` ~ ${newSchedulePopup.timeEnd}` : ''}
+                  </p>
+                )}
+                {newSchedulePopup.location && (
+                  <p className="font-pixel text-[10px] text-muted-foreground">📍 {newSchedulePopup.location}</p>
+                )}
+              </div>
+            </div>
+            <div className="flex border-t-2 border-border-dark">
+              <button
+                onClick={() => setNewSchedulePopup(null)}
+                className="flex-1 py-3 font-pixel text-[10px] text-muted-foreground hover:bg-muted transition-colors border-r-2 border-border-dark"
+              >
+                닫기
+              </button>
+              <button
+                onClick={() => { setNewSchedulePopup(null); navigate('/schedule'); }}
+                className="flex-1 py-3 font-pixel text-[10px] text-primary hover:bg-primary/10 transition-colors"
+              >
+                일정 확인하기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
