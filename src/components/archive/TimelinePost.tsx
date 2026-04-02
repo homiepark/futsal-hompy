@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Heart, MessageCircle, Share2, Send, Trash2, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Reply } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Send, Trash2, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Reply, X } from 'lucide-react';
 import { PixelCard } from '@/components/ui/PixelCard';
 import { toast } from 'sonner';
 import { useArchiveLikes } from '@/hooks/useArchiveLikes';
@@ -65,6 +65,7 @@ export function TimelinePost({
   const [commentText, setCommentText] = useState('');
   const [replyingTo, setReplyingTo] = useState<{ id: string; nickname: string } | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [showLightbox, setShowLightbox] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(content);
   const [displayContent, setDisplayContent] = useState(content);
@@ -307,50 +308,89 @@ export function TimelinePost({
         );
       })()}
 
-      {/* Image Carousel */}
+      {/* Image Grid Preview */}
       {!isVideo && !videoUrl && allImages.length > 0 && (
-        <div className="relative border-4 border-border-dark shadow-pixel overflow-hidden rounded-lg">
-          <img
-            src={allImages[currentImageIndex]}
-            alt={`게시물 이미지 ${currentImageIndex + 1}`}
-            className="w-full max-h-[500px] object-contain transition-opacity duration-200 bg-black/5"
-          />
+        <div className={cn(
+          'grid gap-1 border-4 border-border-dark shadow-pixel overflow-hidden rounded-lg',
+          allImages.length === 1 ? 'grid-cols-1' :
+          allImages.length === 2 ? 'grid-cols-2' :
+          allImages.length === 3 ? 'grid-cols-3' :
+          'grid-cols-3'
+        )}>
+          {allImages.slice(0, 6).map((img, idx) => (
+            <button
+              key={idx}
+              onClick={() => { setCurrentImageIndex(idx); setShowLightbox(true); }}
+              className={cn(
+                'relative overflow-hidden bg-black/5',
+                allImages.length === 1 ? 'aspect-[4/3]' : 'aspect-square'
+              )}
+            >
+              <img src={img} alt={`사진 ${idx + 1}`} className="w-full h-full object-cover hover:scale-105 transition-transform duration-200" />
+              {idx === 5 && allImages.length > 6 && (
+                <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                  <span className="font-pixel text-white text-sm">+{allImages.length - 6}</span>
+                </div>
+              )}
+            </button>
+          ))}
+        </div>
+      )}
 
-          {/* Navigation Arrows */}
+      {/* Lightbox - Full screen image viewer */}
+      {showLightbox && allImages.length > 0 && (
+        <div className="fixed inset-0 z-[80] bg-black/95 flex flex-col" onClick={() => setShowLightbox(false)}>
+          {/* Header */}
+          <div className="flex items-center justify-between p-4 text-white">
+            <span className="font-pixel text-[10px]">{currentImageIndex + 1} / {allImages.length}</span>
+            <button onClick={() => setShowLightbox(false)} className="w-8 h-8 flex items-center justify-center hover:bg-white/10 rounded">
+              <X size={20} className="text-white" />
+            </button>
+          </div>
+
+          {/* Image */}
+          <div className="flex-1 flex items-center justify-center px-4" onClick={(e) => e.stopPropagation()}>
+            <img
+              src={allImages[currentImageIndex]}
+              alt=""
+              className="max-w-full max-h-full object-contain"
+            />
+          </div>
+
+          {/* Navigation */}
           {allImages.length > 1 && (
             <>
               {currentImageIndex > 0 && (
                 <button
-                  onClick={prevImage}
-                  className="absolute left-1.5 top-1/2 -translate-y-1/2 w-7 h-7 bg-background/80 border-2 border-border-dark flex items-center justify-center hover:bg-background transition-colors"
+                  onClick={(e) => { e.stopPropagation(); setCurrentImageIndex(i => i - 1); }}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20"
                 >
-                  <ChevronLeft size={14} className="text-foreground" />
+                  <ChevronLeft size={24} className="text-white" />
                 </button>
               )}
               {currentImageIndex < allImages.length - 1 && (
                 <button
-                  onClick={nextImage}
-                  className="absolute right-1.5 top-1/2 -translate-y-1/2 w-7 h-7 bg-background/80 border-2 border-border-dark flex items-center justify-center hover:bg-background transition-colors"
+                  onClick={(e) => { e.stopPropagation(); setCurrentImageIndex(i => i + 1); }}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20"
                 >
-                  <ChevronRight size={14} className="text-foreground" />
+                  <ChevronRight size={24} className="text-white" />
                 </button>
               )}
-              {/* Dots Indicator */}
-              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
-                {allImages.map((_, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setCurrentImageIndex(idx)}
-                    className={cn(
-                      "w-1.5 h-1.5 border border-border-dark transition-colors",
-                      idx === currentImageIndex ? "bg-primary" : "bg-background/60"
-                    )}
-                  />
-                ))}
-              </div>
             </>
           )}
 
+          {/* Dots */}
+          {allImages.length > 1 && (
+            <div className="flex justify-center gap-2 pb-6">
+              {allImages.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={(e) => { e.stopPropagation(); setCurrentImageIndex(idx); }}
+                  className={cn('w-2 h-2 rounded-full transition-colors', idx === currentImageIndex ? 'bg-white' : 'bg-white/30')}
+                />
+              ))}
+            </div>
+          )}
         </div>
       )}
 
