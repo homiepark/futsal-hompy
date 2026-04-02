@@ -56,6 +56,9 @@ export default function Schedule() {
   const [newLocation, setNewLocation] = useState('');
   const [newEventType, setNewEventType] = useState<'match' | 'training'>('match');
 
+  // team membership data for admin check
+  const [teamRoles, setTeamRoles] = useState<Record<string, string>>({});
+
   // Fetch teams
   useEffect(() => {
     if (!user) { setLoading(false); return; }
@@ -68,14 +71,24 @@ export default function Schedule() {
         const teams = data.filter((d: any) => d.teams).map((d: any) => ({
           id: d.teams.id, name: d.teams.name, emblem: d.teams.emblem, photoUrl: d.teams.photo_url || undefined
         }));
+        const roles: Record<string, string> = {};
+        data.forEach((d: any) => { if (d.teams) roles[d.teams.id] = d.role; });
+        setTeamRoles(roles);
         setMyTeams(teams);
         setSelectedTeam(teams[0]?.id || '');
-        setIsAdmin(!!data.find((d: any) => d.role === 'admin' || d.role === 'owner'));
       }
       setLoading(false);
     };
     fetchTeams();
   }, [user]);
+
+  // 선택된 팀에 대한 admin 여부 (팀 전환 시 갱신)
+  useEffect(() => {
+    if (selectedTeam) {
+      const role = teamRoles[selectedTeam];
+      setIsAdmin(role === 'admin' || role === 'owner');
+    }
+  }, [selectedTeam, teamRoles]);
 
   // 일정 페이지 진입 시 seen 갱신 (뱃지 초기화)
   useEffect(() => {
@@ -180,16 +193,23 @@ export default function Schedule() {
     };
 
     if (editingSchedule) {
-      // 수정
+      // 수정 - team_id, created_by는 변경하지 않음
       const { error } = await supabase.from('team_schedules')
-        .update(payload)
+        .update({
+          title: newTitle.trim(),
+          date: newDate,
+          time_start: newTimeStart || null,
+          time_end: newTimeEnd || null,
+          location: newLocation || null,
+          event_type: newEventType,
+        })
         .eq('id', editingSchedule.id);
-      if (error) { toast.error('일정 수정에 실패했습니다'); return; }
+      if (error) { console.error('Update error:', error); toast.error('일정 수정에 실패했습니다'); return; }
       toast.success('일정이 수정되었습니다! ✏️');
     } else {
       // 등록
       const { error } = await supabase.from('team_schedules').insert(payload);
-      if (error) { toast.error('일정 등록에 실패했습니다'); return; }
+      if (error) { console.error('Insert error:', error); toast.error('일정 등록에 실패했습니다'); return; }
       toast.success('일정이 등록되었습니다! 📅');
     }
 
@@ -212,7 +232,7 @@ export default function Schedule() {
   const handleDeleteSchedule = async (id: string) => {
     if (!confirm('일정을 삭제하시겠습니까?')) return;
     const { error } = await supabase.from('team_schedules').delete().eq('id', id);
-    if (error) { toast.error('일정 삭제에 실패했습니다'); return; }
+    if (error) { console.error('Delete error:', error); toast.error('일정 삭제에 실패했습니다'); return; }
     setSchedules(prev => prev.filter(s => s.id !== id));
     toast.success('일정이 삭제되었습니다');
   };
@@ -433,7 +453,7 @@ export default function Schedule() {
       {showAddModal && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center px-4">
           <div className="absolute inset-0 bg-black/50" onClick={() => { setShowAddModal(false); resetForm(); }} />
-          <div className="relative w-full max-w-sm bg-card border-4 border-border-dark overflow-hidden"
+          <div className="relative w-full max-w-sm bg-card border-4 border-border-dark"
             style={{ boxShadow: '6px 6px 0 hsl(var(--pixel-shadow))' }}
           >
             <div className="bg-primary text-primary-foreground px-4 py-3 flex items-center justify-between">
