@@ -174,17 +174,150 @@ function FootballAnimation() {
   );
 }
 
-// Samba Special Animation - 픽셀 캐릭터들이 드리블하며 움직임
-function SambaAnimation() {
-  const characters = [
-    { id: 0, emoji: '🏃', startX: -10, endX: 110, y: 75, duration: 12, delay: 0, size: 22, flip: false },
-    { id: 1, emoji: '⚽', startX: -5, endX: 115, y: 78, duration: 12, delay: 0.3, size: 14, flip: false },
-    { id: 2, emoji: '🏃', startX: 110, endX: -10, y: 55, duration: 15, delay: 4, size: 18, flip: true },
-    { id: 3, emoji: '⚽', startX: 115, endX: -5, y: 58, duration: 15, delay: 4.2, size: 12, flip: true },
-    { id: 4, emoji: '🤸', startX: -15, endX: 115, y: 40, duration: 18, delay: 8, size: 16, flip: false },
-    { id: 5, emoji: '🥅', startX: 88, endX: 88, y: 72, duration: 0, delay: 0, size: 20, flip: false },
-  ];
+// 픽셀 아트 브라질 선수 SVG (노랑 유니폼, 초록 반바지, 10번)
+function SambaPlayer({ pose, scale = 1 }: { pose: 'run' | 'kick' | 'dribble' | 'celebrate'; scale?: number }) {
+  const s = 2 * scale; // pixel unit size
+  // 공통: 갈색 피부, 검은 머리, 노랑 저지, 초록 반바지, 검은 축구화
+  const skin = '#8D6E4C';
+  const hair = '#1A1A1A';
+  const jersey = '#FDD835';
+  const jerseyBorder = '#F9A825';
+  const shorts = '#2E7D32';
+  const shoes = '#1A1A1A';
+  const number = '#1565C0';
 
+  if (pose === 'run') {
+    return (
+      <svg width={14*s} height={22*s} viewBox={`0 0 ${14*s} ${22*s}`} style={{ imageRendering: 'pixelated' }}>
+        {/* Hair */}
+        <rect x={4*s} y={0} width={6*s} height={3*s} fill={hair} />
+        <rect x={3*s} y={1*s} width={1*s} height={2*s} fill={hair} />
+        {/* Face */}
+        <rect x={4*s} y={3*s} width={6*s} height={4*s} fill={skin} />
+        <rect x={5*s} y={4*s} width={s} height={s} fill={hair} /> {/* eye L */}
+        <rect x={8*s} y={4*s} width={s} height={s} fill={hair} /> {/* eye R */}
+        {/* Jersey */}
+        <rect x={3*s} y={7*s} width={8*s} height={6*s} fill={jersey} />
+        <rect x={3*s} y={7*s} width={8*s} height={s} fill={jerseyBorder} /> {/* collar */}
+        <rect x={1*s} y={8*s} width={2*s} height={4*s} fill={jersey} /> {/* arm L */}
+        <rect x={11*s} y={8*s} width={2*s} height={4*s} fill={jersey} /> {/* arm R */}
+        <rect x={6*s} y={9*s} width={2*s} height={2*s} fill={number} /> {/* 10 */}
+        {/* Arms skin */}
+        <rect x={1*s} y={12*s} width={2*s} height={s} fill={skin} />
+        <rect x={11*s} y={12*s} width={2*s} height={s} fill={skin} />
+        {/* Shorts */}
+        <rect x={3*s} y={13*s} width={8*s} height={3*s} fill={shorts} />
+        {/* Legs - running pose */}
+        <rect x={4*s} y={16*s} width={2*s} height={3*s} fill={skin} /> {/* L leg forward */}
+        <rect x={8*s} y={16*s} width={2*s} height={2*s} fill={skin} /> {/* R leg back */}
+        {/* Shoes */}
+        <rect x={3*s} y={19*s} width={3*s} height={2*s} fill={shoes} />
+        <rect x={9*s} y={18*s} width={2*s} height={2*s} fill={shoes} />
+      </svg>
+    );
+  }
+
+  if (pose === 'kick') {
+    return (
+      <svg width={16*s} height={22*s} viewBox={`0 0 ${16*s} ${22*s}`} style={{ imageRendering: 'pixelated' }}>
+        {/* Hair */}
+        <rect x={4*s} y={0} width={6*s} height={3*s} fill={hair} />
+        {/* Face */}
+        <rect x={4*s} y={3*s} width={6*s} height={4*s} fill={skin} />
+        <rect x={5*s} y={4*s} width={s} height={s} fill={hair} />
+        <rect x={8*s} y={4*s} width={s} height={s} fill={hair} />
+        {/* Jersey - leaning back */}
+        <rect x={3*s} y={7*s} width={8*s} height={6*s} fill={jersey} />
+        <rect x={3*s} y={7*s} width={8*s} height={s} fill={jerseyBorder} />
+        <rect x={0} y={8*s} width={3*s} height={3*s} fill={jersey} /> {/* arm back */}
+        <rect x={11*s} y={7*s} width={2*s} height={4*s} fill={jersey} /> {/* arm up */}
+        <rect x={6*s} y={9*s} width={2*s} height={2*s} fill={number} />
+        <rect x={0} y={11*s} width={2*s} height={s} fill={skin} />
+        <rect x={11*s} y={11*s} width={2*s} height={s} fill={skin} />
+        {/* Shorts */}
+        <rect x={3*s} y={13*s} width={8*s} height={3*s} fill={shorts} />
+        {/* Legs - kicking */}
+        <rect x={4*s} y={16*s} width={2*s} height={4*s} fill={skin} /> {/* standing leg */}
+        <rect x={10*s} y={14*s} width={2*s} height={2*s} fill={skin} /> {/* kick leg */}
+        <rect x={12*s} y={13*s} width={3*s} height={2*s} fill={shoes} /> {/* kick foot */}
+        <rect x={3*s} y={20*s} width={3*s} height={2*s} fill={shoes} />
+      </svg>
+    );
+  }
+
+  if (pose === 'celebrate') {
+    return (
+      <svg width={14*s} height={22*s} viewBox={`0 0 ${14*s} ${22*s}`} style={{ imageRendering: 'pixelated' }}>
+        {/* Hair */}
+        <rect x={4*s} y={0} width={6*s} height={3*s} fill={hair} />
+        {/* Face */}
+        <rect x={4*s} y={3*s} width={6*s} height={4*s} fill={skin} />
+        <rect x={5*s} y={4*s} width={s} height={s} fill={hair} />
+        <rect x={8*s} y={4*s} width={s} height={s} fill={hair} />
+        <rect x={6*s} y={5.5*s} width={2*s} height={s} fill="#E53935" /> {/* smile */}
+        {/* Jersey */}
+        <rect x={3*s} y={7*s} width={8*s} height={6*s} fill={jersey} />
+        <rect x={3*s} y={7*s} width={8*s} height={s} fill={jerseyBorder} />
+        <rect x={6*s} y={9*s} width={2*s} height={2*s} fill={number} />
+        {/* Arms UP - celebrating */}
+        <rect x={1*s} y={3*s} width={2*s} height={5*s} fill={jersey} /> {/* L arm up */}
+        <rect x={11*s} y={3*s} width={2*s} height={5*s} fill={jersey} /> {/* R arm up */}
+        <rect x={0} y={2*s} width={2*s} height={2*s} fill={skin} /> {/* L hand */}
+        <rect x={12*s} y={2*s} width={2*s} height={2*s} fill={skin} /> {/* R hand */}
+        {/* Shorts */}
+        <rect x={3*s} y={13*s} width={8*s} height={3*s} fill={shorts} />
+        {/* Legs - standing */}
+        <rect x={4*s} y={16*s} width={2*s} height={4*s} fill={skin} />
+        <rect x={8*s} y={16*s} width={2*s} height={4*s} fill={skin} />
+        <rect x={3*s} y={20*s} width={3*s} height={2*s} fill={shoes} />
+        <rect x={8*s} y={20*s} width={3*s} height={2*s} fill={shoes} />
+      </svg>
+    );
+  }
+
+  // dribble (default)
+  return (
+    <svg width={14*s} height={22*s} viewBox={`0 0 ${14*s} ${22*s}`} style={{ imageRendering: 'pixelated' }}>
+      {/* Hair */}
+      <rect x={4*s} y={0} width={6*s} height={3*s} fill={hair} />
+      <rect x={10*s} y={1*s} width={s} height={s} fill={hair} />
+      {/* Face */}
+      <rect x={4*s} y={3*s} width={6*s} height={4*s} fill={skin} />
+      <rect x={5*s} y={4*s} width={s} height={s} fill={hair} />
+      <rect x={8*s} y={4*s} width={s} height={s} fill={hair} />
+      {/* Jersey */}
+      <rect x={3*s} y={7*s} width={8*s} height={6*s} fill={jersey} />
+      <rect x={3*s} y={7*s} width={8*s} height={s} fill={jerseyBorder} />
+      <rect x={1*s} y={9*s} width={2*s} height={3*s} fill={jersey} />
+      <rect x={11*s} y={8*s} width={2*s} height={4*s} fill={jersey} />
+      <rect x={6*s} y={9*s} width={2*s} height={2*s} fill={number} />
+      <rect x={1*s} y={12*s} width={2*s} height={s} fill={skin} />
+      <rect x={11*s} y={12*s} width={2*s} height={s} fill={skin} />
+      {/* Shorts */}
+      <rect x={3*s} y={13*s} width={8*s} height={3*s} fill={shorts} />
+      {/* Legs */}
+      <rect x={4*s} y={16*s} width={2*s} height={3*s} fill={skin} />
+      <rect x={8*s} y={16*s} width={2*s} height={3*s} fill={skin} />
+      <rect x={3*s} y={19*s} width={3*s} height={2*s} fill={shoes} />
+      <rect x={8*s} y={19*s} width={3*s} height={2*s} fill={shoes} />
+    </svg>
+  );
+}
+
+// 축구공 SVG
+function SambaBall({ size = 12 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 12 12" style={{ imageRendering: 'pixelated' }}>
+      <circle cx="6" cy="6" r="5" fill="white" stroke="#333" strokeWidth="0.8" />
+      <path d="M6 1.5 L7.5 4 L6 5 L4.5 4 Z" fill="#333" />
+      <path d="M9.5 5 L8 6.5 L9 8.5" fill="none" stroke="#333" strokeWidth="0.6" />
+      <path d="M2.5 5 L4 6.5 L3 8.5" fill="none" stroke="#333" strokeWidth="0.6" />
+    </svg>
+  );
+}
+
+// Samba Special Animation
+function SambaAnimation() {
   const confetti = Array.from({ length: 8 }, (_, i) => ({
     id: i,
     x: Math.random() * 100,
@@ -196,7 +329,7 @@ function SambaAnimation() {
 
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-      {/* Confetti particles - 노랑/초록 */}
+      {/* Confetti */}
       {confetti.map(c => (
         <div
           key={`confetti-${c.id}`}
@@ -207,40 +340,119 @@ function SambaAnimation() {
             width: `${c.size}px`,
             height: `${c.size}px`,
             backgroundColor: c.color,
-            opacity: 0.25,
+            opacity: 0.2,
             animationDuration: `${c.duration}s`,
             animationDelay: `${c.delay}s`,
           }}
         />
       ))}
 
-      {/* Characters running across */}
-      {characters.map(char => (
-        <div
-          key={`char-${char.id}`}
-          className={char.duration > 0 ? 'absolute animate-samba-run' : 'absolute'}
-          style={{
-            top: `${char.y}%`,
-            left: char.duration > 0 ? undefined : `${char.startX}%`,
-            fontSize: `${char.size}px`,
-            opacity: 0.2,
-            transform: char.flip ? 'scaleX(-1)' : 'none',
-            ['--start-x' as any]: `${char.startX}vw`,
-            ['--end-x' as any]: `${char.endX}vw`,
-            animationDuration: char.duration > 0 ? `${char.duration}s` : undefined,
-            animationDelay: char.duration > 0 ? `${char.delay}s` : undefined,
-          }}
-        >
-          {char.emoji}
+      {/* Player 1 - 드리블하며 왼→오 */}
+      <div
+        className="absolute animate-samba-run"
+        style={{
+          top: '68%',
+          opacity: 0.18,
+          ['--start-x' as any]: '-10vw',
+          ['--end-x' as any]: '110vw',
+          animationDuration: '14s',
+          animationDelay: '0s',
+        }}
+      >
+        <div className="animate-samba-bob">
+          <SambaPlayer pose="run" scale={1.2} />
         </div>
-      ))}
+      </div>
+      {/* Ball following player 1 */}
+      <div
+        className="absolute animate-samba-run"
+        style={{
+          top: '80%',
+          opacity: 0.2,
+          ['--start-x' as any]: '-6vw',
+          ['--end-x' as any]: '114vw',
+          animationDuration: '14s',
+          animationDelay: '0.2s',
+        }}
+      >
+        <div className="animate-samba-ball-bounce">
+          <SambaBall size={14} />
+        </div>
+      </div>
+
+      {/* Player 2 - 킥 포즈로 오→왼 */}
+      <div
+        className="absolute animate-samba-run"
+        style={{
+          top: '45%',
+          opacity: 0.14,
+          ['--start-x' as any]: '110vw',
+          ['--end-x' as any]: '-10vw',
+          animationDuration: '18s',
+          animationDelay: '5s',
+          transform: 'scaleX(-1)',
+        }}
+      >
+        <div className="animate-samba-bob">
+          <SambaPlayer pose="kick" scale={1} />
+        </div>
+      </div>
+
+      {/* Player 3 - 세리머니 */}
+      <div
+        className="absolute animate-samba-run"
+        style={{
+          top: '58%',
+          opacity: 0.15,
+          ['--start-x' as any]: '-15vw',
+          ['--end-x' as any]: '115vw',
+          animationDuration: '20s',
+          animationDelay: '10s',
+        }}
+      >
+        <div className="animate-samba-celebrate">
+          <SambaPlayer pose="celebrate" scale={0.9} />
+        </div>
+      </div>
+
+      {/* Player 4 - 드리블 오→왼 (작게) */}
+      <div
+        className="absolute animate-samba-run"
+        style={{
+          top: '30%',
+          opacity: 0.1,
+          ['--start-x' as any]: '105vw',
+          ['--end-x' as any]: '-10vw',
+          animationDuration: '22s',
+          animationDelay: '3s',
+          transform: 'scaleX(-1)',
+        }}
+      >
+        <SambaPlayer pose="dribble" scale={0.7} />
+      </div>
+      <div
+        className="absolute animate-samba-run"
+        style={{
+          top: '38%',
+          opacity: 0.12,
+          ['--start-x' as any]: '108vw',
+          ['--end-x' as any]: '-8vw',
+          animationDuration: '22s',
+          animationDelay: '3.3s',
+          transform: 'scaleX(-1)',
+        }}
+      >
+        <div className="animate-samba-ball-bounce">
+          <SambaBall size={10} />
+        </div>
+      </div>
 
       {/* 하단 잔디 라인 */}
       <div
-        className="absolute bottom-0 left-0 right-0 h-1 animate-samba-grass"
+        className="absolute bottom-0 left-0 right-0 h-1.5 animate-samba-grass"
         style={{
           background: 'repeating-linear-gradient(90deg, #2E7D32 0px, #2E7D32 8px, #4CAF50 8px, #4CAF50 16px)',
-          opacity: 0.15,
+          opacity: 0.12,
         }}
       />
     </div>
