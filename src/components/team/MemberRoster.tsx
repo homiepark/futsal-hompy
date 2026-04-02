@@ -98,7 +98,7 @@ export function MemberRoster({ members, teamId }: MemberRosterProps) {
                       {getStaffLabel(staff.role)}
                     </span>
                   </div>
-                  <div className="font-pixel text-[8px] text-muted-foreground mt-0.5">
+                  <div className="font-pixel text-[10px] text-muted-foreground mt-0.5">
                     {staff.staffCareerYears ? (
                       <span>지도 경력 {staff.staffCareerYears}년</span>
                     ) : (
