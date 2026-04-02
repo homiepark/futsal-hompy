@@ -107,7 +107,16 @@ export function FolderManageModal({ isOpen, onClose, folders, onSave }: FolderMa
   };
 
   const handleSave = () => {
-    onSave(editableFolders);
+    // 편집 중인 폴더명이 있으면 먼저 반영
+    let finalFolders = editableFolders;
+    if (editingId && editingName.trim()) {
+      finalFolders = editableFolders.map(f =>
+        f.id === editingId ? { ...f, name: editingName.trim() } : f
+      );
+    }
+    setEditingId(null);
+    setEditingName('');
+    onSave(finalFolders);
     toast.success('폴더가 저장되었습니다');
     onClose();
   };
