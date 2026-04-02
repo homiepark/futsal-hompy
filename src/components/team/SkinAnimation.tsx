@@ -401,11 +401,49 @@ function SambaCoach({ scale = 1, pose = 'stand' }: { scale?: number; pose?: 'sta
   );
 }
 
-// 리프팅 코치를 export해서 TeamHome에서도 사용 가능
-export function SambaLiftingCoach({ scale = 1.5 }: { scale?: number }) {
+// 리프팅 선수 (노랑 유니폼) - export해서 TeamHome 공지 위에 사용
+export function SambaLiftingPlayer({ scale = 1.5 }: { scale?: number }) {
+  const s = 2 * scale;
+  const skin = '#8D6E4C';
+  const hair = '#1A1A1A';
+  const jersey = '#FDD835';
+  const jerseyBorder = '#F9A825';
+  const shorts = '#2E7D32';
+  const shoes = '#1A1A1A';
+  const number = '#1565C0';
+
   return (
-    <div className="animate-samba-lifting inline-block">
-      <SambaCoach scale={scale} pose="lifting" />
+    <div className="animate-samba-lifting inline-flex flex-col items-center">
+      {/* Ball above head - bouncing */}
+      <div className="animate-samba-ball-bounce mb-1">
+        <SambaBall size={Math.round(10 * scale)} />
+      </div>
+      <svg width={16*s} height={22*s} viewBox={`0 0 ${16*s} ${22*s}`} style={{ imageRendering: 'pixelated' }}>
+        {/* Hair */}
+        <rect x={5*s} y={0} width={6*s} height={3*s} fill={hair} />
+        <rect x={4*s} y={1*s} width={s} height={2*s} fill={hair} />
+        {/* Face */}
+        <rect x={5*s} y={3*s} width={6*s} height={4*s} fill={skin} />
+        <rect x={6*s} y={4*s} width={s} height={s} fill={hair} />
+        <rect x={9*s} y={4*s} width={s} height={s} fill={hair} />
+        {/* Jersey */}
+        <rect x={4*s} y={7*s} width={8*s} height={6*s} fill={jersey} />
+        <rect x={4*s} y={7*s} width={8*s} height={s} fill={jerseyBorder} />
+        <rect x={7*s} y={9*s} width={2*s} height={2*s} fill={number} />
+        {/* Arms - one raised for balance */}
+        <rect x={2*s} y={6*s} width={2*s} height={4*s} fill={jersey} />
+        <rect x={12*s} y={8*s} width={2*s} height={4*s} fill={jersey} />
+        <rect x={1*s} y={5*s} width={2*s} height={2*s} fill={skin} />
+        <rect x={12*s} y={12*s} width={2*s} height={s} fill={skin} />
+        {/* Shorts */}
+        <rect x={4*s} y={13*s} width={8*s} height={3*s} fill={shorts} />
+        {/* Standing leg */}
+        <rect x={5*s} y={16*s} width={2*s} height={4*s} fill={skin} />
+        <rect x={4*s} y={20*s} width={3*s} height={2*s} fill={shoes} />
+        {/* Lifting leg - raised */}
+        <rect x={9*s} y={14*s} width={2*s} height={3*s} fill={skin} />
+        <rect x={10*s} y={12*s} width={3*s} height={2*s} fill={shoes} />
+      </svg>
     </div>
   );
 }
@@ -539,22 +577,6 @@ function SambaAnimation() {
         <div className="animate-samba-ball-bounce">
           <SambaBall size={10} />
         </div>
-      </div>
-
-      {/* Coach - 코치가 천천히 걸어감 */}
-      <div
-        className="absolute animate-samba-run"
-        style={{
-          top: '62%',
-          opacity: 0.6,
-          ['--start-x' as any]: '115vw',
-          ['--end-x' as any]: '-15vw',
-          animationDuration: '25s',
-          animationDelay: '7s',
-          transform: 'scaleX(-1)',
-        }}
-      >
-        <SambaCoach scale={1.1} pose="stand" />
       </div>
 
       {/* 하단 잔디 라인 */}

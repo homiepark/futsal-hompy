@@ -13,7 +13,7 @@ import { MemberRoster } from '@/components/team/MemberRoster';
 import { Guestbook } from '@/components/team/Guestbook';
 
 import { HompySkinSelector, skins } from '@/components/team/HompySkinSelector';
-import { SkinAnimation } from '@/components/team/SkinAnimation';
+import { SkinAnimation, SambaLiftingPlayer } from '@/components/team/SkinAnimation';
 import { PixelButton } from '@/components/ui/PixelButton';
 import { PixelBackButton } from '@/components/ui/PixelBackButton';
 import { JoinRequestButton } from '@/components/team/JoinRequestButton';
@@ -568,7 +568,6 @@ export default function TeamHome() {
         teamId={teamId}
         isAdmin={isAdmin}
         isFavorited={isFavorited}
-        skinId={currentSkin}
         onFavoriteToggle={(val) => {
           setIsFavorited(val);
           try {
@@ -585,6 +584,13 @@ export default function TeamHome() {
         onNameClick={() => { if (isAdmin) { setShowNameEdit(true); setNewTeamName(teamData.name); } }}
         onLevelClick={() => setShowLevelInfo(true)}
       />
+
+      {/* Samba lifting player - 공지 위 */}
+      {currentSkin === 'samba' && (
+        <div className="flex justify-center py-2">
+          <SambaLiftingPlayer scale={1.3} />
+        </div>
+      )}
 
       {/* 3. Marquee Notice Bar (전광판) + 수정 버튼 */}
       <div className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 overflow-hidden border-y-2 border-primary/30">
