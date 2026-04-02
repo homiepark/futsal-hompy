@@ -340,7 +340,7 @@ function SambaAnimation() {
             width: `${c.size}px`,
             height: `${c.size}px`,
             backgroundColor: c.color,
-            opacity: 0.2,
+            opacity: 0.4,
             animationDuration: `${c.duration}s`,
             animationDelay: `${c.delay}s`,
           }}
@@ -352,7 +352,7 @@ function SambaAnimation() {
         className="absolute animate-samba-run"
         style={{
           top: '68%',
-          opacity: 0.18,
+          opacity: 0.55,
           ['--start-x' as any]: '-10vw',
           ['--end-x' as any]: '110vw',
           animationDuration: '14s',
@@ -368,7 +368,7 @@ function SambaAnimation() {
         className="absolute animate-samba-run"
         style={{
           top: '80%',
-          opacity: 0.2,
+          opacity: 0.5,
           ['--start-x' as any]: '-6vw',
           ['--end-x' as any]: '114vw',
           animationDuration: '14s',
@@ -385,7 +385,7 @@ function SambaAnimation() {
         className="absolute animate-samba-run"
         style={{
           top: '45%',
-          opacity: 0.14,
+          opacity: 0.45,
           ['--start-x' as any]: '110vw',
           ['--end-x' as any]: '-10vw',
           animationDuration: '18s',
@@ -403,7 +403,7 @@ function SambaAnimation() {
         className="absolute animate-samba-run"
         style={{
           top: '58%',
-          opacity: 0.15,
+          opacity: 0.5,
           ['--start-x' as any]: '-15vw',
           ['--end-x' as any]: '115vw',
           animationDuration: '20s',
@@ -420,7 +420,7 @@ function SambaAnimation() {
         className="absolute animate-samba-run"
         style={{
           top: '30%',
-          opacity: 0.1,
+          opacity: 0.35,
           ['--start-x' as any]: '105vw',
           ['--end-x' as any]: '-10vw',
           animationDuration: '22s',
@@ -434,7 +434,7 @@ function SambaAnimation() {
         className="absolute animate-samba-run"
         style={{
           top: '38%',
-          opacity: 0.12,
+          opacity: 0.4,
           ['--start-x' as any]: '108vw',
           ['--end-x' as any]: '-8vw',
           animationDuration: '22s',
@@ -452,7 +452,7 @@ function SambaAnimation() {
         className="absolute bottom-0 left-0 right-0 h-1.5 animate-samba-grass"
         style={{
           background: 'repeating-linear-gradient(90deg, #2E7D32 0px, #2E7D32 8px, #4CAF50 8px, #4CAF50 16px)',
-          opacity: 0.12,
+          opacity: 0.3,
         }}
       />
     </div>

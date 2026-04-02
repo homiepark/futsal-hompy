@@ -629,8 +629,8 @@
   /* Samba Special */
   @keyframes samba-run {
     0% { left: var(--start-x); opacity: 0; }
-    5% { opacity: 0.2; }
-    90% { opacity: 0.2; }
+    5% { opacity: 1; }
+    90% { opacity: 1; }
     100% { left: var(--end-x); opacity: 0; }
   }
   .animate-samba-run {
