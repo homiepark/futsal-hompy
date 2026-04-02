@@ -193,20 +193,9 @@ export default function Schedule() {
   const handleSaveSchedule = async () => {
     if (!newTitle.trim() || !newDate || !selectedTeam || !user) return;
 
-    const payload = {
-      team_id: selectedTeam,
-      created_by: user.id,
-      title: newTitle.trim(),
-      date: newDate,
-      time_start: newTimeStart || null,
-      time_end: newTimeEnd || null,
-      location: newLocation || null,
-      event_type: newEventType,
-    };
-
     if (editingSchedule) {
-      // 수정 - team_id, created_by는 변경하지 않음
-      const { error } = await supabase.from('team_schedules')
+      // 수정
+      const { data, error } = await supabase.from('team_schedules')
         .update({
           title: newTitle.trim(),
           date: newDate,
@@ -215,13 +204,35 @@ export default function Schedule() {
           location: newLocation || null,
           event_type: newEventType,
         })
-        .eq('id', editingSchedule.id);
+        .eq('id', editingSchedule.id)
+        .select();
+
       if (error) { console.error('Update error:', error); toast.error('일정 수정에 실패했습니다'); return; }
+      if (!data || data.length === 0) {
+        console.error('Update returned 0 rows - RLS blocking?');
+        toast.error('일정 수정 권한이 없습니다');
+        return;
+      }
       toast.success('일정이 수정되었습니다! ✏️');
     } else {
       // 등록
-      const { error } = await supabase.from('team_schedules').insert(payload);
+      const { data, error } = await supabase.from('team_schedules').insert({
+        team_id: selectedTeam,
+        created_by: user.id,
+        title: newTitle.trim(),
+        date: newDate,
+        time_start: newTimeStart || null,
+        time_end: newTimeEnd || null,
+        location: newLocation || null,
+        event_type: newEventType,
+      }).select();
+
       if (error) { console.error('Insert error:', error); toast.error('일정 등록에 실패했습니다'); return; }
+      if (!data || data.length === 0) {
+        console.error('Insert returned 0 rows - RLS blocking?');
+        toast.error('일정 등록 권한이 없습니다');
+        return;
+      }
       toast.success('일정이 등록되었습니다! 📅');
     }
 
@@ -243,8 +254,28 @@ export default function Schedule() {
 
   const handleDeleteSchedule = async (id: string) => {
     if (!confirm('일정을 삭제하시겠습니까?')) return;
+
+    // 삭제 전 건수 확인
+    const { count: beforeCount } = await supabase
+      .from('team_schedules')
+      .select('id', { count: 'exact', head: true })
+      .eq('id', id);
+
     const { error } = await supabase.from('team_schedules').delete().eq('id', id);
     if (error) { console.error('Delete error:', error); toast.error('일정 삭제에 실패했습니다'); return; }
+
+    // 삭제 후 확인 - 여전히 존재하면 RLS가 차단한 것
+    const { count: afterCount } = await supabase
+      .from('team_schedules')
+      .select('id', { count: 'exact', head: true })
+      .eq('id', id);
+
+    if (afterCount && afterCount > 0) {
+      console.error('Delete blocked by RLS - row still exists');
+      toast.error('일정 삭제 권한이 없습니다. 팀 관리자에게 문의하세요.');
+      return;
+    }
+
     setSchedules(prev => prev.filter(s => s.id !== id));
     toast.success('일정이 삭제되었습니다');
   };
