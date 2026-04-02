@@ -35,7 +35,7 @@ export function GuestLoginPrompt({ open, onOpenChange, teamName }: GuestLoginPro
         {/* Pixel Header */}
         <div className="bg-gradient-to-r from-accent to-accent/80 border-b-4 border-accent-dark px-4 py-3">
           <DialogHeader>
-            <DialogTitle className="font-pixel text-[11px] text-accent-foreground flex items-center gap-2">
+            <DialogTitle className="font-pixel text-[12px] text-accent-foreground flex items-center gap-2">
               <span className="text-lg">⚽</span>
               로그인이 필요해요!
             </DialogTitle>

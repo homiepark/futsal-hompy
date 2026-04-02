@@ -119,9 +119,9 @@ export function LiveMatchBanner() {
         <div className="bg-primary/10 border-b-2 border-border px-3 py-1.5 flex items-center justify-between">
           <div className="flex items-center gap-1.5">
             <Swords size={12} className="text-primary" />
-            <span className="font-pixel text-[8px] text-primary">매치 현황</span>
+            <span className="font-pixel text-[12px] text-primary">매치 현황</span>
           </div>
-          <span className={`px-2 py-0.5 font-pixel text-[7px] ${config.color} border border-current/20`}>
+          <span className={`px-2 py-0.5 font-pixel text-[8px] ${config.color} border border-current/20`}>
             {config.label}
           </span>
         </div>
@@ -132,9 +132,9 @@ export function LiveMatchBanner() {
             {/* Team A */}
             <div className="flex-1 text-center">
               <span className="text-2xl block">{match.teamA.emblem}</span>
-              <span className="font-pixel text-[9px] text-foreground block mt-1">{match.teamA.name}</span>
+              <span className="font-pixel text-[10px] text-foreground block mt-1">{match.teamA.name}</span>
               {match.teamA.level && (
-                <span className="font-pixel text-[7px] text-muted-foreground">LV.{match.teamA.level}</span>
+                <span className="font-pixel text-[8px] text-muted-foreground">LV.{match.teamA.level}</span>
               )}
             </div>
 
@@ -146,19 +146,19 @@ export function LiveMatchBanner() {
             {/* Team B */}
             <div className="flex-1 text-center">
               <span className="text-2xl block">{match.teamB.emblem}</span>
-              <span className="font-pixel text-[9px] text-foreground block mt-1">{match.teamB.name}</span>
+              <span className="font-pixel text-[10px] text-foreground block mt-1">{match.teamB.name}</span>
               {match.teamB.level && (
-                <span className="font-pixel text-[7px] text-muted-foreground">LV.{match.teamB.level}</span>
+                <span className="font-pixel text-[8px] text-muted-foreground">LV.{match.teamB.level}</span>
               )}
             </div>
           </div>
 
           {/* Match Info */}
           <div className="flex items-center justify-center gap-4 mt-3 pt-2 border-t border-border">
-            <span className="font-pixel text-[7px] text-muted-foreground flex items-center gap-1">
+            <span className="font-pixel text-[8px] text-muted-foreground flex items-center gap-1">
               <Clock size={8} /> {match.date} {match.time}
             </span>
-            <span className="font-pixel text-[7px] text-muted-foreground flex items-center gap-1">
+            <span className="font-pixel text-[8px] text-muted-foreground flex items-center gap-1">
               <MapPin size={8} /> {match.location}
             </span>
           </div>

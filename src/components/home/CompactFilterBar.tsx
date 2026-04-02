@@ -90,13 +90,13 @@ export function CompactFilterBar({ filters, onFiltersChange }: CompactFilterBarP
         <div className="bg-gradient-to-r from-secondary to-secondary/80 border-b-3 border-border-dark px-3 py-2 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-base">🔍</span>
-            <h2 className="font-pixel text-[10px] text-foreground">팀 찾기</h2>
+            <h2 className="font-pixel text-[12px] text-foreground">팀 찾기</h2>
           </div>
           
           {hasActiveFilters && (
             <button
               onClick={clearFilters}
-              className="flex items-center gap-1 px-2 py-1 bg-muted font-pixel text-[7px] text-muted-foreground border-2 border-border-dark hover:bg-destructive/20 transition-colors"
+              className="flex items-center gap-1 px-2 py-1 bg-muted font-pixel text-[8px] text-muted-foreground border-2 border-border-dark hover:bg-destructive/20 transition-colors"
             >
               <X size={10} />
               초기화
@@ -113,7 +113,7 @@ export function CompactFilterBar({ filters, onFiltersChange }: CompactFilterBarP
               placeholder="팀 이름 검색..."
               value={filters.teamName}
               onChange={(e) => onFiltersChange({ ...filters, teamName: e.target.value })}
-              className="w-full pl-9 pr-3 py-2.5 font-pixel text-[9px] bg-input border-3 border-border-dark focus:border-primary outline-none"
+              className="w-full pl-9 pr-3 py-2.5 font-pixel text-[10px] bg-input border-3 border-border-dark focus:border-primary outline-none"
               style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
             />
           </div>
@@ -125,7 +125,7 @@ export function CompactFilterBar({ filters, onFiltersChange }: CompactFilterBarP
           <button
             onClick={() => toggleFilter('level')}
             className={cn(
-              "flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 font-pixel text-[9px] border-3 transition-all",
+              "flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 font-pixel text-[10px] border-3 transition-all",
               expandedFilter === 'level' || filters.levels.length > 0
                 ? "bg-primary text-primary-foreground border-primary-dark"
                 : "bg-secondary text-secondary-foreground border-border-dark hover:border-primary"
@@ -135,7 +135,7 @@ export function CompactFilterBar({ filters, onFiltersChange }: CompactFilterBarP
             <Medal size={14} />
             레벨
             {filters.levels.length > 0 && (
-              <span className="px-1.5 py-0.5 bg-accent text-accent-foreground text-[7px]">
+              <span className="px-1.5 py-0.5 bg-accent text-accent-foreground text-[8px]">
                 {filters.levels.length}
               </span>
             )}
@@ -146,7 +146,7 @@ export function CompactFilterBar({ filters, onFiltersChange }: CompactFilterBarP
           <button
             onClick={() => toggleFilter('gender')}
             className={cn(
-              "flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 font-pixel text-[9px] border-3 transition-all",
+              "flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 font-pixel text-[10px] border-3 transition-all",
               expandedFilter === 'gender' || filters.genders.length > 0
                 ? "bg-primary text-primary-foreground border-primary-dark"
                 : "bg-secondary text-secondary-foreground border-border-dark hover:border-primary"
@@ -156,7 +156,7 @@ export function CompactFilterBar({ filters, onFiltersChange }: CompactFilterBarP
             <Users size={14} />
             성별
             {filters.genders.length > 0 && (
-              <span className="px-1.5 py-0.5 bg-accent text-accent-foreground text-[7px]">
+              <span className="px-1.5 py-0.5 bg-accent text-accent-foreground text-[8px]">
                 {filters.genders.length}
               </span>
             )}
@@ -167,7 +167,7 @@ export function CompactFilterBar({ filters, onFiltersChange }: CompactFilterBarP
           <button
             onClick={() => toggleFilter('region')}
             className={cn(
-              "flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 font-pixel text-[9px] border-3 transition-all",
+              "flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 font-pixel text-[10px] border-3 transition-all",
               expandedFilter === 'region' || filters.selectedRegions.length > 0
                 ? "bg-primary text-primary-foreground border-primary-dark"
                 : "bg-secondary text-secondary-foreground border-border-dark hover:border-primary"
@@ -177,7 +177,7 @@ export function CompactFilterBar({ filters, onFiltersChange }: CompactFilterBarP
             <MapPin size={14} />
             지역
             {filters.selectedRegions.length > 0 && (
-              <span className="px-1.5 py-0.5 bg-accent text-accent-foreground text-[7px]">
+              <span className="px-1.5 py-0.5 bg-accent text-accent-foreground text-[8px]">
                 {filters.selectedRegions.length}
               </span>
             )}
@@ -207,8 +207,8 @@ export function CompactFilterBar({ filters, onFiltersChange }: CompactFilterBarP
                 >
                   <span className="text-base">{icon}</span>
                   <div>
-                    <span className="font-pixel text-[9px] font-bold block">{label}</span>
-                    <span className="font-pixel text-[6px] opacity-70">{desc}</span>
+                    <span className="font-pixel text-[10px] font-bold block">{label}</span>
+                    <span className="font-pixel text-[8px] opacity-70">{desc}</span>
                   </div>
                 </button>
               ))}
@@ -233,7 +233,7 @@ export function CompactFilterBar({ filters, onFiltersChange }: CompactFilterBarP
                   style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
                 >
                   <span className="text-base">{icon}</span>
-                  <span className="font-pixel text-[9px]">{label}</span>
+                  <span className="font-pixel text-[10px]">{label}</span>
                 </button>
               ))}
             </div>
@@ -249,7 +249,7 @@ export function CompactFilterBar({ filters, onFiltersChange }: CompactFilterBarP
                   <span className="font-pixel text-[8px] text-muted-foreground">선택된 지역</span>
                   <button
                     onClick={clearRegions}
-                    className="font-pixel text-[7px] text-accent hover:text-accent-dark"
+                    className="font-pixel text-[8px] text-accent hover:text-accent-dark"
                   >
                     전체 해제
                   </button>
@@ -295,7 +295,7 @@ export function CompactFilterBar({ filters, onFiltersChange }: CompactFilterBarP
               {/* Step 2: 구/군 선택 */}
               {selectedRegionKey && regionData[selectedRegionKey] && (
                 <div className="bg-muted/50 border-2 border-border-dark p-2">
-                  <span className="font-pixel text-[7px] text-muted-foreground block mb-1.5">
+                  <span className="font-pixel text-[8px] text-muted-foreground block mb-1.5">
                     {selectedRegionKey} 지역 선택 (복수 가능)
                   </span>
                   <div className="flex flex-wrap gap-1 max-h-32 overflow-y-auto overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
@@ -308,7 +308,7 @@ export function CompactFilterBar({ filters, onFiltersChange }: CompactFilterBarP
                           key={district}
                           onClick={() => toggleRegion({ region: selectedRegionKey, district })}
                           className={cn(
-                            "px-2 py-1 font-pixel text-[7px] border transition-all flex items-center gap-0.5",
+                            "px-2 py-1 font-pixel text-[8px] border transition-all flex items-center gap-0.5",
                             isSelected
                               ? "bg-primary text-primary-foreground border-primary-dark"
                               : "bg-card text-foreground border-border hover:border-primary/50"
@@ -325,7 +325,7 @@ export function CompactFilterBar({ filters, onFiltersChange }: CompactFilterBarP
 
               {/* Empty state */}
               {filters.selectedRegions.length === 0 && !selectedRegionKey && (
-                <p className="font-pixel text-[7px] text-muted-foreground text-center py-1">
+                <p className="font-pixel text-[8px] text-muted-foreground text-center py-1">
                   시/도를 선택하면 세부 지역을 고를 수 있어요
                 </p>
               )}

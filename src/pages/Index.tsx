@@ -321,7 +321,7 @@ const Index = () => {
             <button
               onClick={() => navigate('/profile')}
               className={cn(
-                'mt-2 px-4 py-2 font-pixel text-[9px]',
+                'mt-2 px-4 py-2 font-pixel text-[10px]',
                 'bg-primary text-primary-foreground',
                 'border-3 border-primary-dark',
                 'shadow-[3px_3px_0_hsl(var(--primary-dark))]',

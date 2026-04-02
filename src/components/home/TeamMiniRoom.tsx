@@ -63,7 +63,7 @@ function SpeechBubble({ message }: { message: string }) {
           minWidth: '120px',
         }}
       >
-        <p className="font-pixel text-[8px] text-foreground text-center leading-relaxed">
+        <p className="font-pixel text-[10px] text-foreground text-center leading-relaxed">
           {message}
         </p>
       </div>
@@ -132,13 +132,13 @@ function VisitorCounter({ today, total }: { today: number; total: number }) {
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-1.5">
           <Eye size={10} className="text-green-400" />
-          <span className="font-pixel text-[7px] text-green-400">TODAY</span>
-          <span className="font-pixel text-[9px] text-white font-bold ml-auto">{today}</span>
+          <span className="font-pixel text-[10px] text-green-400">TODAY</span>
+          <span className="font-pixel text-[10px] text-white font-bold ml-auto">{today}</span>
         </div>
         <div className="h-px bg-[#3A3A4A]" />
         <div className="flex items-center gap-1.5">
-          <span className="font-pixel text-[7px] text-gray-400">TOTAL</span>
-          <span className="font-pixel text-[9px] text-gray-300 font-bold ml-auto">{total}</span>
+          <span className="font-pixel text-[10px] text-gray-400">TOTAL</span>
+          <span className="font-pixel text-[10px] text-gray-300 font-bold ml-auto">{total}</span>
         </div>
       </div>
     </div>
@@ -159,8 +159,8 @@ function GuestbookBoard({ onClick }: { onClick: () => void }) {
           minWidth: '60px',
         }}
       >
-        <p className="font-pixel text-[8px] text-[#E8E8C8] text-center">📝</p>
-        <p className="font-pixel text-[7px] text-[#E8E8C8] text-center">방명록</p>
+        <p className="font-pixel text-[10px] text-[#E8E8C8] text-center">📝</p>
+        <p className="font-pixel text-[10px] text-[#E8E8C8] text-center">방명록</p>
       </div>
       {/* Chalk dust effect on hover */}
       <div className="opacity-0 group-hover:opacity-100 transition-opacity">
@@ -184,7 +184,7 @@ function BulletinBoard({ teamName }: { teamName: string }) {
       <div className="w-2 h-2 bg-red-500 border border-red-700 rounded-full mx-auto mb-1" />
       {/* Note */}
       <div className="bg-[#FFFFC8] p-1 border border-[#E8E8A0]">
-        <p className="font-pixel text-[6px] text-[#4A4A4A] text-center truncate">{teamName}</p>
+        <p className="font-pixel text-[10px] text-[#4A4A4A] text-center truncate">{teamName}</p>
       </div>
     </div>
   );
@@ -277,7 +277,7 @@ export function TeamMiniRoom({ userId }: TeamMiniRoomProps) {
           {/* Room Header */}
           <div className="bg-gradient-to-r from-primary to-primary/80 border-b-3 border-primary-dark px-3 py-1.5 flex items-center gap-2">
             <span className="text-sm">🏠</span>
-            <h2 className="font-pixel text-[9px] text-primary-foreground">{team.name}의 미니홈</h2>
+            <h2 className="font-pixel text-[12px] text-primary-foreground">{team.name}의 미니홈</h2>
           </div>
 
           {/* Isometric Room */}
@@ -372,14 +372,14 @@ export function TeamMiniRoom({ userId }: TeamMiniRoomProps) {
           <div className="bg-secondary/50 border-t-2 border-border-dark px-3 py-2 flex justify-center gap-2">
             <button
               onClick={() => navigate(`/team/${team.id}`)}
-              className="px-3 py-1.5 bg-primary text-primary-foreground font-pixel text-[8px] border-2 border-primary-dark hover:brightness-110 transition-all"
+              className="px-3 py-1.5 bg-primary text-primary-foreground font-pixel text-[10px] border-2 border-primary-dark hover:brightness-110 transition-all"
               style={{ boxShadow: '2px 2px 0 hsl(var(--primary-dark))' }}
             >
               🏠 팀 홈 가기
             </button>
             <button
               onClick={() => navigate('/matchmaking')}
-              className="px-3 py-1.5 bg-accent text-accent-foreground font-pixel text-[8px] border-2 border-accent-dark hover:brightness-110 transition-all"
+              className="px-3 py-1.5 bg-accent text-accent-foreground font-pixel text-[10px] border-2 border-accent-dark hover:brightness-110 transition-all"
               style={{ boxShadow: '2px 2px 0 hsl(var(--accent-dark))' }}
             >
               ⚔️ 매칭 찾기

@@ -84,7 +84,7 @@ export function RecentActivityFeed() {
   if (loading) {
     return (
       <div className="px-4 py-3">
-        <h3 className="font-pixel text-[10px] text-foreground flex items-center gap-2 mb-3">
+        <h3 className="font-pixel text-[12px] text-foreground flex items-center gap-2 mb-3">
           <span className="text-primary">📋</span>
           최근 활동
         </h3>
@@ -100,7 +100,7 @@ export function RecentActivityFeed() {
   if (activities.length === 0) {
     return (
       <div className="px-4 py-3">
-        <h3 className="font-pixel text-[10px] text-foreground flex items-center gap-2 mb-3">
+        <h3 className="font-pixel text-[12px] text-foreground flex items-center gap-2 mb-3">
           <span className="text-primary">📋</span>
           최근 활동
         </h3>
@@ -145,18 +145,18 @@ export function RecentActivityFeed() {
             {/* Content */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5">
-                <span className="font-pixel text-[9px] text-foreground">{activity.teamName}</span>
-                <span className="px-1 py-0.5 bg-primary/10 border border-primary/20 font-pixel text-[6px] text-primary">
+                <span className="font-pixel text-[10px] text-foreground">{activity.teamName}</span>
+                <span className="px-1 py-0.5 bg-primary/10 border border-primary/20 font-pixel text-[8px] text-primary">
                   {activity.folderName || '게시글'}
                 </span>
               </div>
-              <p className="font-pixel text-[7px] text-muted-foreground mt-0.5 truncate">
+              <p className="font-pixel text-[8px] text-muted-foreground mt-0.5 truncate">
                 📸 {activity.description}
               </p>
             </div>
 
             {/* Time */}
-            <span className="font-pixel text-[7px] text-muted-foreground shrink-0">
+            <span className="font-pixel text-[8px] text-muted-foreground shrink-0">
               {activity.timeAgo}
             </span>
           </div>

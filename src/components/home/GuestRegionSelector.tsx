@@ -109,7 +109,7 @@ export function GuestRegionSelector({
           <div className="bg-muted border-3 border-border-dark p-3" 
             style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}
           >
-            <p className="font-pixel text-[9px] text-foreground leading-relaxed">
+            <p className="font-pixel text-[10px] text-foreground leading-relaxed">
               📍 관심 있는 동네를 선택하면
               <br />
               그 지역 팀들의 소식을 볼 수 있어요!
@@ -122,7 +122,7 @@ export function GuestRegionSelector({
           {/* Selected Regions */}
           {selectedRegions.length > 0 && (
             <div className="space-y-2">
-              <p className="font-pixel text-[9px] text-foreground">선택한 동네:</p>
+              <p className="font-pixel text-[10px] text-foreground">선택한 동네:</p>
               <div className="flex flex-wrap gap-2">
                 {selectedRegions.map((r, i) => (
                   <div 
@@ -145,11 +145,11 @@ export function GuestRegionSelector({
           {/* Add Region */}
           {selectedRegions.length < MAX_REGIONS && (
             <div className="space-y-2">
-              <p className="font-pixel text-[9px] text-foreground">동네 추가:</p>
+              <p className="font-pixel text-[10px] text-foreground">동네 추가:</p>
               <div className="grid grid-cols-2 gap-2">
                 <Select value={tempRegion} onValueChange={(v) => { setTempRegion(v); setTempDistrict(''); }}>
                   <SelectTrigger className={cn(
-                    'bg-input border-3 border-border-dark font-pixel text-[9px] h-9',
+                    'bg-input border-3 border-border-dark font-pixel text-[10px] h-9',
                     'focus:border-primary focus:ring-0'
                   )}>
                     <SelectValue placeholder="시/도" />
@@ -159,7 +159,7 @@ export function GuestRegionSelector({
                       <SelectItem 
                         key={r} 
                         value={r}
-                        className="font-pixel text-[9px] cursor-pointer hover:bg-muted"
+                        className="font-pixel text-[10px] cursor-pointer hover:bg-muted"
                       >
                         {r}
                       </SelectItem>
@@ -169,7 +169,7 @@ export function GuestRegionSelector({
 
                 <Select value={tempDistrict} onValueChange={setTempDistrict} disabled={!tempRegion}>
                   <SelectTrigger className={cn(
-                    'bg-input border-3 border-border-dark font-pixel text-[9px] h-9',
+                    'bg-input border-3 border-border-dark font-pixel text-[10px] h-9',
                     'focus:border-primary focus:ring-0',
                     !tempRegion && 'opacity-50'
                   )}>
@@ -180,7 +180,7 @@ export function GuestRegionSelector({
                       <SelectItem 
                         key={d} 
                         value={d}
-                        className="font-pixel text-[9px] cursor-pointer hover:bg-muted"
+                        className="font-pixel text-[10px] cursor-pointer hover:bg-muted"
                       >
                         {d}
                       </SelectItem>
@@ -194,7 +194,7 @@ export function GuestRegionSelector({
                 disabled={!tempRegion || !tempDistrict}
                 className={cn(
                   'w-full flex items-center justify-center gap-2 py-2',
-                  'bg-secondary border-3 border-border-dark font-pixel text-[9px]',
+                  'bg-secondary border-3 border-border-dark font-pixel text-[10px]',
                   'transition-all',
                   tempRegion && tempDistrict 
                     ? 'hover:bg-muted cursor-pointer' 
@@ -258,7 +258,7 @@ export function GuestRegionPrompt({ onSelectClick }: GuestRegionPromptProps) {
         {/* Content */}
         <div className="p-6 text-center">
           <div className="text-5xl mb-4 animate-bounce">📍</div>
-          <p className="font-pixel text-[11px] text-foreground mb-2">
+          <p className="font-pixel text-[12px] text-foreground mb-2">
             동네를 설정하고 주변 팀 소식을 받아보세요!
           </p>
           <p className="font-pixel text-[8px] text-muted-foreground mb-4">

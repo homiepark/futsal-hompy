@@ -15,7 +15,7 @@ export function GuestAuthPrompt() {
         <div className="bg-gradient-to-r from-accent to-accent/80 border-b-4 border-accent-dark px-4 py-3">
           <div className="flex items-center gap-2">
             <span className="text-lg">📰</span>
-            <h2 className="font-pixel text-[11px] text-accent-foreground">
+            <h2 className="font-pixel text-[12px] text-accent-foreground">
               우리동네 풋살팀 소식
             </h2>
           </div>
@@ -47,7 +47,7 @@ export function GuestAuthPrompt() {
                 신규 멤버 모집
               </span>
             </div>
-            <p className="font-pixel text-[9px] text-muted-foreground leading-relaxed">
+            <p className="font-pixel text-[10px] text-muted-foreground leading-relaxed">
               관심 지역의 풋살팀 활동을 한눈에 볼 수 있어요 ⚽
             </p>
           </div>
@@ -59,7 +59,7 @@ export function GuestAuthPrompt() {
               className={cn(
                 'w-full flex items-center justify-center gap-2 py-3.5',
                 'bg-primary text-primary-foreground border-4 border-primary-dark',
-                'font-pixel text-[11px] uppercase tracking-wider',
+                'font-pixel text-[12px] uppercase tracking-wider',
                 'hover:brightness-110 transition-all',
                 'active:translate-x-0.5 active:translate-y-0.5'
               )}

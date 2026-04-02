@@ -74,7 +74,7 @@ export function HotTeamsRanking() {
     return (
       <div className="px-4 py-3">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="font-pixel text-[10px] text-foreground flex items-center gap-2">
+          <h3 className="font-pixel text-[12px] text-foreground flex items-center gap-2">
             <Trophy size={14} className="text-accent" />
             이번 달 인기팀 TOP 3
           </h3>
@@ -92,7 +92,7 @@ export function HotTeamsRanking() {
     return (
       <div className="px-4 py-3">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="font-pixel text-[10px] text-foreground flex items-center gap-2">
+          <h3 className="font-pixel text-[12px] text-foreground flex items-center gap-2">
             <Trophy size={14} className="text-accent" />
             이번 달 인기팀 TOP 3
           </h3>
@@ -107,7 +107,7 @@ export function HotTeamsRanking() {
   return (
     <div className="px-4 py-3">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="font-pixel text-[10px] text-foreground flex items-center gap-2">
+        <h3 className="font-pixel text-[12px] text-foreground flex items-center gap-2">
           <Trophy size={14} className="text-accent" />
           이번 달 인기팀 TOP 3
         </h3>
@@ -147,12 +147,12 @@ export function HotTeamsRanking() {
               <span className="text-xl">{team.emblem}</span>
             )}
             <div className="flex-1 text-left min-w-0">
-              <span className="font-pixel text-[9px] text-foreground block truncate">{team.name}</span>
+              <span className="font-pixel text-[10px] text-foreground block truncate">{team.name}</span>
               <div className="flex items-center gap-2 mt-0.5">
-                <span className={`px-1.5 py-0.5 text-[7px] font-pixel text-white ${levelColors[team.level]}`}>
+                <span className={`px-1.5 py-0.5 text-[8px] font-pixel text-white ${levelColors[team.level]}`}>
                   LV.{team.level}
                 </span>
-                <span className="font-pixel text-[7px] text-muted-foreground flex items-center gap-0.5">
+                <span className="font-pixel text-[8px] text-muted-foreground flex items-center gap-0.5">
                   <Users size={8} /> {team.memberCount}명
                 </span>
               </div>
@@ -161,7 +161,7 @@ export function HotTeamsRanking() {
             {/* Win Count */}
             <div className="text-right shrink-0">
               <span className="font-pixel text-[10px] text-accent block">{team.wins}</span>
-              <span className="font-pixel text-[7px] text-muted-foreground">승</span>
+              <span className="font-pixel text-[8px] text-muted-foreground">승</span>
             </div>
           </button>
         ))}
