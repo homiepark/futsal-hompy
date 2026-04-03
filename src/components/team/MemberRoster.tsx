@@ -105,6 +105,8 @@ export function MemberRoster({ members, teamId }: MemberRosterProps) {
   };
 
   const isOwnStaff = (staff: Member) => user && staff.userId === user.id;
+  const isTeamAdmin = user && members.some(m => m.userId === user.id && (m.role === 'owner' || m.role === 'admin'));
+  const canEditStaff = (staff: Member) => isOwnStaff(staff) || isTeamAdmin;
 
   return (
     <>
@@ -155,7 +157,7 @@ export function MemberRoster({ members, teamId }: MemberRosterProps) {
                   </div>
 
                   {/* 본인이면 수정 버튼 */}
-                  {isOwnStaff(staff) && editingStaffId !== staff.id && (
+                  {canEditStaff(staff) && editingStaffId !== staff.id && (
                     <button
                       onClick={(e) => startEditCareer(staff, e)}
                       className="shrink-0 w-7 h-7 flex items-center justify-center bg-secondary border-2 border-border-dark rounded hover:border-primary transition-colors"
