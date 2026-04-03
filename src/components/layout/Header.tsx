@@ -70,7 +70,7 @@ export function Header() {
       <div className="flex items-center justify-between px-4 py-3 max-w-lg mx-auto">
         <div className="flex items-center gap-2">
           <GoalIcon />
-          <h1 className="text-base text-foreground" style={{ fontFamily: 'NeoDunggeunmo, monospace' }}>
+          <h1 className="text-base text-foreground" style={{ fontFamily: 'Galmuri11, sans-serif', fontWeight: 700 }}>
             우리의풋살
           </h1>
         </div>

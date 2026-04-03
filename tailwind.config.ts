@@ -14,8 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        pixel: ['"DNFBitBitv2"', '"NeoDunggeunmo"', '"Galmuri11"', 'sans-serif'],
-        body: ['"DNFBitBitv2"', '"NeoDunggeunmo"', '"Galmuri11"', 'sans-serif'],
+        pixel: ['"Galmuri11"', 'sans-serif'],
+        body: ['"Galmuri11"', 'sans-serif'],
       },
       colors: {
         border: {

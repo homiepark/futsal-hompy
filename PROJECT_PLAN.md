@@ -113,7 +113,9 @@
 - React 18 + TypeScript + Vite (코드 스플리팅 적용)
 - Supabase (인증, PostgreSQL, 실시간, 스토리지)
 - Tailwind CSS + shadcn/ui + 커스텀 픽셀아트 테마
-- 폰트: Galmuri11 (기본 pixel), NeoDunggeunmo, DNFBitBitv2 (폴백)
+- 폰트: **Galmuri11 단일 통일** (font-pixel: Bold 700 / font-body: Regular 400)
+  - DNFBitBitv2, NeoDunggeunmo, Press Start 2P → 전부 제거 (CDN import 포함)
+  - 픽셀 감성 유지하면서 11px 이하에서 가독성 최적화
 - 배포: Vercel
 - 번들: vendor(162KB) / supabase(194KB) / ui(80KB) / 페이지별 청크
 

@@ -1,7 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-@import url('https://cdn.jsdelivr.net/gh/neodgm/neodgm-webfont@1.530/neodgm/style.css');
 @import url('https://cdn.jsdelivr.net/npm/galmuri/dist/galmuri.css');
-@import url('https://cdn.jsdelivr.net/gh/nicejrp/DNFBitBit@master/DNFBitBit.css');
 
 @tailwind base;
 @tailwind components;
@@ -111,24 +108,25 @@
 @layer base {
   * {
     @apply border-border;
-    font-family: 'DNFBitBitv2', 'NeoDunggeunmo', 'Galmuri11', sans-serif !important;
+    font-family: 'Galmuri11', sans-serif !important;
   }
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'DNFBitBitv2', 'NeoDunggeunmo', 'Galmuri11', sans-serif !important;
+    font-family: 'Galmuri11', sans-serif !important;
     font-size: 14px;
     line-height: 1.6;
   }
 
-  /* All headings use pixel font */
+  /* All headings use Galmuri11 Bold */
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'DNFBitBitv2', 'NeoDunggeunmo', 'Galmuri11', sans-serif !important;
+    font-family: 'Galmuri11', sans-serif !important;
+    font-weight: 700;
   }
 
-  /* All text elements use pixel font */
+  /* All text elements use Galmuri11 */
   p, span, label, input, textarea, button, select, a, div {
-    font-family: 'DNFBitBitv2', 'NeoDunggeunmo', 'Galmuri11', sans-serif !important;
+    font-family: 'Galmuri11', sans-serif !important;
   }
 
   /* Prevent iOS Safari auto-zoom on input focus (requires 16px minimum) */
@@ -136,13 +134,15 @@
     font-size: 16px !important;
   }
 
-  /* Override font classes */
+  /* Override font classes - Galmuri11 통일 */
   .font-pixel {
-    font-family: 'Galmuri11', 'NeoDunggeunmo', 'DNFBitBitv2', sans-serif !important;
+    font-family: 'Galmuri11', 'Galmuri11 Bold', sans-serif !important;
+    font-weight: 700;
   }
 
   .font-body {
-    font-family: 'Galmuri11', 'NeoDunggeunmo', sans-serif !important;
+    font-family: 'Galmuri11', sans-serif !important;
+    font-weight: 400;
   }
 }
 
@@ -392,10 +392,12 @@
 
 @layer utilities {
   .font-pixel {
-    font-family: 'Galmuri11', 'NeoDunggeunmo', 'DNFBitBitv2', sans-serif !important;
+    font-family: 'Galmuri11', 'Galmuri11 Bold', sans-serif !important;
+    font-weight: 700;
   }
   .font-body {
-    font-family: 'Galmuri11', 'NeoDunggeunmo', sans-serif !important;
+    font-family: 'Galmuri11', sans-serif !important;
+    font-weight: 400;
   }
 
   /* Animation for game-like feedback */
