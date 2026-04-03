@@ -455,7 +455,7 @@ export function TimelinePost({
 
       {/* Lightbox - Full screen media viewer (video + images) */}
       {showLightbox && allMedia.length > 0 && (
-        <div className="fixed inset-0 z-[80] bg-black/95 flex flex-col" onClick={() => setShowLightbox(false)}>
+        <div className="fixed inset-0 z-[80] bg-black/95 flex flex-col" style={{ touchAction: 'none' }} onClick={() => setShowLightbox(false)}>
           {/* Header */}
           <div className="flex items-center justify-between p-4 text-white">
             <div className="flex items-center gap-2">
@@ -477,6 +477,16 @@ export function TimelinePost({
               const touch = e.touches[0];
               (e.currentTarget as any)._touchStartX = touch.clientX;
               (e.currentTarget as any)._touchStartY = touch.clientY;
+            }}
+            onTouchMove={(e) => {
+              const startX = (e.currentTarget as any)._touchStartX;
+              const startY = (e.currentTarget as any)._touchStartY;
+              if (startX === undefined) return;
+              const diffX = Math.abs(e.touches[0].clientX - startX);
+              const diffY = Math.abs(e.touches[0].clientY - startY);
+              if (diffX > diffY) {
+                e.preventDefault();
+              }
             }}
             onTouchEnd={(e) => {
               const startX = (e.currentTarget as any)._touchStartX;
