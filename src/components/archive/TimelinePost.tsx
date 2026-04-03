@@ -402,7 +402,7 @@ export function TimelinePost({
             onClick={() => { setCurrentImageIndex(0); setShowLightbox(true); }}
             className="relative border-4 border-border-dark shadow-pixel overflow-hidden rounded-lg w-full text-left"
           >
-            <video src={url} className="w-full aspect-video object-cover bg-black pointer-events-none" preload="metadata" />
+            <video src={`${url}#t=0.5`} preload="metadata" muted playsInline className="w-full aspect-video object-cover pointer-events-none" />
             <div className="absolute inset-0 flex items-center justify-center bg-black/20">
               <div className="w-12 h-12 bg-white/90 rounded-full flex items-center justify-center">
                 <span className="text-xl ml-0.5">▶</span>
