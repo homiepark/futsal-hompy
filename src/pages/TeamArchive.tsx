@@ -117,7 +117,7 @@ export default function TeamArchive() {
     try {
       let query = supabase
         .from('archive_posts')
-        .select('id, content, image_url, image_urls, video_url, folder_id, created_at, author_user_id, activity_date')
+        .select('id, content, image_url, image_urls, video_url, folder_id, created_at, author_user_id, activity_date, visibility')
         .order('created_at', { ascending: false });
 
       if (selectedTeam && selectedTeam !== 'all') {
@@ -176,6 +176,7 @@ export default function TeamArchive() {
           activityDate: (post as any).activity_date || undefined,
           authorUserId: post.author_user_id || undefined,
           authorAvatarUrl: profileMap.get(post.author_user_id)?.avatarUrl || undefined,
+          visibility: (post as any).visibility || 'members',
         }));
 
         setPosts(mappedPosts);

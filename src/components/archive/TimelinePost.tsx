@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Heart, MessageCircle, Share2, Send, Trash2, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Reply, X } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { Heart, MessageCircle, Share2, Send, Trash2, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Reply, X, Plus, Image } from 'lucide-react';
 import { PixelCard } from '@/components/ui/PixelCard';
 import { toast } from 'sonner';
 import { useArchiveLikes } from '@/hooks/useArchiveLikes';
@@ -31,6 +31,7 @@ interface TimelinePostProps {
   folderEmoji?: string;
   folderId?: string;
   activityDate?: string;
+  visibility?: 'public' | 'members';
   folders?: { id: string; name: string; emoji: string }[];
 }
 
@@ -55,6 +56,7 @@ export function TimelinePost({
   folderEmoji,
   folderId,
   activityDate,
+  visibility = 'members',
   folders = [],
 }: TimelinePostProps) {
   const { user } = useAuth();
@@ -71,6 +73,11 @@ export function TimelinePost({
   const [displayContent, setDisplayContent] = useState(content);
   const [editActivityDate, setEditActivityDate] = useState(activityDate || '');
   const [editFolderId, setEditFolderId] = useState(folderId || '');
+  const [editVisibility, setEditVisibility] = useState<'public' | 'members'>(visibility);
+  const [editVideoUrl, setEditVideoUrl] = useState(videoUrl || '');
+  const [editImageUrls, setEditImageUrls] = useState<string[]>([]);
+  const [newImageFiles, setNewImageFiles] = useState<{ file: File; preview: string }[]>([]);
+  const editFileInputRef = useRef<HTMLInputElement>(null);
   const [displayFolderName, setDisplayFolderName] = useState(folderName);
   const [displayFolderEmoji, setDisplayFolderEmoji] = useState(folderEmoji);
 
@@ -94,11 +101,31 @@ export function TimelinePost({
 
   const handleSaveEdit = async () => {
     if (!editContent.trim()) return;
-    const updateData: any = { content: editContent };
-    if (editActivityDate) updateData.activity_date = editActivityDate;
-    else updateData.activity_date = null;
-    if (editFolderId && editFolderId !== 'all') updateData.folder_id = editFolderId;
-    else updateData.folder_id = null;
+
+    // 새 이미지 업로드
+    let uploadedUrls: string[] = [];
+    if (newImageFiles.length > 0 && user) {
+      for (const item of newImageFiles) {
+        const ext = item.file.name.split('.').pop();
+        const filePath = `${user.id}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+        const { error: upErr } = await supabase.storage.from('archive-images').upload(filePath, item.file);
+        if (upErr) { toast.error('이미지 업로드에 실패했습니다'); return; }
+        const { data: urlData } = supabase.storage.from('archive-images').getPublicUrl(filePath);
+        uploadedUrls.push(urlData.publicUrl);
+      }
+    }
+
+    const finalImageUrls = [...editImageUrls, ...uploadedUrls];
+
+    const updateData: any = {
+      content: editContent,
+      activity_date: editActivityDate || null,
+      folder_id: (editFolderId && editFolderId !== 'all') ? editFolderId : null,
+      visibility: editVisibility,
+      video_url: editVideoUrl || null,
+      image_urls: finalImageUrls.length > 0 ? finalImageUrls : null,
+      image_url: finalImageUrls[0] || null,
+    };
 
     const { error } = await supabase
       .from('archive_posts')
@@ -170,7 +197,16 @@ export function TimelinePost({
         <div className="flex items-center gap-1">
           {canEdit && !isEditing && (
             <button
-              onClick={() => setIsEditing(true)}
+              onClick={() => {
+                setIsEditing(true);
+                setEditContent(displayContent);
+                setEditActivityDate(activityDate || '');
+                setEditFolderId(folderId || '');
+                setEditVisibility(visibility);
+                setEditVideoUrl(videoUrl || '');
+                setEditImageUrls([...allImages]);
+                setNewImageFiles([]);
+              }}
               className="text-muted-foreground hover:text-foreground transition-colors p-1"
               aria-label="게시물 수정"
             >
@@ -192,59 +228,115 @@ export function TimelinePost({
       {/* Content */}
       {isEditing ? (
         <div className="space-y-3">
-          <textarea
-            value={editContent}
-            onChange={(e) => setEditContent(e.target.value)}
-            className="pixel-input w-full text-sm p-3 min-h-[120px] resize-y"
-            rows={4}
-          />
-
-          {/* Activity Date */}
+          {/* 내용 */}
           <div>
-            <label className="block font-pixel text-[11px] text-muted-foreground mb-1">📅 활동 날짜</label>
-            <input
-              type="date"
-              value={editActivityDate}
-              onChange={(e) => setEditActivityDate(e.target.value)}
-              className="w-full px-2 py-1.5 bg-input border-2 border-border-dark font-pixel text-[10px] focus:outline-none focus:border-primary"
+            <label className="block font-pixel text-[11px] text-foreground mb-1">내용</label>
+            <textarea
+              value={editContent}
+              onChange={(e) => setEditContent(e.target.value)}
+              className="w-full p-3 min-h-[100px] resize-y bg-input border-2 border-border-dark rounded-lg font-body text-sm focus:outline-none focus:border-primary"
+              rows={4}
             />
           </div>
 
-          {/* Folder Selection */}
+          {/* 공개 범위 */}
+          <div>
+            <label className="block font-pixel text-[11px] text-foreground mb-1">공개 범위</label>
+            <div className="flex gap-2">
+              <button type="button" onClick={() => setEditVisibility('members')}
+                className={cn('flex-1 py-1.5 border-2 rounded-lg font-pixel text-[11px] transition-all',
+                  editVisibility === 'members' ? 'bg-primary border-primary-dark text-primary-foreground' : 'bg-muted border-border-dark text-foreground hover:border-primary'
+                )}>🔒 팀원만</button>
+              <button type="button" onClick={() => setEditVisibility('public')}
+                className={cn('flex-1 py-1.5 border-2 rounded-lg font-pixel text-[11px] transition-all',
+                  editVisibility === 'public' ? 'bg-accent border-accent-dark text-accent-foreground' : 'bg-muted border-border-dark text-foreground hover:border-accent'
+                )}>🌐 전체 공개</button>
+            </div>
+          </div>
+
+          {/* 활동 날짜 */}
+          <div>
+            <label className="block font-pixel text-[11px] text-foreground mb-1">📅 활동 날짜</label>
+            <input type="date" value={editActivityDate} onChange={(e) => setEditActivityDate(e.target.value)}
+              className="w-full px-3 py-1.5 bg-input border-2 border-border-dark rounded-lg font-body text-sm focus:outline-none focus:border-primary" />
+          </div>
+
+          {/* 폴더 */}
           {folders.length > 0 && (
             <div>
-              <label className="block font-pixel text-[11px] text-muted-foreground mb-1">📁 폴더 변경</label>
+              <label className="block font-pixel text-[11px] text-foreground mb-1">📁 폴더</label>
               <div className="flex flex-wrap gap-1.5">
                 {folders.map(f => (
-                  <button
-                    key={f.id}
-                    type="button"
-                    onClick={() => setEditFolderId(f.id)}
-                    className={`px-2 py-1 border-2 font-pixel text-[11px] transition-all ${
+                  <button key={f.id} type="button" onClick={() => setEditFolderId(f.id)}
+                    className={cn('px-2.5 py-1 border-2 rounded-lg font-pixel text-[11px] transition-all',
                       editFolderId === f.id
                         ? 'bg-primary border-primary-dark text-primary-foreground'
                         : 'bg-muted border-border-dark text-foreground hover:border-primary'
-                    }`}
-                  >
-                    {f.emoji} {f.name}
-                  </button>
+                    )}>{f.emoji} {f.name}</button>
                 ))}
               </div>
             </div>
           )}
 
+          {/* 이미지 관리 */}
+          <div>
+            <label className="block font-pixel text-[11px] text-foreground mb-1">🖼️ 이미지</label>
+            <input ref={editFileInputRef} type="file" accept="image/*" multiple className="hidden"
+              onChange={(e) => {
+                const files = Array.from(e.target.files || []);
+                files.forEach(file => {
+                  const reader = new FileReader();
+                  reader.onloadend = () => {
+                    setNewImageFiles(prev => [...prev, { file, preview: reader.result as string }]);
+                  };
+                  reader.readAsDataURL(file);
+                });
+                if (editFileInputRef.current) editFileInputRef.current.value = '';
+              }}
+            />
+            <div className="grid grid-cols-4 gap-1.5">
+              {editImageUrls.map((url, idx) => (
+                <div key={`existing-${idx}`} className="relative aspect-square border-2 border-border-dark rounded-lg overflow-hidden group">
+                  <img src={url} alt="" className="w-full h-full object-cover" />
+                  <button onClick={() => setEditImageUrls(prev => prev.filter((_, i) => i !== idx))}
+                    className="absolute top-0.5 right-0.5 w-5 h-5 bg-destructive/90 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <X size={10} className="text-white" />
+                  </button>
+                </div>
+              ))}
+              {newImageFiles.map((item, idx) => (
+                <div key={`new-${idx}`} className="relative aspect-square border-2 border-primary/50 rounded-lg overflow-hidden group">
+                  <img src={item.preview} alt="" className="w-full h-full object-cover" />
+                  <div className="absolute top-0.5 left-0.5 px-1 bg-primary rounded"><span className="font-pixel text-[8px] text-primary-foreground">NEW</span></div>
+                  <button onClick={() => setNewImageFiles(prev => prev.filter((_, i) => i !== idx))}
+                    className="absolute top-0.5 right-0.5 w-5 h-5 bg-destructive/90 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <X size={10} className="text-white" />
+                  </button>
+                </div>
+              ))}
+              <button onClick={() => editFileInputRef.current?.click()}
+                className="aspect-square border-2 border-dashed border-border-dark rounded-lg bg-muted/50 flex flex-col items-center justify-center gap-0.5 hover:border-primary transition-colors">
+                <Plus size={14} className="text-muted-foreground" />
+                <span className="font-pixel text-[9px] text-muted-foreground">추가</span>
+              </button>
+            </div>
+          </div>
+
+          {/* 동영상 URL */}
+          <div>
+            <label className="block font-pixel text-[11px] text-foreground mb-1">🎬 동영상 URL</label>
+            <input type="url" value={editVideoUrl} onChange={(e) => setEditVideoUrl(e.target.value)}
+              placeholder="YouTube 또는 동영상 링크"
+              className="w-full px-3 py-1.5 bg-input border-2 border-border-dark rounded-lg font-body text-sm focus:outline-none focus:border-primary placeholder:text-muted-foreground" />
+          </div>
+
           <div className="flex gap-2 justify-end">
-            <button
-              onClick={handleCancelEdit}
-              className="font-pixel text-[9px] px-3 py-1.5 border-2 border-border-dark bg-muted text-muted-foreground hover:bg-muted/80 transition-colors"
-            >
+            <button onClick={handleCancelEdit}
+              className="font-pixel text-[11px] px-4 py-2 border-2 border-border-dark rounded-lg bg-muted text-foreground hover:bg-muted/80 transition-colors">
               취소
             </button>
-            <button
-              onClick={handleSaveEdit}
-              disabled={!editContent.trim()}
-              className="font-pixel text-[9px] px-3 py-1.5 border-2 border-primary-dark bg-primary text-primary-foreground hover:brightness-110 transition-colors disabled:opacity-50"
-            >
+            <button onClick={handleSaveEdit} disabled={!editContent.trim()}
+              className="font-pixel text-[11px] px-4 py-2 border-2 border-primary-dark rounded-lg bg-primary text-primary-foreground hover:brightness-110 transition-colors disabled:opacity-50">
               저장
             </button>
           </div>
