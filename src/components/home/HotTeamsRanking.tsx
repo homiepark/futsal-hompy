@@ -76,7 +76,7 @@ export function HotTeamsRanking() {
     return (
       <div className="px-4 py-3">
         <div className="flex items-center gap-2 mb-3">
-          <h3 className="font-pixel text-[12px] text-foreground flex items-center gap-2">
+          <h3 className="font-pixel text-xs text-foreground flex items-center gap-2">
             🎉 NEW 팀 창단을 축하합니다!
           </h3>
         </div>
@@ -93,12 +93,12 @@ export function HotTeamsRanking() {
     return (
       <div className="px-4 py-3">
         <div className="flex items-center gap-2 mb-3">
-          <h3 className="font-pixel text-[12px] text-foreground flex items-center gap-2">
+          <h3 className="font-pixel text-xs text-foreground flex items-center gap-2">
             🎉 NEW 팀 창단을 축하합니다!
           </h3>
         </div>
         <div className="bg-card border-3 border-border-dark p-4 text-center">
-          <span className="font-pixel text-[8px] text-muted-foreground">아직 등록된 팀이 없습니다</span>
+          <span className="font-pixel text-[11px] text-muted-foreground">아직 등록된 팀이 없습니다</span>
         </div>
       </div>
     );
@@ -108,7 +108,7 @@ export function HotTeamsRanking() {
     <div className="px-4 py-3">
       <div className="flex items-center gap-2 mb-3">
         <Sparkles size={14} className="text-accent" />
-        <h3 className="font-pixel text-[12px] text-foreground">
+        <h3 className="font-pixel text-xs text-foreground">
           NEW 팀 창단을 축하합니다!
         </h3>
         <span className="text-base">🎉</span>
@@ -124,7 +124,7 @@ export function HotTeamsRanking() {
           >
             {/* NEW Badge + Emblem Area */}
             <div className="relative bg-gradient-to-b from-accent/20 to-transparent pt-2 pb-3 px-2">
-              <span className="absolute top-1.5 right-1.5 px-1.5 py-0.5 bg-accent text-accent-foreground font-pixel text-[8px] border border-accent-dark animate-pulse">
+              <span className="absolute top-1.5 right-1.5 px-1.5 py-0.5 bg-accent text-accent-foreground font-pixel text-[11px] border border-accent-dark animate-pulse">
                 NEW
               </span>
               {team.photoUrl ? (
@@ -140,16 +140,16 @@ export function HotTeamsRanking() {
 
             {/* Team Info */}
             <div className="px-2 pb-2.5 pt-1 border-t-2 border-border">
-              <p className="font-pixel text-[10px] text-foreground truncate">{team.name}</p>
+              <p className="font-pixel text-[11px] text-foreground truncate">{team.name}</p>
               <div className="flex items-center justify-center gap-1.5 mt-1">
                 <span className={`px-1.5 py-0.5 text-[8px] font-pixel text-white ${levelColors[team.level]}`}>
                   LV.{team.level}
                 </span>
-                <span className="font-pixel text-[8px] text-muted-foreground flex items-center gap-0.5">
+                <span className="font-pixel text-[11px] text-muted-foreground flex items-center gap-0.5">
                   <Users size={8} /> {team.memberCount}
                 </span>
               </div>
-              <p className="font-pixel text-[8px] text-muted-foreground mt-1">
+              <p className="font-pixel text-[11px] text-muted-foreground mt-1">
                 {formatDistanceToNow(new Date(team.createdAt), { addSuffix: true, locale: ko })}
               </p>
             </div>

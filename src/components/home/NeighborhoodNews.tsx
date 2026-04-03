@@ -184,7 +184,7 @@ export function NeighborhoodNews({ userRegions, userId, isGuest = false, onGuest
         >
           <div className="flex items-center gap-2 mb-3">
             <span className="text-lg">📰</span>
-            <h2 className="font-pixel text-[12px] text-foreground">우리동네 풋살팀 소식</h2>
+            <h2 className="font-pixel text-xs text-foreground">우리동네 풋살팀 소식</h2>
           </div>
           <div className="flex gap-3 overflow-hidden">
             {[1, 2, 3].map(i => (
@@ -208,13 +208,13 @@ export function NeighborhoodNews({ userRegions, userId, isGuest = false, onGuest
         >
           <div className="flex items-center gap-2 mb-3">
             <span className="text-lg">📰</span>
-            <h2 className="font-pixel text-[12px] text-foreground">우리동네 풋살팀 소식</h2>
+            <h2 className="font-pixel text-xs text-foreground">우리동네 풋살팀 소식</h2>
           </div>
           <div className="text-center py-6">
-            <p className="font-pixel text-[10px] text-muted-foreground">
+            <p className="font-pixel text-[11px] text-muted-foreground">
               아직 동네 소식이 없어요 🌿
             </p>
-            <p className="font-pixel text-[10px] text-muted-foreground mt-2">
+            <p className="font-pixel text-[11px] text-muted-foreground mt-2">
               {userRegions.map(r => r.district).join(', ')}에 팀이 생기면 알려드릴게요!
             </p>
           </div>
@@ -233,8 +233,8 @@ export function NeighborhoodNews({ userRegions, userId, isGuest = false, onGuest
         <div className="bg-gradient-to-r from-accent to-accent/80 border-b-3 border-accent-dark px-3 py-2 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-base">📰</span>
-            <h2 className="font-pixel text-[12px] text-accent-foreground">우리동네 풋살팀 소식</h2>
-            <span className="px-2 py-0.5 bg-accent-foreground/20 text-accent-foreground font-pixel text-[8px] animate-pulse">
+            <h2 className="font-pixel text-xs text-accent-foreground">우리동네 풋살팀 소식</h2>
+            <span className="px-2 py-0.5 bg-accent-foreground/20 text-accent-foreground font-pixel text-[11px] animate-pulse">
               LIVE
             </span>
           </div>
@@ -292,7 +292,7 @@ export function NeighborhoodNews({ userRegions, userId, isGuest = false, onGuest
                     />
                   ) : (
                     <div className="p-2 h-full flex items-center justify-center bg-gradient-to-br from-secondary to-muted">
-                      <p className="font-pixel text-[8px] text-foreground text-center line-clamp-3 leading-relaxed">
+                      <p className="font-pixel text-[11px] text-foreground text-center line-clamp-3 leading-relaxed">
                         {item.content}
                       </p>
                     </div>
@@ -300,7 +300,7 @@ export function NeighborhoodNews({ userRegions, userId, isGuest = false, onGuest
 
                   {/* Type Label */}
                   <div className={cn(
-                    "absolute top-1 left-1 px-1.5 py-0.5 font-pixel text-[8px] border",
+                    "absolute top-1 left-1 px-1.5 py-0.5 font-pixel text-[11px] border",
                     getTypeBg(item.type)
                   )}>
                     {getTypeLabel(item.type)}
@@ -312,12 +312,12 @@ export function NeighborhoodNews({ userRegions, userId, isGuest = false, onGuest
                   <div className="flex items-center gap-2">
                     <span className="text-base flex-shrink-0">{item.teamEmblem}</span>
                     <div className="flex-1 min-w-0">
-                      <p className="font-pixel text-[10px] text-foreground truncate">{item.teamName}</p>
+                      <p className="font-pixel text-[11px] text-foreground truncate">{item.teamName}</p>
                       <div className="flex items-center gap-1.5 mt-0.5">
-                        <span className={`px-1 py-0.5 font-pixel text-[8px] ${levelColors[item.teamLevel] || 'bg-muted text-muted-foreground'}`}>
+                        <span className={`px-1 py-0.5 font-pixel text-[11px] ${levelColors[item.teamLevel] || 'bg-muted text-muted-foreground'}`}>
                           LV.{item.teamLevel}
                         </span>
-                        <span className="font-pixel text-[8px] text-muted-foreground">
+                        <span className="font-pixel text-[11px] text-muted-foreground">
                           {item.district}
                         </span>
                       </div>
@@ -331,11 +331,11 @@ export function NeighborhoodNews({ userRegions, userId, isGuest = false, onGuest
 
         {/* Region Pills Footer */}
         <div className="px-3 py-2 bg-secondary/50 border-t-3 border-border flex flex-wrap gap-1.5 items-center">
-          <span className="font-pixel text-[8px] text-muted-foreground mr-1">📍 내 동네:</span>
+          <span className="font-pixel text-[11px] text-muted-foreground mr-1">📍 내 동네:</span>
           {userRegions.map((r) => (
             <span
               key={`${r.region}-${r.district}`}
-              className="px-2 py-0.5 bg-accent/20 text-accent font-pixel text-[8px] border border-accent/50"
+              className="px-2 py-0.5 bg-accent/20 text-accent font-pixel text-[11px] border border-accent/50"
             >
               {r.district}
             </span>
