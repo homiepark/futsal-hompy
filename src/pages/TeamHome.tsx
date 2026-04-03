@@ -103,6 +103,7 @@ export default function TeamHome() {
   const [archiveItems, setArchiveItems] = useState<ArchiveItem[]>([]);
   const [archiveTotalCount, setArchiveTotalCount] = useState(0);
   const [notices, setNotices] = useState<Array<{ id: string; content: string; created_at: string }>>([]);
+  const [noticeColor, setNoticeColor] = useState<string>('#00ff88');
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -294,6 +295,10 @@ export default function TeamHome() {
         if (!noticesRes.error && noticesRes.data) {
           setNotices(noticesRes.data);
         }
+
+        // Load notice color from localStorage
+        const savedColor = localStorage.getItem(`notice_color_${teamId}`);
+        if (savedColor) setNoticeColor(savedColor);
       } catch (err) {
         if (!cancelled) {
           console.error('Failed to load team data:', err);
@@ -600,25 +605,26 @@ export default function TeamHome() {
             {notices.length > 0 ? (
               <div className="animate-marquee whitespace-nowrap">
                 {notices.map((n, i) => (
-                  <span key={n.id} className="font-pixel text-xs text-[#00ff88] drop-shadow-[0_0_8px_rgba(0,255,136,0.8)] mx-6">
+                  <span key={n.id} className="font-pixel text-xs mx-6" style={{ color: noticeColor, textShadow: `0 0 8px ${noticeColor}80` }}>
                     {n.content}
-                    {i < notices.length - 1 && <span className="mx-4 text-[#ff6b9d] drop-shadow-[0_0_6px_rgba(255,107,157,0.8)]">◆</span>}
+                    {i < notices.length - 1 && <span className="mx-4" style={{ color: '#ff6b9d', textShadow: '0 0 6px rgba(255,107,157,0.8)' }}>◆</span>}
                   </span>
                 ))}
                 {notices.map((n) => (
-                  <span key={`dup-${n.id}`} className="font-pixel text-xs text-[#00ff88] drop-shadow-[0_0_8px_rgba(0,255,136,0.8)] mx-6">
+                  <span key={`dup-${n.id}`} className="font-pixel text-xs mx-6" style={{ color: noticeColor, textShadow: `0 0 8px ${noticeColor}80` }}>
                     {n.content}
                   </span>
                 ))}
               </div>
             ) : (
-              <span className="font-pixel text-xs text-[#00ff88]/50 px-4">공지를 등록해보세요</span>
+              <span className="font-pixel text-xs px-4" style={{ color: `${noticeColor}80` }}>공지를 등록해보세요</span>
             )}
           </div>
           {isAdmin && (
             <button
               onClick={() => setShowNoticeEdit(true)}
-              className="shrink-0 px-2 font-pixel text-[11px] text-[#00ff88] hover:text-white transition-colors"
+              className="shrink-0 px-2 font-pixel text-[11px] hover:text-white transition-colors"
+              style={{ color: noticeColor }}
             >
               ✏️
             </button>
@@ -796,9 +802,11 @@ export default function TeamHome() {
           <div className="relative w-full max-w-sm bg-card border-4 border-border-dark overflow-hidden"
             style={{ boxShadow: '6px 6px 0 hsl(var(--pixel-shadow))' }}
           >
-            <div className="bg-gradient-to-r from-[#1a0a2e] to-[#16213e] text-[#00ff88] px-4 py-3 flex items-center justify-between">
-              <span className="font-pixel text-[10px]">📢 공지 수정</span>
-              <button onClick={() => setShowNoticeEdit(false)} className="hover:opacity-80 font-pixel text-[10px]">✕</button>
+            <div className="bg-gradient-to-r from-[#1a0a2e] to-[#16213e] px-4 py-3 flex items-center justify-between"
+              style={{ color: noticeColor }}
+            >
+              <span className="font-pixel text-[11px]">📢 공지 수정</span>
+              <button onClick={() => setShowNoticeEdit(false)} className="hover:opacity-80 font-pixel text-[11px]">✕</button>
             </div>
             <div className="p-4 space-y-3">
               <textarea
@@ -809,6 +817,47 @@ export default function TeamHome() {
                 maxLength={100}
               />
               <p className="font-body text-[11px] text-muted-foreground text-right">{noticeText.length}/100</p>
+
+              {/* Neon Color Picker */}
+              <div>
+                <p className="font-pixel text-[11px] text-muted-foreground mb-2">전광판 컬러</p>
+                <div className="flex gap-2 flex-wrap">
+                  {[
+                    { color: '#00ff88', name: '네온 그린' },
+                    { color: '#00e5ff', name: '사이버 블루' },
+                    { color: '#ff6b9d', name: '핑크' },
+                    { color: '#ffea00', name: '네온 옐로우' },
+                    { color: '#ff6e40', name: '오렌지' },
+                    { color: '#e040fb', name: '퍼플' },
+                    { color: '#76ff03', name: '라임' },
+                    { color: '#ffffff', name: '화이트' },
+                  ].map(c => (
+                    <button
+                      key={c.color}
+                      onClick={() => {
+                        setNoticeColor(c.color);
+                        localStorage.setItem(`notice_color_${teamId}`, c.color);
+                      }}
+                      className="w-8 h-8 border-3 transition-all hover:scale-110"
+                      style={{
+                        backgroundColor: c.color,
+                        borderColor: noticeColor === c.color ? '#fff' : 'transparent',
+                        boxShadow: noticeColor === c.color
+                          ? `0 0 12px ${c.color}, inset 0 0 4px rgba(0,0,0,0.3)`
+                          : `0 0 6px ${c.color}60`,
+                      }}
+                      title={c.name}
+                    />
+                  ))}
+                </div>
+                {/* Preview */}
+                <div className="mt-2 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 px-3 py-2 border border-gray-700 overflow-hidden">
+                  <p className="font-pixel text-xs truncate" style={{ color: noticeColor, textShadow: `0 0 8px ${noticeColor}80` }}>
+                    {noticeText || '미리보기 텍스트입니다 ⚽'}
+                  </p>
+                </div>
+              </div>
+
               <button
                 onClick={async () => {
                   if (!noticeText.trim()) return;
@@ -816,8 +865,13 @@ export default function TeamHome() {
                   setNoticeText('');
                   setShowNoticeEdit(false);
                 }}
-                className="w-full py-2.5 bg-[#00ff88] text-[#1a0a2e] font-pixel text-[11px] border-2 border-[#00cc6a] hover:brightness-110 transition-all"
-                style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow) / 0.5)' }}
+                className="w-full py-2.5 font-pixel text-[11px] border-2 hover:brightness-110 transition-all"
+                style={{
+                  backgroundColor: noticeColor,
+                  color: '#1a0a2e',
+                  borderColor: `${noticeColor}cc`,
+                  boxShadow: `2px 2px 0 hsl(var(--pixel-shadow) / 0.5), 0 0 12px ${noticeColor}40`,
+                }}
               >
                 공지 등록
               </button>
