@@ -658,10 +658,15 @@ export default function Schedule() {
                           const endH = (h + 2) % 24;
                           setNewTimeEnd(`${String(endH).padStart(2, '0')}:${String(m).padStart(2, '0')}`);
                         }
-                        // 종료시간 input으로 포커스 이동
+                        // 종료시간 input으로 포커스 + picker 열기
                         setTimeout(() => {
-                          document.getElementById('time-end-input')?.focus();
-                        }, 50);
+                          const endInput = document.getElementById('time-end-input') as HTMLInputElement | null;
+                          if (endInput) {
+                            endInput.focus();
+                            endInput.click();
+                            try { endInput.showPicker?.(); } catch {}
+                          }
+                        }, 100);
                       }
                     }}
                     className="flex-1 pixel-input text-[10px] min-w-0" style={{ paddingRight: '4px' }} />
