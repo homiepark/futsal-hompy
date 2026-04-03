@@ -539,16 +539,16 @@ export default function Schedule() {
 
       {/* Add/Edit Schedule Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center px-4">
+        <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center px-0 sm:px-4">
           <div className="absolute inset-0 bg-black/50" onClick={() => { setShowAddModal(false); resetForm(); }} />
-          <div className="relative w-full max-w-sm bg-card border-4 border-border-dark"
+          <div className="relative w-full sm:max-w-sm bg-card border-4 border-border-dark rounded-t-xl sm:rounded-xl max-h-[90vh] flex flex-col"
             style={{ boxShadow: '6px 6px 0 hsl(var(--pixel-shadow))' }}
           >
-            <div className="bg-primary text-primary-foreground px-4 py-3 flex items-center justify-between">
+            <div className="bg-primary text-primary-foreground px-4 py-3 flex items-center justify-between shrink-0 rounded-t-lg">
               <span className="font-pixel text-[11px]">📅 {editingSchedule ? '일정 수정' : '일정 등록'}</span>
               <button onClick={() => { setShowAddModal(false); resetForm(); }} className="hover:opacity-80 font-pixel text-[11px]">✕</button>
             </div>
-            <div className="px-5 py-4 space-y-3">
+            <div className="px-5 py-4 space-y-3 overflow-y-auto flex-1">
               {/* Event Type */}
               <div>
                 <label className="block font-pixel text-[11px] text-muted-foreground mb-1">유형 *</label>
@@ -584,7 +584,7 @@ export default function Schedule() {
                 <div className="flex items-center justify-between mb-1">
                   <label className="font-pixel text-[11px] text-muted-foreground">날짜 *</label>
                   {!editingSchedule && (
-                    <button type="button" onClick={() => { setIsRecurring(!isRecurring); setSelectedDates([]); }}
+                    <button type="button" onClick={() => { setIsRecurring(!isRecurring); setSelectedDates([]); setRecurringMonth(currentMonth); }}
                       className={cn('px-2 py-0.5 font-pixel text-[9px] border-2 rounded transition-all',
                         isRecurring ? 'bg-primary/20 border-primary text-primary' : 'bg-muted border-border-dark text-muted-foreground hover:border-primary'
                       )}
@@ -645,35 +645,23 @@ export default function Schedule() {
                 )}
               </div>
               <div>
-                <label className="block font-pixel text-[11px] text-muted-foreground mb-1">시간</label>
-                <div className="flex items-center gap-2">
-                  <input type="time" value={newTimeStart}
-                    onChange={(e) => setNewTimeStart(e.target.value)}
-                    onBlur={(e) => {
-                      const start = e.target.value;
-                      if (start) {
-                        // 종료시간 자동 설정 (2시간 후)
-                        if (!newTimeEnd) {
-                          const [h, m] = start.split(':').map(Number);
-                          const endH = (h + 2) % 24;
-                          setNewTimeEnd(`${String(endH).padStart(2, '0')}:${String(m).padStart(2, '0')}`);
-                        }
-                        // 종료시간 input으로 포커스 + picker 열기
-                        setTimeout(() => {
-                          const endInput = document.getElementById('time-end-input') as HTMLInputElement | null;
-                          if (endInput) {
-                            endInput.focus();
-                            endInput.click();
-                            try { endInput.showPicker?.(); } catch {}
-                          }
-                        }, 100);
-                      }
-                    }}
-                    className="flex-1 pixel-input text-[10px] min-w-0" style={{ paddingRight: '4px' }} />
-                  <span className="font-pixel text-[11px] text-muted-foreground shrink-0">~</span>
-                  <input id="time-end-input" type="time" value={newTimeEnd} onChange={(e) => setNewTimeEnd(e.target.value)}
-                    className="flex-1 pixel-input text-[10px] min-w-0" style={{ paddingRight: '4px' }} />
-                </div>
+                <label className="block font-pixel text-[11px] text-muted-foreground mb-1">시작 시간</label>
+                <input type="time" value={newTimeStart}
+                  onChange={(e) => {
+                    const start = e.target.value;
+                    setNewTimeStart(start);
+                    if (start && !newTimeEnd) {
+                      const [h, m] = start.split(':').map(Number);
+                      const endH = (h + 2) % 24;
+                      setNewTimeEnd(`${String(endH).padStart(2, '0')}:${String(m).padStart(2, '0')}`);
+                    }
+                  }}
+                  className="w-full pixel-input text-[11px]" />
+              </div>
+              <div>
+                <label className="block font-pixel text-[11px] text-muted-foreground mb-1">종료 시간</label>
+                <input type="time" value={newTimeEnd} onChange={(e) => setNewTimeEnd(e.target.value)}
+                  className={cn('w-full pixel-input text-[11px]', newTimeStart && !newTimeEnd && 'border-primary ring-2 ring-primary/30')} />
               </div>
               <div>
                 <label className="block font-pixel text-[11px] text-muted-foreground mb-1">장소</label>
