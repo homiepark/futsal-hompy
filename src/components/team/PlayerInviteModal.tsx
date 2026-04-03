@@ -239,19 +239,19 @@ export function PlayerInviteModal({ isOpen, onClose, teamId, teamName }: PlayerI
           {!selectedUser ? (
             <>
               {/* Search Input */}
-              <div className="flex gap-2">
+              <div className="flex items-center gap-1.5 pixel-input py-1.5 px-2">
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="이름으로 검색..."
-                  className="flex-1 pixel-input"
+                  className="flex-1 min-w-0 bg-transparent text-sm focus:outline-none"
                   onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 />
                 <button
                   onClick={handleSearch}
                   disabled={searching}
-                  className="pixel-btn pixel-btn-primary px-3"
+                  className="shrink-0 w-8 h-8 flex items-center justify-center rounded text-primary hover:bg-primary/10 transition-colors disabled:text-muted-foreground"
                 >
                   <Search size={16} />
                 </button>

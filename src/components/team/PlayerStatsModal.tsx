@@ -297,9 +297,9 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
             <p className="font-pixel text-[11px] text-muted-foreground uppercase mb-2">📝 선수 방명록</p>
 
             {/* Guestbook Input */}
-            <div className="flex gap-2 mb-3">
+            <div className="flex items-center gap-1.5 mb-3 px-3 py-2 bg-input border-2 border-border-dark rounded focus-within:border-primary">
               <input
-                className="flex-1 min-w-0 px-3 py-2 bg-input border-2 border-border-dark rounded font-pixel text-[11px] placeholder:text-muted-foreground focus:outline-none focus:border-primary"
+                className="flex-1 min-w-0 bg-transparent font-pixel text-[11px] placeholder:text-muted-foreground focus:outline-none"
                 placeholder="응원 메시지를 남겨주세요..."
                 value={guestbookMessage}
                 onChange={(e) => setGuestbookMessage(e.target.value)}
@@ -308,10 +308,12 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
               />
               <button
                 onClick={handleSubmitGuestbook}
-                className="px-3 py-2 bg-primary border-2 border-primary-dark hover:brightness-110 transition-all"
-                style={{ boxShadow: '2px 2px 0 hsl(var(--primary-dark))' }}
+                className={cn(
+                  "shrink-0 w-7 h-7 flex items-center justify-center rounded transition-colors",
+                  guestbookMessage.trim() ? "text-primary hover:bg-primary/10" : "text-muted-foreground"
+                )}
               >
-                <Send size={14} className="text-primary-foreground" />
+                <Send size={14} />
               </button>
             </div>
 
@@ -411,12 +413,12 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
 
                   {/* Reply Input */}
                   {replyingToId === entry.id && user && (
-                    <div className="flex gap-1.5 mt-2">
+                    <div className="flex items-center gap-1.5 mt-2 px-2 py-1.5 bg-input border-2 border-border-dark focus-within:border-primary">
                       <input
                         value={replyText}
                         onChange={(e) => setReplyText(e.target.value)}
                         placeholder="댓글 입력..."
-                        className="flex-1 px-2 py-1.5 bg-input border-2 border-border-dark font-pixel text-[11px] focus:outline-none focus:border-primary"
+                        className="flex-1 min-w-0 bg-transparent font-pixel text-[11px] focus:outline-none"
                         maxLength={100}
                         autoFocus
                         onKeyDown={(e) => {
@@ -435,7 +437,10 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
                             setReplyingToId(null);
                           }
                         }}
-                        className="text-primary p-1"
+                        className={cn(
+                          "shrink-0 w-7 h-7 flex items-center justify-center rounded transition-colors",
+                          replyText.trim() ? "text-primary hover:bg-primary/10" : "text-muted-foreground"
+                        )}
                       >
                         <Send size={14} />
                       </button>
