@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Send, Heart, Loader2, Trash2, Pencil, Check, X } from 'lucide-react';
-import { PixelButton } from '@/components/ui/PixelButton';
 import { supabase } from '@/integrations/supabase/client';
+import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
@@ -192,9 +192,9 @@ export function Guestbook({ teamId }: GuestbookProps) {
 
       <div className="p-2">
         {/* Message Input */}
-        <div className="flex gap-1.5 mb-2">
+        <div className="flex items-center gap-1.5 mb-2 px-2 py-1.5 bg-input border-2 border-border-dark focus-within:border-primary">
           <input
-            className="flex-1 px-2 py-1.5 bg-input border-2 border-border-dark font-pixel text-[11px] placeholder:text-muted-foreground focus:outline-none focus:border-primary"
+            className="flex-1 min-w-0 bg-transparent font-pixel text-[11px] placeholder:text-muted-foreground focus:outline-none"
             placeholder={user ? '메시지를 남겨주세요...' : '로그인 후 작성 가능'}
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
@@ -202,15 +202,16 @@ export function Guestbook({ teamId }: GuestbookProps) {
             disabled={!user || sending}
             maxLength={200}
           />
-          <PixelButton
-            variant="primary"
-            size="sm"
-            className="px-2"
+          <button
+            className={cn(
+              "shrink-0 w-7 h-7 flex items-center justify-center rounded transition-colors",
+              !user || sending || !newMessage.trim() ? "text-muted-foreground" : "text-primary hover:bg-primary/10"
+            )}
             onClick={handleSend}
             disabled={!user || sending || !newMessage.trim()}
           >
-            {sending ? <Loader2 size={12} className="animate-spin" /> : <Send size={12} />}
-          </PixelButton>
+            {sending ? <Loader2 size={12} className="animate-spin" /> : <Send size={14} />}
+          </button>
         </div>
 
         {/* Entries */}
