@@ -144,7 +144,7 @@ export function TeamHeader({
         {/* Team Photo */}
         <div className="relative shrink-0">
           <div
-            className="w-20 h-20 bg-muted border-3 border-border-dark overflow-hidden"
+            className="w-24 h-24 bg-muted border-3 border-border-dark rounded-lg overflow-hidden"
             style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}
           >
             {photoUrl ? (
@@ -196,7 +196,7 @@ export function TeamHeader({
                 <button onClick={() => onFavoriteToggle?.(!isFavorited)} className="transition-transform active:scale-125">
                   <Star size={16} className={isFavorited ? 'text-[hsl(45,100%,50%)] fill-[hsl(45,100%,50%)]' : 'text-muted-foreground'} />
                 </button>
-                <h1 className="font-pixel text-sm text-foreground leading-tight">{name}</h1>
+                <h1 className="font-pixel text-base text-foreground leading-tight">{name}</h1>
                 {isAdmin && (
                   <button onClick={() => onNameClick ? onNameClick() : setIsEditingName(true)} className="text-muted-foreground hover:text-primary">
                     <Pencil size={10} />
@@ -216,19 +216,19 @@ export function TeamHeader({
           <div className="space-y-1">
             {region && (
               <div className="flex items-center gap-1.5">
-                <span className="font-body text-[11px] text-muted-foreground/60 w-12 shrink-0">활동지역</span>
-                <span className="font-body text-[11px] text-foreground">📍 {region}</span>
+                <span className="font-body text-xs text-muted-foreground/60 w-14 shrink-0">활동지역</span>
+                <span className="font-body text-xs text-foreground">📍 {region}</span>
               </div>
             )}
             {homeGroundName && (
               <div className="flex items-center gap-1.5">
-                <span className="font-body text-[11px] text-muted-foreground/60 w-12 shrink-0">홈구장</span>
+                <span className="font-body text-xs text-muted-foreground/60 w-14 shrink-0">홈구장</span>
                 <button
                   onClick={() => {
                     const query = homeGroundAddress || homeGroundName;
                     if (query) window.open(`https://map.naver.com/v5/search/${encodeURIComponent(query)}`, '_blank');
                   }}
-                  className="font-body text-[11px] text-[#03C75A] hover:underline flex items-center gap-0.5"
+                  className="font-body text-xs text-[#03C75A] hover:underline flex items-center gap-0.5"
                 >
                   <MapPin size={9} />
                   {homeGroundName}
@@ -237,8 +237,8 @@ export function TeamHeader({
             )}
             {trainingInfo && (
               <div className="flex items-center gap-1.5">
-                <span className="font-body text-[11px] text-muted-foreground/60 w-12 shrink-0">훈련시간</span>
-                <span className="font-body text-[11px] text-foreground">🕐 {trainingInfo}</span>
+                <span className="font-body text-xs text-muted-foreground/60 w-14 shrink-0">훈련시간</span>
+                <span className="font-body text-xs text-foreground">🕐 {trainingInfo}</span>
               </div>
             )}
           </div>

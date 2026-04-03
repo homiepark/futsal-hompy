@@ -51,7 +51,7 @@ export function TeamIntro({ introduction, isAdmin = false, onSave }: TeamIntroPr
               className={cn(
                 'w-full px-2 py-1.5 min-h-[60px] resize-none',
                 'bg-input border-2 border-border-dark',
-                'font-pixel text-[11px] leading-relaxed',
+                'font-body text-sm leading-relaxed',
                 'placeholder:text-muted-foreground',
                 'focus:outline-none focus:border-primary'
               )}
@@ -92,7 +92,7 @@ export function TeamIntro({ introduction, isAdmin = false, onSave }: TeamIntroPr
             </div>
           </div>
         ) : (
-          <p className="font-pixel text-[11px] text-foreground leading-relaxed whitespace-pre-wrap">
+          <p className="font-body text-sm text-foreground leading-relaxed whitespace-pre-wrap">
             {introduction || (isAdmin ? '팀 소개를 작성해주세요...' : '')}
           </p>
         )}
