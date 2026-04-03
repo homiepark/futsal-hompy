@@ -151,11 +151,11 @@ export function MemberRoster({ members, teamId }: MemberRosterProps) {
                     <button
                       key={member.id}
                       onClick={() => handleMemberClick(member)}
-                      className="flex flex-col items-center p-2 bg-muted border-2 border-border-dark hover:border-primary hover:bg-secondary transition-colors text-center"
+                      className="flex flex-col items-center p-2 bg-muted border-2 border-border-dark rounded-lg hover:border-primary hover:bg-secondary transition-colors text-center"
                       style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow) / 0.5)' }}
                     >
                       {/* Avatar */}
-                      <div className="w-12 h-12 bg-secondary border-2 border-border-dark overflow-hidden relative mb-1.5">
+                      <div className="w-12 h-12 bg-secondary border-2 border-border-dark rounded-md overflow-hidden relative mb-1.5">
                         {member.avatarUrl ? (
                           <img src={member.avatarUrl} alt={member.nickname} className="w-full h-full object-cover" />
                         ) : (
