@@ -276,8 +276,8 @@
   
   /* Kairosoft Panel - Main container with thick borders */
   .kairo-panel {
-    @apply bg-card border-4 border-border-dark;
-    box-shadow: 
+    @apply bg-card border-4 border-border-dark rounded-xl overflow-hidden;
+    box-shadow:
       3px 3px 0 hsl(var(--pixel-shadow)),
       inset -2px -2px 0 hsl(var(--pixel-shadow) / 0.2),
       inset 2px 2px 0 hsl(0 0% 100% / 0.4);

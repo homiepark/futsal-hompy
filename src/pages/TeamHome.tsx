@@ -654,7 +654,7 @@ export default function TeamHome() {
                   toast('매너 점수는 매치 후 상대팀이 평가합니다', { icon: '⭐', description: '매치 결과 입력 시 상대팀에게 별 1~5점을 받아요' });
                 }
               }}
-              className="bg-card border-2 border-border-dark py-2 text-center hover:bg-muted transition-colors"
+              className="bg-card border-2 border-border-dark rounded-lg py-2 text-center hover:bg-muted transition-colors"
               style={{boxShadow:'2px 2px 0 hsl(var(--pixel-shadow) / 0.5)'}}
             >
               <span className="text-sm block">{stat.icon}</span>
@@ -690,13 +690,13 @@ export default function TeamHome() {
         {isAdmin && (
           <div className="space-y-2">
             <div className="flex gap-2">
-              <button onClick={() => setShowBroadcast(true)} className="flex-1 py-2.5 bg-card border-2 border-border-dark font-pixel text-[11px] text-foreground flex items-center justify-center gap-1 hover:bg-muted" style={{boxShadow:'2px 2px 0 hsl(var(--pixel-shadow) / 0.5)'}}>
+              <button onClick={() => setShowBroadcast(true)} className="flex-1 py-2.5 bg-card border-2 border-border-dark rounded-lg font-pixel text-[11px] text-foreground flex items-center justify-center gap-1 hover:bg-muted" style={{boxShadow:'2px 2px 0 hsl(var(--pixel-shadow) / 0.5)'}}>
                 📢 메시지
               </button>
-              <button onClick={() => setShowInviteModal(true)} className="flex-1 py-2.5 bg-card border-2 border-border-dark font-pixel text-[11px] text-foreground flex items-center justify-center gap-1 hover:bg-muted" style={{boxShadow:'2px 2px 0 hsl(var(--pixel-shadow) / 0.5)'}}>
+              <button onClick={() => setShowInviteModal(true)} className="flex-1 py-2.5 bg-card border-2 border-border-dark rounded-lg font-pixel text-[11px] text-foreground flex items-center justify-center gap-1 hover:bg-muted" style={{boxShadow:'2px 2px 0 hsl(var(--pixel-shadow) / 0.5)'}}>
                 👥 초대
               </button>
-              <button onClick={() => navigate('/messages', { state: { tab: 'join-requests' } })} className="flex-1 py-2.5 bg-card border-2 border-border-dark font-pixel text-[11px] text-foreground flex items-center justify-center gap-1 hover:bg-muted" style={{boxShadow:'2px 2px 0 hsl(var(--pixel-shadow) / 0.5)'}}>
+              <button onClick={() => navigate('/messages', { state: { tab: 'join-requests' } })} className="flex-1 py-2.5 bg-card border-2 border-border-dark rounded-lg font-pixel text-[11px] text-foreground flex items-center justify-center gap-1 hover:bg-muted" style={{boxShadow:'2px 2px 0 hsl(var(--pixel-shadow) / 0.5)'}}>
                 📋 입단관리
               </button>
             </div>
@@ -706,14 +706,14 @@ export default function TeamHome() {
               <div className="flex gap-2">
                 <button
                   onClick={() => setShowAdminManage(true)}
-                  className="flex-1 py-2.5 bg-card border-2 border-border-dark font-pixel text-[11px] text-foreground flex items-center justify-center gap-1 hover:bg-muted"
+                  className="flex-1 py-2.5 bg-card border-2 border-border-dark rounded-lg font-pixel text-[11px] text-foreground flex items-center justify-center gap-1 hover:bg-muted"
                   style={{boxShadow:'2px 2px 0 hsl(var(--pixel-shadow) / 0.5)'}}
                 >
                   🛡️ 멤버 역할 관리
                 </button>
                 <button
                   onClick={() => setShowAdminTransfer(true)}
-                  className="flex-1 py-2.5 bg-card border-2 border-border-dark font-pixel text-[11px] text-foreground flex items-center justify-center gap-1 hover:bg-muted"
+                  className="flex-1 py-2.5 bg-card border-2 border-border-dark rounded-lg font-pixel text-[11px] text-foreground flex items-center justify-center gap-1 hover:bg-muted"
                   style={{boxShadow:'2px 2px 0 hsl(var(--pixel-shadow) / 0.5)'}}
                 >
                   👑 팀장 이전
@@ -734,7 +734,7 @@ export default function TeamHome() {
                 className="w-full"
               />
             ) : (
-              <div className="w-full text-center py-2.5 bg-muted border-2 border-border-dark font-pixel text-[11px] text-muted-foreground"
+              <div className="w-full text-center py-2.5 bg-muted border-2 border-border-dark rounded-lg font-pixel text-[11px] text-muted-foreground"
                 style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
               >
                 ✅ 팀원입니다
@@ -742,7 +742,7 @@ export default function TeamHome() {
             )}
             <button
               onClick={() => setShowDirectMessage(true)}
-              className="w-full py-2.5 bg-secondary border-3 border-border-dark font-pixel text-[11px] text-foreground hover:bg-muted transition-colors flex items-center justify-center gap-2"
+              className="w-full py-2.5 bg-secondary border-3 border-border-dark rounded-lg font-pixel text-[11px] text-foreground hover:bg-muted transition-colors flex items-center justify-center gap-2"
               style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
             >
               ✉️ 팀 관리자에게 쪽지보내기

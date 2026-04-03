@@ -196,7 +196,7 @@ export function TeamHeader({
                 <button onClick={() => onFavoriteToggle?.(!isFavorited)} className="transition-transform active:scale-125">
                   <Star size={16} className={isFavorited ? 'text-[hsl(45,100%,50%)] fill-[hsl(45,100%,50%)]' : 'text-muted-foreground'} />
                 </button>
-                <h1 className="font-pixel text-base text-foreground leading-tight">{name}</h1>
+                <h1 className="font-pixel text-lg text-foreground leading-tight drop-shadow-[0_1px_1px_rgba(0,0,0,0.3)]">{name}</h1>
                 {isAdmin && (
                   <button onClick={() => onNameClick ? onNameClick() : setIsEditingName(true)} className="text-muted-foreground hover:text-primary">
                     <Pencil size={10} />
@@ -216,13 +216,13 @@ export function TeamHeader({
           <div className="space-y-1">
             {region && (
               <div className="flex items-center gap-1.5">
-                <span className="font-body text-xs text-muted-foreground/60 w-14 shrink-0">활동지역</span>
+                <span className="font-body text-xs text-muted-foreground w-14 shrink-0">활동지역</span>
                 <span className="font-body text-xs text-foreground">📍 {region}</span>
               </div>
             )}
             {homeGroundName && (
               <div className="flex items-center gap-1.5">
-                <span className="font-body text-xs text-muted-foreground/60 w-14 shrink-0">홈구장</span>
+                <span className="font-body text-xs text-muted-foreground w-14 shrink-0">홈구장</span>
                 <button
                   onClick={() => {
                     const query = homeGroundAddress || homeGroundName;
@@ -237,7 +237,7 @@ export function TeamHeader({
             )}
             {trainingInfo && (
               <div className="flex items-center gap-1.5">
-                <span className="font-body text-xs text-muted-foreground/60 w-14 shrink-0">훈련시간</span>
+                <span className="font-body text-xs text-muted-foreground w-14 shrink-0">훈련시간</span>
                 <span className="font-body text-xs text-foreground">🕐 {trainingInfo}</span>
               </div>
             )}
