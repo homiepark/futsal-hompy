@@ -122,7 +122,10 @@ export function TimelinePost({
   };
 
   // Build the effective image list: prefer imageUrls array, fallback to single imageUrl
-  const allImages = imageUrls.length > 0 ? imageUrls : (imageUrl ? [imageUrl] : []);
+  // 동영상 URL은 이미지 목록에서 제외
+  const videoSrc = videoUrl || (isVideo ? imageUrl : '');
+  const allImages = (imageUrls.length > 0 ? imageUrls : (imageUrl ? [imageUrl] : []))
+    .filter(url => url && url !== videoSrc && !url.match(/\.(mp4|webm|mov|avi)(\?|$)/i));
 
   const displayLikes = isMock ? mockLikes : likesCount;
   const displayComments = isMock ? mockComments : commentsCount;
@@ -308,8 +311,8 @@ export function TimelinePost({
         );
       })()}
 
-      {/* Image Grid Preview */}
-      {!isVideo && !videoUrl && allImages.length > 0 && (
+      {/* Image Grid Preview - 동영상과 함께 올려도 표시 */}
+      {allImages.length > 0 && (
         <div className={cn(
           'grid gap-1 border-4 border-border-dark shadow-pixel overflow-hidden rounded-lg',
           allImages.length === 1 ? 'grid-cols-1' :
