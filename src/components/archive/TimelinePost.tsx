@@ -469,41 +469,76 @@ export function TimelinePost({
             </button>
           </div>
 
-          {/* Media with swipe */}
+          {/* Media with swipe - 슬라이드 방식 */}
           <div
-            className="flex-1 flex items-center justify-center px-4 select-none"
+            className="flex-1 relative overflow-hidden select-none"
             onClick={(e) => e.stopPropagation()}
             onTouchStart={(e) => {
               const touch = e.touches[0];
               (e.currentTarget as any)._touchStartX = touch.clientX;
+              (e.currentTarget as any)._touchStartY = touch.clientY;
             }}
             onTouchEnd={(e) => {
               const startX = (e.currentTarget as any)._touchStartX;
+              const startY = (e.currentTarget as any)._touchStartY;
               if (startX === undefined) return;
               const endX = e.changedTouches[0].clientX;
-              const diff = startX - endX;
-              if (diff > 50 && currentImageIndex < allMedia.length - 1) {
-                setCurrentImageIndex(i => i + 1);
-              } else if (diff < -50 && currentImageIndex > 0) {
-                setCurrentImageIndex(i => i - 1);
+              const endY = e.changedTouches[0].clientY;
+              const diffX = startX - endX;
+              const diffY = Math.abs(startY - endY);
+              // 가로 스와이프만 (세로보다 가로 이동이 클 때)
+              if (Math.abs(diffX) > 50 && Math.abs(diffX) > diffY) {
+                if (diffX > 0 && currentImageIndex < allMedia.length - 1) {
+                  setCurrentImageIndex(i => i + 1);
+                } else if (diffX < 0 && currentImageIndex > 0) {
+                  setCurrentImageIndex(i => i - 1);
+                }
               }
             }}
           >
-            {allMedia[currentImageIndex]?.type === 'video' ? (
-              <video
-                key={allMedia[currentImageIndex].url}
-                src={allMedia[currentImageIndex].url}
-                controls
-                autoPlay
-                className="max-w-full max-h-full object-contain bg-black"
-                onClick={(e) => e.stopPropagation()}
-              />
-            ) : (
-              <img
-                src={allMedia[currentImageIndex]?.url}
-                alt=""
-                className="max-w-full max-h-full object-contain pointer-events-none"
-              />
+            {/* 슬라이드 트랙 */}
+            <div
+              className="flex h-full transition-transform duration-300 ease-out"
+              style={{ transform: `translateX(-${currentImageIndex * 100}%)` }}
+            >
+              {allMedia.map((item, idx) => (
+                <div key={idx} className="w-full h-full flex-shrink-0 flex items-center justify-center px-4">
+                  {item.type === 'video' ? (
+                    <video
+                      key={item.url}
+                      src={item.url}
+                      controls
+                      autoPlay={idx === currentImageIndex}
+                      playsInline
+                      className="max-w-full max-h-full object-contain bg-black rounded-lg"
+                    />
+                  ) : (
+                    <img
+                      src={item.url}
+                      alt=""
+                      className="max-w-full max-h-full object-contain pointer-events-none"
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* 좌우 화살표 (2개 이상일 때) */}
+            {allMedia.length > 1 && (
+              <>
+                {currentImageIndex > 0 && (
+                  <button onClick={() => setCurrentImageIndex(i => i - 1)}
+                    className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-black/50 rounded-full flex items-center justify-center text-white hover:bg-black/70 transition-colors">
+                    <ChevronLeft size={20} />
+                  </button>
+                )}
+                {currentImageIndex < allMedia.length - 1 && (
+                  <button onClick={() => setCurrentImageIndex(i => i + 1)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-black/50 rounded-full flex items-center justify-center text-white hover:bg-black/70 transition-colors">
+                    <ChevronRight size={20} />
+                  </button>
+                )}
+              </>
             )}
           </div>
 
