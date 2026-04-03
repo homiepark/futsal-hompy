@@ -179,7 +179,7 @@ export default function TeamHome() {
             .select('id, image_url, video_url, content, created_at')
             .eq('team_id', teamId)
             .order('created_at', { ascending: false })
-            .limit(4),
+            .limit(8),
 
           supabase
             .from('team_notices')
