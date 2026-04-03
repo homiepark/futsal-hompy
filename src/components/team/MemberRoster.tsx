@@ -127,7 +127,7 @@ export function MemberRoster({ members, teamId }: MemberRosterProps) {
                   style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow) / 0.3)' }}
                 >
                   {/* Avatar */}
-                  <div className="w-10 h-10 bg-secondary border-2 border-border-dark rounded-md overflow-hidden flex-shrink-0 relative">
+                  <div className="w-12 h-12 bg-secondary border-2 border-border-dark rounded-md overflow-hidden flex-shrink-0 relative">
                     {staff.avatarUrl ? (
                       <img src={staff.avatarUrl} alt={staff.nickname} className="w-full h-full object-cover" />
                     ) : (
@@ -138,20 +138,20 @@ export function MemberRoster({ members, teamId }: MemberRosterProps) {
 
                   {/* Info */}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="font-pixel text-[11px] text-foreground truncate">{staff.nickname}</span>
-                      <span className="px-1.5 py-0.5 bg-primary/20 border border-primary/40 font-pixel text-[11px] text-primary shrink-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-pixel text-xs text-foreground truncate">{staff.nickname}</span>
+                      <span className="px-1.5 py-0.5 bg-primary/20 border border-primary/40 rounded font-pixel text-[11px] text-primary shrink-0">
                         {getStaffLabel(staff.role)}
                       </span>
                     </div>
-                    <div className="font-pixel text-[10px] text-muted-foreground mt-0.5">
-                      {staff.staffCareerYears ? (
-                        <span>지도 경력 {staff.staffCareerYears}년</span>
-                      ) : (
-                        <span>경력 미입력</span>
-                      )}
+                    <div className="space-y-0.5">
+                      <p className="font-body text-xs text-foreground">
+                        📋 지도 경력 {staff.staffCareerYears ? `${staff.staffCareerYears}년` : '미입력'}
+                      </p>
                       {staff.staffCareerNote && (
-                        <span className="ml-1 text-foreground/60">· {staff.staffCareerNote}</span>
+                        <p className="font-body text-xs text-muted-foreground">
+                          💬 {staff.staffCareerNote}
+                        </p>
                       )}
                     </div>
                   </div>
