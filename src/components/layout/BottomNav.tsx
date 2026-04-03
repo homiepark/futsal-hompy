@@ -103,7 +103,7 @@ export function BottomNav() {
               <span className="text-sm">{activeTeam.emblem || '⚽'}</span>
             )}
           </div>
-          <span className="font-pixel text-[8px] text-primary">{activeTeam.name}</span>
+          <span className="font-pixel text-[11px] text-primary">{activeTeam.name}</span>
           <span className="font-body text-[10px] text-muted-foreground">활성 팀</span>
         </div>
       )}

@@ -18,7 +18,7 @@ export function TeamPolaroid({
         ) : (
           <div className="text-center p-4">
             <Camera className="w-12 h-12 text-muted-foreground mx-auto mb-2" />
-            <p className="font-pixel text-[8px] text-muted-foreground">팀 사진을 추가하세요</p>
+            <p className="font-pixel text-[11px] text-muted-foreground">팀 사진을 추가하세요</p>
           </div>
         )}
       </div>

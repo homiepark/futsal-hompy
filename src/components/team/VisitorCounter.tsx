@@ -33,7 +33,7 @@ export function VisitorCounter({ todayCount, totalCount }: VisitorCounterProps) 
     >
       {/* Today */}
       <div className="flex items-center gap-1.5">
-        <span className="font-pixel text-[8px] text-muted-foreground">TODAY</span>
+        <span className="font-pixel text-[11px] text-muted-foreground">TODAY</span>
         <div className="flex gap-[2px]">
           {padNumber(todayCount, 4).split('').map((digit, i) => (
             <span
@@ -50,7 +50,7 @@ export function VisitorCounter({ todayCount, totalCount }: VisitorCounterProps) 
 
       {/* Total */}
       <div className="flex items-center gap-1.5">
-        <span className="font-pixel text-[8px] text-muted-foreground">TOTAL</span>
+        <span className="font-pixel text-[11px] text-muted-foreground">TOTAL</span>
         <div className="flex gap-[2px]">
           {padNumber(displayTotal, 6).split('').map((digit, i) => (
             <span

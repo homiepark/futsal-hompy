@@ -139,7 +139,7 @@ export function BroadcastModal({
 
         {/* Member Avatars Preview */}
         <div className="px-4 pb-4">
-          <p className="font-pixel text-[8px] text-muted-foreground uppercase mb-2">
+          <p className="font-pixel text-[11px] text-muted-foreground uppercase mb-2">
             📨 받는 사람 ({members.length}명)
           </p>
           <div className="flex flex-wrap gap-1">

@@ -62,7 +62,7 @@ export function FightingButton({ teamName }: FightingButtonProps) {
         )}
         style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow) / 0.5)' }}
       >
-        👊 파이팅! {count > 0 && <span className="text-[7px] opacity-80">({count})</span>}
+        👊 파이팅! {count > 0 && <span className="text-[11px] opacity-80">({count})</span>}
       </button>
     </div>
   );

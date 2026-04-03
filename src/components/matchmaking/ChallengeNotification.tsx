@@ -174,7 +174,7 @@ export function ChallengeNotification({
                 </PixelBadge>
                 <div className="flex items-center gap-1">
                   <Star size={10} className="text-accent fill-accent" />
-                  <span className="font-pixel text-[8px] text-accent">4.5</span>
+                  <span className="font-pixel text-[11px] text-accent">4.5</span>
                 </div>
               </div>
             </div>
@@ -183,7 +183,7 @@ export function ChallengeNotification({
           {/* Message */}
           {application.message && (
             <div className="px-3 py-2 bg-primary/10 border-2 border-primary/30">
-              <p className="font-pixel text-[8px] text-foreground leading-relaxed">
+              <p className="font-pixel text-[11px] text-foreground leading-relaxed">
                 "{application.message}"
               </p>
             </div>

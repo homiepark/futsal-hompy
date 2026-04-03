@@ -126,7 +126,7 @@ export function AdminTransferModal({
                       </div>
                       <span className="font-pixel text-[9px] text-foreground flex-1">{admin.nickname}</span>
                       {admin.id === currentAdminId ? (
-                        <span className="font-pixel text-[8px] text-primary px-1.5 py-0.5 bg-primary/20 border border-primary">
+                        <span className="font-pixel text-[11px] text-primary px-1.5 py-0.5 bg-primary/20 border border-primary">
                           👑 대표
                         </span>
                       ) : (
@@ -192,7 +192,7 @@ export function AdminTransferModal({
               )}
 
               {!canAddAdmin && (
-                <p className="font-pixel text-[8px] text-muted-foreground text-center py-2 mb-3 bg-muted/50 border border-border-dark">
+                <p className="font-pixel text-[11px] text-muted-foreground text-center py-2 mb-3 bg-muted/50 border border-border-dark">
                   ℹ️ 팀당 최대 2명의 관리자를 설정할 수 있습니다
                 </p>
               )}
@@ -243,7 +243,7 @@ export function AdminTransferModal({
                     </div>
                     <span className="font-pixel text-[9px] text-foreground">{member.nickname}</span>
                     {member.isAdmin && (
-                      <span className="font-pixel text-[7px] text-primary px-1 bg-primary/20 border border-primary">
+                      <span className="font-pixel text-[11px] text-primary px-1 bg-primary/20 border border-primary">
                         관리자
                       </span>
                     )}
@@ -274,7 +274,7 @@ export function AdminTransferModal({
               {/* Confirmation Step */}
               <div className="flex items-center gap-2 p-2 bg-accent/20 border-2 border-accent mb-3">
                 <AlertTriangle size={16} className="text-accent flex-shrink-0" />
-                <p className="font-pixel text-[8px] text-foreground leading-tight">
+                <p className="font-pixel text-[11px] text-foreground leading-tight">
                   정말로 <strong>{selectedMemberData?.nickname}</strong>님에게 대표 관리자 권한을 이전하시겠습니까?
                   이 작업은 되돌릴 수 없습니다.
                 </p>

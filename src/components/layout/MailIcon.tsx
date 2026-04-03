@@ -39,7 +39,7 @@ export function MailIcon({ unreadCount = 0, hasBroadcast = false, className }: M
       {unreadCount > 0 && (
         <span 
           className={cn(
-            "absolute -top-1 -right-1 min-w-[14px] h-[14px] flex items-center justify-center text-[7px] font-pixel border",
+            "absolute -top-1 -right-1 min-w-[14px] h-[14px] flex items-center justify-center text-[11px] font-pixel border",
             hasBroadcast 
               ? "bg-destructive text-destructive-foreground border-destructive animate-pulse" 
               : "bg-accent text-accent-foreground border-accent-dark"

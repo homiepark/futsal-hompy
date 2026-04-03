@@ -76,7 +76,7 @@ export function PixelEmptyState({
       </div>
       <p className="font-pixel text-[10px] text-muted-foreground">{message}</p>
       {subMessage && (
-        <p className="font-pixel text-[8px] text-muted-foreground mt-1">{subMessage}</p>
+        <p className="font-pixel text-[11px] text-muted-foreground mt-1">{subMessage}</p>
       )}
     </div>
   );

@@ -297,8 +297,8 @@ export function CreateMatchPostModal({
                 </div>
               </div>
               <div className="text-right">
-                <span className="font-pixel text-[7px] text-muted-foreground block">공고 작성</span>
-                <span className="font-pixel text-[8px] text-primary">팀 관리자</span>
+                <span className="font-pixel text-[11px] text-muted-foreground block">공고 작성</span>
+                <span className="font-pixel text-[11px] text-primary">팀 관리자</span>
               </div>
             </div>
           )}
@@ -358,7 +358,7 @@ export function CreateMatchPostModal({
                   ))}
                 </select>
               </div>
-              <p className="font-pixel text-[8px] text-muted-foreground">
+              <p className="font-pixel text-[11px] text-muted-foreground">
                 ⏰ {matchTimeStart} ~ {matchTimeEnd} (총 {
                   (() => {
                     const [startH, startM] = matchTimeStart.split(':').map(Number);
@@ -427,7 +427,7 @@ export function CreateMatchPostModal({
                   📍 {team?.homeGroundName}
                 </p>
                 {team?.homeGroundAddress && (
-                  <p className="font-pixel text-[8px] text-muted-foreground mt-1">
+                  <p className="font-pixel text-[11px] text-muted-foreground mt-1">
                     {team.homeGroundAddress}
                   </p>
                 )}
@@ -472,7 +472,7 @@ export function CreateMatchPostModal({
               </h3>
               <LevelInfoButton />
             </div>
-            <p className="font-pixel text-[8px] text-muted-foreground">복수 선택 가능</p>
+            <p className="font-pixel text-[11px] text-muted-foreground">복수 선택 가능</p>
             <div className="grid grid-cols-2 gap-2">
               {levelOptions.map(({ value, name, icon }) => {
                 const isSelected = targetLevels.includes(value);
@@ -505,7 +505,7 @@ export function CreateMatchPostModal({
                       <div>
                         <span className="font-pixel text-[10px] font-bold block">LV.{value}</span>
                         <span className={cn(
-                          "font-pixel text-[7px]",
+                          "font-pixel text-[11px]",
                           isSelected ? "opacity-75" : "text-muted-foreground"
                         )}>
                           {name}
@@ -543,13 +543,13 @@ export function CreateMatchPostModal({
           {/* Draft Save Status */}
           <div className="flex items-center justify-center gap-2">
             {draftSaveStatus === 'saving' && (
-              <span className="font-pixel text-[8px] text-muted-foreground animate-pulse flex items-center gap-1">
+              <span className="font-pixel text-[11px] text-muted-foreground animate-pulse flex items-center gap-1">
                 <Save size={10} className="animate-spin" />
                 저장 중...
               </span>
             )}
             {draftSaveStatus === 'saved' && (
-              <span className="font-pixel text-[8px] text-primary flex items-center gap-1">
+              <span className="font-pixel text-[11px] text-primary flex items-center gap-1">
                 <Save size={10} />
                 임시 저장됨
               </span>

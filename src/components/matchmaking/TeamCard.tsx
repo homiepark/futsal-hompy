@@ -71,7 +71,7 @@ export function TeamCard({
             {/* Manner Score */}
             <div className="flex items-center gap-1">
               <Star size={10} className="text-accent fill-accent" />
-              <span className="font-pixel text-[8px] text-accent">{mannerScore.toFixed(1)}</span>
+              <span className="font-pixel text-[11px] text-accent">{mannerScore.toFixed(1)}</span>
             </div>
           </div>
         </div>
@@ -83,7 +83,7 @@ export function TeamCard({
               <span 
                 key={idx}
                 className={cn(
-                  "px-1.5 py-0.5 font-pixel text-[7px] border",
+                  "px-1.5 py-0.5 font-pixel text-[11px] border",
                   tag === '내 동네 팀' && "bg-primary/20 text-primary border-primary/50",
                   tag === '실력 비슷' && "bg-accent/20 text-accent border-accent/50",
                   tag === '첫 대결' && "bg-secondary text-secondary-foreground border-border"

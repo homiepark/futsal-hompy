@@ -83,7 +83,7 @@ export function CourtBookingModal({ isOpen, onClose, courtName, courtAddress, pr
             <h3 className="font-pixel text-[10px]">{courtName}</h3>
             <div className="flex items-center gap-1 mt-1 opacity-80">
               <MapPin size={10} />
-              <span className="font-pixel text-[7px]">{courtAddress}</span>
+              <span className="font-pixel text-[11px]">{courtAddress}</span>
             </div>
           </div>
           <button onClick={onClose} className="hover:opacity-80">
@@ -95,7 +95,7 @@ export function CourtBookingModal({ isOpen, onClose, courtName, courtAddress, pr
           <>
             {/* Date Selector */}
             <div className="px-4 py-3 border-b-2 border-border shrink-0">
-              <h4 className="font-pixel text-[8px] text-muted-foreground mb-2">날짜 선택</h4>
+              <h4 className="font-pixel text-[11px] text-muted-foreground mb-2">날짜 선택</h4>
               <div className="flex gap-2 overflow-x-auto pb-2">
                 {dates.map((date) => {
                   const isSelected = isSameDay(date, selectedDate);
@@ -112,7 +112,7 @@ export function CourtBookingModal({ isOpen, onClose, courtName, courtAddress, pr
                       }`}
                       style={{ boxShadow: isSelected ? '2px 2px 0 hsl(var(--primary-dark))' : '1px 1px 0 hsl(var(--pixel-shadow))' }}
                     >
-                      <span className={`font-pixel text-[8px] block ${isWeekend && !isSelected ? 'text-accent' : ''}`}>
+                      <span className={`font-pixel text-[11px] block ${isWeekend && !isSelected ? 'text-accent' : ''}`}>
                         {dayName}
                       </span>
                       <span className="font-pixel text-[11px] block mt-0.5">
@@ -127,17 +127,17 @@ export function CourtBookingModal({ isOpen, onClose, courtName, courtAddress, pr
             {/* Time Slots Grid */}
             <div className="px-4 py-3 overflow-y-auto flex-1">
               <div className="flex items-center justify-between mb-2">
-                <h4 className="font-pixel text-[8px] text-muted-foreground">
+                <h4 className="font-pixel text-[11px] text-muted-foreground">
                   {format(selectedDate, 'M월 d일 (EEE)', { locale: ko })} 시간대
                 </h4>
                 <div className="flex gap-2">
                   <span className="flex items-center gap-1">
                     <span className="w-3 h-3 bg-primary/20 border border-primary/40" />
-                    <span className="font-pixel text-[7px] text-muted-foreground">선택</span>
+                    <span className="font-pixel text-[11px] text-muted-foreground">선택</span>
                   </span>
                   <span className="flex items-center gap-1">
                     <span className="w-3 h-3 bg-muted border border-border-dark opacity-50" />
-                    <span className="font-pixel text-[7px] text-muted-foreground">예약됨</span>
+                    <span className="font-pixel text-[11px] text-muted-foreground">예약됨</span>
                   </span>
                 </div>
               </div>
@@ -161,7 +161,7 @@ export function CourtBookingModal({ isOpen, onClose, courtName, courtAddress, pr
                       style={{ boxShadow: isSelected ? '2px 2px 0 hsl(var(--primary-dark) / 0.3)' : '1px 1px 0 hsl(var(--pixel-shadow) / 0.5)' }}
                     >
                       <span className="font-pixel text-[10px] block">{slot.time}</span>
-                      <span className={`font-pixel text-[7px] block mt-0.5 ${isBooked ? 'text-muted-foreground' : 'text-accent'}`}>
+                      <span className={`font-pixel text-[11px] block mt-0.5 ${isBooked ? 'text-muted-foreground' : 'text-accent'}`}>
                         {isBooked ? '마감' : `₩${(slot.price / 10000).toFixed(1)}만`}
                       </span>
                     </button>
@@ -175,10 +175,10 @@ export function CourtBookingModal({ isOpen, onClose, courtName, courtAddress, pr
               <div className="px-4 py-3 border-t-3 border-border-dark bg-card shrink-0">
                 <div className="flex items-center justify-between mb-2">
                   <div>
-                    <span className="font-pixel text-[8px] text-muted-foreground">
+                    <span className="font-pixel text-[11px] text-muted-foreground">
                       {selectedSlots.length}시간 선택
                     </span>
-                    <span className="font-pixel text-[8px] text-foreground ml-2">
+                    <span className="font-pixel text-[11px] text-foreground ml-2">
                       {selectedSlots[0]} - {parseInt(selectedSlots[selectedSlots.length - 1]) + 1}:00
                     </span>
                   </div>
@@ -209,7 +209,7 @@ export function CourtBookingModal({ isOpen, onClose, courtName, courtAddress, pr
                 <MapPin size={14} className="text-primary shrink-0" />
                 <div>
                   <span className="font-pixel text-[9px] text-foreground block">{courtName}</span>
-                  <span className="font-pixel text-[7px] text-muted-foreground">{courtAddress}</span>
+                  <span className="font-pixel text-[11px] text-muted-foreground">{courtAddress}</span>
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -218,7 +218,7 @@ export function CourtBookingModal({ isOpen, onClose, courtName, courtAddress, pr
                   <span className="font-pixel text-[9px] text-foreground block">
                     {format(selectedDate, 'yyyy년 M월 d일 (EEE)', { locale: ko })}
                   </span>
-                  <span className="font-pixel text-[7px] text-muted-foreground">
+                  <span className="font-pixel text-[11px] text-muted-foreground">
                     {selectedSlots[0]} - {parseInt(selectedSlots[selectedSlots.length - 1]) + 1}:00 ({selectedSlots.length}시간)
                   </span>
                 </div>
@@ -227,7 +227,7 @@ export function CourtBookingModal({ isOpen, onClose, courtName, courtAddress, pr
 
             {/* Team Size */}
             <div>
-              <label className="font-pixel text-[8px] text-muted-foreground mb-2 block">인원 수</label>
+              <label className="font-pixel text-[11px] text-muted-foreground mb-2 block">인원 수</label>
               <div className="flex gap-2">
                 {['5', '6', '8', '10', '12'].map(size => (
                   <button
@@ -254,7 +254,7 @@ export function CourtBookingModal({ isOpen, onClose, courtName, courtAddress, pr
                 <span className="font-pixel text-sm text-accent">₩{totalPrice.toLocaleString()}</span>
               </div>
               <div className="text-right">
-                <span className="font-pixel text-[7px] text-muted-foreground">
+                <span className="font-pixel text-[11px] text-muted-foreground">
                   1인당 ₩{Math.round(totalPrice / parseInt(teamSize)).toLocaleString()}
                 </span>
               </div>

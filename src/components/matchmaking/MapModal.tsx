@@ -58,7 +58,7 @@ export function MapModal({
               </div>
               <div>
                 <p className="font-pixel text-[10px] text-foreground">{teamName}</p>
-                <p className="font-pixel text-[8px] text-muted-foreground">홈 구장</p>
+                <p className="font-pixel text-[11px] text-muted-foreground">홈 구장</p>
               </div>
             </div>
           )}
@@ -85,7 +85,7 @@ export function MapModal({
               <div className="w-12 h-12 bg-primary border-3 border-primary-dark flex items-center justify-center mb-2" style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}>
                 <MapPin size={24} className="text-primary-foreground" />
               </div>
-              <p className="font-pixel text-[8px] text-muted-foreground">
+              <p className="font-pixel text-[11px] text-muted-foreground">
                 아래 버튼으로 지도 앱에서 확인하세요
               </p>
             </div>
@@ -107,7 +107,7 @@ export function MapModal({
 
           {/* Map App Links */}
           <div className="space-y-2">
-            <p className="font-pixel text-[8px] text-muted-foreground text-center">
+            <p className="font-pixel text-[11px] text-muted-foreground text-center">
               지도 앱에서 위치 확인
             </p>
             <div className="flex gap-2">

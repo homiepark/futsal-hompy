@@ -71,7 +71,7 @@ export function MatchTicker() {
       <div className="flex items-center">
         {/* Label */}
         <div className="flex-shrink-0 px-3 py-2 bg-accent text-accent-foreground border-r-3 border-accent-dark">
-          <span className="font-pixel text-[8px] uppercase">LIVE</span>
+          <span className="font-pixel text-[11px] uppercase">LIVE</span>
         </div>
 
         {/* Scrolling Ticker */}

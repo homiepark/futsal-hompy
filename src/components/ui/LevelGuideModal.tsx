@@ -152,7 +152,7 @@ export function LevelGuideModal({ isOpen, onClose }: LevelGuideModalProps) {
             <div className="bg-accent/10 border-2 border-accent p-3 flex items-start gap-3">
               <div className="flex-shrink-0 mt-0.5 text-xl">⚽</div>
               <div>
-                <p className="font-pixel text-[8px] text-accent mb-1">TRAINER'S NOTE</p>
+                <p className="font-pixel text-[11px] text-accent mb-1">TRAINER'S NOTE</p>
                 <p className="font-body text-xs text-foreground">
                   정확한 레벨 정보는 모두에게 공정하고 안전한 경기를 보장합니다!
                 </p>

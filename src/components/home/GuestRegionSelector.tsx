@@ -114,7 +114,7 @@ export function GuestRegionSelector({
               <br />
               그 지역 팀들의 소식을 볼 수 있어요!
             </p>
-            <p className="font-pixel text-[8px] text-muted-foreground mt-2">
+            <p className="font-pixel text-[11px] text-muted-foreground mt-2">
               (최대 {MAX_REGIONS}개 선택 가능)
             </p>
           </div>
@@ -127,7 +127,7 @@ export function GuestRegionSelector({
                 {selectedRegions.map((r, i) => (
                   <div 
                     key={`${r.region}-${r.district}`}
-                    className="flex items-center gap-1 px-2 py-1 bg-accent/20 border-2 border-accent text-accent font-pixel text-[8px]"
+                    className="flex items-center gap-1 px-2 py-1 bg-accent/20 border-2 border-accent text-accent font-pixel text-[11px]"
                   >
                     <span>📍 {r.district}</span>
                     <button 
@@ -261,7 +261,7 @@ export function GuestRegionPrompt({ onSelectClick }: GuestRegionPromptProps) {
           <p className="font-pixel text-[12px] text-foreground mb-2">
             동네를 설정하고 주변 팀 소식을 받아보세요!
           </p>
-          <p className="font-pixel text-[8px] text-muted-foreground mb-4">
+          <p className="font-pixel text-[11px] text-muted-foreground mb-4">
             관심 지역의 팀 활동, 매치 결과, 모집 공고를 한눈에
           </p>
           

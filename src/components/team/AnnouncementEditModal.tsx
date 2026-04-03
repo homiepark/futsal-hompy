@@ -74,14 +74,14 @@ export function AnnouncementEditModal({
               style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
             />
             <div className="text-right mt-1">
-              <span className="font-pixel text-[8px] text-muted-foreground">
+              <span className="font-pixel text-[11px] text-muted-foreground">
                 {content.length}/200
               </span>
             </div>
           </div>
 
           <div className="bg-amber-50 border-2 border-amber-300 p-2 rounded">
-            <p className="font-pixel text-[8px] text-amber-700">
+            <p className="font-pixel text-[11px] text-amber-700">
               💡 팁: 공지사항은 팀 홈 상단에 표시되며, 모든 팀원이 볼 수 있습니다.
             </p>
           </div>

@@ -72,7 +72,7 @@ export function MatchPostCard({
         <div className="space-y-3">
           {/* Header with "WANTED" style */}
           <div className="text-center pb-2 border-b-2 border-dashed border-border">
-            <span className="font-pixel text-[8px] text-muted-foreground tracking-widest">
+            <span className="font-pixel text-[11px] text-muted-foreground tracking-widest">
               ⚔️ MATCH WANTED ⚔️
             </span>
           </div>
@@ -98,7 +98,7 @@ export function MatchPostCard({
                   </PixelBadge>
                   <div className="flex items-center gap-1">
                     <Star size={10} className="text-accent fill-accent" />
-                    <span className="font-pixel text-[8px] text-accent">{teamMannerScore.toFixed(1)}</span>
+                    <span className="font-pixel text-[11px] text-accent">{teamMannerScore.toFixed(1)}</span>
                   </div>
                 </div>
               </div>
@@ -159,7 +159,7 @@ export function MatchPostCard({
 
           {/* Description */}
           {description && (
-            <p className="font-pixel text-[8px] text-muted-foreground line-clamp-2 px-1">
+            <p className="font-pixel text-[11px] text-muted-foreground line-clamp-2 px-1">
               {description}
             </p>
           )}

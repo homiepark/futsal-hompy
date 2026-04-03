@@ -11,7 +11,7 @@ export function WinsCounter({ wins = 42 }: WinsCounterProps) {
     <PixelCard className="flex items-center gap-3">
       <PixelIcon icon={Trophy} variant="accent" size="lg" />
       <div>
-        <p className="font-pixel text-[8px] text-muted-foreground">총 승리</p>
+        <p className="font-pixel text-[11px] text-muted-foreground">총 승리</p>
         <p className="font-pixel text-2xl text-accent">{wins}</p>
       </div>
     </PixelCard>

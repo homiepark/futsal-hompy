@@ -96,7 +96,7 @@ export function InvitationCard({
           <p className="font-pixel text-[9px] text-accent uppercase">팀 초대</p>
           <p className="font-pixel text-sm text-foreground">{teamName}</p>
         </div>
-        <span className="font-pixel text-[8px] text-muted-foreground">{createdAt}</span>
+        <span className="font-pixel text-[11px] text-muted-foreground">{createdAt}</span>
       </div>
 
       {/* Message */}

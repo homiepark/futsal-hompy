@@ -69,23 +69,23 @@ export function MatchResultConfirm({
         <div className="p-4 space-y-4">
           {/* Match Info */}
           <div className="text-center">
-            <p className="font-pixel text-[8px] text-muted-foreground mb-2">{matchDate}</p>
+            <p className="font-pixel text-[11px] text-muted-foreground mb-2">{matchDate}</p>
             <div className="flex items-center justify-center gap-3">
               <div className="text-center">
                 <span className="text-2xl block">{myTeamEmblem}</span>
-                <span className="font-pixel text-[8px] text-foreground">{myTeamName}</span>
+                <span className="font-pixel text-[11px] text-foreground">{myTeamName}</span>
               </div>
               <span className="font-pixel text-[12px] text-accent">VS</span>
               <div className="text-center">
                 <span className="text-2xl block">{opponentEmblem}</span>
-                <span className="font-pixel text-[8px] text-foreground">{opponentName}</span>
+                <span className="font-pixel text-[11px] text-foreground">{opponentName}</span>
               </div>
             </div>
           </div>
 
           {/* Result Selection */}
           <div>
-            <p className="font-pixel text-[8px] text-muted-foreground mb-2">경기 결과</p>
+            <p className="font-pixel text-[11px] text-muted-foreground mb-2">경기 결과</p>
             <div className="grid grid-cols-3 gap-2">
               {results.map(r => (
                 <button
@@ -109,7 +109,7 @@ export function MatchResultConfirm({
 
           {/* Manner Rating */}
           <div>
-            <p className="font-pixel text-[8px] text-muted-foreground mb-2">
+            <p className="font-pixel text-[11px] text-muted-foreground mb-2">
               <Shield size={10} className="inline mr-1" />
               상대팀 매너 평가
             </p>
@@ -129,14 +129,14 @@ export function MatchResultConfirm({
                 </button>
               ))}
             </div>
-            <p className="font-pixel text-[7px] text-center text-muted-foreground mt-1">
+            <p className="font-pixel text-[11px] text-center text-muted-foreground mt-1">
               {mannerRating <= 2 ? '아쉬웠어요' : mannerRating <= 3 ? '보통이에요' : mannerRating <= 4 ? '좋았어요!' : '최고예요!'}
             </p>
           </div>
 
           {/* Info */}
           <div className="bg-primary/5 border border-primary/20 p-2.5">
-            <p className="font-pixel text-[7px] text-primary leading-relaxed">
+            <p className="font-pixel text-[11px] text-primary leading-relaxed">
               💡 양 팀 모두 같은 결과를 입력하면 자동 반영됩니다.
               결과가 다를 경우 관리자가 확인합니다.
             </p>

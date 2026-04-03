@@ -96,18 +96,18 @@ export function ChallengeModal({
           <div className="flex items-center justify-center gap-4 py-2">
             <div className="text-center">
               <span className="text-2xl block">{myTeam.emblem}</span>
-              <span className="font-pixel text-[8px] text-foreground">{myTeam.name}</span>
+              <span className="font-pixel text-[11px] text-foreground">{myTeam.name}</span>
             </div>
             <span className="font-pixel text-[14px] text-accent">VS</span>
             <div className="text-center">
               <span className="text-2xl block">{targetTeamEmblem}</span>
-              <span className="font-pixel text-[8px] text-foreground">{targetTeamName}</span>
+              <span className="font-pixel text-[11px] text-foreground">{targetTeamName}</span>
             </div>
           </div>
 
           {/* Message Input */}
           <div>
-            <label className="font-pixel text-[8px] text-muted-foreground block mb-1.5">
+            <label className="font-pixel text-[11px] text-muted-foreground block mb-1.5">
               상대팀에게 한마디 (선택)
             </label>
             <textarea
@@ -117,10 +117,10 @@ export function ChallengeModal({
               maxLength={200}
               className="w-full pixel-input h-20 resize-none"
             />
-            <span className="font-pixel text-[6px] text-muted-foreground">{message.length}/200</span>
+            <span className="font-pixel text-[11px] text-muted-foreground">{message.length}/200</span>
           </div>
 
-          <p className="font-pixel text-[7px] text-muted-foreground bg-primary/5 border border-primary/20 p-2">
+          <p className="font-pixel text-[11px] text-muted-foreground bg-primary/5 border border-primary/20 p-2">
             💡 도전 신청과 함께 상대팀 관리자에게 쪽지가 전송됩니다. 쪽지함에서 계속 소통할 수 있어요!
           </p>
 

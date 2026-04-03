@@ -48,8 +48,8 @@ export function TeamMoodIndicator({ teamId, isAdmin = false }: TeamMoodIndicator
         {currentMood.emoji}
       </span>
       <div className="text-left">
-        <span className="font-pixel text-[8px] text-foreground block">{currentMood.label}</span>
-        {isAdmin && <span className="font-pixel text-[8px] text-muted-foreground">탭하여 변경</span>}
+        <span className="font-pixel text-[11px] text-foreground block">{currentMood.label}</span>
+        {isAdmin && <span className="font-pixel text-[11px] text-muted-foreground">탭하여 변경</span>}
       </div>
     </button>
   );

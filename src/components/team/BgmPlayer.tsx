@@ -42,11 +42,11 @@ export function BgmPlayer({ tracks = defaultTracks, teamName }: BgmPlayerProps) 
       <div className="bg-primary text-primary-foreground px-2.5 py-1.5 flex items-center justify-between">
         <div className="flex items-center gap-1.5">
           <Music size={10} />
-          <span className="font-pixel text-[8px]">BGM</span>
+          <span className="font-pixel text-[11px]">BGM</span>
         </div>
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="font-pixel text-[8px] hover:opacity-80"
+          className="font-pixel text-[11px] hover:opacity-80"
         >
           {isExpanded ? '▲' : '▼'}
         </button>
@@ -82,18 +82,18 @@ export function BgmPlayer({ tracks = defaultTracks, teamName }: BgmPlayerProps) 
         {/* Track Info - Marquee */}
         <div className="flex-1 min-w-0 overflow-hidden">
           <div className={`${isPlaying ? 'animate-marquee' : ''} whitespace-nowrap`}>
-            <span className="font-pixel text-[8px] text-foreground">
+            <span className="font-pixel text-[11px] text-foreground">
               ♪ {track.title}
             </span>
-            <span className="font-pixel text-[8px] text-muted-foreground ml-2">
+            <span className="font-pixel text-[11px] text-muted-foreground ml-2">
               - {track.artist}
             </span>
             {isPlaying && (
               <>
-                <span className="font-pixel text-[8px] text-foreground ml-8">
+                <span className="font-pixel text-[11px] text-foreground ml-8">
                   ♪ {track.title}
                 </span>
-                <span className="font-pixel text-[8px] text-muted-foreground ml-2">
+                <span className="font-pixel text-[11px] text-muted-foreground ml-2">
                   - {track.artist}
                 </span>
               </>
@@ -123,15 +123,15 @@ export function BgmPlayer({ tracks = defaultTracks, teamName }: BgmPlayerProps) 
                   : 'hover:bg-muted border border-transparent'
               }`}
             >
-              <span className="font-pixel text-[8px] text-accent w-3">
+              <span className="font-pixel text-[11px] text-accent w-3">
                 {i === currentTrack && isPlaying ? '▶' : `${i + 1}`}
               </span>
-              <span className={`font-pixel text-[8px] truncate ${
+              <span className={`font-pixel text-[11px] truncate ${
                 i === currentTrack ? 'text-primary' : 'text-foreground'
               }`}>
                 {t.title}
               </span>
-              <span className="font-pixel text-[7px] text-muted-foreground ml-auto shrink-0">
+              <span className="font-pixel text-[11px] text-muted-foreground ml-auto shrink-0">
                 {t.artist}
               </span>
             </button>

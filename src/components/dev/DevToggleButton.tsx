@@ -10,7 +10,7 @@ export function DevToggleButton() {
       className={cn(
         'fixed bottom-24 right-3 z-50',
         'px-2 py-1.5',
-        'font-pixel text-[8px]',
+        'font-pixel text-[11px]',
         'border-2 transition-all duration-100',
         'active:translate-y-0.5',
         'opacity-50 hover:opacity-100',

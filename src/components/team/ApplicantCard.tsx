@@ -91,7 +91,7 @@ export function ApplicantCard({
               const label = positionLabels[pos] || pos;
               return (
                 <span key={pos} className={cn(
-                  'font-pixel text-[8px] px-2 py-0.5 border-2 border-border-dark',
+                  'font-pixel text-[11px] px-2 py-0.5 border-2 border-border-dark',
                   color
                 )}
                   style={{ boxShadow: '1px 1px 0 hsl(var(--pixel-shadow) / 0.5)' }}

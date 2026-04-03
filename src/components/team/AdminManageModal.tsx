@@ -147,7 +147,7 @@ export function AdminManageModal({ isOpen, onClose, members, teamId, ownerId, on
         </div>
 
         <div className="p-4 space-y-3 max-h-[60vh] overflow-y-auto">
-          <p className="font-pixel text-[8px] text-muted-foreground">
+          <p className="font-pixel text-[11px] text-muted-foreground">
             감독(1명), 코치(복수), 관리자, 선수 역할을 지정할 수 있습니다.
           </p>
 
@@ -173,7 +173,7 @@ export function AdminManageModal({ isOpen, onClose, members, teamId, ownerId, on
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-pixel text-[10px] text-foreground truncate">{member.nickname}</p>
-                      <p className="font-pixel text-[8px] text-muted-foreground">
+                      <p className="font-pixel text-[11px] text-muted-foreground">
                         {getRoleIcon(member.role)} {getRoleLabel(member.role)}
                         {isStaff(member.role) && member.staffCareerYears && (
                           <span className="ml-1 text-primary">· 경력 {member.staffCareerYears}년</span>
@@ -193,7 +193,7 @@ export function AdminManageModal({ isOpen, onClose, members, teamId, ownerId, on
                           onClick={() => !isCurrentRole && handleRoleChange(member, opt.value)}
                           disabled={loading === member.id || isCurrentRole || isManagerDisabled}
                           className={cn(
-                            'px-2 py-1 border-2 font-pixel text-[8px] transition-all disabled:opacity-50',
+                            'px-2 py-1 border-2 font-pixel text-[11px] transition-all disabled:opacity-50',
                             isCurrentRole
                               ? 'bg-primary text-primary-foreground border-primary-dark'
                               : 'bg-card border-border-dark hover:border-primary text-foreground'
@@ -233,13 +233,13 @@ export function AdminManageModal({ isOpen, onClose, members, teamId, ownerId, on
                             <button
                               onClick={() => handleSaveCareer(member)}
                               disabled={loading === member.id}
-                              className="px-3 py-1 bg-primary text-primary-foreground border-2 border-primary-dark font-pixel text-[8px]"
+                              className="px-3 py-1 bg-primary text-primary-foreground border-2 border-primary-dark font-pixel text-[11px]"
                             >
                               저장
                             </button>
                             <button
                               onClick={() => setEditingCareer(null)}
-                              className="px-3 py-1 bg-muted border-2 border-border-dark font-pixel text-[8px]"
+                              className="px-3 py-1 bg-muted border-2 border-border-dark font-pixel text-[11px]"
                             >
                               취소
                             </button>
@@ -252,7 +252,7 @@ export function AdminManageModal({ isOpen, onClose, members, teamId, ownerId, on
                             setCareerYears(member.staffCareerYears?.toString() || '');
                             setCareerNote(member.staffCareerNote || '');
                           }}
-                          className="font-pixel text-[8px] text-primary hover:text-primary/80"
+                          className="font-pixel text-[11px] text-primary hover:text-primary/80"
                         >
                           {member.staffCareerYears ? `✏️ 경력 수정 (${member.staffCareerYears}년)` : '➕ 지도 경력 입력'}
                           {member.staffCareerNote && (

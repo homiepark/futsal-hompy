@@ -79,7 +79,6 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
       reader.readAsDataURL(file);
     });
 
-    // Reset input so same file can be selected again
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
@@ -98,7 +97,7 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
 
     setVideoFile(file);
     setVideoPreview(URL.createObjectURL(file));
-    setVideoUrl(''); // clear link if file selected
+    setVideoUrl('');
     if (videoInputRef.current) videoInputRef.current.value = '';
   };
 
@@ -223,12 +222,12 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-start justify-center pt-8 pb-24 px-4">
+    <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center px-0 sm:px-4">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
 
-      <div className="relative w-full max-w-md max-h-full overflow-hidden kairo-panel animate-in fade-in zoom-in-95 duration-200 flex flex-col">
+      <div className="relative w-full sm:max-w-md max-h-[90vh] overflow-hidden kairo-panel animate-in fade-in zoom-in-95 duration-200 flex flex-col rounded-t-xl sm:rounded-xl">
         {/* Header */}
-        <div className="kairo-panel-header justify-between flex-shrink-0">
+        <div className="kairo-panel-header justify-between flex-shrink-0 rounded-t-lg">
           <div className="flex items-center gap-2">
             <span>📝</span>
             <span>팀 스토리 글쓰기</span>
@@ -242,17 +241,17 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
         </div>
 
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto p-3 space-y-3">
+        <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {/* Folder Selection */}
           <div>
-            <label className="block font-pixel text-[8px] text-muted-foreground uppercase mb-1.5">폴더 선택</label>
+            <label className="block font-pixel text-[11px] text-foreground mb-2">폴더 선택</label>
             <div className="flex flex-wrap gap-1.5">
               {folders.map((folder) => (
                 <button
                   key={folder.id}
                   onClick={() => setSelectedFolder(folder.id)}
                   className={cn(
-                    'px-2 py-1 border-2 font-pixel text-[8px] transition-all',
+                    'px-2.5 py-1.5 border-2 rounded-lg font-pixel text-[11px] transition-all',
                     selectedFolder === folder.id
                       ? 'bg-primary border-primary-dark text-primary-foreground'
                       : 'bg-muted border-border-dark text-foreground hover:border-primary'
@@ -267,12 +266,12 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
 
           {/* Visibility Selection */}
           <div>
-            <label className="block font-pixel text-[8px] text-muted-foreground uppercase mb-1.5">공개 범위</label>
+            <label className="block font-pixel text-[11px] text-foreground mb-2">공개 범위</label>
             <div className="flex gap-2">
               <button
                 onClick={() => setVisibility('members')}
                 className={cn(
-                  'flex-1 py-1.5 border-2 font-pixel text-[8px] transition-all',
+                  'flex-1 py-2 border-2 rounded-lg font-pixel text-[11px] transition-all',
                   visibility === 'members'
                     ? 'bg-primary border-primary-dark text-primary-foreground'
                     : 'bg-muted border-border-dark text-foreground hover:border-primary'
@@ -284,7 +283,7 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
               <button
                 onClick={() => setVisibility('public')}
                 className={cn(
-                  'flex-1 py-1.5 border-2 font-pixel text-[8px] transition-all',
+                  'flex-1 py-2 border-2 rounded-lg font-pixel text-[11px] transition-all',
                   visibility === 'public'
                     ? 'bg-accent border-accent-dark text-accent-foreground'
                     : 'bg-muted border-border-dark text-foreground hover:border-accent'
@@ -298,33 +297,36 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
 
           {/* Activity Date */}
           <div>
-            <label className="block font-pixel text-[8px] text-muted-foreground uppercase mb-1.5">📅 활동 날짜 (선택)</label>
+            <label className="block font-pixel text-[11px] text-foreground mb-2">📅 활동 날짜 (선택)</label>
             <input
               type="date"
               value={activityDate}
               onChange={(e) => setActivityDate(e.target.value)}
-              className="w-full px-3 py-1.5 bg-input border-2 border-border-dark font-pixel text-[10px] focus:outline-none focus:border-primary"
+              className="w-full px-3 py-2 bg-input border-2 border-border-dark rounded-lg font-body text-sm focus:outline-none focus:border-primary"
               style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow) / 0.5)' }}
             />
-            <p className="font-pixel text-[7px] text-muted-foreground mt-1">설정하면 팀 캘린더에 자동 표시돼요</p>
+            <p className="font-body text-xs text-muted-foreground mt-1.5 leading-relaxed">
+              활동한 날짜를 지정하면 팀 일정 캘린더에 자동 연동!
+              해당 날짜를 탭하면 이 게시글을 바로 모아볼 수 있어요 📸
+            </p>
           </div>
 
           {/* Content Input */}
           <div>
-            <label className="block font-pixel text-[8px] text-muted-foreground uppercase mb-1.5">내용</label>
+            <label className="block font-pixel text-[11px] text-foreground mb-2">내용</label>
             <textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="오늘의 기록을 남겨보세요..."
-              className="w-full h-24 px-3 py-2 bg-input border-3 border-border-dark font-pixel text-[10px] text-foreground placeholder:text-muted-foreground resize-none focus:outline-none focus:border-primary"
+              className="w-full h-28 px-3 py-2.5 bg-input border-2 border-border-dark rounded-lg font-body text-sm text-foreground placeholder:text-muted-foreground resize-none focus:outline-none focus:border-primary"
               style={{ boxShadow: 'inset 2px 2px 0 hsl(var(--pixel-shadow) / 0.2)' }}
             />
           </div>
 
           {/* Multi Image Upload */}
           <div>
-            <div className="flex items-center justify-between mb-1.5">
-              <label className="font-pixel text-[8px] text-muted-foreground uppercase">
+            <div className="flex items-center justify-between mb-2">
+              <label className="font-pixel text-[11px] text-foreground">
                 이미지 ({images.length}/{MAX_IMAGES})
               </label>
             </div>
@@ -342,16 +344,16 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
                 {/* Image Grid */}
                 <div className="grid grid-cols-3 gap-1.5">
                   {images.map((img, idx) => (
-                    <div key={idx} className="relative aspect-square border-3 border-border-dark overflow-hidden group" style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}>
+                    <div key={idx} className="relative aspect-square border-2 border-border-dark rounded-lg overflow-hidden group" style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}>
                       <img src={img.preview} alt="" className="w-full h-full object-cover" />
                       {idx === 0 && (
-                        <div className="absolute top-0.5 left-0.5 px-1 bg-primary border border-primary-dark">
-                          <span className="font-pixel text-[6px] text-primary-foreground">대표</span>
+                        <div className="absolute top-1 left-1 px-1.5 py-0.5 bg-primary border border-primary-dark rounded">
+                          <span className="font-pixel text-[9px] text-primary-foreground">대표</span>
                         </div>
                       )}
                       <button
                         onClick={() => removeImage(idx)}
-                        className="absolute top-0.5 right-0.5 w-5 h-5 bg-destructive/90 border border-border-dark flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="absolute top-0.5 right-0.5 w-5 h-5 bg-destructive/90 border border-border-dark rounded flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                       >
                         <X size={10} className="text-destructive-foreground" />
                       </button>
@@ -361,10 +363,10 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
                   {images.length < MAX_IMAGES && (
                     <button
                       onClick={() => fileInputRef.current?.click()}
-                      className="aspect-square border-3 border-dashed border-border-dark bg-muted/50 flex flex-col items-center justify-center gap-1 hover:border-primary hover:bg-muted transition-colors"
+                      className="aspect-square border-2 border-dashed border-border-dark rounded-lg bg-muted/50 flex flex-col items-center justify-center gap-1 hover:border-primary hover:bg-muted transition-colors"
                     >
                       <Plus size={16} className="text-muted-foreground" />
-                      <span className="font-pixel text-[6px] text-muted-foreground">추가</span>
+                      <span className="font-pixel text-[9px] text-muted-foreground">추가</span>
                     </button>
                   )}
                 </div>
@@ -372,12 +374,12 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
             ) : (
               <button
                 onClick={() => fileInputRef.current?.click()}
-                className="w-full py-6 border-3 border-dashed border-border-dark bg-muted/50 flex flex-col items-center gap-2 hover:border-primary hover:bg-muted transition-colors"
+                className="w-full py-6 border-2 border-dashed border-border-dark rounded-lg bg-muted/50 flex flex-col items-center gap-2 hover:border-primary hover:bg-muted transition-colors"
               >
-                <div className="w-10 h-10 bg-secondary border-2 border-border-dark flex items-center justify-center">
+                <div className="w-10 h-10 bg-secondary border-2 border-border-dark rounded-lg flex items-center justify-center">
                   <Image size={20} className="text-muted-foreground" />
                 </div>
-                <span className="font-pixel text-[8px] text-muted-foreground">
+                <span className="font-body text-xs text-muted-foreground">
                   클릭하여 이미지 업로드 (최대 {MAX_IMAGES}장, 각 10MB)
                 </span>
               </button>
@@ -386,7 +388,7 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
 
           {/* Video Upload / Link */}
           <div>
-            <label className="block font-pixel text-[8px] text-muted-foreground uppercase mb-1.5">
+            <label className="block font-pixel text-[11px] text-foreground mb-2">
               🎬 동영상 (50MB 이하 직접 업로드 또는 링크)
             </label>
             <input
@@ -398,16 +400,16 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
             />
 
             {videoFile ? (
-              <div className="relative border-3 border-border-dark overflow-hidden" style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}>
+              <div className="relative border-2 border-border-dark rounded-lg overflow-hidden" style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}>
                 <video src={videoPreview} className="w-full aspect-video object-cover bg-black" controls />
                 <button
                   onClick={removeVideo}
-                  className="absolute top-1 right-1 w-6 h-6 bg-destructive/90 border border-border-dark flex items-center justify-center"
+                  className="absolute top-1 right-1 w-6 h-6 bg-destructive/90 border border-border-dark rounded flex items-center justify-center"
                 >
                   <X size={12} className="text-destructive-foreground" />
                 </button>
-                <div className="absolute bottom-1 left-1 px-2 py-0.5 bg-accent border border-accent-dark">
-                  <span className="font-pixel text-[6px] text-accent-foreground">
+                <div className="absolute bottom-1 left-1 px-2 py-0.5 bg-accent border border-accent-dark rounded">
+                  <span className="font-body text-[11px] text-accent-foreground">
                     {(videoFile.size / 1024 / 1024).toFixed(1)}MB
                   </span>
                 </div>
@@ -416,10 +418,10 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
               <div className="flex gap-2">
                 <button
                   onClick={() => videoInputRef.current?.click()}
-                  className="flex-1 py-4 border-3 border-dashed border-border-dark bg-muted/50 flex flex-col items-center gap-1 hover:border-primary hover:bg-muted transition-colors"
+                  className="flex-1 py-4 border-2 border-dashed border-border-dark rounded-lg bg-muted/50 flex flex-col items-center gap-1 hover:border-primary hover:bg-muted transition-colors"
                 >
                   <Video size={18} className="text-muted-foreground" />
-                  <span className="font-pixel text-[7px] text-muted-foreground">파일 선택</span>
+                  <span className="font-body text-xs text-muted-foreground">파일 선택</span>
                 </button>
                 <div className="flex-1">
                   <div className="relative h-full">
@@ -429,7 +431,7 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
                       value={videoUrl}
                       onChange={(e) => setVideoUrl(e.target.value)}
                       placeholder="또는 URL 붙여넣기"
-                      className="w-full h-full pl-7 pr-3 py-2 bg-input border-3 border-border-dark font-pixel text-[8px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary"
+                      className="w-full h-full pl-7 pr-3 py-2 bg-input border-2 border-border-dark rounded-lg font-body text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary"
                     />
                   </div>
                 </div>
@@ -439,14 +441,14 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
 
           {/* Tags */}
           <div>
-            <label className="block font-pixel text-[8px] text-muted-foreground uppercase mb-1.5">태그 선택</label>
+            <label className="block font-pixel text-[11px] text-foreground mb-2">태그 선택</label>
             <div className="grid grid-cols-4 gap-1.5">
               {defaultTags.map((tag) => (
                 <button
                   key={tag.id}
                   onClick={() => handleTagToggle(tag.id)}
                   className={cn(
-                    'py-1.5 border-2 font-pixel text-[7px] transition-all',
+                    'py-1.5 border-2 rounded-lg font-pixel text-[11px] transition-all',
                     selectedTags.includes(tag.id)
                       ? 'bg-accent border-accent-dark text-accent-foreground'
                       : 'bg-muted border-border-dark text-foreground hover:border-accent'
@@ -466,7 +468,7 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
           <button
             onClick={onClose}
             disabled={uploading}
-            className="flex-1 py-2.5 bg-secondary border-3 border-border-dark font-pixel text-[9px] text-foreground hover:bg-muted transition-colors disabled:opacity-50"
+            className="flex-1 py-2.5 bg-secondary border-3 border-border-dark rounded-lg font-pixel text-[11px] text-foreground hover:bg-muted transition-colors disabled:opacity-50"
             style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
           >
             취소
@@ -475,17 +477,17 @@ export function ArchiveWriteModal({ isOpen, onClose, folders, teamId, onSubmitSu
             type="button"
             onClick={handleSubmit}
             disabled={uploading}
-            className="flex-[2] py-3 bg-primary border-3 border-primary-dark font-pixel text-[10px] text-primary-foreground hover:brightness-110 transition-all flex items-center justify-center gap-1.5 disabled:opacity-50"
+            className="flex-[2] py-3 bg-primary border-3 border-primary-dark rounded-lg font-pixel text-xs text-primary-foreground hover:brightness-110 transition-all flex items-center justify-center gap-1.5 disabled:opacity-50"
             style={{ boxShadow: '3px 3px 0 hsl(var(--primary-dark))' }}
           >
             {uploading ? (
               <>
-                <Loader2 size={12} className="animate-spin" />
+                <Loader2 size={14} className="animate-spin" />
                 {uploadProgress || '업로드 중...'}
               </>
             ) : (
               <>
-                <Upload size={12} />
+                <Upload size={14} />
                 등록하기
               </>
             )}

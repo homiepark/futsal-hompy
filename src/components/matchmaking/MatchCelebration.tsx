@@ -245,7 +245,7 @@ export function MatchCelebration({
           </div>
 
           {/* Footer hint */}
-          <p className="text-center font-pixel text-[8px] text-muted-foreground mt-4 animate-pulse">
+          <p className="text-center font-pixel text-[11px] text-muted-foreground mt-4 animate-pulse">
             채팅방으로 이동합니다...
           </p>
         </div>

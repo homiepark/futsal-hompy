@@ -157,7 +157,7 @@ export function TimelinePost({
         </div>
         <div className="flex-1">
           {displayFolderName && displayFolderName !== '전체보기' && (
-            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-primary/10 border border-primary/30 font-pixel text-[7px] text-primary mb-0.5">
+            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-primary/10 border border-primary/30 font-pixel text-[11px] text-primary mb-0.5">
               {displayFolderEmoji || '📁'} {displayFolderName}
             </span>
           )}
@@ -198,7 +198,7 @@ export function TimelinePost({
 
           {/* Activity Date */}
           <div>
-            <label className="block font-pixel text-[8px] text-muted-foreground mb-1">📅 활동 날짜</label>
+            <label className="block font-pixel text-[11px] text-muted-foreground mb-1">📅 활동 날짜</label>
             <input
               type="date"
               value={editActivityDate}
@@ -210,14 +210,14 @@ export function TimelinePost({
           {/* Folder Selection */}
           {folders.length > 0 && (
             <div>
-              <label className="block font-pixel text-[8px] text-muted-foreground mb-1">📁 폴더 변경</label>
+              <label className="block font-pixel text-[11px] text-muted-foreground mb-1">📁 폴더 변경</label>
               <div className="flex flex-wrap gap-1.5">
                 {folders.map(f => (
                   <button
                     key={f.id}
                     type="button"
                     onClick={() => setEditFolderId(f.id)}
-                    className={`px-2 py-1 border-2 font-pixel text-[8px] transition-all ${
+                    className={`px-2 py-1 border-2 font-pixel text-[11px] transition-all ${
                       editFolderId === f.id
                         ? 'bg-primary border-primary-dark text-primary-foreground'
                         : 'bg-muted border-border-dark text-foreground hover:border-primary'
@@ -300,7 +300,7 @@ export function TimelinePost({
             <video src={url} poster={imageUrl} controls className="w-full aspect-video object-cover bg-black" preload="metadata">
               브라우저가 비디오를 지원하지 않습니다.
             </video>
-            <div className="absolute top-2 left-2 px-2 py-0.5 bg-accent border-2 border-accent-dark font-pixel text-[7px] text-accent-foreground"
+            <div className="absolute top-2 left-2 px-2 py-0.5 bg-accent border-2 border-accent-dark font-pixel text-[11px] text-accent-foreground"
               style={{ boxShadow: '1px 1px 0 hsl(var(--accent-dark))' }}>
               🎬 VIDEO
             </div>
@@ -323,10 +323,13 @@ export function TimelinePost({
               onClick={() => { setCurrentImageIndex(idx); setShowLightbox(true); }}
               className={cn(
                 'relative overflow-hidden bg-black/5',
-                allImages.length === 1 ? 'aspect-[4/3]' : 'aspect-square'
+                allImages.length === 1 ? 'aspect-auto max-h-96' : 'aspect-square'
               )}
             >
-              <img src={img} alt={`사진 ${idx + 1}`} className="w-full h-full object-cover hover:scale-105 transition-transform duration-200" />
+              <img src={img} alt={`사진 ${idx + 1}`} className={cn(
+                'w-full hover:scale-105 transition-transform duration-200',
+                allImages.length === 1 ? 'h-auto object-contain' : 'h-full object-cover'
+              )} />
               {idx === 5 && allImages.length > 6 && (
                 <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
                   <span className="font-pixel text-white text-sm">+{allImages.length - 6}</span>
@@ -433,7 +436,7 @@ export function TimelinePost({
                       {comment.avatar_url ? (
                         <img src={comment.avatar_url} alt="" className="w-full h-full object-cover" />
                       ) : (
-                        <span className="font-pixel text-[7px] text-muted-foreground">
+                        <span className="font-pixel text-[11px] text-muted-foreground">
                           {(comment.nickname || '풋').charAt(0)}
                         </span>
                       )}
@@ -443,7 +446,7 @@ export function TimelinePost({
                         <span className="font-pixel text-[9px] text-foreground font-bold">
                           {comment.nickname}
                         </span>
-                        <span className="font-pixel text-[7px] text-muted-foreground">
+                        <span className="font-pixel text-[11px] text-muted-foreground">
                           {format(new Date(comment.created_at), 'M.d HH:mm', { locale: ko })}
                         </span>
                         {user && (
@@ -452,7 +455,7 @@ export function TimelinePost({
                             className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-0.5"
                           >
                             <Reply size={10} />
-                            <span className="font-pixel text-[7px]">답글</span>
+                            <span className="font-pixel text-[11px]">답글</span>
                           </button>
                         )}
                         {user?.id === comment.user_id && (
@@ -477,17 +480,17 @@ export function TimelinePost({
                             {reply.avatar_url ? (
                               <img src={reply.avatar_url} alt="" className="w-full h-full object-cover" />
                             ) : (
-                              <span className="font-pixel text-[6px] text-muted-foreground">
+                              <span className="font-pixel text-[11px] text-muted-foreground">
                                 {(reply.nickname || '풋').charAt(0)}
                               </span>
                             )}
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2">
-                              <span className="font-pixel text-[8px] text-foreground font-bold">
+                              <span className="font-pixel text-[11px] text-foreground font-bold">
                                 {reply.nickname}
                               </span>
-                              <span className="font-pixel text-[6px] text-muted-foreground">
+                              <span className="font-pixel text-[11px] text-muted-foreground">
                                 {format(new Date(reply.created_at), 'M.d HH:mm', { locale: ko })}
                               </span>
                               {user?.id === reply.user_id && (
@@ -509,7 +512,7 @@ export function TimelinePost({
               ))}
             </div>
           ) : (
-            <p className="font-pixel text-[8px] text-muted-foreground text-center py-2">
+            <p className="font-pixel text-[11px] text-muted-foreground text-center py-2">
               아직 댓글이 없습니다
             </p>
           )}
@@ -518,7 +521,7 @@ export function TimelinePost({
           {replyingTo && (
             <div className="flex items-center gap-2 px-2 py-1 bg-muted border-2 border-border-dark">
               <Reply size={10} className="text-primary" />
-              <span className="font-pixel text-[8px] text-muted-foreground">
+              <span className="font-pixel text-[11px] text-muted-foreground">
                 {replyingTo.nickname}에게 답글
               </span>
               <button
@@ -557,7 +560,7 @@ export function TimelinePost({
               </button>
             </div>
           ) : (
-            <p className="font-pixel text-[8px] text-muted-foreground text-center py-1">
+            <p className="font-pixel text-[11px] text-muted-foreground text-center py-1">
               로그인 후 댓글을 작성할 수 있습니다
             </p>
           )}

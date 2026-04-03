@@ -337,14 +337,14 @@ export function AdvancedFilterBar({ filters, onFiltersChange }: AdvancedFilterBa
                   {isActive ? <Check size={10} /> : <span>{icon}</span>}
                   <span className="font-pixel text-[10px]">LV.{value}</span>
                   <span className={cn(
-                    "font-body text-[7px]",
+                    "font-body text-[11px]",
                     isActive ? "opacity-75" : "text-muted-foreground"
                   )}>
                     ({tier})
                   </span>
                 </div>
                 <p className={cn(
-                  "font-pixel text-[7px] mt-0.5 truncate",
+                  "font-pixel text-[11px] mt-0.5 truncate",
                   isActive ? "opacity-90" : "text-muted-foreground"
                 )}>
                   {name}

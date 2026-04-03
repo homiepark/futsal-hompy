@@ -51,17 +51,17 @@ export function EventCard({
           <div className="w-4 h-4 bg-primary border border-primary-dark flex items-center justify-center">
             <Check size={10} className="text-primary-foreground" />
           </div>
-          <span className="font-pixel text-[8px] text-primary">{attendees.attending}</span>
+          <span className="font-pixel text-[11px] text-primary">{attendees.attending}</span>
         </div>
         <div className="flex items-center gap-1">
           <div className="w-4 h-4 bg-destructive border border-destructive flex items-center justify-center">
             <X size={10} className="text-destructive-foreground" />
           </div>
-          <span className="font-pixel text-[8px] text-destructive">{attendees.absent}</span>
+          <span className="font-pixel text-[11px] text-destructive">{attendees.absent}</span>
         </div>
         <div className="flex items-center gap-1">
           <div className="w-4 h-4 bg-muted border border-border-dark" />
-          <span className="font-pixel text-[8px] text-muted-foreground">{attendees.pending}</span>
+          <span className="font-pixel text-[11px] text-muted-foreground">{attendees.pending}</span>
         </div>
       </div>
 

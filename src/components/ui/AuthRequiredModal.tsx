@@ -61,7 +61,7 @@ export function AuthRequiredModal({
           <p className="font-pixel text-[10px] text-foreground mb-2">
             {message}
           </p>
-          <p className="font-pixel text-[8px] text-muted-foreground">
+          <p className="font-pixel text-[11px] text-muted-foreground">
             간편 신청을 위해 가입이 필요합니다.
           </p>
         </div>

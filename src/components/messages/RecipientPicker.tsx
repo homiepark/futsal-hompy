@@ -146,11 +146,11 @@ export function RecipientPicker({ isOpen, onClose, onSelect }: RecipientPickerPr
       <div className="flex-1 text-left min-w-0">
         <div className="flex items-center gap-1">
           <span className="font-pixel text-[9px] text-foreground truncate">{u.nickname}</span>
-          <span className="font-pixel text-[7px] text-muted-foreground">#{u.tag}</span>
+          <span className="font-pixel text-[11px] text-muted-foreground">#{u.tag}</span>
         </div>
         <div className="flex items-center gap-2">
-          {u.teamName && <span className="font-pixel text-[6px] text-primary">⚽ {u.teamName}</span>}
-          {u.region && <span className="font-pixel text-[6px] text-muted-foreground">📍 {u.region}</span>}
+          {u.teamName && <span className="font-pixel text-[11px] text-primary">⚽ {u.teamName}</span>}
+          {u.region && <span className="font-pixel text-[11px] text-muted-foreground">📍 {u.region}</span>}
         </div>
       </div>
     </button>
@@ -198,7 +198,7 @@ export function RecipientPicker({ isOpen, onClose, onSelect }: RecipientPickerPr
             ) : teamMembers.length === 0 ? (
               <div className="p-6 text-center">
                 <span className="text-2xl block mb-2">👥</span>
-                <span className="font-pixel text-[8px] text-muted-foreground">팀원이 없습니다</span>
+                <span className="font-pixel text-[11px] text-muted-foreground">팀원이 없습니다</span>
               </div>
             ) : (
               teamMembers.map(renderUser)
@@ -226,12 +226,12 @@ export function RecipientPicker({ isOpen, onClose, onSelect }: RecipientPickerPr
                 searchResults.map(renderUser)
               ) : searchQuery.trim() ? (
                 <div className="p-6 text-center">
-                  <span className="font-pixel text-[8px] text-muted-foreground">검색 결과가 없습니다</span>
+                  <span className="font-pixel text-[11px] text-muted-foreground">검색 결과가 없습니다</span>
                 </div>
               ) : (
                 <div className="p-6 text-center">
                   <span className="text-2xl block mb-2">🔍</span>
-                  <span className="font-pixel text-[8px] text-muted-foreground">닉네임을 입력해서 검색하세요</span>
+                  <span className="font-pixel text-[11px] text-muted-foreground">닉네임을 입력해서 검색하세요</span>
                 </div>
               )}
             </>

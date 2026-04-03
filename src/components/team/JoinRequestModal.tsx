@@ -243,13 +243,13 @@ export function JoinRequestModal({
                 </div>
                 <div>
                   <p className="font-pixel text-[11px] text-foreground font-bold">{teamName}</p>
-                  <p className="font-pixel text-[8px] text-muted-foreground">팀에 가입 신청</p>
+                  <p className="font-pixel text-[11px] text-muted-foreground">팀에 가입 신청</p>
                 </div>
               </div>
 
               {/* Compact Profile Summary */}
               <div className="p-3 bg-muted/50 border-2 border-dashed border-border">
-                <p className="font-pixel text-[8px] text-muted-foreground mb-2">✅ 내 프로필로 신청됩니다</p>
+                <p className="font-pixel text-[11px] text-muted-foreground mb-2">✅ 내 프로필로 신청됩니다</p>
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="font-pixel text-[9px] text-foreground bg-secondary px-2 py-1 border border-border-dark">
                     {profile.nickname}
@@ -283,7 +283,7 @@ export function JoinRequestModal({
                   style={{ boxShadow: 'inset 2px 2px 0 hsl(var(--pixel-shadow) / 0.3)' }}
                   maxLength={150}
                 />
-                <p className="font-pixel text-[7px] text-muted-foreground text-right mt-1">
+                <p className="font-pixel text-[11px] text-muted-foreground text-right mt-1">
                   {message.length}/150
                 </p>
               </div>

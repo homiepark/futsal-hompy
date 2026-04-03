@@ -36,8 +36,8 @@ export function PhotoGridItem({ imageUrl, content, likes, onClick }: PhotoGridIt
               {content || ''}
             </p>
             <div className="flex items-center gap-1 mt-1">
-              <span className="font-pixel text-[8px] text-muted-foreground">📝</span>
-              <span className="font-pixel text-[8px] text-muted-foreground">♥ {likes}</span>
+              <span className="font-pixel text-[11px] text-muted-foreground">📝</span>
+              <span className="font-pixel text-[11px] text-muted-foreground">♥ {likes}</span>
             </div>
           </div>
         )}

@@ -56,7 +56,7 @@ export function GuestLoginPrompt({ open, onOpenChange, teamName }: GuestLoginPro
               <br />
               더 많은 소식을 볼 수 있어요!
             </p>
-            <p className="font-pixel text-[8px] text-muted-foreground">
+            <p className="font-pixel text-[11px] text-muted-foreground">
               팀 가입, 매치 신청, 방명록 작성도 가능해요 ✨
             </p>
           </div>
@@ -109,7 +109,7 @@ export function GuestLoginPrompt({ open, onOpenChange, teamName }: GuestLoginPro
           {/* Skip Option */}
           <button
             onClick={() => onOpenChange(false)}
-            className="font-pixel text-[8px] text-muted-foreground hover:text-foreground transition-colors"
+            className="font-pixel text-[11px] text-muted-foreground hover:text-foreground transition-colors"
           >
             나중에 할게요
           </button>

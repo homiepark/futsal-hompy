@@ -96,7 +96,7 @@ export function RecommendedMatches({ teams, userDistricts }: RecommendedMatchesP
                   <p className="font-pixel text-[9px] text-foreground truncate">{team.name}</p>
                   <div className="flex items-center gap-1 text-muted-foreground">
                     <MapPin size={8} />
-                    <span className="font-pixel text-[7px]">{team.district}</span>
+                    <span className="font-pixel text-[11px]">{team.district}</span>
                   </div>
                 </div>
                 {/* Compatibility Score */}
@@ -117,7 +117,7 @@ export function RecommendedMatches({ teams, userDistricts }: RecommendedMatchesP
                         strokeDasharray={`${team.matchScore}, 100`}
                       />
                     </svg>
-                    <span className="absolute inset-0 flex items-center justify-center font-pixel text-[7px] text-foreground">
+                    <span className="absolute inset-0 flex items-center justify-center font-pixel text-[11px] text-foreground">
                       {team.matchScore}
                     </span>
                   </div>
@@ -130,7 +130,7 @@ export function RecommendedMatches({ teams, userDistricts }: RecommendedMatchesP
                   <span 
                     key={idx}
                     className={cn(
-                      "px-1.5 py-0.5 font-pixel text-[7px] border",
+                      "px-1.5 py-0.5 font-pixel text-[11px] border",
                       tag === '내 동네 팀' && "bg-primary/20 text-primary border-primary/50",
                       tag === '실력 비슷' && "bg-accent/20 text-accent border-accent/50",
                       tag === '첫 대결' && "bg-secondary text-secondary-foreground border-border"
@@ -152,7 +152,7 @@ export function RecommendedMatches({ teams, userDistricts }: RecommendedMatchesP
                   )}
                 >
                   <MapPin size={8} className="text-primary flex-shrink-0" />
-                  <span className="font-pixel text-[7px] text-foreground truncate">
+                  <span className="font-pixel text-[11px] text-foreground truncate">
                     {team.homeGroundName}
                   </span>
                 </button>
@@ -160,19 +160,19 @@ export function RecommendedMatches({ teams, userDistricts }: RecommendedMatchesP
 
               {/* Stats Row */}
               <div className="flex items-center justify-between">
-                <PixelBadge variant={levelVariants[team.level as keyof typeof levelVariants] || 'default'} className="text-[7px]">
+                <PixelBadge variant={levelVariants[team.level as keyof typeof levelVariants] || 'default'} className="text-[11px]">
                   LV.{team.level}
                 </PixelBadge>
                 <div className="flex items-center gap-1">
                   <Star size={10} className="text-accent fill-accent" />
-                  <span className="font-pixel text-[8px] text-accent">{team.mannerScore.toFixed(1)}</span>
+                  <span className="font-pixel text-[11px] text-accent">{team.mannerScore.toFixed(1)}</span>
                 </div>
               </div>
 
               {/* Match Time */}
               <div className="mt-2 flex items-center gap-1 text-muted-foreground">
                 <Clock size={8} />
-                <span className="font-pixel text-[7px]">{team.matchTime}</span>
+                <span className="font-pixel text-[11px]">{team.matchTime}</span>
               </div>
             </div>
           ))}

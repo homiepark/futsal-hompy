@@ -186,19 +186,19 @@ export function JoinRequestNotification({ teamId, isAdmin }: JoinRequestNotifica
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-pixel text-[10px] text-foreground font-bold">{request.nickname}</span>
                     {request.realName && (
-                      <span className="font-pixel text-[8px] text-muted-foreground">({request.realName})</span>
+                      <span className="font-pixel text-[11px] text-muted-foreground">({request.realName})</span>
                     )}
                   </div>
                   <div className="flex items-center gap-2 mt-0.5">
                     {request.position && (
-                      <span className="font-pixel text-[7px] text-primary px-1.5 py-0.5 bg-primary/10 border border-primary/30">
+                      <span className="font-pixel text-[11px] text-primary px-1.5 py-0.5 bg-primary/10 border border-primary/30">
                         {positionLabels[request.position] || request.position}
                       </span>
                     )}
-                    <span className="font-pixel text-[7px] text-muted-foreground">경력 {expStr(request)}</span>
+                    <span className="font-pixel text-[11px] text-muted-foreground">경력 {expStr(request)}</span>
                   </div>
                   {request.message && (
-                    <p className="font-pixel text-[8px] text-foreground mt-1.5 p-1.5 bg-muted border border-border-dark">
+                    <p className="font-pixel text-[11px] text-foreground mt-1.5 p-1.5 bg-muted border border-border-dark">
                       "{request.message}"
                     </p>
                   )}
@@ -210,7 +210,7 @@ export function JoinRequestNotification({ teamId, isAdmin }: JoinRequestNotifica
                 <button
                   onClick={() => handleAccept(request)}
                   disabled={processing === request.id}
-                  className="flex-1 py-1.5 bg-primary border-2 border-primary-dark font-pixel text-[8px] text-primary-foreground flex items-center justify-center gap-1 hover:brightness-110 disabled:opacity-50"
+                  className="flex-1 py-1.5 bg-primary border-2 border-primary-dark font-pixel text-[11px] text-primary-foreground flex items-center justify-center gap-1 hover:brightness-110 disabled:opacity-50"
                   style={{ boxShadow: '2px 2px 0 hsl(var(--primary-dark))' }}
                 >
                   <Check size={10} /> 수락
@@ -218,7 +218,7 @@ export function JoinRequestNotification({ teamId, isAdmin }: JoinRequestNotifica
                 <button
                   onClick={() => handleReject(request)}
                   disabled={processing === request.id}
-                  className="flex-1 py-1.5 bg-muted border-2 border-border-dark font-pixel text-[8px] text-foreground flex items-center justify-center gap-1 hover:bg-secondary disabled:opacity-50"
+                  className="flex-1 py-1.5 bg-muted border-2 border-border-dark font-pixel text-[11px] text-foreground flex items-center justify-center gap-1 hover:bg-secondary disabled:opacity-50"
                   style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
                 >
                   <X size={10} /> 거절

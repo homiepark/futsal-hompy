@@ -96,7 +96,7 @@ export function CompactFilterBar({ filters, onFiltersChange }: CompactFilterBarP
           {hasActiveFilters && (
             <button
               onClick={clearFilters}
-              className="flex items-center gap-1 px-2 py-1 bg-muted font-pixel text-[8px] text-muted-foreground border-2 border-border-dark hover:bg-destructive/20 transition-colors"
+              className="flex items-center gap-1 px-2 py-1 bg-muted font-pixel text-[11px] text-muted-foreground border-2 border-border-dark hover:bg-destructive/20 transition-colors"
             >
               <X size={10} />
               초기화
@@ -189,7 +189,7 @@ export function CompactFilterBar({ filters, onFiltersChange }: CompactFilterBarP
         {expandedFilter === 'level' && (
           <div className="px-3 pb-3 border-t-2 border-border pt-3">
             <div className="flex items-center justify-between mb-2">
-              <span className="font-pixel text-[8px] text-muted-foreground">레벨 선택 (복수 가능)</span>
+              <span className="font-pixel text-[11px] text-muted-foreground">레벨 선택 (복수 가능)</span>
               <LevelInfoButton />
             </div>
             <div className="grid grid-cols-2 gap-2">
@@ -208,7 +208,7 @@ export function CompactFilterBar({ filters, onFiltersChange }: CompactFilterBarP
                   <span className="text-base">{icon}</span>
                   <div>
                     <span className="font-pixel text-[10px] font-bold block">{label}</span>
-                    <span className="font-pixel text-[8px] opacity-70">{desc}</span>
+                    <span className="font-pixel text-[11px] opacity-70">{desc}</span>
                   </div>
                 </button>
               ))}
@@ -218,7 +218,7 @@ export function CompactFilterBar({ filters, onFiltersChange }: CompactFilterBarP
 
         {expandedFilter === 'gender' && (
           <div className="px-3 pb-3 border-t-2 border-border pt-3">
-            <span className="font-pixel text-[8px] text-muted-foreground block mb-2">성별 선택</span>
+            <span className="font-pixel text-[11px] text-muted-foreground block mb-2">성별 선택</span>
             <div className="flex gap-2">
               {genderOptions.map(({ value, label, icon }) => (
                 <button
@@ -246,10 +246,10 @@ export function CompactFilterBar({ filters, onFiltersChange }: CompactFilterBarP
             {filters.selectedRegions.length > 0 && (
               <div className="mb-2">
                 <div className="flex items-center justify-between mb-1.5">
-                  <span className="font-pixel text-[8px] text-muted-foreground">선택된 지역</span>
+                  <span className="font-pixel text-[11px] text-muted-foreground">선택된 지역</span>
                   <button
                     onClick={clearRegions}
-                    className="font-pixel text-[8px] text-accent hover:text-accent-dark"
+                    className="font-pixel text-[11px] text-accent hover:text-accent-dark"
                   >
                     전체 해제
                   </button>
@@ -259,7 +259,7 @@ export function CompactFilterBar({ filters, onFiltersChange }: CompactFilterBarP
                     <button
                       key={`${r.region}-${r.district}`}
                       onClick={() => toggleRegion(r)}
-                      className="px-2 py-1 bg-primary text-primary-foreground font-pixel text-[8px] border-2 border-primary-dark hover:bg-destructive hover:border-destructive transition-colors flex items-center gap-1"
+                      className="px-2 py-1 bg-primary text-primary-foreground font-pixel text-[11px] border-2 border-primary-dark hover:bg-destructive hover:border-destructive transition-colors flex items-center gap-1"
                       style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow) / 0.5)' }}
                     >
                       {r.region} {r.district}
@@ -279,7 +279,7 @@ export function CompactFilterBar({ filters, onFiltersChange }: CompactFilterBarP
                     key={region}
                     onClick={() => setSelectedRegionKey(selectedRegionKey === region ? '' : region)}
                     className={cn(
-                      "px-2 py-1 font-pixel text-[8px] border-2 transition-all",
+                      "px-2 py-1 font-pixel text-[11px] border-2 transition-all",
                       selectedRegionKey === region
                         ? "bg-primary text-primary-foreground border-primary-dark"
                         : filters.selectedRegions.some(r => r.region === region)
@@ -295,7 +295,7 @@ export function CompactFilterBar({ filters, onFiltersChange }: CompactFilterBarP
               {/* Step 2: 구/군 선택 */}
               {selectedRegionKey && regionData[selectedRegionKey] && (
                 <div className="bg-muted/50 border-2 border-border-dark p-2">
-                  <span className="font-pixel text-[8px] text-muted-foreground block mb-1.5">
+                  <span className="font-pixel text-[11px] text-muted-foreground block mb-1.5">
                     {selectedRegionKey} 지역 선택 (복수 가능)
                   </span>
                   <div className="flex flex-wrap gap-1 max-h-32 overflow-y-auto overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
@@ -308,7 +308,7 @@ export function CompactFilterBar({ filters, onFiltersChange }: CompactFilterBarP
                           key={district}
                           onClick={() => toggleRegion({ region: selectedRegionKey, district })}
                           className={cn(
-                            "px-2 py-1 font-pixel text-[8px] border transition-all flex items-center gap-0.5",
+                            "px-2 py-1 font-pixel text-[11px] border transition-all flex items-center gap-0.5",
                             isSelected
                               ? "bg-primary text-primary-foreground border-primary-dark"
                               : "bg-card text-foreground border-border hover:border-primary/50"
@@ -325,7 +325,7 @@ export function CompactFilterBar({ filters, onFiltersChange }: CompactFilterBarP
 
               {/* Empty state */}
               {filters.selectedRegions.length === 0 && !selectedRegionKey && (
-                <p className="font-pixel text-[8px] text-muted-foreground text-center py-1">
+                <p className="font-pixel text-[11px] text-muted-foreground text-center py-1">
                   시/도를 선택하면 세부 지역을 고를 수 있어요
                 </p>
               )}

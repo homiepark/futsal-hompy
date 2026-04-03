@@ -72,14 +72,14 @@ export function AnnouncementHistoryModal({
               >
                 {/* Date */}
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="font-pixel text-[8px] text-amber-600 bg-amber-200 px-2 py-0.5 border border-amber-500">
+                  <span className="font-pixel text-[11px] text-amber-600 bg-amber-200 px-2 py-0.5 border border-amber-500">
                     {new Date(notice.created_at).toLocaleDateString('ko-KR', {
                       year: 'numeric',
                       month: 'long',
                       day: 'numeric',
                     })}
                   </span>
-                  <span className="font-pixel text-[8px] text-amber-500">
+                  <span className="font-pixel text-[11px] text-amber-500">
                     {new Date(notice.created_at).toLocaleTimeString('ko-KR', {
                       hour: '2-digit',
                       minute: '2-digit',
@@ -98,7 +98,7 @@ export function AnnouncementHistoryModal({
 
         {/* Footer */}
         <div className="p-3 border-t-2 border-border-dark bg-muted/30">
-          <p className="font-pixel text-[8px] text-muted-foreground text-center">
+          <p className="font-pixel text-[11px] text-muted-foreground text-center">
             총 {notices.length}개의 공지
           </p>
         </div>

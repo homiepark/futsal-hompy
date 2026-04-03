@@ -300,10 +300,10 @@ export function PlayerInviteModal({ isOpen, onClose, teamId, teamName }: PlayerI
                       <div className="flex-1 min-w-0">
                         <p className="font-pixel text-sm text-foreground truncate">{user.nickname}</p>
                         <div className="flex items-center gap-2 mt-0.5">
-                          <span className="font-pixel text-[8px] text-muted-foreground">
+                          <span className="font-pixel text-[11px] text-muted-foreground">
                             {positionLabels[user.preferred_position || ''] || user.preferred_position || '미정'}
                           </span>
-                          <span className="font-pixel text-[8px] text-muted-foreground">
+                          <span className="font-pixel text-[11px] text-muted-foreground">
                             • 경력 {user.years_of_experience}년
                           </span>
                         </div>

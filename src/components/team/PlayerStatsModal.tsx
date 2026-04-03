@@ -171,7 +171,7 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
                       'border-2 text-[9px] font-pixel',
                       posInfo.color
                     )}>
-                      {i === 0 && <span className="text-[7px]">★</span>}
+                      {i === 0 && <span className="text-[11px]">★</span>}
                       <span>{posInfo.emoji}</span>
                       <span>{posInfo.label}</span>
                     </div>
@@ -385,7 +385,7 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
                         <div key={reply.id}>
                           <div className="flex items-center gap-2">
                             <span className="font-pixel text-[11px] text-primary">{reply.authorNickname}</span>
-                            <span className="font-pixel text-[7px] text-muted-foreground">{reply.date}</span>
+                            <span className="font-pixel text-[11px] text-muted-foreground">{reply.date}</span>
                             {user?.id === reply.authorUserId && (
                               <button
                                 onClick={() => deleteEntry(reply.id)}

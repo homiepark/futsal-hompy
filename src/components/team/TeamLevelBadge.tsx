@@ -49,13 +49,13 @@ export function TeamLevelBadge({
     return (
       <div className="flex items-center gap-1.5 flex-wrap">
         {/* Level Badge */}
-        <span className={`px-1.5 py-0.5 text-[7px] font-pixel text-white ${levelColors[level] || levelColors['1']}`}>
+        <span className={`px-1.5 py-0.5 text-[11px] font-pixel text-white ${levelColors[level] || levelColors['1']}`}>
           LV.{level}
         </span>
 
         {/* Verified Mark */}
         {isVerified && (
-          <span className="px-1 py-0.5 bg-primary/10 border border-primary/30 font-pixel text-[6px] text-primary flex items-center gap-0.5">
+          <span className="px-1 py-0.5 bg-primary/10 border border-primary/30 font-pixel text-[11px] text-primary flex items-center gap-0.5">
             <Shield size={7} /> 검증됨
           </span>
         )}

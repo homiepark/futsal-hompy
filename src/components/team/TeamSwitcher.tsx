@@ -102,7 +102,7 @@ export function TeamSwitcher({ className }: TeamSwitcherProps) {
             style={{ boxShadow: '4px 4px 0 hsl(var(--pixel-shadow))' }}
           >
             <div className="px-3 py-2 border-b-2 border-border">
-              <span className="font-pixel text-[8px] text-muted-foreground">팀 전환</span>
+              <span className="font-pixel text-[11px] text-muted-foreground">팀 전환</span>
             </div>
             {otherTeams.map((team) => (
               <button

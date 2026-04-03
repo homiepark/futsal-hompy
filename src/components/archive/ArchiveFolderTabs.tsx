@@ -31,7 +31,7 @@ export function ArchiveFolderTabs({
           key={folder.id}
           onClick={() => onSelect(folder.id)}
           className={cn(
-            'flex-shrink-0 px-3 py-1.5 border-2 font-pixel text-[8px] transition-all whitespace-nowrap',
+            'flex-shrink-0 px-3 py-1.5 border-2 font-pixel text-[11px] transition-all whitespace-nowrap',
             selectedFolder === folder.id
               ? 'bg-primary border-primary-dark text-primary-foreground'
               : 'bg-muted border-border-dark text-foreground hover:border-primary'

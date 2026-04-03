@@ -129,7 +129,7 @@ export function TeamAnnouncement({
         {/* Date indicator */}
         {latestNotice && (
           <div className="mt-2 text-right">
-            <span className="font-pixel text-[8px] text-amber-600">
+            <span className="font-pixel text-[11px] text-amber-600">
               {new Date(latestNotice.created_at).toLocaleDateString('ko-KR')}
             </span>
           </div>

@@ -52,7 +52,7 @@ export function LatestArchive({ teamId, items }: LatestArchiveProps) {
                   <p className="font-body text-[8px] text-foreground leading-tight line-clamp-4 overflow-hidden">
                     {item.content || ''}
                   </p>
-                  <span className="font-pixel text-[7px] text-muted-foreground">📝</span>
+                  <span className="font-pixel text-[11px] text-muted-foreground">📝</span>
                 </div>
               )}
             </Link>

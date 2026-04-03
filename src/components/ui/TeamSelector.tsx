@@ -76,7 +76,7 @@ export function TeamSelector({ teams, selectedTeam, onSelect, showAllOption = tr
                 </div>
                 <span className="font-body text-foreground">{team.name}</span>
                 {selectedTeam === team.id && (
-                  <span className="ml-auto text-primary font-pixel text-[8px]">✓</span>
+                  <span className="ml-auto text-primary font-pixel text-[11px]">✓</span>
                 )}
               </button>
             ))}

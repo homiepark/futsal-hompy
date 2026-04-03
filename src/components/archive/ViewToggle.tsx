@@ -12,7 +12,7 @@ export function ViewToggle({ view, onViewChange }: ViewToggleProps) {
       <button
         onClick={() => onViewChange('grid')}
         className={cn(
-          'flex items-center gap-1.5 px-3 py-2 font-pixel text-[8px] uppercase transition-colors',
+          'flex items-center gap-1.5 px-3 py-2 font-pixel text-[11px] uppercase transition-colors',
           view === 'grid' 
             ? 'bg-primary text-primary-foreground' 
             : 'bg-secondary text-secondary-foreground hover:bg-muted'
@@ -24,7 +24,7 @@ export function ViewToggle({ view, onViewChange }: ViewToggleProps) {
       <button
         onClick={() => onViewChange('single')}
         className={cn(
-          'flex items-center gap-1.5 px-3 py-2 font-pixel text-[8px] uppercase transition-colors border-l-2 border-border-dark',
+          'flex items-center gap-1.5 px-3 py-2 font-pixel text-[11px] uppercase transition-colors border-l-2 border-border-dark',
           view === 'single' 
             ? 'bg-primary text-primary-foreground' 
             : 'bg-secondary text-secondary-foreground hover:bg-muted'

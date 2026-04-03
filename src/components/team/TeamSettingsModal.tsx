@@ -155,7 +155,7 @@ export function TeamSettingsModal({
                 <button
                   key={r}
                   onClick={() => { setRegion(r); setDistrict(''); }}
-                  className={`px-2 py-1 font-pixel text-[7px] border-2 transition-all ${
+                  className={`px-2 py-1 font-pixel text-[11px] border-2 transition-all ${
                     region === r
                       ? 'bg-primary text-primary-foreground border-primary-dark'
                       : 'bg-muted text-muted-foreground border-border-dark hover:border-primary/50'
@@ -169,13 +169,13 @@ export function TeamSettingsModal({
             {/* 구/군 선택 */}
             {region && regionData[region] && (
               <div className="bg-muted/50 border-2 border-border-dark p-2">
-                <span className="font-pixel text-[7px] text-muted-foreground block mb-1.5">{region} 세부 지역</span>
+                <span className="font-pixel text-[11px] text-muted-foreground block mb-1.5">{region} 세부 지역</span>
                 <div className="flex flex-wrap gap-1 max-h-28 overflow-y-auto overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
                   {regionData[region].map((d) => (
                     <button
                       key={d}
                       onClick={() => setDistrict(d)}
-                      className={`px-2 py-1 font-pixel text-[7px] border transition-all flex items-center gap-0.5 ${
+                      className={`px-2 py-1 font-pixel text-[11px] border transition-all flex items-center gap-0.5 ${
                         district === d
                           ? 'bg-primary text-primary-foreground border-primary-dark'
                           : 'bg-card text-foreground border-border hover:border-primary/50'
@@ -190,7 +190,7 @@ export function TeamSettingsModal({
             )}
 
             {region && district && (
-              <div className="mt-2 px-2 py-1.5 bg-primary/10 border border-primary/30 font-pixel text-[8px] text-primary">
+              <div className="mt-2 px-2 py-1.5 bg-primary/10 border border-primary/30 font-pixel text-[11px] text-primary">
                 📍 {region} {district}
               </div>
             )}
@@ -220,7 +220,7 @@ export function TeamSettingsModal({
                   <span className="text-xl">{opt.emoji}</span>
                   <div>
                     <span className="font-pixel text-[9px] block">LV.{opt.lv} {opt.name}</span>
-                    <span className="font-pixel text-[8px] text-muted-foreground">{opt.desc}</span>
+                    <span className="font-pixel text-[11px] text-muted-foreground">{opt.desc}</span>
                   </div>
                 </button>
               ))}
@@ -258,7 +258,7 @@ export function TeamSettingsModal({
                   }
                   window.open(`https://map.naver.com/v5/search/${encodeURIComponent(query + ' 풋살')}`, '_blank');
                 }}
-                className="flex-1 py-2 bg-[#03C75A] text-white font-pixel text-[8px] border-2 border-[#02b351] hover:brightness-110 transition-all flex items-center justify-center gap-1"
+                className="flex-1 py-2 bg-[#03C75A] text-white font-pixel text-[11px] border-2 border-[#02b351] hover:brightness-110 transition-all flex items-center justify-center gap-1"
                 style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow) / 0.5)' }}
               >
                 <Navigation size={10} />
@@ -283,7 +283,7 @@ export function TeamSettingsModal({
                     },
                   }).open();
                 }}
-                className="flex-1 py-2 bg-secondary text-foreground font-pixel text-[8px] border-2 border-border-dark hover:bg-muted transition-all flex items-center justify-center gap-1"
+                className="flex-1 py-2 bg-secondary text-foreground font-pixel text-[11px] border-2 border-border-dark hover:bg-muted transition-all flex items-center justify-center gap-1"
                 style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow) / 0.5)' }}
               >
                 <MapPin size={10} />
@@ -291,7 +291,7 @@ export function TeamSettingsModal({
               </button>
             </div>
 
-            <p className="font-pixel text-[8px] text-muted-foreground mt-1.5">
+            <p className="font-pixel text-[11px] text-muted-foreground mt-1.5">
               💡 구장 이름만 입력해도 OK! 주소는 선택사항이에요
             </p>
           </div>
@@ -367,7 +367,7 @@ export function TeamSettingsModal({
               <select
                 value={trainingStartTime}
                 onChange={(e) => setTrainingStartTime(e.target.value)}
-                className="flex-1 pixel-input font-pixel text-[8px]"
+                className="flex-1 pixel-input font-pixel text-[11px]"
               >
                 <option value="">시작 시간</option>
                 {timeOptions.map((t) => (
@@ -378,7 +378,7 @@ export function TeamSettingsModal({
               <select
                 value={trainingEndTime}
                 onChange={(e) => setTrainingEndTime(e.target.value)}
-                className="flex-1 pixel-input font-pixel text-[8px]"
+                className="flex-1 pixel-input font-pixel text-[11px]"
               >
                 <option value="">종료 시간</option>
                 {timeOptions.map((t) => (
@@ -395,10 +395,10 @@ export function TeamSettingsModal({
               value={introduction}
               onChange={(e) => setIntroduction(e.target.value)}
               placeholder="팀을 소개해주세요"
-              className="w-full pixel-input h-20 resize-none font-pixel text-[8px]"
+              className="w-full pixel-input h-20 resize-none font-pixel text-[11px]"
               maxLength={500}
             />
-            <p className="font-pixel text-[8px] text-muted-foreground text-right">{introduction.length}/500</p>
+            <p className="font-pixel text-[11px] text-muted-foreground text-right">{introduction.length}/500</p>
           </div>
 
           {/* SNS 링크 */}
@@ -412,7 +412,7 @@ export function TeamSettingsModal({
                   value={instagramUrl}
                   onChange={(e) => setInstagramUrl(e.target.value)}
                   placeholder="인스타그램 URL"
-                  className="w-full pixel-input font-pixel text-[8px]"
+                  className="w-full pixel-input font-pixel text-[11px]"
                 />
               </div>
               <div className="flex items-center gap-2">
@@ -422,7 +422,7 @@ export function TeamSettingsModal({
                   value={youtubeUrl}
                   onChange={(e) => setYoutubeUrl(e.target.value)}
                   placeholder="유튜브 URL"
-                  className="w-full pixel-input font-pixel text-[8px]"
+                  className="w-full pixel-input font-pixel text-[11px]"
                 />
               </div>
             </div>
@@ -444,7 +444,7 @@ export function TeamSettingsModal({
           {onDelete && !showDeleteConfirm && (
             <button
               onClick={() => setShowDeleteConfirm(true)}
-              className="w-full py-2 font-pixel text-[8px] text-destructive hover:text-destructive/80 transition-colors"
+              className="w-full py-2 font-pixel text-[11px] text-destructive hover:text-destructive/80 transition-colors"
             >
               팀 삭제하기
             </button>
@@ -454,7 +454,7 @@ export function TeamSettingsModal({
               <p className="font-pixel text-[9px] text-destructive text-center">
                 ⚠️ 정말 팀을 삭제하시겠습니까?
               </p>
-              <p className="font-pixel text-[7px] text-muted-foreground text-center">
+              <p className="font-pixel text-[11px] text-muted-foreground text-center">
                 팀 삭제 시 모든 데이터(멤버, 공지, 스토리)가 삭제되며 복구할 수 없습니다.
               </p>
               <div className="flex gap-2">

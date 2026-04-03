@@ -222,7 +222,7 @@ export function HompySkinSelector({ isOpen, onClose, currentSkin, onSkinChange }
               </div>
               <div className="text-center">
                 <span className="text-lg block">{skin.emoji}</span>
-                <span className="font-pixel text-[7px] text-foreground block mt-1">{skin.name}</span>
+                <span className="font-pixel text-[11px] text-foreground block mt-1">{skin.name}</span>
               </div>
               {currentSkin === skin.id && (
                 <div className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-accent border-2 border-accent-dark rounded-full flex items-center justify-center">
@@ -236,7 +236,7 @@ export function HompySkinSelector({ isOpen, onClose, currentSkin, onSkinChange }
         {/* Preview info */}
         {selectedSkin?.animation && (
           <div className="px-4 py-2 bg-muted/50 border-t border-border text-center">
-            <span className="font-pixel text-[8px] text-muted-foreground">
+            <span className="font-pixel text-[11px] text-muted-foreground">
               ✨ 이 스킨은 {
                 selectedSkin.animation === 'sakura' ? '벚꽃 날리기' :
                 selectedSkin.animation === 'snow' ? '눈 내리기' :

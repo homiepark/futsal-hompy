@@ -48,7 +48,7 @@ export function HomeGroundSelector({
               }
               window.open(`https://map.naver.com/v5/search/${encodeURIComponent(query + ' 풋살')}`, '_blank');
             }}
-            className="flex-1 py-2 bg-[#03C75A] text-white font-pixel text-[8px] border-2 border-[#02b351] hover:brightness-110 transition-all flex items-center justify-center gap-1"
+            className="flex-1 py-2 bg-[#03C75A] text-white font-pixel text-[11px] border-2 border-[#02b351] hover:brightness-110 transition-all flex items-center justify-center gap-1"
             style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow) / 0.5)' }}
           >
             <Navigation size={10} />
@@ -73,7 +73,7 @@ export function HomeGroundSelector({
                 },
               }).open();
             }}
-            className="flex-1 py-2 bg-secondary text-foreground font-pixel text-[8px] border-2 border-border-dark hover:bg-muted transition-all flex items-center justify-center gap-1"
+            className="flex-1 py-2 bg-secondary text-foreground font-pixel text-[11px] border-2 border-border-dark hover:bg-muted transition-all flex items-center justify-center gap-1"
             style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow) / 0.5)' }}
           >
             <MapPin size={10} />
@@ -81,7 +81,7 @@ export function HomeGroundSelector({
           </button>
         </div>
 
-        <p className="font-pixel text-[8px] text-muted-foreground">
+        <p className="font-pixel text-[11px] text-muted-foreground">
           💡 구장 이름만 입력해도 OK! 주소는 선택사항이에요
         </p>
       </div>

@@ -37,13 +37,13 @@ export function GuestAuthPrompt() {
               <span className="text-primary">우리동네 풋살팀 소식</span>을 확인하세요!
             </p>
             <div className="flex flex-wrap justify-center gap-2 pt-1">
-              <span className="px-2 py-1 bg-primary/10 border-2 border-primary/30 font-pixel text-[8px] text-primary">
+              <span className="px-2 py-1 bg-primary/10 border-2 border-primary/30 font-pixel text-[11px] text-primary">
                 팀 소식
               </span>
-              <span className="px-2 py-1 bg-accent/10 border-2 border-accent/30 font-pixel text-[8px] text-accent">
+              <span className="px-2 py-1 bg-accent/10 border-2 border-accent/30 font-pixel text-[11px] text-accent">
                 매치 결과
               </span>
-              <span className="px-2 py-1 bg-secondary border-2 border-border font-pixel text-[8px] text-muted-foreground">
+              <span className="px-2 py-1 bg-secondary border-2 border-border font-pixel text-[11px] text-muted-foreground">
                 신규 멤버 모집
               </span>
             </div>
