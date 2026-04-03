@@ -113,7 +113,7 @@
 - React 18 + TypeScript + Vite (코드 스플리팅 적용)
 - Supabase (인증, PostgreSQL, 실시간, 스토리지)
 - Tailwind CSS + shadcn/ui + 커스텀 픽셀아트 테마
-- 폰트: DNFBitBitv2 (제목/뱃지), NeoDunggeunmo, Galmuri11
+- 폰트: Galmuri11 (기본 pixel), NeoDunggeunmo, DNFBitBitv2 (폴백)
 - 배포: Vercel
 - 번들: vendor(162KB) / supabase(194KB) / ui(80KB) / 페이지별 청크
 
@@ -131,19 +131,19 @@ player_guestbook_entries
 
 ## 알려진 이슈 & 개선 필요사항
 
-### 코드 품질
-| 우선순위 | 이슈 | 위치 | 설명 |
-|---------|------|------|------|
-| 🔴 높음 | 메시지 insert 에러 미처리 | JoinRequestModal.tsx:133, JoinRequestNotification.tsx:99,128 | supabase insert 후 error 체크 없음 |
-| 🟡 중간 | text-[8px] 잔여 | ProfileSetup.tsx (5곳), MyProfile.tsx (1곳), TeamArchive.tsx (1곳) | 11px로 통일 필요 |
-| 🟡 중간 | console.error 정리 | 30+ 곳 | 프로덕션 로깅 전략 수립 필요 |
+### 해결 완료 ✅
+| 이슈 | 해결 내용 |
+|------|----------|
+| ~~메시지 insert 에러 미처리~~ | error 체크 + console.error 로깅 추가 (3곳) |
+| ~~text-[8px] 잔여~~ | ProfileSetup 5곳 + MyProfile 1곳 + TeamArchive 1곳 → 11px 통일 |
+| ~~게시글 이미지 수정 시 미반영~~ | onUpdate 콜백 추가 → fetchPosts 재호출 |
+| ~~폰트 가독성 낮음~~ | font-pixel 기본을 Galmuri11로 교체 (DNFBitBitv2 → 폴백) |
 
-### UX 개선 제안
+### 남은 개선사항
 | 우선순위 | 제안 | 설명 |
 |---------|------|------|
-| 🔴 높음 | 게시글 이미지 수정 시 새로고침 미반영 | 수정 후 allImages가 업데이트되지 않음 (페이지 새로고침 필요) |
-| 🟡 중간 | 폰트 전략 재검토 | font-pixel(DNFBitBitv2)이 소형에서 가독성 낮음. Galmuri11을 font-pixel 기본으로 전환 고려 |
-| 🟡 중간 | 게시글 작성 시 사진 순서 변경 | 드래그로 대표 이미지 변경 기능 |
+| 🟡 중간 | console.error 정리 | 30+ 곳. 프로덕션 로깅 전략 수립 필요 |
+| 🟡 중간 | 게시글 사진 순서 변경 | 드래그로 대표 이미지 변경 기능 |
 | 🟢 낮음 | 라이트박스에서 YouTube 동영상 | 현재 YouTube는 인라인 iframe만 (라이트박스 미지원) |
 | 🟢 낮음 | 팀원 현황 컴팩트/카드 뷰 토글 | 한눈에 보기 vs 상세 보기 전환 |
 
