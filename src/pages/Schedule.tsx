@@ -377,7 +377,7 @@ export default function Schedule() {
             <span className="font-pixel text-[11px] text-muted-foreground">자체전</span>
           </div>
           <div className="flex items-center gap-1">
-            <span className="w-2.5 h-2.5 rounded-full bg-lime-400 inline-block"></span>
+            <span className="text-sm">🏃</span>
             <span className="font-pixel text-[11px] text-muted-foreground">훈련</span>
           </div>
           <div className="flex items-center gap-1">
@@ -433,7 +433,7 @@ export default function Schedule() {
                   <div className="flex items-center gap-0.5 mt-0.5 h-3">
                     {hasMatch && <span className="text-[10px] leading-none drop-shadow-[0_0_3px_rgba(255,200,0,0.8)]">⭐</span>}
                     {hasFriendly && <span className="text-[10px] leading-none">⚔️</span>}
-                    {hasTraining && <span className={cn('w-2 h-2 rounded-full', isSelected ? 'bg-primary-foreground' : 'bg-lime-400')}></span>}
+                    {hasTraining && <span className="text-[10px] leading-none">🏃</span>}
                     {hasEvent && <span className="text-[10px] leading-none">🎉</span>}
                     {hasPosts && <span className={cn('w-1.5 h-1.5 rounded-full', isSelected ? 'bg-primary-foreground' : 'bg-accent')}></span>}
                   </div>
