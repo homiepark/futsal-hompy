@@ -202,7 +202,13 @@ export function TimelinePost({
             </span>
           )}
           <p className="font-pixel text-[10px] text-foreground">{author}</p>
-          <p className="font-body text-xs text-muted-foreground">{date}</p>
+          <div className="flex items-center gap-1.5">
+            <span className="font-body text-xs text-muted-foreground">{date}</span>
+            <span className={cn(
+              "font-pixel text-[9px] px-1 py-0.5 rounded",
+              visibility === 'public' ? "text-blue-500 bg-blue-50" : "text-amber-600 bg-amber-50"
+            )}>{visibility === 'public' ? '🌐 전체' : '🔒 팀원'}</span>
+          </div>
         </div>
         <div className="flex items-center gap-1">
           {canEdit && !isEditing && (
