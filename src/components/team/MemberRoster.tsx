@@ -146,7 +146,7 @@ export function MemberRoster({ members, teamId }: MemberRosterProps) {
                 </div>
 
                 {/* 3-Column Fixed Grid */}
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-4 gap-1.5">
                   {positionMembers.map((member) => (
                     <button
                       key={member.id}
@@ -155,7 +155,7 @@ export function MemberRoster({ members, teamId }: MemberRosterProps) {
                       style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow) / 0.5)' }}
                     >
                       {/* Avatar */}
-                      <div className="w-16 h-16 bg-secondary border-2 border-border-dark rounded-md overflow-hidden relative mb-1">
+                      <div className="w-12 h-12 bg-secondary border-2 border-border-dark rounded-md overflow-hidden relative mb-1">
                         {member.avatarUrl ? (
                           <img src={member.avatarUrl} alt={member.nickname} className="w-full h-full object-cover" />
                         ) : (
