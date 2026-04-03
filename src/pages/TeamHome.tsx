@@ -636,7 +636,7 @@ export default function TeamHome() {
           {[
             { label: '팀 레벨', value: `LV.${teamData.level}`, icon: '🏅', key: 'level' },
             { label: '매치 횟수', value: '0전', icon: '⚔️', key: 'match' },
-            { label: '팀원평균경력', value: `${avgExp}년`, icon: '⏰', key: 'exp' },
+            { label: '평균경력', value: `${avgExp}년`, icon: '⏰', key: 'exp' },
             { label: '매너', value: '-', icon: '⭐', key: 'manner' },
             { label: '멤버', value: `${members.length}명`, icon: '👥', key: 'member' },
           ].map(stat => (
