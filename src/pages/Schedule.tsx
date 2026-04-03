@@ -550,7 +550,7 @@ export default function Schedule() {
               <span className="font-pixel text-[11px]">📅 {editingSchedule ? '일정 수정' : '일정 등록'}</span>
               <button onClick={() => { setShowAddModal(false); resetForm(); }} className="hover:opacity-80 font-pixel text-[11px]">✕</button>
             </div>
-            <div className="px-5 py-4 space-y-3 overflow-y-auto flex-1">
+            <div className="px-5 py-4 space-y-3 overflow-y-auto flex-1 overscroll-contain">
               {/* Event Type */}
               <div>
                 <label className="block font-pixel text-[11px] text-muted-foreground mb-1">유형 *</label>
@@ -609,7 +609,7 @@ export default function Schedule() {
                         className="w-7 h-7 flex items-center justify-center hover:bg-muted rounded"><ChevronRight size={16} /></button>
                     </div>
                     {/* Week Header */}
-                    <div className="grid grid-cols-7 gap-0.5 mb-1">
+                    <div className="grid grid-cols-7 gap-1 mb-1">
                       {['일','월','화','수','목','금','토'].map((d, i) => (
                         <div key={d} className={cn('text-center font-pixel text-[9px] py-0.5',
                           i === 0 ? 'text-red-400' : i === 6 ? 'text-blue-400' : 'text-muted-foreground'
@@ -617,7 +617,7 @@ export default function Schedule() {
                       ))}
                     </div>
                     {/* Days Grid */}
-                    <div className="grid grid-cols-7 gap-0.5">
+                    <div className="grid grid-cols-7 gap-1">
                       {Array.from({ length: getDay(startOfMonth(recurringMonth)) }).map((_, i) => <div key={`e-${i}`} />)}
                       {eachDayOfInterval({ start: startOfMonth(recurringMonth), end: endOfMonth(recurringMonth) }).map(day => {
                         const dateStr = format(day, 'yyyy-MM-dd');
@@ -627,7 +627,7 @@ export default function Schedule() {
                           <button key={dateStr} type="button" onClick={() =>
                             setSelectedDates(prev => isSelected ? prev.filter(d => d !== dateStr) : [...prev, dateStr].sort())
                           }
-                            className={cn('aspect-square flex items-center justify-center font-pixel text-[11px] rounded transition-all',
+                            className={cn('min-h-[36px] flex items-center justify-center font-pixel text-[11px] rounded-md transition-all',
                               isSelected ? 'bg-primary text-primary-foreground border-2 border-primary-dark' : 'hover:bg-muted border border-transparent',
                               !isSelected && dow === 0 && 'text-red-400',
                               !isSelected && dow === 6 && 'text-blue-400',
