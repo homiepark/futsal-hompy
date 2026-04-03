@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Plus, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 import { cn } from '@/lib/utils';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, isSameDay, isToday, addDays } from 'date-fns';
 import { ko } from 'date-fns/locale';
@@ -48,6 +49,7 @@ export default function Schedule() {
   const [isAdmin, setIsAdmin] = useState(false);
 
   const [showAddModal, setShowAddModal] = useState(false);
+  useBodyScrollLock(showAddModal);
   const [editingSchedule, setEditingSchedule] = useState<ScheduleEvent | null>(null);
   const [newTitle, setNewTitle] = useState('');
   const [newDate, setNewDate] = useState('');
