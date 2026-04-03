@@ -59,14 +59,14 @@ export function LatestArchive({ teamId, items }: LatestArchiveProps) {
           ))}
           {displayItems.length === 0 && (
             <div className="col-span-4 py-6 text-center">
-              <p className="font-pixel text-[9px] text-muted-foreground">아직 스토리가 없습니다</p>
+              <p className="font-body text-xs text-muted-foreground">아직 스토리가 없습니다</p>
             </div>
           )}
         </div>
 
         <Link
           to={`/archive?team=${teamId}`}
-          className="block w-full py-2 bg-accent text-accent-foreground text-center font-pixel text-[9px] uppercase border-3 border-accent-dark hover:brightness-110 transition-all active:translate-y-0.5"
+          className="block w-full py-2 bg-accent text-accent-foreground text-center font-pixel text-[11px] uppercase border-3 border-accent-dark hover:brightness-110 transition-all active:translate-y-0.5"
           style={{
             boxShadow: '2px 2px 0 hsl(var(--accent-dark)), inset -1px -1px 0 hsl(var(--accent-dark) / 0.4), inset 1px 1px 0 hsl(0 0% 100% / 0.3)'
           }}

@@ -206,7 +206,7 @@ export function TeamHeader({
             )}
             <button
               onClick={onLevelClick}
-              className={cn('px-2 py-0.5 border-2 font-pixel text-[8px] hover:brightness-110 transition-all cursor-pointer', levelColors[level] || 'bg-primary text-primary-foreground')}
+              className={cn('px-2 py-0.5 border-2 font-pixel text-[11px] hover:brightness-110 transition-all cursor-pointer', levelColors[level] || 'bg-primary text-primary-foreground')}
             >
               LV.{level}
             </button>
@@ -216,19 +216,19 @@ export function TeamHeader({
           <div className="space-y-1">
             {region && (
               <div className="flex items-center gap-1.5">
-                <span className="font-pixel text-[7px] text-muted-foreground/60 w-10 shrink-0">활동지역</span>
-                <span className="font-pixel text-[9px] text-foreground">📍 {region}</span>
+                <span className="font-body text-[11px] text-muted-foreground/60 w-12 shrink-0">활동지역</span>
+                <span className="font-body text-[11px] text-foreground">📍 {region}</span>
               </div>
             )}
             {homeGroundName && (
               <div className="flex items-center gap-1.5">
-                <span className="font-pixel text-[7px] text-muted-foreground/60 w-10 shrink-0">홈구장</span>
+                <span className="font-body text-[11px] text-muted-foreground/60 w-12 shrink-0">홈구장</span>
                 <button
                   onClick={() => {
                     const query = homeGroundAddress || homeGroundName;
                     if (query) window.open(`https://map.naver.com/v5/search/${encodeURIComponent(query)}`, '_blank');
                   }}
-                  className="font-pixel text-[9px] text-[#03C75A] hover:underline flex items-center gap-0.5"
+                  className="font-body text-[11px] text-[#03C75A] hover:underline flex items-center gap-0.5"
                 >
                   <MapPin size={9} />
                   {homeGroundName}
@@ -237,8 +237,8 @@ export function TeamHeader({
             )}
             {trainingInfo && (
               <div className="flex items-center gap-1.5">
-                <span className="font-pixel text-[7px] text-muted-foreground/60 w-10 shrink-0">훈련시간</span>
-                <span className="font-pixel text-[9px] text-foreground">🕐 {trainingInfo}</span>
+                <span className="font-body text-[11px] text-muted-foreground/60 w-12 shrink-0">훈련시간</span>
+                <span className="font-body text-[11px] text-foreground">🕐 {trainingInfo}</span>
               </div>
             )}
           </div>

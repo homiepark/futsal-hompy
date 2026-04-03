@@ -93,8 +93,8 @@ export function MemberRoster({ members, teamId }: MemberRosterProps) {
                 {/* Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="font-pixel text-[10px] text-foreground truncate">{staff.nickname}</span>
-                    <span className="px-1.5 py-0.5 bg-primary/20 border border-primary/40 font-pixel text-[8px] text-primary shrink-0">
+                    <span className="font-pixel text-[11px] text-foreground truncate">{staff.nickname}</span>
+                    <span className="px-1.5 py-0.5 bg-primary/20 border border-primary/40 font-pixel text-[11px] text-primary shrink-0">
                       {getStaffLabel(staff.role)}
                     </span>
                   </div>
@@ -137,7 +137,7 @@ export function MemberRoster({ members, teamId }: MemberRosterProps) {
                 {/* Position Tag */}
                 <div className={cn(
                   'inline-flex items-center gap-1 px-1.5 py-0.5 mb-1.5',
-                  'border-2 text-[8px] font-pixel',
+                  'border-2 text-[11px] font-pixel',
                   info.color
                 )}>
                   <span>{info.emoji}</span>
@@ -168,11 +168,11 @@ export function MemberRoster({ members, teamId }: MemberRosterProps) {
 
                       {/* Info */}
                       <div className="flex flex-col min-w-0">
-                        <span className="font-pixel text-[8px] text-foreground truncate leading-tight">
+                        <span className="font-pixel text-[11px] text-foreground truncate leading-tight">
                           {member.nickname}
                         </span>
                         <div className="flex items-center gap-1">
-                          <span className="font-pixel text-[8px] text-muted-foreground leading-tight">
+                          <span className="font-body text-[11px] text-muted-foreground leading-tight">
                             {member.yearsOfExperience}년{member.monthsOfExperience ? `${member.monthsOfExperience}개월` : ''}
                           </span>
                           {(member.positions?.length ?? 0) > 1 && (

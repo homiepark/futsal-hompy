@@ -178,7 +178,7 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
                   );
                 })}
               </div>
-              <p className="font-pixel text-[8px] text-muted-foreground">
+              <p className="font-pixel text-[11px] text-muted-foreground">
                 {info.fullName}
               </p>
             </div>
@@ -189,7 +189,7 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
             <div className="bg-primary/10 border-2 border-primary/30 p-3">
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-sm">{player.role === 'manager' ? '👔' : '📋'}</span>
-                <span className="font-pixel text-[10px] text-primary">
+                <span className="font-pixel text-[11px] text-primary">
                   {player.role === 'manager' ? '감독' : '코치'}
                 </span>
               </div>
@@ -209,7 +209,7 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
           {/* Personal Bio Section */}
           <div className="kairo-section">
             <div className="flex items-center justify-between mb-1.5">
-              <p className="font-pixel text-[8px] text-muted-foreground uppercase">💬 한줄 소개</p>
+              <p className="font-pixel text-[11px] text-muted-foreground uppercase">💬 한줄 소개</p>
               {isOwnProfile && !isEditingBio && (
                 <button
                   onClick={() => { setBioText(displayBio); setIsEditingBio(true); }}
@@ -226,7 +226,7 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
                   value={bioText}
                   onChange={(e) => setBioText(e.target.value)}
                   placeholder="한줄 소개를 입력하세요..."
-                  className="w-full px-2 py-1.5 bg-input border-2 border-border-dark font-pixel text-[10px] focus:outline-none focus:border-primary"
+                  className="w-full px-2 py-1.5 bg-input border-2 border-border-dark font-pixel text-[11px] focus:outline-none focus:border-primary"
                   maxLength={50}
                   autoFocus
                   onKeyDown={(e) => e.key === 'Enter' && handleSaveBio()}
@@ -234,13 +234,13 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
                 <div className="flex gap-1.5 justify-end">
                   <button
                     onClick={() => setIsEditingBio(false)}
-                    className="px-2 py-1 border-2 border-border-dark bg-muted font-pixel text-[8px] text-muted-foreground"
+                    className="px-2 py-1 border-2 border-border-dark bg-muted font-pixel text-[11px] text-muted-foreground"
                   >
                     취소
                   </button>
                   <button
                     onClick={handleSaveBio}
-                    className="px-2 py-1 border-2 border-primary-dark bg-primary font-pixel text-[8px] text-primary-foreground flex items-center gap-1"
+                    className="px-2 py-1 border-2 border-primary-dark bg-primary font-pixel text-[11px] text-primary-foreground flex items-center gap-1"
                   >
                     <Check size={8} />
                     저장
@@ -252,7 +252,7 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
                 className="bg-muted/50 border-2 border-border-dark p-2"
                 style={{ boxShadow: 'inset 1px 1px 0 hsl(var(--pixel-shadow) / 0.3)' }}
               >
-                <p className="font-pixel text-[10px] text-foreground leading-relaxed">
+                <p className="font-pixel text-[11px] text-foreground leading-relaxed">
                   {displayBio || (isOwnProfile ? '한줄 소개를 작성해보세요! ✏️' : '아직 자기소개가 없습니다 ✨')}
                 </p>
               </div>
@@ -265,8 +265,8 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
             <div className="kairo-section flex items-center gap-2">
               <Calendar size={14} className="text-primary flex-shrink-0" />
               <div className="min-w-0">
-                <p className="font-pixel text-[8px] text-muted-foreground uppercase">가입일</p>
-                <p className="font-pixel text-[9px] text-foreground truncate">
+                <p className="font-pixel text-[11px] text-muted-foreground uppercase">가입일</p>
+                <p className="font-pixel text-[11px] text-foreground truncate">
                   {player.joinDate || '-'}
                 </p>
               </div>
@@ -276,8 +276,8 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
             <div className="kairo-section flex items-center gap-2">
               <Trophy size={14} className="text-accent flex-shrink-0" />
               <div className="min-w-0">
-                <p className="font-pixel text-[8px] text-muted-foreground uppercase">경력</p>
-                <p className="font-pixel text-[9px] text-foreground">
+                <p className="font-pixel text-[11px] text-muted-foreground uppercase">경력</p>
+                <p className="font-pixel text-[11px] text-foreground">
                   {expStr}
                 </p>
               </div>
@@ -286,7 +286,7 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
 
           {/* Player Guestbook Section */}
           <div className="kairo-section">
-            <p className="font-pixel text-[10px] text-muted-foreground uppercase mb-2">📝 선수 방명록</p>
+            <p className="font-pixel text-[11px] text-muted-foreground uppercase mb-2">📝 선수 방명록</p>
 
             {/* Guestbook Input */}
             <div className="flex gap-2 mb-3">
@@ -316,9 +316,9 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
                   style={{ boxShadow: '1px 1px 0 hsl(var(--pixel-shadow) / 0.3)' }}
                 >
                   <div className="flex items-center justify-between mb-1">
-                    <span className="font-pixel text-[10px] text-primary">{entry.authorNickname}</span>
+                    <span className="font-pixel text-[11px] text-primary">{entry.authorNickname}</span>
                     <div className="flex items-center gap-2">
-                      <span className="font-pixel text-[8px] text-muted-foreground">{entry.date}</span>
+                      <span className="font-pixel text-[11px] text-muted-foreground">{entry.date}</span>
                       {user?.id === entry.authorUserId && (
                         <>
                           <button
@@ -364,7 +364,7 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
                       )}
                     >
                       <Heart size={14} fill={entry.isLikedByMe ? "currentColor" : "none"} />
-                      <span className="font-pixel text-[9px]">{entry.likes}</span>
+                      <span className="font-pixel text-[11px]">{entry.likes}</span>
                     </button>
                     <button
                       onClick={() => setReplyingToId(replyingToId === entry.id ? null : entry.id)}
@@ -374,7 +374,7 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
                       )}
                     >
                       <MessageCircle size={14} />
-                      <span className="font-pixel text-[9px]">{entry.replies.length ? entry.replies.length : '댓글'}</span>
+                      <span className="font-pixel text-[11px]">{entry.replies.length ? entry.replies.length : '댓글'}</span>
                     </button>
                   </div>
 
@@ -384,7 +384,7 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
                       {entry.replies.map(reply => (
                         <div key={reply.id}>
                           <div className="flex items-center gap-2">
-                            <span className="font-pixel text-[9px] text-primary">{reply.authorNickname}</span>
+                            <span className="font-pixel text-[11px] text-primary">{reply.authorNickname}</span>
                             <span className="font-pixel text-[7px] text-muted-foreground">{reply.date}</span>
                             {user?.id === reply.authorUserId && (
                               <button
@@ -395,7 +395,7 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
                               </button>
                             )}
                           </div>
-                          <p className="font-pixel text-[10px] text-foreground leading-tight">{reply.message}</p>
+                          <p className="font-pixel text-[11px] text-foreground leading-tight">{reply.message}</p>
                         </div>
                       ))}
                     </div>
@@ -408,7 +408,7 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
                         value={replyText}
                         onChange={(e) => setReplyText(e.target.value)}
                         placeholder="댓글 입력..."
-                        className="flex-1 px-2 py-1.5 bg-input border-2 border-border-dark font-pixel text-[10px] focus:outline-none focus:border-primary"
+                        className="flex-1 px-2 py-1.5 bg-input border-2 border-border-dark font-pixel text-[11px] focus:outline-none focus:border-primary"
                         maxLength={100}
                         autoFocus
                         onKeyDown={(e) => {
@@ -436,7 +436,7 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
                 </div>
               ))}
               {guestbookEntries.length === 0 && (
-                <p className="font-pixel text-[9px] text-muted-foreground text-center py-3">
+                <p className="font-pixel text-[11px] text-muted-foreground text-center py-3">
                   아직 방명록이 없어요. 첫 번째 응원을 남겨보세요! 💪
                 </p>
               )}
@@ -453,7 +453,7 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
                 setShowDM(false);
                 onClose();
               }}
-              className="flex-1 py-2 bg-muted border-3 border-border-dark font-pixel text-[9px] text-foreground hover:bg-secondary transition-colors"
+              className="flex-1 py-2 bg-muted border-3 border-border-dark font-pixel text-[11px] text-foreground hover:bg-secondary transition-colors"
               style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
             >
               닫기
@@ -461,7 +461,7 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
             <button
               onClick={() => setShowDM(true)}
               disabled={!user || isOwnProfile}
-              className="flex-1 py-2 bg-primary border-3 border-primary-dark font-pixel text-[9px] text-primary-foreground hover:brightness-110 transition-all disabled:opacity-50"
+              className="flex-1 py-2 bg-primary border-3 border-primary-dark font-pixel text-[11px] text-primary-foreground hover:brightness-110 transition-all disabled:opacity-50"
               style={{ boxShadow: '2px 2px 0 hsl(var(--primary-dark))' }}
             >
               쪽지 보내기

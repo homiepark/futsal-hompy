@@ -24,7 +24,7 @@ import { PlayerInviteModal } from '@/components/team/PlayerInviteModal';
 import { DirectMessageModal } from '@/components/messages/DirectMessageModal';
 import { BroadcastModal } from '@/components/messages/BroadcastModal';
 import { TeamSettingsModal } from '@/components/team/TeamSettingsModal';
-import { TeamAchievements } from '@/components/team/TeamAchievements';
+
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { levelOptions } from '@/lib/teamData';
@@ -618,7 +618,7 @@ export default function TeamHome() {
           {isAdmin && (
             <button
               onClick={() => setShowNoticeEdit(true)}
-              className="shrink-0 px-2 font-pixel text-[8px] text-[#00ff88] hover:text-white transition-colors"
+              className="shrink-0 px-2 font-pixel text-[11px] text-[#00ff88] hover:text-white transition-colors"
             >
               ✏️
             </button>
@@ -652,18 +652,11 @@ export default function TeamHome() {
               style={{boxShadow:'2px 2px 0 hsl(var(--pixel-shadow) / 0.5)'}}
             >
               <span className="text-sm block">{stat.icon}</span>
-              <span className="font-pixel text-[12px] text-foreground block mt-0.5">{stat.value}</span>
-              <span className="font-pixel text-[8px] text-muted-foreground">{stat.label}</span>
+              <span className="font-pixel text-xs text-foreground block mt-0.5">{stat.value}</span>
+              <span className="font-body text-[11px] text-muted-foreground">{stat.label}</span>
             </button>
           ))}
         </div>
-
-        {/* 5. Achievements */}
-        <TeamAchievements
-          matchCount={0}
-          memberCount={members.length}
-          archiveCount={archiveTotalCount}
-        />
 
         {/* 7. Team Intro */}
         <TeamIntro
@@ -691,13 +684,13 @@ export default function TeamHome() {
         {isAdmin && (
           <div className="space-y-2">
             <div className="flex gap-2">
-              <button onClick={() => setShowBroadcast(true)} className="flex-1 py-2.5 bg-card border-2 border-border-dark font-pixel text-[8px] text-foreground flex items-center justify-center gap-1 hover:bg-muted" style={{boxShadow:'2px 2px 0 hsl(var(--pixel-shadow) / 0.5)'}}>
+              <button onClick={() => setShowBroadcast(true)} className="flex-1 py-2.5 bg-card border-2 border-border-dark font-pixel text-[11px] text-foreground flex items-center justify-center gap-1 hover:bg-muted" style={{boxShadow:'2px 2px 0 hsl(var(--pixel-shadow) / 0.5)'}}>
                 📢 메시지
               </button>
-              <button onClick={() => setShowInviteModal(true)} className="flex-1 py-2.5 bg-card border-2 border-border-dark font-pixel text-[8px] text-foreground flex items-center justify-center gap-1 hover:bg-muted" style={{boxShadow:'2px 2px 0 hsl(var(--pixel-shadow) / 0.5)'}}>
+              <button onClick={() => setShowInviteModal(true)} className="flex-1 py-2.5 bg-card border-2 border-border-dark font-pixel text-[11px] text-foreground flex items-center justify-center gap-1 hover:bg-muted" style={{boxShadow:'2px 2px 0 hsl(var(--pixel-shadow) / 0.5)'}}>
                 👥 초대
               </button>
-              <button onClick={() => navigate('/messages', { state: { tab: 'join-requests' } })} className="flex-1 py-2.5 bg-card border-2 border-border-dark font-pixel text-[8px] text-foreground flex items-center justify-center gap-1 hover:bg-muted" style={{boxShadow:'2px 2px 0 hsl(var(--pixel-shadow) / 0.5)'}}>
+              <button onClick={() => navigate('/messages', { state: { tab: 'join-requests' } })} className="flex-1 py-2.5 bg-card border-2 border-border-dark font-pixel text-[11px] text-foreground flex items-center justify-center gap-1 hover:bg-muted" style={{boxShadow:'2px 2px 0 hsl(var(--pixel-shadow) / 0.5)'}}>
                 📋 입단관리
               </button>
             </div>
@@ -707,14 +700,14 @@ export default function TeamHome() {
               <div className="flex gap-2">
                 <button
                   onClick={() => setShowAdminManage(true)}
-                  className="flex-1 py-2.5 bg-card border-2 border-border-dark font-pixel text-[8px] text-foreground flex items-center justify-center gap-1 hover:bg-muted"
+                  className="flex-1 py-2.5 bg-card border-2 border-border-dark font-pixel text-[11px] text-foreground flex items-center justify-center gap-1 hover:bg-muted"
                   style={{boxShadow:'2px 2px 0 hsl(var(--pixel-shadow) / 0.5)'}}
                 >
                   🛡️ 멤버 역할 관리
                 </button>
                 <button
                   onClick={() => setShowAdminTransfer(true)}
-                  className="flex-1 py-2.5 bg-card border-2 border-border-dark font-pixel text-[8px] text-foreground flex items-center justify-center gap-1 hover:bg-muted"
+                  className="flex-1 py-2.5 bg-card border-2 border-border-dark font-pixel text-[11px] text-foreground flex items-center justify-center gap-1 hover:bg-muted"
                   style={{boxShadow:'2px 2px 0 hsl(var(--pixel-shadow) / 0.5)'}}
                 >
                   👑 팀장 이전
@@ -735,7 +728,7 @@ export default function TeamHome() {
                 className="w-full"
               />
             ) : (
-              <div className="w-full text-center py-2.5 bg-muted border-2 border-border-dark font-pixel text-[9px] text-muted-foreground"
+              <div className="w-full text-center py-2.5 bg-muted border-2 border-border-dark font-pixel text-[11px] text-muted-foreground"
                 style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
               >
                 ✅ 팀원입니다
@@ -743,7 +736,7 @@ export default function TeamHome() {
             )}
             <button
               onClick={() => setShowDirectMessage(true)}
-              className="w-full py-2.5 bg-secondary border-3 border-border-dark font-pixel text-[9px] text-foreground hover:bg-muted transition-colors flex items-center justify-center gap-2"
+              className="w-full py-2.5 bg-secondary border-3 border-border-dark font-pixel text-[11px] text-foreground hover:bg-muted transition-colors flex items-center justify-center gap-2"
               style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
             >
               ✉️ 팀 관리자에게 쪽지보내기
@@ -815,7 +808,7 @@ export default function TeamHome() {
                 className="w-full pixel-input h-20 resize-none"
                 maxLength={100}
               />
-              <p className="font-pixel text-[8px] text-muted-foreground text-right">{noticeText.length}/100</p>
+              <p className="font-body text-[11px] text-muted-foreground text-right">{noticeText.length}/100</p>
               <button
                 onClick={async () => {
                   if (!noticeText.trim()) return;
@@ -823,7 +816,7 @@ export default function TeamHome() {
                   setNoticeText('');
                   setShowNoticeEdit(false);
                 }}
-                className="w-full py-2.5 bg-[#00ff88] text-[#1a0a2e] font-pixel text-[9px] border-2 border-[#00cc6a] hover:brightness-110 transition-all"
+                className="w-full py-2.5 bg-[#00ff88] text-[#1a0a2e] font-pixel text-[11px] border-2 border-[#00cc6a] hover:brightness-110 transition-all"
                 style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow) / 0.5)' }}
               >
                 공지 등록
@@ -856,13 +849,13 @@ export default function TeamHome() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1.5">
-                        <span className={`px-1.5 py-0.5 ${color} text-white font-pixel text-[8px]`}>{level.label}</span>
-                        <span className="font-pixel text-[9px] text-foreground">{level.name}</span>
+                        <span className={`px-1.5 py-0.5 ${color} text-white font-pixel text-[11px]`}>{level.label}</span>
+                        <span className="font-pixel text-[11px] text-foreground">{level.name}</span>
                         {teamData.level === level.value && <span className="font-pixel text-[7px] text-primary">← 우리 팀</span>}
                       </div>
-                      <p className="font-pixel text-[8px] text-muted-foreground mt-0.5">{level.desc}</p>
-                      <p className="font-pixel text-[8px] text-muted-foreground/70 mt-0.5">{level.characteristic}</p>
-                      <p className="font-pixel text-[8px] text-muted-foreground/70">{level.operatingStyle}</p>
+                      <p className="font-body text-[11px] text-muted-foreground mt-0.5">{level.desc}</p>
+                      <p className="font-body text-[11px] text-muted-foreground/70 mt-0.5">{level.characteristic}</p>
+                      <p className="font-body text-[11px] text-muted-foreground/70">{level.operatingStyle}</p>
                     </div>
                   </div>
                 );
@@ -871,7 +864,7 @@ export default function TeamHome() {
                 const recommendedLevel = avgExp < 1 ? '1' : avgExp < 3 ? '2' : avgExp < 7 ? '3' : '4';
                 const recOpt = levelOptions.find(l => l.value === recommendedLevel);
                 return recommendedLevel !== (teamData.level || '1') && recOpt ? (
-                  <p className="font-pixel text-[8px] text-amber-500 text-center pt-2 border-t border-border">
+                  <p className="font-body text-[11px] text-amber-500 text-center pt-2 border-t border-border">
                     💡 팀원 경력 기반 추천: {recOpt.label} {recOpt.name}
                   </p>
                 ) : null;
@@ -905,7 +898,7 @@ export default function TeamHome() {
                 autoFocus
                 onKeyDown={(e) => e.key === 'Enter' && handleNameSave()}
               />
-              <p className="font-pixel text-[8px] text-muted-foreground text-right">{newTeamName.length}/30</p>
+              <p className="font-body text-[11px] text-muted-foreground text-right">{newTeamName.length}/30</p>
               <button
                 onClick={handleNameSave}
                 disabled={!newTeamName.trim()}

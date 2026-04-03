@@ -222,7 +222,7 @@ export function Guestbook({ teamId }: GuestbookProps) {
           ) : entries.length === 0 ? (
             <div className="text-center py-4">
               <span className="text-2xl block mb-1">📝</span>
-              <p className="font-pixel text-[8px] text-muted-foreground">
+              <p className="font-body text-xs text-muted-foreground">
                 아직 방명록이 없습니다. 첫 글을 남겨보세요!
               </p>
             </div>
@@ -234,9 +234,9 @@ export function Guestbook({ teamId }: GuestbookProps) {
                 style={{ boxShadow: '1px 1px 0 hsl(var(--pixel-shadow) / 0.4)' }}
               >
                 <div className="flex items-center justify-between mb-0.5">
-                  <span className="font-pixel text-[10px] text-primary">{entry.author}</span>
+                  <span className="font-pixel text-[11px] text-primary">{entry.author}</span>
                   <div className="flex items-center gap-1">
-                    <span className="font-pixel text-[9px] text-muted-foreground">{entry.date}</span>
+                    <span className="font-body text-[11px] text-muted-foreground">{entry.date}</span>
                     {user?.id === entry.authorUserId && (
                       <>
                         <button
@@ -278,7 +278,7 @@ export function Guestbook({ teamId }: GuestbookProps) {
                   }`}
                 >
                   <Heart size={10} fill={entry.isLiked ? 'currentColor' : 'none'} />
-                  <span className="font-pixel text-[9px]">{entry.likes}</span>
+                  <span className="font-pixel text-[11px]">{entry.likes}</span>
                 </button>
               </div>
             ))

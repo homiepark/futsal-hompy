@@ -58,7 +58,7 @@ export function TeamIntro({ introduction, isAdmin = false, onSave }: TeamIntroPr
               maxLength={200}
             />
             <div className="flex items-center justify-between">
-              <span className="font-pixel text-[7px] text-muted-foreground">
+              <span className="font-body text-[11px] text-muted-foreground">
                 {editText.length}/200
               </span>
               <div className="flex gap-1">
@@ -67,7 +67,7 @@ export function TeamIntro({ introduction, isAdmin = false, onSave }: TeamIntroPr
                   className={cn(
                     'px-2 py-1 flex items-center gap-1',
                     'bg-secondary border-2 border-border-dark',
-                    'font-pixel text-[8px] text-foreground',
+                    'font-pixel text-[11px] text-foreground',
                     'hover:bg-muted transition-colors'
                   )}
                   style={{ boxShadow: '1px 1px 0 hsl(var(--pixel-shadow))' }}
@@ -80,7 +80,7 @@ export function TeamIntro({ introduction, isAdmin = false, onSave }: TeamIntroPr
                   className={cn(
                     'px-2 py-1 flex items-center gap-1',
                     'bg-primary border-2 border-primary-dark',
-                    'font-pixel text-[8px] text-primary-foreground',
+                    'font-pixel text-[11px] text-primary-foreground',
                     'hover:brightness-110 transition-all'
                   )}
                   style={{ boxShadow: '1px 1px 0 hsl(var(--primary-dark))' }}

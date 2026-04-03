@@ -62,7 +62,7 @@ export function TeamLevelBadge({
 
         {/* Avg Experience */}
         {avgExperience !== undefined && avgExperience > 0 && (
-          <span className="font-pixel text-[7px] text-muted-foreground flex items-center gap-0.5">
+          <span className="font-pixel text-[11px] text-muted-foreground flex items-center gap-0.5">
             <Clock size={7} /> 평균 {avgExperience.toFixed(1)}년
           </span>
         )}
@@ -90,8 +90,8 @@ export function TeamLevelBadge({
             LV.{level}
           </div>
           <div>
-            <span className="font-pixel text-[9px] text-foreground block">{levelNames[level] || '풋린이'}</span>
-            <span className="font-pixel text-[7px] text-muted-foreground">팀 레벨</span>
+            <span className="font-pixel text-[11px] text-foreground block">{levelNames[level] || '풋린이'}</span>
+            <span className="font-pixel text-[11px] text-muted-foreground">팀 레벨</span>
           </div>
         </div>
 
@@ -102,8 +102,8 @@ export function TeamLevelBadge({
         <div className="flex items-center gap-2">
           <span className="text-lg">{matchTier.emoji}</span>
           <div>
-            <span className={`font-pixel text-[9px] block ${matchTier.color}`}>{matchTier.label}</span>
-            <span className="font-pixel text-[7px] text-muted-foreground flex items-center gap-0.5">
+            <span className={`font-pixel text-[11px] block ${matchTier.color}`}>{matchTier.label}</span>
+            <span className="font-pixel text-[11px] text-muted-foreground flex items-center gap-0.5">
               <Swords size={7} /> {matchCount}전
             </span>
           </div>
@@ -113,7 +113,7 @@ export function TeamLevelBadge({
         {isVerified && (
           <div className="ml-auto px-2 py-1 bg-primary/10 border border-primary/30 flex items-center gap-1">
             <Shield size={10} className="text-primary" />
-            <span className="font-pixel text-[7px] text-primary">검증됨</span>
+            <span className="font-pixel text-[11px] text-primary">검증됨</span>
           </div>
         )}
       </div>
@@ -154,7 +154,7 @@ export function TeamLevelBadge({
 
       {/* Info Text */}
       {!isVerified && (
-        <p className="font-pixel text-[7px] text-muted-foreground text-center pt-1">
+        <p className="font-pixel text-[11px] text-muted-foreground text-center pt-1">
           💡 매치 5회 이상 시 "검증된 팀" 마크가 부여됩니다
         </p>
       )}
