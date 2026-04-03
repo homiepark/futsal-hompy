@@ -15,7 +15,7 @@ interface LatestArchiveProps {
 }
 
 export function LatestArchive({ teamId, items }: LatestArchiveProps) {
-  const displayItems = items.slice(0, 4);
+  const displayItems = items.slice(0, 8);
 
   return (
     <div className="kairo-panel">
