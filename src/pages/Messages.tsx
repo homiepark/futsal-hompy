@@ -754,7 +754,7 @@ export default function Messages() {
               key={tab.key}
               onClick={() => setActiveTab(tab.key as typeof activeTab)}
               className={cn(
-                'flex-1 min-w-[60px] py-2 border-3 text-[10px] transition-all flex items-center justify-center gap-1 font-pixel',
+                'flex-1 min-w-[60px] py-2 border-3 text-[11px] transition-all flex items-center justify-center gap-1 font-pixel',
                 activeTab === tab.key
                   ? 'bg-primary text-primary-foreground border-primary-dark shadow-[2px_2px_0_hsl(var(--primary-dark))]'
                   : 'bg-card text-foreground border-border-dark shadow-[2px_2px_0_hsl(var(--pixel-shadow))]'
@@ -919,7 +919,7 @@ export default function Messages() {
                       {conv.unreadCount > 0 && (
                         <div className="flex-shrink-0 mt-1">
                           <span className={cn(
-                            "px-1.5 py-0.5 text-[10px] font-pixel border",
+                            "px-1.5 py-0.5 text-[11px] font-pixel border",
                             isBroadcast
                               ? "bg-destructive text-white border-destructive animate-ping"
                               : "bg-accent text-accent-foreground border-accent-dark"

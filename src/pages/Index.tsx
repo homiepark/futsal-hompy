@@ -328,13 +328,13 @@ const Index = () => {
             style={{ boxShadow: '4px 4px 0 hsl(var(--pixel-shadow))' }}
           >
             <div className="text-3xl mb-2">📍</div>
-            <p className="font-pixel text-[10px] text-foreground mb-1">
+            <p className="font-pixel text-[11px] text-foreground mb-1">
               활동 지역을 설정하면 동네 소식을 볼 수 있어요!
             </p>
             <button
               onClick={() => navigate('/profile')}
               className={cn(
-                'mt-2 px-4 py-2 font-pixel text-[10px]',
+                'mt-2 px-4 py-2 font-pixel text-[11px]',
                 'bg-primary text-primary-foreground',
                 'border-3 border-primary-dark',
                 'shadow-[3px_3px_0_hsl(var(--primary-dark))]',
@@ -360,7 +360,7 @@ const Index = () => {
             'w-full flex items-center justify-center gap-2',
             'bg-accent text-accent-foreground',
             'border-4 border-accent-dark',
-            'font-pixel text-[10px] uppercase tracking-wider',
+            'font-pixel text-[11px] uppercase tracking-wider',
             'px-4 py-3',
             'transition-all duration-100',
             'hover:brightness-110',
@@ -392,7 +392,7 @@ const Index = () => {
           <button
             onClick={() => setListView('all')}
             className={cn(
-              'flex items-center gap-2 px-4 py-2 font-pixel text-[10px] border-4 transition-all',
+              'flex items-center gap-2 px-4 py-2 font-pixel text-[11px] border-4 transition-all',
               listView === 'all'
                 ? 'bg-primary text-primary-foreground border-primary-dark shadow-[4px_4px_0_hsl(var(--primary-dark))]'
                 : 'bg-card text-foreground border-border-dark shadow-[4px_4px_0_hsl(var(--pixel-shadow))] hover:bg-muted'
@@ -405,7 +405,7 @@ const Index = () => {
           <button
             onClick={() => setListView('favorites')}
             className={cn(
-              'flex items-center gap-2 px-4 py-2 font-pixel text-[10px] border-4 transition-all',
+              'flex items-center gap-2 px-4 py-2 font-pixel text-[11px] border-4 transition-all',
               listView === 'favorites'
                 ? 'bg-accent text-accent-foreground border-accent-dark shadow-[4px_4px_0_hsl(var(--accent-dark))]'
                 : 'bg-card text-foreground border-border-dark shadow-[4px_4px_0_hsl(var(--pixel-shadow))] hover:bg-muted'
@@ -424,7 +424,7 @@ const Index = () => {
             style={{ boxShadow: '4px 4px 0 hsl(var(--pixel-shadow))' }}
           >
             <div className="text-4xl mb-3 animate-pulse">⚽</div>
-            <p className="font-pixel text-[10px] text-muted-foreground">팀 목록을 불러오는 중...</p>
+            <p className="font-pixel text-[11px] text-muted-foreground">팀 목록을 불러오는 중...</p>
           </div>
         ) : displayedTeams.length > 0 ? (
           <div className="grid gap-3">
@@ -450,10 +450,10 @@ const Index = () => {
             style={{ boxShadow: '4px 4px 0 hsl(var(--pixel-shadow))' }}
           >
             <div className="text-4xl mb-3">🔍</div>
-            <p className="font-pixel text-[10px] text-muted-foreground">
+            <p className="font-pixel text-[11px] text-muted-foreground">
               {listView === 'favorites' ? '관심 팀이 없습니다' : '검색 결과가 없습니다'}
             </p>
-            <p className="font-pixel text-[8px] text-muted-foreground mt-2">
+            <p className="font-pixel text-[11px] text-muted-foreground mt-2">
               {listView === 'favorites' ? '팀 카드의 별 아이콘을 눌러 추가해보세요!' : '필터 조건을 변경해보세요'}
             </p>
           </div>

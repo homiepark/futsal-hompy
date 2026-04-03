@@ -15,7 +15,7 @@ interface ScheduleEvent {
   timeStart?: string;
   timeEnd?: string;
   location?: string;
-  eventType: 'match' | 'friendly' | 'training';
+  eventType: 'match' | 'friendly' | 'training' | 'event';
 }
 
 interface PostEvent {
@@ -54,10 +54,10 @@ export default function Schedule() {
   const [newTimeStart, setNewTimeStart] = useState('');
   const [newTimeEnd, setNewTimeEnd] = useState('');
   const [newLocation, setNewLocation] = useState('');
-  const [newEventType, setNewEventType] = useState<'match' | 'friendly' | 'training'>('match');
+  const [newEventType, setNewEventType] = useState<'match' | 'friendly' | 'training' | 'event'>('training');
   const [isRecurring, setIsRecurring] = useState(false);
-  const [recurringDays, setRecurringDays] = useState<number[]>([]);
-  const [recurringEndDate, setRecurringEndDate] = useState('');
+  const [selectedDates, setSelectedDates] = useState<string[]>([]);
+  const [recurringMonth, setRecurringMonth] = useState(new Date());
 
   // team membership data for admin check
   const [teamRoles, setTeamRoles] = useState<Record<string, string>>({});
@@ -190,7 +190,7 @@ export default function Schedule() {
 
   const resetForm = () => {
     setNewTitle(''); setNewDate(''); setNewTimeStart(''); setNewTimeEnd(''); setNewLocation(''); setNewEventType('training');
-    setIsRecurring(false); setRecurringDays([]); setRecurringEndDate('');
+    setIsRecurring(false); setSelectedDates([]); setRecurringMonth(new Date());
     setEditingSchedule(null);
   };
 
@@ -198,22 +198,8 @@ export default function Schedule() {
     if (!newTitle.trim() || !selectedTeam || !user) return;
 
     // 반복 등록 모드
-    if (isRecurring && recurringDays.length > 0 && newDate && recurringEndDate) {
-      const start = new Date(newDate);
-      const end = new Date(recurringEndDate);
-      const dates: string[] = [];
-      let current = start;
-      while (current <= end) {
-        if (recurringDays.includes(getDay(current))) {
-          dates.push(format(current, 'yyyy-MM-dd'));
-        }
-        current = addDays(current, 1);
-      }
-      if (dates.length === 0) {
-        toast.error('선택한 기간에 해당 요일이 없습니다');
-        return;
-      }
-      const rows = dates.map(d => ({
+    if (isRecurring && selectedDates.length > 0) {
+      const rows = selectedDates.map(d => ({
         team_id: selectedTeam,
         created_by: user.id,
         title: newTitle.trim(),
@@ -225,7 +211,7 @@ export default function Schedule() {
       }));
       const { error } = await supabase.from('team_schedules').insert(rows);
       if (error) { console.error('Batch insert error:', error); toast.error('일정 등록에 실패했습니다'); return; }
-      toast.success(`${dates.length}개 일정이 등록되었습니다! 📅`);
+      toast.success(`${selectedDates.length}개 일정이 등록되었습니다! 📅`);
       setShowAddModal(false);
       resetForm();
       fetchData();
@@ -329,7 +315,7 @@ export default function Schedule() {
         <div className="text-6xl mb-4">🔒</div>
         <h1 className="font-pixel text-lg text-foreground mb-2">팀 일정</h1>
         <p className="font-body text-muted-foreground mb-6">로그인이 필요합니다</p>
-        <button onClick={() => navigate('/auth')} className="px-6 py-3 bg-primary border-4 border-primary-dark text-primary-foreground font-pixel text-[10px] shadow-pixel">로그인하기</button>
+        <button onClick={() => navigate('/auth')} className="px-6 py-3 bg-primary border-4 border-primary-dark text-primary-foreground font-pixel text-[11px] shadow-pixel">로그인하기</button>
       </div>
     );
   }
@@ -340,7 +326,7 @@ export default function Schedule() {
         <div className="text-6xl mb-4">📅</div>
         <h1 className="font-pixel text-lg text-foreground mb-2">팀 일정</h1>
         <p className="font-body text-muted-foreground mb-6">팀에 가입하면 일정을 볼 수 있어요</p>
-        <button onClick={() => navigate('/')} className="px-6 py-3 bg-primary border-4 border-primary-dark text-primary-foreground font-pixel text-[10px] shadow-pixel">팀 찾아보기</button>
+        <button onClick={() => navigate('/')} className="px-6 py-3 bg-primary border-4 border-primary-dark text-primary-foreground font-pixel text-[11px] shadow-pixel">팀 찾아보기</button>
       </div>
     );
   }
@@ -367,7 +353,7 @@ export default function Schedule() {
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
             {myTeams.map(team => (
               <button key={team.id} onClick={() => setSelectedTeam(team.id)}
-                className={cn('flex-shrink-0 flex items-center gap-2 px-3 py-2 border-3 font-pixel text-[10px] transition-all',
+                className={cn('flex-shrink-0 flex items-center gap-2 px-3 py-2 border-3 font-pixel text-[11px] transition-all',
                   selectedTeam === team.id ? 'bg-primary border-primary-dark text-primary-foreground' : 'bg-card border-border-dark text-foreground hover:border-primary'
                 )} style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
               >
@@ -384,19 +370,23 @@ export default function Schedule() {
         <div className="flex items-center gap-3 px-1">
           <div className="flex items-center gap-1">
             <span className="text-sm">⭐</span>
-            <span className="font-pixel text-[10px] text-muted-foreground">매치</span>
+            <span className="font-pixel text-[11px] text-muted-foreground">매치</span>
           </div>
           <div className="flex items-center gap-1">
             <span className="text-sm">⚔️</span>
-            <span className="font-pixel text-[10px] text-muted-foreground">자체전</span>
+            <span className="font-pixel text-[11px] text-muted-foreground">자체전</span>
           </div>
           <div className="flex items-center gap-1">
             <span className="w-2.5 h-2.5 rounded-full bg-lime-400 inline-block"></span>
-            <span className="font-pixel text-[10px] text-muted-foreground">훈련</span>
+            <span className="font-pixel text-[11px] text-muted-foreground">훈련</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="text-sm">🎉</span>
+            <span className="font-pixel text-[11px] text-muted-foreground">이벤트</span>
           </div>
           <div className="flex items-center gap-1">
             <span className="w-2 h-2 rounded-full bg-accent inline-block"></span>
-            <span className="font-pixel text-[10px] text-muted-foreground">게시글</span>
+            <span className="font-pixel text-[11px] text-muted-foreground">게시글</span>
           </div>
         </div>
 
@@ -410,7 +400,7 @@ export default function Schedule() {
 
           <div className="grid grid-cols-7 gap-1 mb-2">
             {weekDays.map((day, i) => (
-              <div key={day} className={cn('text-center font-pixel text-[10px] py-1.5',
+              <div key={day} className={cn('text-center font-pixel text-[11px] py-1.5',
                 i === 0 ? 'text-red-400' : i === 6 ? 'text-blue-400' : 'text-muted-foreground'
               )}>{day}</div>
             ))}
@@ -424,6 +414,7 @@ export default function Schedule() {
               const hasMatch = daySchedules.some(s => s.eventType === 'match');
               const hasFriendly = daySchedules.some(s => s.eventType === 'friendly');
               const hasTraining = daySchedules.some(s => s.eventType === 'training');
+              const hasEvent = daySchedules.some(s => s.eventType === 'event');
               const hasPosts = dayPosts.length > 0;
               const isSelected = selectedDate && isSameDay(day, selectedDate);
               const dayOfWeek = getDay(day);
@@ -443,6 +434,7 @@ export default function Schedule() {
                     {hasMatch && <span className="text-[10px] leading-none drop-shadow-[0_0_3px_rgba(255,200,0,0.8)]">⭐</span>}
                     {hasFriendly && <span className="text-[10px] leading-none">⚔️</span>}
                     {hasTraining && <span className={cn('w-2 h-2 rounded-full', isSelected ? 'bg-primary-foreground' : 'bg-lime-400')}></span>}
+                    {hasEvent && <span className="text-[10px] leading-none">🎉</span>}
                     {hasPosts && <span className={cn('w-1.5 h-1.5 rounded-full', isSelected ? 'bg-primary-foreground' : 'bg-accent')}></span>}
                   </div>
                 </button>
@@ -469,13 +461,14 @@ export default function Schedule() {
                     <div className={cn('w-12 h-12 flex items-center justify-center border-2 shrink-0 text-xl rounded-lg',
                       s.eventType === 'match' ? 'bg-yellow-100 border-yellow-400' :
                       s.eventType === 'friendly' ? 'bg-orange-50 border-orange-400' :
+                      s.eventType === 'event' ? 'bg-purple-50 border-purple-400' :
                       'bg-lime-50 border-lime-400'
                     )}>
-                      {s.eventType === 'match' ? '⭐' : s.eventType === 'friendly' ? '⚔️' : '🏃'}
+                      {s.eventType === 'match' ? '⭐' : s.eventType === 'friendly' ? '⚔️' : s.eventType === 'event' ? '🎉' : '🏃'}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-pixel text-[12px] text-foreground">{s.title}</p>
-                      <div className="flex items-center gap-2 mt-1 font-pixel text-[10px] text-muted-foreground flex-wrap">
+                      <div className="flex items-center gap-2 mt-1 font-pixel text-[11px] text-muted-foreground flex-wrap">
                         {(s.timeStart || s.timeEnd) && (
                           <span>⏰ {s.timeStart || ''}{s.timeEnd ? ` ~ ${s.timeEnd}` : ''}</span>
                         )}
@@ -483,9 +476,10 @@ export default function Schedule() {
                         <span className={cn('px-1.5 py-0.5 border text-[9px] rounded',
                           s.eventType === 'match' ? 'bg-yellow-100 border-yellow-400 text-yellow-700' :
                           s.eventType === 'friendly' ? 'bg-orange-50 border-orange-400 text-orange-600' :
+                          s.eventType === 'event' ? 'bg-purple-50 border-purple-400 text-purple-600' :
                           'bg-lime-50 border-lime-400 text-lime-600'
                         )}>
-                          {s.eventType === 'match' ? '매치' : s.eventType === 'friendly' ? '자체전' : '훈련'}
+                          {s.eventType === 'match' ? '매치' : s.eventType === 'friendly' ? '자체전' : s.eventType === 'event' ? '이벤트' : '훈련'}
                         </span>
                       </div>
                     </div>
@@ -520,7 +514,7 @@ export default function Schedule() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-pixel text-[12px] text-foreground truncate">{event.title}</p>
-                      <span className="font-pixel text-[10px] text-muted-foreground">👤 {event.author}</span>
+                      <span className="font-pixel text-[11px] text-muted-foreground">👤 {event.author}</span>
                     </div>
                     <ChevronRight size={14} className="text-muted-foreground shrink-0" />
                   </button>
@@ -530,10 +524,10 @@ export default function Schedule() {
 
             {selectedSchedules.length === 0 && selectedPosts.length === 0 && (
               <div className="bg-card border-3 border-border-dark p-6 text-center" style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}>
-                <p className="font-pixel text-[10px] text-muted-foreground">이 날의 기록이 없습니다</p>
+                <p className="font-pixel text-[11px] text-muted-foreground">이 날의 기록이 없습니다</p>
                 {isAdmin && (
                   <button onClick={() => { setShowAddModal(true); setNewDate(format(selectedDate, 'yyyy-MM-dd')); }}
-                    className="mt-2 px-4 py-1.5 bg-accent border-2 border-accent-dark font-pixel text-[8px] text-accent-foreground hover:brightness-110">
+                    className="mt-2 px-4 py-1.5 bg-accent border-2 border-accent-dark font-pixel text-[11px] text-accent-foreground hover:brightness-110">
                     + 일정 등록
                   </button>
                 )}
@@ -551,111 +545,138 @@ export default function Schedule() {
             style={{ boxShadow: '6px 6px 0 hsl(var(--pixel-shadow))' }}
           >
             <div className="bg-primary text-primary-foreground px-4 py-3 flex items-center justify-between">
-              <span className="font-pixel text-[10px]">📅 {editingSchedule ? '일정 수정' : '일정 등록'}</span>
-              <button onClick={() => { setShowAddModal(false); resetForm(); }} className="hover:opacity-80 font-pixel text-[10px]">✕</button>
+              <span className="font-pixel text-[11px]">📅 {editingSchedule ? '일정 수정' : '일정 등록'}</span>
+              <button onClick={() => { setShowAddModal(false); resetForm(); }} className="hover:opacity-80 font-pixel text-[11px]">✕</button>
             </div>
             <div className="px-5 py-4 space-y-3">
               {/* Event Type */}
               <div>
-                <label className="block font-pixel text-[10px] text-muted-foreground mb-1">유형 *</label>
+                <label className="block font-pixel text-[11px] text-muted-foreground mb-1">유형 *</label>
                 <div className="flex gap-1.5">
                   <button type="button" onClick={() => setNewEventType('match')}
-                    className={cn('flex-1 py-2 border-3 rounded-lg font-pixel text-[10px] flex items-center justify-center gap-1 transition-all',
+                    className={cn('flex-1 py-2 border-3 rounded-lg font-pixel text-[11px] flex items-center justify-center gap-1 transition-all',
                       newEventType === 'match' ? 'bg-yellow-100 border-yellow-400 text-yellow-700' : 'bg-muted border-border-dark text-foreground hover:border-yellow-400'
                     )} style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow) / 0.5)' }}
                   >⭐ 매치</button>
                   <button type="button" onClick={() => setNewEventType('friendly')}
-                    className={cn('flex-1 py-2 border-3 rounded-lg font-pixel text-[10px] flex items-center justify-center gap-1 transition-all',
+                    className={cn('flex-1 py-2 border-3 rounded-lg font-pixel text-[11px] flex items-center justify-center gap-1 transition-all',
                       newEventType === 'friendly' ? 'bg-orange-50 border-orange-400 text-orange-600' : 'bg-muted border-border-dark text-foreground hover:border-orange-400'
                     )} style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow) / 0.5)' }}
                   >⚔️ 자체전</button>
                   <button type="button" onClick={() => setNewEventType('training')}
-                    className={cn('flex-1 py-2 border-3 rounded-lg font-pixel text-[10px] flex items-center justify-center gap-1 transition-all',
+                    className={cn('flex-1 py-2 border-3 rounded-lg font-pixel text-[11px] flex items-center justify-center gap-1 transition-all',
                       newEventType === 'training' ? 'bg-lime-50 border-lime-400 text-lime-600' : 'bg-muted border-border-dark text-foreground hover:border-lime-400'
                     )} style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow) / 0.5)' }}
                   >🏃 훈련</button>
+                  <button type="button" onClick={() => setNewEventType('event')}
+                    className={cn('flex-1 py-2 border-3 rounded-lg font-pixel text-[11px] flex items-center justify-center gap-1 transition-all',
+                      newEventType === 'event' ? 'bg-purple-50 border-purple-400 text-purple-600' : 'bg-muted border-border-dark text-foreground hover:border-purple-400'
+                    )} style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow) / 0.5)' }}
+                  >🎉 이벤트</button>
                 </div>
               </div>
               <div>
-                <label className="block font-pixel text-[10px] text-muted-foreground mb-1">제목 *</label>
+                <label className="block font-pixel text-[11px] text-muted-foreground mb-1">제목 *</label>
                 <input type="text" value={newTitle} onChange={(e) => setNewTitle(e.target.value)}
                   placeholder="예: 정기 훈련, 친선 경기..." className="w-full pixel-input" maxLength={50} />
               </div>
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="font-pixel text-[10px] text-muted-foreground">{isRecurring ? '시작 날짜 *' : '날짜 *'}</label>
+                  <label className="font-pixel text-[11px] text-muted-foreground">날짜 *</label>
                   {!editingSchedule && (
-                    <button type="button" onClick={() => setIsRecurring(!isRecurring)}
+                    <button type="button" onClick={() => { setIsRecurring(!isRecurring); setSelectedDates([]); }}
                       className={cn('px-2 py-0.5 font-pixel text-[9px] border-2 rounded transition-all',
                         isRecurring ? 'bg-primary/20 border-primary text-primary' : 'bg-muted border-border-dark text-muted-foreground hover:border-primary'
                       )}
-                    >🔄 정기 일정</button>
+                    >📅 다중 선택</button>
                   )}
                 </div>
-                <input type="date" value={newDate} onChange={(e) => setNewDate(e.target.value)}
-                  className="w-full pixel-input text-[10px]" style={{ boxSizing: 'border-box', paddingRight: '8px' }} />
 
-                {/* 정기 일정 옵션 */}
-                {isRecurring && (
-                  <div className="mt-2 p-3 bg-muted/50 border-2 border-border-dark rounded-lg space-y-2">
-                    <label className="block font-pixel text-[10px] text-muted-foreground">반복 요일 *</label>
-                    <div className="flex gap-1">
-                      {['일', '월', '화', '수', '목', '금', '토'].map((day, i) => (
-                        <button key={i} type="button" onClick={() =>
-                          setRecurringDays(prev => prev.includes(i) ? prev.filter(d => d !== i) : [...prev, i])
-                        }
-                          className={cn('flex-1 py-1.5 font-pixel text-[10px] border-2 rounded transition-all',
-                            recurringDays.includes(i)
-                              ? 'bg-primary border-primary-dark text-primary-foreground'
-                              : 'bg-card border-border-dark text-foreground hover:border-primary',
-                            i === 0 && !recurringDays.includes(i) && 'text-red-400',
-                            i === 6 && !recurringDays.includes(i) && 'text-blue-400',
-                          )}
-                        >{day}</button>
+                {!isRecurring ? (
+                  <input type="date" value={newDate} onChange={(e) => setNewDate(e.target.value)}
+                    className="w-full pixel-input text-[10px]" style={{ boxSizing: 'border-box', paddingRight: '8px' }} />
+                ) : (
+                  /* 다중 날짜 선택 달력 */
+                  <div className="border-2 border-border-dark rounded-lg p-3 bg-muted/30">
+                    {/* Month Navigation */}
+                    <div className="flex items-center justify-between mb-2">
+                      <button type="button" onClick={() => setRecurringMonth(prev => new Date(prev.getFullYear(), prev.getMonth() - 1, 1))}
+                        className="w-7 h-7 flex items-center justify-center hover:bg-muted rounded"><ChevronLeft size={16} /></button>
+                      <span className="font-pixel text-[11px] text-foreground">{format(recurringMonth, 'yyyy년 M월', { locale: ko })}</span>
+                      <button type="button" onClick={() => setRecurringMonth(prev => new Date(prev.getFullYear(), prev.getMonth() + 1, 1))}
+                        className="w-7 h-7 flex items-center justify-center hover:bg-muted rounded"><ChevronRight size={16} /></button>
+                    </div>
+                    {/* Week Header */}
+                    <div className="grid grid-cols-7 gap-0.5 mb-1">
+                      {['일','월','화','수','목','금','토'].map((d, i) => (
+                        <div key={d} className={cn('text-center font-pixel text-[9px] py-0.5',
+                          i === 0 ? 'text-red-400' : i === 6 ? 'text-blue-400' : 'text-muted-foreground'
+                        )}>{d}</div>
                       ))}
                     </div>
-                    <label className="block font-pixel text-[10px] text-muted-foreground mt-1">종료 날짜 *</label>
-                    <input type="date" value={recurringEndDate} onChange={(e) => setRecurringEndDate(e.target.value)}
-                      className="w-full pixel-input text-[10px]" min={newDate} style={{ boxSizing: 'border-box', paddingRight: '8px' }} />
-                    {recurringDays.length > 0 && newDate && recurringEndDate && (
-                      <p className="font-pixel text-[10px] text-primary">
-                        📅 {recurringDays.map(d => ['일','월','화','수','목','금','토'][d]).join(', ')}요일 반복
-                      </p>
+                    {/* Days Grid */}
+                    <div className="grid grid-cols-7 gap-0.5">
+                      {Array.from({ length: getDay(startOfMonth(recurringMonth)) }).map((_, i) => <div key={`e-${i}`} />)}
+                      {eachDayOfInterval({ start: startOfMonth(recurringMonth), end: endOfMonth(recurringMonth) }).map(day => {
+                        const dateStr = format(day, 'yyyy-MM-dd');
+                        const isSelected = selectedDates.includes(dateStr);
+                        const dow = getDay(day);
+                        return (
+                          <button key={dateStr} type="button" onClick={() =>
+                            setSelectedDates(prev => isSelected ? prev.filter(d => d !== dateStr) : [...prev, dateStr].sort())
+                          }
+                            className={cn('aspect-square flex items-center justify-center font-pixel text-[11px] rounded transition-all',
+                              isSelected ? 'bg-primary text-primary-foreground border-2 border-primary-dark' : 'hover:bg-muted border border-transparent',
+                              !isSelected && dow === 0 && 'text-red-400',
+                              !isSelected && dow === 6 && 'text-blue-400',
+                            )}
+                          >{format(day, 'd')}</button>
+                        );
+                      })}
+                    </div>
+                    {selectedDates.length > 0 && (
+                      <div className="mt-2 flex items-center justify-between">
+                        <p className="font-pixel text-[11px] text-primary">📅 {selectedDates.length}일 선택됨</p>
+                        <button type="button" onClick={() => setSelectedDates([])}
+                          className="font-pixel text-[9px] text-muted-foreground hover:text-destructive">초기화</button>
+                      </div>
                     )}
                   </div>
                 )}
               </div>
               <div>
-                <label className="block font-pixel text-[10px] text-muted-foreground mb-1">시간</label>
+                <label className="block font-pixel text-[11px] text-muted-foreground mb-1">시간</label>
                 <div className="flex items-center gap-2">
-                  <input type="time" value={newTimeStart} onChange={(e) => {
-                    const start = e.target.value;
-                    setNewTimeStart(start);
-                    // 종료시간 자동 설정 (2시간 후)
-                    if (start && !newTimeEnd) {
-                      const [h, m] = start.split(':').map(Number);
-                      const endH = (h + 2) % 24;
-                      setNewTimeEnd(`${String(endH).padStart(2, '0')}:${String(m).padStart(2, '0')}`);
-                    }
-                    // 종료시간 input으로 포커스 이동
-                    setTimeout(() => {
-                      const endInput = document.getElementById('time-end-input');
-                      endInput?.focus();
-                    }, 100);
-                  }}
+                  <input type="time" value={newTimeStart}
+                    onChange={(e) => setNewTimeStart(e.target.value)}
+                    onBlur={(e) => {
+                      const start = e.target.value;
+                      if (start) {
+                        // 종료시간 자동 설정 (2시간 후)
+                        if (!newTimeEnd) {
+                          const [h, m] = start.split(':').map(Number);
+                          const endH = (h + 2) % 24;
+                          setNewTimeEnd(`${String(endH).padStart(2, '0')}:${String(m).padStart(2, '0')}`);
+                        }
+                        // 종료시간 input으로 포커스 이동
+                        setTimeout(() => {
+                          document.getElementById('time-end-input')?.focus();
+                        }, 50);
+                      }
+                    }}
                     className="flex-1 pixel-input text-[10px] min-w-0" style={{ paddingRight: '4px' }} />
-                  <span className="font-pixel text-[10px] text-muted-foreground shrink-0">~</span>
+                  <span className="font-pixel text-[11px] text-muted-foreground shrink-0">~</span>
                   <input id="time-end-input" type="time" value={newTimeEnd} onChange={(e) => setNewTimeEnd(e.target.value)}
                     className="flex-1 pixel-input text-[10px] min-w-0" style={{ paddingRight: '4px' }} />
                 </div>
               </div>
               <div>
-                <label className="block font-pixel text-[10px] text-muted-foreground mb-1">장소</label>
+                <label className="block font-pixel text-[11px] text-muted-foreground mb-1">장소</label>
                 <input type="text" value={newLocation} onChange={(e) => setNewLocation(e.target.value)}
                   placeholder="예: OO 풋살장" className="w-full pixel-input" maxLength={50} />
               </div>
-              <button onClick={handleSaveSchedule} disabled={!newTitle.trim() || !newDate}
-                className="w-full py-2.5 bg-primary text-primary-foreground font-pixel text-[10px] border-3 border-primary-dark hover:brightness-110 disabled:opacity-50"
+              <button onClick={handleSaveSchedule} disabled={!newTitle.trim() || (!isRecurring && !newDate) || (isRecurring && selectedDates.length === 0)}
+                className="w-full py-2.5 bg-primary text-primary-foreground font-pixel text-[11px] border-3 border-primary-dark hover:brightness-110 disabled:opacity-50"
                 style={{ boxShadow: '2px 2px 0 hsl(var(--primary-dark))' }}
               >{editingSchedule ? '수정하기' : isRecurring ? '🔄 일괄 등록하기' : '등록하기'}</button>
             </div>

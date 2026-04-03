@@ -347,7 +347,7 @@ export default function MyProfile() {
             className="w-full pixel-input"
             maxLength={20}
           />
-          <p className="font-pixel text-[8px] text-muted-foreground mt-2">
+          <p className="font-pixel text-[11px] text-muted-foreground mt-2">
             팀 관리자에게만 공개됩니다 (입단 신청 시 본인 확인용)
           </p>
         </PixelCard>
@@ -372,7 +372,7 @@ export default function MyProfile() {
                   className="flex items-center gap-1.5 px-2.5 py-1.5 bg-primary text-primary-foreground border-3 border-primary-dark"
                   style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
                 >
-                  <span className="font-pixel text-[9px]">📍 {r.district}</span>
+                  <span className="font-pixel text-[11px]">📍 {r.district}</span>
                   <button
                     onClick={() => handleRemoveRegion(index)}
                     className="w-4 h-4 flex items-center justify-center bg-primary-dark/30 hover:bg-destructive hover:text-destructive-foreground transition-colors"
@@ -389,14 +389,14 @@ export default function MyProfile() {
             <div className="flex gap-2">
               <Select value={tempRegion} onValueChange={(v) => { setTempRegion(v); setTempDistrict(''); }}>
                 <SelectTrigger className={cn(
-                  'flex-1 bg-input border-3 border-border-dark font-pixel text-[10px] h-10',
+                  'flex-1 bg-input border-3 border-border-dark font-pixel text-[11px] h-10',
                   'focus:border-primary focus:ring-0'
                 )}>
                   <SelectValue placeholder="시/도" />
                 </SelectTrigger>
                 <SelectContent className="bg-card border-3 border-border-dark max-h-48 z-50">
                   {regions.map((r) => (
-                    <SelectItem key={r} value={r} className="font-pixel text-[10px] cursor-pointer hover:bg-muted">
+                    <SelectItem key={r} value={r} className="font-pixel text-[11px] cursor-pointer hover:bg-muted">
                       {r}
                     </SelectItem>
                   ))}
@@ -405,7 +405,7 @@ export default function MyProfile() {
 
               <Select value={tempDistrict} onValueChange={setTempDistrict} disabled={!tempRegion}>
                 <SelectTrigger className={cn(
-                  'flex-1 bg-input border-3 border-border-dark font-pixel text-[10px] h-10',
+                  'flex-1 bg-input border-3 border-border-dark font-pixel text-[11px] h-10',
                   'focus:border-primary focus:ring-0',
                   !tempRegion && 'opacity-50'
                 )}>
@@ -413,7 +413,7 @@ export default function MyProfile() {
                 </SelectTrigger>
                 <SelectContent className="bg-card border-3 border-border-dark max-h-48 z-50">
                   {tempDistricts.map((d) => (
-                    <SelectItem key={d} value={d} className="font-pixel text-[10px] cursor-pointer hover:bg-muted">
+                    <SelectItem key={d} value={d} className="font-pixel text-[11px] cursor-pointer hover:bg-muted">
                       {d}
                     </SelectItem>
                   ))}
@@ -447,7 +447,7 @@ export default function MyProfile() {
             <span className="text-primary">⚽</span>
             포지션 선택
           </h2>
-          <p className="font-pixel text-[8px] text-muted-foreground mb-3">복수 선택 가능 · 첫 번째 선택이 대표 포지션</p>
+          <p className="font-pixel text-[11px] text-muted-foreground mb-3">복수 선택 가능 · 첫 번째 선택이 대표 포지션</p>
           <div className="grid grid-cols-2 gap-3">
             {futsalPositions.map((pos) => {
               const isSelected = profile.preferredPositions.includes(pos.id);
@@ -476,7 +476,7 @@ export default function MyProfile() {
                     </div>
                   )}
                   <span className="text-xl block mb-1">{pos.emoji}</span>
-                  <span className="font-pixel text-[10px] block">{pos.label}</span>
+                  <span className="font-pixel text-[11px] block">{pos.label}</span>
                   <span className="font-body text-[9px] text-muted-foreground block">{pos.description}</span>
                 </button>
               );
@@ -486,7 +486,7 @@ export default function MyProfile() {
           {/* Primary position selector - only when multiple selected */}
           {profile.preferredPositions.length > 1 && (
             <div className="mt-3 p-2 bg-muted border-2 border-border-dark">
-              <p className="font-pixel text-[8px] text-muted-foreground mb-2">★ 대표 포지션 설정</p>
+              <p className="font-pixel text-[11px] text-muted-foreground mb-2">★ 대표 포지션 설정</p>
               <div className="flex flex-wrap gap-1.5">
                 {profile.preferredPositions.map((posId) => {
                   const pos = futsalPositions.find(p => p.id === posId);
@@ -500,7 +500,7 @@ export default function MyProfile() {
                         setProfile({ ...profile, preferredPositions: [posId, ...others] });
                       }}
                       className={cn(
-                        'px-2.5 py-1 border-2 font-pixel text-[9px] transition-all',
+                        'px-2.5 py-1 border-2 font-pixel text-[11px] transition-all',
                         isPrimary
                           ? 'bg-accent border-accent-dark text-accent-foreground'
                           : 'bg-secondary border-border-dark text-foreground hover:border-accent'
@@ -524,7 +524,7 @@ export default function MyProfile() {
 
           {/* Years of Experience - Detailed */}
           <div className="mb-4">
-            <label className="font-pixel text-[10px] text-muted-foreground mb-2 block">
+            <label className="font-pixel text-[11px] text-muted-foreground mb-2 block">
               풋살/축구 경력
             </label>
             <div className="flex items-center gap-2">
@@ -532,7 +532,7 @@ export default function MyProfile() {
                 <select
                   value={profile.yearsOfExperience}
                   onChange={(e) => setProfile({ ...profile, yearsOfExperience: Number(e.target.value) })}
-                  className="w-full px-2 py-2 bg-input border-3 border-border-dark font-pixel text-[10px] focus:outline-none focus:border-accent"
+                  className="w-full px-2 py-2 bg-input border-3 border-border-dark font-pixel text-[11px] focus:outline-none focus:border-accent"
                   style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
                 >
                   {Array.from({ length: 31 }, (_, i) => i).map(y => (
@@ -544,7 +544,7 @@ export default function MyProfile() {
                 <select
                   value={profile.monthsOfExperience}
                   onChange={(e) => setProfile({ ...profile, monthsOfExperience: Number(e.target.value) })}
-                  className="w-full px-2 py-2 bg-input border-3 border-border-dark font-pixel text-[10px] focus:outline-none focus:border-accent"
+                  className="w-full px-2 py-2 bg-input border-3 border-border-dark font-pixel text-[11px] focus:outline-none focus:border-accent"
                   style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
                 >
                   {Array.from({ length: 12 }, (_, i) => i).map(m => (
@@ -554,7 +554,7 @@ export default function MyProfile() {
               </div>
             </div>
             <div className="mt-2 text-center p-2 bg-accent/20 border-2 border-accent">
-              <span className="font-pixel text-[10px] text-accent-foreground">
+              <span className="font-pixel text-[11px] text-accent-foreground">
                 📊 경력: {profile.yearsOfExperience}년 {profile.monthsOfExperience > 0 ? `${profile.monthsOfExperience}개월` : ''}
               </span>
             </div>

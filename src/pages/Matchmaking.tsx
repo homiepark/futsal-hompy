@@ -296,7 +296,7 @@ export default function Matchmaking() {
           <span className="text-primary">⚔️</span>
           매칭팀 구해요
         </h2>
-        <p className="font-pixel text-[8px] text-muted-foreground">
+        <p className="font-pixel text-[11px] text-muted-foreground">
           대결 상대를 찾는 팀들의 공고 게시판
         </p>
       </div>
@@ -324,7 +324,7 @@ export default function Matchmaking() {
           onClick={() => setIsCreateModalOpen(true)}
           className={cn(
             "w-full flex items-center justify-center gap-2 px-4 py-3 mb-4",
-            "bg-primary text-primary-foreground font-pixel text-[10px]",
+            "bg-primary text-primary-foreground font-pixel text-[11px]",
             "border-3 border-primary-dark",
             "hover:brightness-110 active:translate-y-0.5 transition-all"
           )}
@@ -337,7 +337,7 @@ export default function Matchmaking() {
 
       {/* Match Posts */}
       <div className="space-y-4">
-        <h3 className="font-pixel text-[10px] text-foreground flex items-center gap-2">
+        <h3 className="font-pixel text-[11px] text-foreground flex items-center gap-2">
           <span className="text-accent">📋</span>
           매칭 공고
           <span className="text-muted-foreground">({filteredPosts.length})</span>
@@ -345,7 +345,7 @@ export default function Matchmaking() {
 
         {isLoading ? (
           <div className="text-center py-8">
-            <p className="font-pixel text-[10px] text-muted-foreground animate-pulse">
+            <p className="font-pixel text-[11px] text-muted-foreground animate-pulse">
               로딩 중...
             </p>
           </div>
@@ -370,10 +370,10 @@ export default function Matchmaking() {
           ))
         ) : (
           <div className="text-center py-8 bg-card border-3 border-border-dark" style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}>
-            <p className="font-pixel text-[10px] text-muted-foreground mb-2">
+            <p className="font-pixel text-[11px] text-muted-foreground mb-2">
               조건에 맞는 공고가 없습니다
             </p>
-            <p className="font-pixel text-[8px] text-muted-foreground">
+            <p className="font-pixel text-[11px] text-muted-foreground">
               필터를 조정하거나 새 공고를 기다려주세요
             </p>
           </div>
