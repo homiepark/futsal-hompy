@@ -12,6 +12,7 @@ interface PlayerStats {
   id: string;
   userId?: string;
   nickname: string;
+  realName?: string;
   avatarUrl?: string;
   position: 'pivo' | 'ala' | 'fixo' | 'goleiro';
   positions?: string[];
@@ -158,9 +159,16 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
 
             {/* Info */}
             <div className="flex-1 min-w-0">
-              <h3 className="font-pixel text-sm text-foreground truncate mb-1">
-                {player.nickname}
-              </h3>
+              <div className="flex items-baseline gap-1.5 mb-1">
+                <h3 className="font-pixel text-sm text-foreground truncate">
+                  {player.nickname}
+                </h3>
+                {player.realName && (
+                  <span className="font-body text-xs text-muted-foreground shrink-0">
+                    ({player.realName})
+                  </span>
+                )}
+              </div>
               <div className="flex flex-wrap gap-1 mb-2">
                 {(player.positions?.length ? player.positions : [player.position]).map((pos, i) => {
                   const posInfo = positionInfo[pos as keyof typeof positionInfo];

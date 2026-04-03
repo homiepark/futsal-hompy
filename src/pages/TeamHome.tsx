@@ -54,6 +54,7 @@ interface MemberData {
   id: string;
   userId?: string;
   nickname: string;
+  realName?: string;
   avatarUrl?: string;
   position: 'pivo' | 'ala' | 'fixo' | 'goleiro';
   yearsOfExperience?: number;
@@ -230,7 +231,7 @@ export default function TeamHome() {
           const userIds = membersRes.data.map((m: any) => m.user_id);
           const { data: profilesData } = await supabase
             .from('profiles')
-            .select('user_id, nickname, avatar_url, preferred_positions, years_of_experience, months_of_experience, experience_set_at')
+            .select('user_id, nickname, avatar_url, preferred_positions, years_of_experience, months_of_experience, experience_set_at, real_name')
             .in('user_id', userIds);
 
           const profileMap = new Map(
@@ -244,6 +245,7 @@ export default function TeamHome() {
               id: m.id,
               userId: m.user_id,
               nickname: profile?.nickname ?? '팀원',
+              realName: profile?.real_name || undefined,
               avatarUrl: profile?.avatar_url ?? '',
               position: toPosition(positions[0]),
               yearsOfExperience: (() => {

@@ -10,6 +10,7 @@ interface Member {
   id: string;
   userId?: string;
   nickname: string;
+  realName?: string;
   avatarUrl?: string;
   position: 'pivo' | 'ala' | 'fixo' | 'goleiro';
   positions?: string[];

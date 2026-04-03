@@ -308,12 +308,12 @@ export default function ProfileSetup() {
           className="w-full pixel-input"
           maxLength={20}
         />
-        <div className="mt-2 p-2 bg-muted border-2 border-border-dark">
-          <p className="font-pixel text-[9px] text-muted-foreground">
-            🔒 실명은 팀 관리자에게만 공개됩니다
+        <div className="mt-2 p-2.5 bg-muted border-2 border-border-dark rounded-lg">
+          <p className="font-body text-xs text-foreground">
+            👥 실명은 같은 팀원에게만 선수카드에서 표시됩니다
           </p>
-          <p className="font-pixel text-[8px] text-muted-foreground mt-1">
-            입단 신청 시 본인 확인용으로만 사용되며, 다른 사용자에게는 보이지 않습니다.
+          <p className="font-body text-[11px] text-muted-foreground mt-1">
+            팀 외부 사용자에게는 닉네임만 보이며, 팀원 간 소통을 위해 사용돼요.
           </p>
         </div>
       </PixelCard>

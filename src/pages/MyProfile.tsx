@@ -347,8 +347,8 @@ export default function MyProfile() {
             className="w-full pixel-input"
             maxLength={20}
           />
-          <p className="font-pixel text-[11px] text-muted-foreground mt-2">
-            팀 관리자에게만 공개됩니다 (입단 신청 시 본인 확인용)
+          <p className="font-body text-xs text-muted-foreground mt-2">
+            👥 같은 팀원에게만 선수카드에서 표시됩니다
           </p>
         </PixelCard>
 
