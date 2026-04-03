@@ -84,7 +84,7 @@ export function RecentActivityFeed() {
   if (loading) {
     return (
       <div className="px-4 py-3">
-        <h3 className="font-pixel text-[12px] text-foreground flex items-center gap-2 mb-3">
+        <h3 className="font-pixel text-xs text-foreground flex items-center gap-2 mb-3">
           <span className="text-primary">📋</span>
           최근 활동
         </h3>
@@ -100,7 +100,7 @@ export function RecentActivityFeed() {
   if (activities.length === 0) {
     return (
       <div className="px-4 py-3">
-        <h3 className="font-pixel text-[12px] text-foreground flex items-center gap-2 mb-3">
+        <h3 className="font-pixel text-xs text-foreground flex items-center gap-2 mb-3">
           <span className="text-primary">📋</span>
           최근 활동
         </h3>
@@ -108,7 +108,7 @@ export function RecentActivityFeed() {
           className="bg-card border-3 border-border-dark p-4 text-center"
           style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}
         >
-          <span className="font-pixel text-[8px] text-muted-foreground">최근 활동이 없습니다</span>
+          <span className="font-body text-xs text-muted-foreground">최근 활동이 없습니다</span>
         </div>
       </div>
     );
@@ -116,7 +116,7 @@ export function RecentActivityFeed() {
 
   return (
     <div className="px-4 py-3">
-      <h3 className="font-pixel text-[10px] text-foreground flex items-center gap-2 mb-3">
+      <h3 className="font-pixel text-xs text-foreground flex items-center gap-2 mb-3">
         <span className="text-primary">📋</span>
         최근 활동
       </h3>
@@ -132,7 +132,7 @@ export function RecentActivityFeed() {
             onClick={() => navigate(`/archive?team=${activity.teamId}&post=${activity.id}`)}
           >
             {/* Thumbnail: image or team photo */}
-            <div className="w-10 h-10 flex items-center justify-center overflow-hidden rounded-sm shrink-0 border-2 border-border-dark bg-muted">
+            <div className="w-12 h-12 flex items-center justify-center overflow-hidden rounded-md shrink-0 border-2 border-border-dark bg-muted">
               {activity.imageUrl ? (
                 <img src={activity.imageUrl} alt="" className="w-full h-full object-cover" />
               ) : activity.teamPhotoUrl ? (
@@ -145,18 +145,18 @@ export function RecentActivityFeed() {
             {/* Content */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5">
-                <span className="font-pixel text-[10px] text-foreground">{activity.teamName}</span>
-                <span className="px-1 py-0.5 bg-primary/10 border border-primary/20 font-pixel text-[8px] text-primary">
+                <span className="font-pixel text-[11px] text-foreground">{activity.teamName}</span>
+                <span className="px-1 py-0.5 bg-primary/10 border border-primary/20 font-pixel text-[11px] text-primary">
                   {activity.folderName || '게시글'}
                 </span>
               </div>
-              <p className="font-pixel text-[8px] text-muted-foreground mt-0.5 truncate">
+              <p className="font-body text-[11px] text-muted-foreground mt-0.5 truncate">
                 📸 {activity.description}
               </p>
             </div>
 
             {/* Time */}
-            <span className="font-pixel text-[8px] text-muted-foreground shrink-0">
+            <span className="font-body text-[11px] text-muted-foreground shrink-0">
               {activity.timeAgo}
             </span>
           </div>
