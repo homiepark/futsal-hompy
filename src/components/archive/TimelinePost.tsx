@@ -716,28 +716,27 @@ export function TimelinePost({
 
           {/* Comment Input */}
           {user ? (
-            <div className="flex gap-2 items-center">
+            <div className="flex items-center gap-1.5 pixel-input py-1 px-2">
               <input
                 type="text"
                 value={commentText}
                 onChange={(e) => setCommentText(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder={replyingTo ? `${replyingTo.nickname}에게 답글...` : "댓글을 입력하세요..."}
-                className="pixel-input flex-1 text-xs py-1.5 px-2"
+                className="flex-1 text-xs bg-transparent outline-none min-w-0"
                 maxLength={200}
               />
               <button
                 onClick={handleSubmitComment}
                 disabled={commentLoading || !commentText.trim()}
                 className={cn(
-                  "w-8 h-8 flex items-center justify-center border-2 transition-colors",
+                  "shrink-0 w-7 h-7 flex items-center justify-center rounded transition-colors",
                   commentText.trim()
-                    ? "bg-primary border-primary-dark text-primary-foreground hover:brightness-110"
-                    : "bg-muted border-border text-muted-foreground"
+                    ? "text-primary hover:bg-primary/10"
+                    : "text-muted-foreground"
                 )}
-                style={commentText.trim() ? { boxShadow: '2px 2px 0 hsl(var(--primary-dark))' } : undefined}
               >
-                <Send size={14} />
+                <Send size={16} />
               </button>
             </div>
           ) : (
