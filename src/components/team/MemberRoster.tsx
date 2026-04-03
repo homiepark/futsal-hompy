@@ -127,13 +127,12 @@ export function MemberRoster({ members, teamId }: MemberRosterProps) {
                   style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow) / 0.3)' }}
                 >
                   {/* Avatar */}
-                  <div className="w-12 h-12 bg-secondary border-2 border-border-dark rounded-md overflow-hidden flex-shrink-0 relative">
+                  <div className="w-12 h-12 bg-secondary border-2 border-border-dark rounded-md overflow-hidden flex-shrink-0">
                     {staff.avatarUrl ? (
                       <img src={staff.avatarUrl} alt={staff.nickname} className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-lg bg-muted">👤</div>
                     )}
-                    <div className="absolute -top-0.5 -right-0.5 text-[10px]">{getStaffIcon(staff.role)}</div>
                   </div>
 
                   {/* Info */}
