@@ -124,8 +124,8 @@ export function MemberRoster({ members, teamId }: MemberRosterProps) {
           <span className="text-muted-foreground ml-1">({playerMembers.length}명)</span>
         </div>
 
-        {/* Dense Member Grid */}
-        <div className="p-2 space-y-2">
+        {/* Member Grid */}
+        <div className="p-3 space-y-3">
           {positionOrder.map((position) => {
             const positionMembers = groupedMembers[position];
             if (!positionMembers || positionMembers.length === 0) return null;
@@ -136,56 +136,58 @@ export function MemberRoster({ members, teamId }: MemberRosterProps) {
               <div key={position}>
                 {/* Position Tag */}
                 <div className={cn(
-                  'inline-flex items-center gap-1 px-1.5 py-0.5 mb-1.5',
+                  'inline-flex items-center gap-1.5 px-2 py-1 mb-2',
                   'border-2 text-[11px] font-pixel',
                   info.color
                 )}>
                   <span>{info.emoji}</span>
                   <span>{info.label}</span>
+                  <span className="text-muted-foreground">({positionMembers.length})</span>
                 </div>
 
-                {/* Dense Members Row */}
-                <div className="flex flex-wrap gap-1.5">
+                {/* 3-Column Fixed Grid */}
+                <div className="grid grid-cols-3 gap-2">
                   {positionMembers.map((member) => (
                     <button
                       key={member.id}
                       onClick={() => handleMemberClick(member)}
-                      className="kairo-member-chip group text-left"
+                      className="flex flex-col items-center p-2 bg-muted border-2 border-border-dark hover:border-primary hover:bg-secondary transition-colors text-center"
+                      style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow) / 0.5)' }}
                     >
-                      {/* Mini Avatar */}
-                      <div className="w-7 h-7 bg-secondary border-2 border-border-dark overflow-hidden relative flex-shrink-0">
+                      {/* Avatar */}
+                      <div className="w-12 h-12 bg-secondary border-2 border-border-dark overflow-hidden relative mb-1.5">
                         {member.avatarUrl ? (
                           <img src={member.avatarUrl} alt={member.nickname} className="w-full h-full object-cover" />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-xs bg-muted">
+                          <div className="w-full h-full flex items-center justify-center text-xl bg-muted">
                             👤
                           </div>
                         )}
                         {member.isAdmin && (
-                          <div className="absolute -top-0.5 -right-0.5 text-[8px]">{member.role === 'owner' ? '👑' : '🛡️'}</div>
+                          <div className="absolute -top-1 -right-1 text-[10px]">{member.role === 'owner' ? '👑' : '🛡️'}</div>
                         )}
                       </div>
 
-                      {/* Info */}
-                      <div className="flex flex-col min-w-0">
-                        <span className="font-pixel text-[11px] text-foreground truncate leading-tight">
-                          {member.nickname}
-                        </span>
-                        <div className="flex items-center gap-1">
-                          <span className="font-body text-[11px] text-muted-foreground leading-tight">
-                            {member.yearsOfExperience}년{member.monthsOfExperience ? `${member.monthsOfExperience}개월` : ''}
-                          </span>
-                          {(member.positions?.length ?? 0) > 1 && (
-                            <div className="flex gap-0.5">
-                              {member.positions?.filter(p => p !== position).map(p => (
-                                <span key={p} className="font-pixel text-[7px] px-1 bg-primary/20 border border-primary text-primary">
-                                  {positionInfo[p as keyof typeof positionInfo]?.emoji}
-                                </span>
-                              ))}
-                            </div>
-                          )}
+                      {/* Nickname */}
+                      <span className="font-pixel text-[11px] text-foreground truncate w-full leading-tight">
+                        {member.nickname}
+                      </span>
+
+                      {/* Experience */}
+                      <span className="font-body text-[11px] text-muted-foreground leading-tight mt-0.5">
+                        {member.yearsOfExperience}년{member.monthsOfExperience ? `${member.monthsOfExperience}개월` : ''}
+                      </span>
+
+                      {/* Multi-position badges */}
+                      {(member.positions?.length ?? 0) > 1 && (
+                        <div className="flex gap-0.5 mt-1">
+                          {member.positions?.filter(p => p !== position).map(p => (
+                            <span key={p} className="font-pixel text-[9px] px-1 bg-primary/20 border border-primary text-primary">
+                              {positionInfo[p as keyof typeof positionInfo]?.emoji}
+                            </span>
+                          ))}
                         </div>
-                      </div>
+                      )}
                     </button>
                   ))}
                 </div>
