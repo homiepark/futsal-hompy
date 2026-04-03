@@ -254,7 +254,7 @@ export default function TeamArchive() {
           <PixelButton
             variant="accent"
             size="sm"
-            className="flex items-center gap-1 text-[8px] px-2 py-1"
+            className="flex items-center gap-1 text-[11px] px-2 py-1"
             onClick={() => setShowWriteModal(true)}
           >
             <Plus size={12} />
@@ -331,6 +331,7 @@ export default function TeamArchive() {
                   isAdmin={isAdmin}
                   isOwner={isOwner}
                   onDelete={(postId) => setPosts(prev => prev.filter(p => p.id !== postId))}
+                  onUpdate={fetchPosts}
                   folderName={folders.find(f => f.id === post.folderId)?.name}
                   folderEmoji={folders.find(f => f.id === post.folderId)?.emoji}
                   folderId={post.folderId}

@@ -27,6 +27,7 @@ interface TimelinePostProps {
   isAdmin?: boolean;
   isOwner?: boolean;
   onDelete?: (postId: string) => void;
+  onUpdate?: () => void;
   folderName?: string;
   folderEmoji?: string;
   folderId?: string;
@@ -52,6 +53,7 @@ export function TimelinePost({
   isAdmin = false,
   isOwner = false,
   onDelete,
+  onUpdate,
   folderName,
   folderEmoji,
   folderId,
@@ -141,6 +143,7 @@ export function TimelinePost({
     setDisplayFolderEmoji(newFolder?.emoji);
     setIsEditing(false);
     toast.success('게시물이 수정되었습니다.');
+    onUpdate?.();
   };
 
   const handleCancelEdit = () => {

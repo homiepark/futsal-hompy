@@ -253,7 +253,7 @@ export default function ProfileSetup() {
             ) : (
               <div className="w-full h-full flex flex-col items-center justify-center bg-secondary">
                 <Camera size={28} className="text-muted-foreground mb-1" />
-                <span className="font-pixel text-[8px] text-muted-foreground">사진 추가</span>
+                <span className="font-pixel text-[11px] text-muted-foreground">사진 추가</span>
               </div>
             )}
           </button>
@@ -325,7 +325,7 @@ export default function ProfileSetup() {
           활동 지역
           <span className="text-[9px] text-muted-foreground font-pixel">(최대 3개)</span>
         </label>
-        <p className="font-pixel text-[8px] text-muted-foreground mb-3">
+        <p className="font-pixel text-[11px] text-muted-foreground mb-3">
           설정하시면 홈 화면에서 해당 지역 팀들을 먼저 보여드려요!
         </p>
 
@@ -413,7 +413,7 @@ export default function ProfileSetup() {
           <span className="text-primary">⚽</span>
           포지션 선택 <span className="text-accent">*</span>
         </label>
-        <p className="font-pixel text-[8px] text-muted-foreground mb-3">복수 선택 가능 · 첫 번째 선택이 대표 포지션</p>
+        <p className="font-pixel text-[11px] text-muted-foreground mb-3">복수 선택 가능 · 첫 번째 선택이 대표 포지션</p>
         <div className="grid grid-cols-2 gap-3">
           {positions.map((pos) => {
             const isSelected = selectedPositions.includes(pos.id);
@@ -443,7 +443,7 @@ export default function ProfileSetup() {
               >
                 {isSelected && (
                   <div className="absolute top-1 right-1 w-4 h-4 bg-accent border-2 border-accent-dark flex items-center justify-center">
-                    <span className="text-[8px] text-accent-foreground">{isPrimary ? '★' : '✓'}</span>
+                    <span className="text-[11px] text-accent-foreground">{isPrimary ? '★' : '✓'}</span>
                   </div>
                 )}
                 <span className="text-xl block mb-1">{pos.emoji}</span>
@@ -457,7 +457,7 @@ export default function ProfileSetup() {
         {/* Primary position selector */}
         {selectedPositions.length > 1 && (
           <div className="mt-3 p-2 bg-muted border-2 border-border-dark">
-            <p className="font-pixel text-[8px] text-muted-foreground mb-2">★ 대표 포지션 설정</p>
+            <p className="font-pixel text-[11px] text-muted-foreground mb-2">★ 대표 포지션 설정</p>
             <div className="flex flex-wrap gap-1.5">
               {selectedPositions.map((posId) => {
                 const pos = positions.find(p => p.id === posId);

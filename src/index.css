@@ -138,11 +138,11 @@
 
   /* Override font classes */
   .font-pixel {
-    font-family: 'DNFBitBitv2', 'NeoDunggeunmo', 'Galmuri11', sans-serif !important;
+    font-family: 'Galmuri11', 'NeoDunggeunmo', 'DNFBitBitv2', sans-serif !important;
   }
 
   .font-body {
-    font-family: 'DNFBitBitv2', 'NeoDunggeunmo', 'Galmuri11', sans-serif !important;
+    font-family: 'Galmuri11', 'NeoDunggeunmo', sans-serif !important;
   }
 }
 
@@ -392,10 +392,10 @@
 
 @layer utilities {
   .font-pixel {
-    font-family: 'DNFBitBitv2', 'NeoDunggeunmo', 'Galmuri11', sans-serif !important;
+    font-family: 'Galmuri11', 'NeoDunggeunmo', 'DNFBitBitv2', sans-serif !important;
   }
   .font-body {
-    font-family: 'DNFBitBitv2', 'NeoDunggeunmo', 'Galmuri11', sans-serif !important;
+    font-family: 'Galmuri11', 'NeoDunggeunmo', sans-serif !important;
   }
 
   /* Animation for game-like feedback */

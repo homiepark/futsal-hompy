@@ -96,13 +96,14 @@ export function JoinRequestNotification({ teamId, isAdmin }: JoinRequestNotifica
 
       // Send message to applicant
       if (user) {
-        await supabase.from('messages').insert({
+        const { error: msgError } = await supabase.from('messages').insert({
           sender_id: user.id,
           receiver_id: request.userId,
           team_id: teamId,
           content: `입단 신청이 승인되었습니다! 🎉 팀에 오신 것을 환영합니다!`,
           is_read: false,
         });
+        if (msgError) console.error('승인 알림 메시지 전송 실패:', msgError);
       }
 
       setRequests(prev => prev.filter(r => r.id !== request.id));
@@ -125,13 +126,14 @@ export function JoinRequestNotification({ teamId, isAdmin }: JoinRequestNotifica
 
       // Send message to applicant
       if (user) {
-        await supabase.from('messages').insert({
+        const { error: msgError } = await supabase.from('messages').insert({
           sender_id: user.id,
           receiver_id: request.userId,
           team_id: teamId,
           content: `입단 신청이 거절되었습니다.`,
           is_read: false,
         });
+        if (msgError) console.error('거절 알림 메시지 전송 실패:', msgError);
       }
 
       setRequests(prev => prev.filter(r => r.id !== request.id));

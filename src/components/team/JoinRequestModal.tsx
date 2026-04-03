@@ -130,13 +130,14 @@ export function JoinRequestModal({
         .single();
 
       if (teamData?.admin_user_id) {
-        await supabase.from('messages').insert({
+        const { error: msgError } = await supabase.from('messages').insert({
           sender_id: user.id,
           receiver_id: teamData.admin_user_id,
           team_id: teamId,
           content: `새로운 입단 신청이 도착했습니다! ✉️\n\n신청자: ${profile.nickname}${profile.real_name ? ` (실명: ${profile.real_name})` : ''}\n포지션: ${profile.preferred_position || '미설정'}\n경력: ${profile.years_of_experience}년${profile.months_of_experience ? ` ${profile.months_of_experience}개월` : ''}\n\n"${message.trim()}"`,
           is_read: false,
         });
+        if (msgError) console.error('알림 메시지 전송 실패:', msgError);
       }
 
       // Show success state

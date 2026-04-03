@@ -472,7 +472,7 @@ export default function MyProfile() {
                 >
                   {isSelected && (
                     <div className="absolute top-1 right-1 w-4 h-4 bg-accent border-2 border-accent-dark flex items-center justify-center">
-                      <span className="text-[8px] text-accent-foreground">{isPrimary ? '★' : '✓'}</span>
+                      <span className="text-[11px] text-accent-foreground">{isPrimary ? '★' : '✓'}</span>
                     </div>
                   )}
                   <span className="text-xl block mb-1">{pos.emoji}</span>
