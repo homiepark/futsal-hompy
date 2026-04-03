@@ -154,6 +154,13 @@ export function TimelinePost({
   const allImages = (imageUrls.length > 0 ? imageUrls : (imageUrl ? [imageUrl] : []))
     .filter(url => url && url !== videoSrc && !url.match(/\.(mp4|webm|mov|avi)(\?|$)/i));
 
+  // 통합 미디어 배열 (동영상 + 사진) - 라이트박스용
+  const allMedia: { type: 'video' | 'image'; url: string }[] = [];
+  if (videoSrc && !videoSrc.match(/youtube\.com|youtu\.be/)) {
+    allMedia.push({ type: 'video', url: videoSrc });
+  }
+  allImages.forEach(url => allMedia.push({ type: 'image', url }));
+
   const displayLikes = isMock ? mockLikes : likesCount;
   const displayComments = isMock ? mockComments : commentsCount;
 
@@ -389,17 +396,28 @@ export function TimelinePost({
             </div>
           );
         }
-        // Direct video file
+        // Direct video file - tap to open in lightbox gallery
         return (
-          <div className="relative border-4 border-border-dark shadow-pixel overflow-hidden rounded-lg">
-            <video src={url} poster={imageUrl} controls className="w-full aspect-video object-cover bg-black" preload="metadata">
-              브라우저가 비디오를 지원하지 않습니다.
-            </video>
-            <div className="absolute top-2 left-2 px-2 py-0.5 bg-accent border-2 border-accent-dark font-pixel text-[11px] text-accent-foreground"
+          <button
+            onClick={() => { setCurrentImageIndex(0); setShowLightbox(true); }}
+            className="relative border-4 border-border-dark shadow-pixel overflow-hidden rounded-lg w-full text-left"
+          >
+            <video src={url} className="w-full aspect-video object-cover bg-black pointer-events-none" preload="metadata" />
+            <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+              <div className="w-12 h-12 bg-white/90 rounded-full flex items-center justify-center">
+                <span className="text-xl ml-0.5">▶</span>
+              </div>
+            </div>
+            <div className="absolute top-2 left-2 px-2 py-0.5 bg-accent border-2 border-accent-dark rounded font-pixel text-[11px] text-accent-foreground"
               style={{ boxShadow: '1px 1px 0 hsl(var(--accent-dark))' }}>
               🎬 VIDEO
             </div>
-          </div>
+            {allImages.length > 0 && (
+              <div className="absolute bottom-2 right-2 px-2 py-0.5 bg-black/70 rounded font-pixel text-[11px] text-white">
+                +{allImages.length} 📸
+              </div>
+            )}
+          </button>
         );
       })()}
 
@@ -415,7 +433,7 @@ export function TimelinePost({
           {allImages.slice(0, 6).map((img, idx) => (
             <button
               key={idx}
-              onClick={() => { setCurrentImageIndex(idx); setShowLightbox(true); }}
+              onClick={() => { setCurrentImageIndex(idx + (videoSrc && !videoSrc.match(/youtube\.com|youtu\.be/) ? 1 : 0)); setShowLightbox(true); }}
               className={cn(
                 'relative overflow-hidden bg-black/5',
                 allImages.length === 1 ? 'aspect-auto max-h-96' : 'aspect-square'
@@ -435,18 +453,23 @@ export function TimelinePost({
         </div>
       )}
 
-      {/* Lightbox - Full screen image viewer */}
-      {showLightbox && allImages.length > 0 && (
+      {/* Lightbox - Full screen media viewer (video + images) */}
+      {showLightbox && allMedia.length > 0 && (
         <div className="fixed inset-0 z-[80] bg-black/95 flex flex-col" onClick={() => setShowLightbox(false)}>
           {/* Header */}
           <div className="flex items-center justify-between p-4 text-white">
-            <span className="font-pixel text-[10px]">{currentImageIndex + 1} / {allImages.length}</span>
+            <div className="flex items-center gap-2">
+              <span className="font-pixel text-[11px]">{currentImageIndex + 1} / {allMedia.length}</span>
+              {allMedia[currentImageIndex]?.type === 'video' && (
+                <span className="px-1.5 py-0.5 bg-accent rounded font-pixel text-[9px] text-accent-foreground">🎬 VIDEO</span>
+              )}
+            </div>
             <button onClick={() => setShowLightbox(false)} className="w-8 h-8 flex items-center justify-center hover:bg-white/10 rounded">
               <X size={20} className="text-white" />
             </button>
           </div>
 
-          {/* Image with swipe */}
+          {/* Media with swipe */}
           <div
             className="flex-1 flex items-center justify-center px-4 select-none"
             onClick={(e) => e.stopPropagation()}
@@ -459,28 +482,43 @@ export function TimelinePost({
               if (startX === undefined) return;
               const endX = e.changedTouches[0].clientX;
               const diff = startX - endX;
-              if (diff > 50 && currentImageIndex < allImages.length - 1) {
+              if (diff > 50 && currentImageIndex < allMedia.length - 1) {
                 setCurrentImageIndex(i => i + 1);
               } else if (diff < -50 && currentImageIndex > 0) {
                 setCurrentImageIndex(i => i - 1);
               }
             }}
           >
-            <img
-              src={allImages[currentImageIndex]}
-              alt=""
-              className="max-w-full max-h-full object-contain pointer-events-none"
-            />
+            {allMedia[currentImageIndex]?.type === 'video' ? (
+              <video
+                key={allMedia[currentImageIndex].url}
+                src={allMedia[currentImageIndex].url}
+                controls
+                autoPlay
+                className="max-w-full max-h-full object-contain bg-black"
+                onClick={(e) => e.stopPropagation()}
+              />
+            ) : (
+              <img
+                src={allMedia[currentImageIndex]?.url}
+                alt=""
+                className="max-w-full max-h-full object-contain pointer-events-none"
+              />
+            )}
           </div>
 
           {/* Dots */}
-          {allImages.length > 1 && (
+          {allMedia.length > 1 && (
             <div className="flex justify-center gap-2 pb-6">
-              {allImages.map((_, idx) => (
+              {allMedia.map((item, idx) => (
                 <button
                   key={idx}
                   onClick={(e) => { e.stopPropagation(); setCurrentImageIndex(idx); }}
-                  className={cn('w-2 h-2 rounded-full transition-colors', idx === currentImageIndex ? 'bg-white' : 'bg-white/30')}
+                  className={cn(
+                    'rounded-full transition-colors',
+                    idx === currentImageIndex ? 'bg-white' : 'bg-white/30',
+                    item.type === 'video' ? 'w-3 h-3' : 'w-2 h-2'
+                  )}
                 />
               ))}
             </div>
