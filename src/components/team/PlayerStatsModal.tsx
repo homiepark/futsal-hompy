@@ -299,7 +299,7 @@ export function PlayerStatsModal({ isOpen, onClose, player }: PlayerStatsModalPr
             {/* Guestbook Input */}
             <div className="flex gap-2 mb-3">
               <input
-                className="flex-1 px-3 py-2 bg-input border-2 border-border-dark font-pixel text-[11px] placeholder:text-muted-foreground focus:outline-none focus:border-primary"
+                className="flex-1 min-w-0 px-3 py-2 bg-input border-2 border-border-dark rounded font-pixel text-[11px] placeholder:text-muted-foreground focus:outline-none focus:border-primary"
                 placeholder="응원 메시지를 남겨주세요..."
                 value={guestbookMessage}
                 onChange={(e) => setGuestbookMessage(e.target.value)}
