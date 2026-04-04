@@ -35,8 +35,10 @@ function html(title, desc, image, url) {
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:title" content="${esc(title)}"/>
 <meta name="twitter:image" content="${esc(image)}"/>
-<meta http-equiv="refresh" content="0;url=${esc(url)}"/>
-</head><body><p>Redirecting...</p></body></html>`;
+</head><body>
+<p>Redirecting...</p>
+<script>window.location.replace("${url}");</script>
+</body></html>`;
 }
 
 export default async function handler(request) {
