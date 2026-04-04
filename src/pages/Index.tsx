@@ -61,7 +61,7 @@ const Index = () => {
   const [loading, setLoading] = useState(true);
   const [unreadCount, setUnreadCount] = useState(0);
   const [filters, setFilters] = useState<FilterState>(initialFilterState);
-  const [listMode, setListMode] = useState<'filter' | 'all'>('all');
+  const [listMode, setListMode] = useState<'filter' | 'all'>('filter');
   const [favorites, setFavorites] = useState<Set<string>>(() => {
     try {
       const saved = localStorage.getItem('team-favorites');
@@ -168,8 +168,11 @@ const Index = () => {
     return [...teams].sort((a, b) => a.name.localeCompare(b.name, 'ko'));
   }, [teams]);
 
+  // 필터 모드에서 필터가 설정되었는지 확인
+  const hasActiveFilters = filters.teamName || filters.levels.length > 0 || filters.genders.length > 0 || (filters.selectedRegions && filters.selectedRegions.length > 0) || filters.days.length > 0 || filters.timeSlot;
+
   // 표시할 팀 목록
-  const displayedTeams = listMode === 'all' ? allTeamsSorted : filteredTeams;
+  const displayedTeams = listMode === 'all' ? allTeamsSorted : (hasActiveFilters ? filteredTeams : []);
 
   // Favorite teams for carousel
   const favoriteTeams = useMemo(() => {
@@ -321,13 +324,22 @@ const Index = () => {
 
       {/* Team List */}
       <div className="px-4 pb-4">
-        {listMode === 'filter' && (
+        {listMode === 'filter' && hasActiveFilters && (
           <p className="font-pixel text-[9px] text-muted-foreground mb-2">
             검색 결과 {filteredTeams.length}팀
           </p>
         )}
 
-        {loading ? (
+        {listMode === 'filter' && !hasActiveFilters ? (
+          <div
+            className="bg-card border-3 border-border-dark p-6 text-center rounded-xl"
+            style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}
+          >
+            <div className="text-3xl mb-2">🔍</div>
+            <p className="font-pixel text-[11px] text-muted-foreground">팀 이름을 검색하거나</p>
+            <p className="font-pixel text-[11px] text-muted-foreground">지역/조건을 설정해보세요!</p>
+          </div>
+        ) : loading ? (
           <div
             className="bg-card border-3 border-border-dark p-8 text-center rounded-xl"
             style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}

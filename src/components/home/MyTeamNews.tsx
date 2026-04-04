@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { formatDistanceToNow } from 'date-fns';
@@ -34,7 +33,6 @@ export function MyTeamNews({ userId }: MyTeamNewsProps) {
   const navigate = useNavigate();
   const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
     const fetchMyTeamNews = async () => {
@@ -176,8 +174,7 @@ export function MyTeamNews({ userId }: MyTeamNewsProps) {
     fetchMyTeamNews();
   }, [userId]);
 
-  const displayedItems = expanded ? newsItems : newsItems.slice(0, 5);
-  const hasMore = newsItems.length > 5 && !expanded;
+  const displayedItems = newsItems;
 
   if (loading) {
     return (
@@ -228,14 +225,16 @@ export function MyTeamNews({ userId }: MyTeamNewsProps) {
           <span className="font-pixel text-[9px] text-primary-foreground/70">{newsItems.length}건</span>
         </div>
 
-        {/* News List */}
-        <div className="divide-y divide-border">
+        {/* News List - scrollable */}
+        <div className="divide-y divide-border max-h-[220px] overflow-y-auto overscroll-contain">
           {displayedItems.map((item) => (
             <button
               key={item.id}
               onClick={() => {
                 if (item.type === 'schedule') {
                   navigate('/schedule');
+                } else if (item.type === 'post') {
+                  navigate(`/archive?team=${item.teamId}`);
                 } else {
                   navigate(`/team/${item.teamId}`);
                 }
@@ -272,17 +271,6 @@ export function MyTeamNews({ userId }: MyTeamNewsProps) {
             </button>
           ))}
         </div>
-
-        {/* Show More Button */}
-        {hasMore && (
-          <button
-            onClick={() => setExpanded(true)}
-            className="w-full flex items-center justify-center gap-1 py-2 border-t border-border text-muted-foreground hover:bg-muted/50 transition-colors"
-          >
-            <span className="font-pixel text-[10px]">더보기 ({newsItems.length - 5}건)</span>
-            <ChevronDown size={12} />
-          </button>
-        )}
       </div>
     </div>
   );
