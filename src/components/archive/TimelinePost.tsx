@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { supabase } from '@/integrations/supabase/client';
+import { shareToKakao } from '@/lib/kakaoShare';
 
 interface TimelinePostProps {
   id: string;
@@ -608,20 +609,15 @@ export function TimelinePost({
         </button>
         <button
           className="text-muted-foreground hover:text-primary transition-colors ml-auto p-1.5"
-          onClick={async () => {
-            const shareUrl = `${window.location.origin}/api/og?type=post&id=${id}`;
-            if (navigator.share) {
-              try {
-                await navigator.share({
-                  title: `📸 ${author}의 게시글`,
-                  text: displayContent ? displayContent.slice(0, 60) : '팀 스토리',
-                  url: shareUrl,
-                });
-              } catch {}
-            } else {
-              await navigator.clipboard.writeText(shareUrl);
-              toast.success('링크가 복사되었습니다!');
-            }
+          onClick={() => {
+            const postUrl = `${window.location.origin}/archive?post=${id}`;
+            const postImage = allImages[0] || videoUrl || undefined;
+            shareToKakao({
+              title: `${author}의 게시글`,
+              imageUrl: postImage,
+              linkUrl: postUrl,
+              buttonTitle: '게시글 보기',
+            });
           }}
         >
           <Share2 size={20} />
