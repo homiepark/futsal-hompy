@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Settings, Mail, Plus } from 'lucide-react';
 import { SimpleHeader } from '@/components/findteam/SimpleHeader';
 import { TeamListCard } from '@/components/findteam/TeamListCard';
+import { HotTeamsRanking } from '@/components/home/HotTeamsRanking';
 import { MyTeamNews } from '@/components/home/MyTeamNews';
 import { FavoriteTeams } from '@/components/home/FavoriteTeams';
 import { CompactFilterBar } from '@/components/home/CompactFilterBar';
@@ -60,6 +61,7 @@ const Index = () => {
   const [loading, setLoading] = useState(true);
   const [unreadCount, setUnreadCount] = useState(0);
   const [filters, setFilters] = useState<FilterState>(initialFilterState);
+  const [listMode, setListMode] = useState<'filter' | 'all'>('all');
   const [favorites, setFavorites] = useState<Set<string>>(() => {
     try {
       const saved = localStorage.getItem('team-favorites');
@@ -70,10 +72,7 @@ const Index = () => {
   // Fetch unread message count
   useEffect(() => {
     const fetchUnreadCount = async () => {
-      if (!user) {
-        setUnreadCount(0);
-        return;
-      }
+      if (!user) { setUnreadCount(0); return; }
       try {
         const { count, error } = await supabase
           .from('messages')
@@ -87,30 +86,6 @@ const Index = () => {
       }
     };
     fetchUnreadCount();
-  }, [user]);
-
-  // Fetch user profile for smart filter (multi-region)
-  useEffect(() => {
-    const fetchUserProfile = async () => {
-      if (!user) return;
-      try {
-        const { data: profile, error } = await supabase
-          .from('profiles')
-          .select('preferred_regions')
-          .eq('user_id', user.id)
-          .single();
-
-        if (error) throw error;
-
-        const savedRegions = profile?.preferred_regions as unknown as PreferredRegion[] | null;
-        if (savedRegions && Array.isArray(savedRegions) && savedRegions.length > 0) {
-          setFilters(prev => ({ ...prev, selectedRegions: savedRegions }));
-        }
-      } catch (error) {
-        console.error('Error fetching user profile:', error);
-      }
-    };
-    fetchUserProfile();
   }, [user]);
 
   // Fetch teams from Supabase
@@ -155,11 +130,7 @@ const Index = () => {
   const handleFavoriteToggle = (teamId: string, isFavorited: boolean) => {
     setFavorites(prev => {
       const next = new Set(prev);
-      if (isFavorited) {
-        next.add(teamId);
-      } else {
-        next.delete(teamId);
-      }
+      if (isFavorited) { next.add(teamId); } else { next.delete(teamId); }
       localStorage.setItem('team-favorites', JSON.stringify([...next]));
       return next;
     });
@@ -168,7 +139,7 @@ const Index = () => {
     ));
   };
 
-  // Real-time filtering with multi-region support
+  // Filtered teams (지역 필터 적용)
   const filteredTeams = useMemo(() => {
     return teams.filter(team => {
       if (filters.teamName && !team.name.toLowerCase().includes(filters.teamName.toLowerCase())) return false;
@@ -191,6 +162,14 @@ const Index = () => {
       return true;
     });
   }, [teams, filters]);
+
+  // 전체팀 보기 (가나다순)
+  const allTeamsSorted = useMemo(() => {
+    return [...teams].sort((a, b) => a.name.localeCompare(b.name, 'ko'));
+  }, [teams]);
+
+  // 표시할 팀 목록
+  const displayedTeams = listMode === 'all' ? allTeamsSorted : filteredTeams;
 
   // Favorite teams for carousel
   const favoriteTeams = useMemo(() => {
@@ -217,9 +196,7 @@ const Index = () => {
   }
 
   function formatRegion(team: Team): string {
-    if (team.region && team.district) {
-      return `${team.region} ${team.district}`;
-    }
+    if (team.region && team.district) return `${team.region} ${team.district}`;
     return team.region || '미정';
   }
 
@@ -267,8 +244,11 @@ const Index = () => {
         <SimpleHeader />
       </div>
 
-      {/* Create Team CTA - compact, right under banner */}
-      <div className="px-4 pt-3 pb-1">
+      {/* NEW 팀 창단 축하 🎉 */}
+      <HotTeamsRanking />
+
+      {/* Create Team CTA */}
+      <div className="px-4 pb-1">
         <button
           onClick={() => navigate('/create-team')}
           className={cn(
@@ -281,9 +261,7 @@ const Index = () => {
             'hover:brightness-110',
             'active:translate-x-0.5 active:translate-y-0.5'
           )}
-          style={{
-            boxShadow: '3px 3px 0 hsl(var(--accent-dark))',
-          }}
+          style={{ boxShadow: '3px 3px 0 hsl(var(--accent-dark))' }}
         >
           <Plus size={14} strokeWidth={3} />
           <span>🏆 새 팀 만들기</span>
@@ -291,43 +269,75 @@ const Index = () => {
       </div>
 
       {/* My Team News - for logged-in users */}
-      {user && (
-        <MyTeamNews userId={user.id} />
-      )}
+      {user && <MyTeamNews userId={user.id} />}
 
       {/* Guest Auth Prompt */}
-      {!user && (
-        <GuestAuthPrompt />
-      )}
+      {!user && <GuestAuthPrompt />}
 
       {/* Favorite Teams Carousel */}
       <FavoriteTeams teams={favoriteTeams} />
 
       {/* Team Discovery Section */}
-      <CompactFilterBar
-        filters={filters}
-        onFiltersChange={setFilters}
-      />
+      <div className="px-4 pt-2 pb-1">
+        <div className="flex items-center gap-2 mb-2">
+          <span className="text-sm">🔍</span>
+          <h2 className="font-pixel text-[11px] text-foreground">팀 찾기</h2>
+        </div>
+
+        {/* Mode Toggle: 전체팀 / 지역설정 */}
+        <div className="flex gap-1.5 mb-2">
+          <button
+            onClick={() => setListMode('all')}
+            className={cn(
+              'px-3 py-1.5 font-pixel text-[11px] border-2 rounded-lg transition-all',
+              listMode === 'all'
+                ? 'bg-primary text-primary-foreground border-primary-dark shadow-[2px_2px_0_hsl(var(--primary-dark))]'
+                : 'bg-card text-foreground border-border-dark hover:bg-muted'
+            )}
+          >
+            ⚽ 전체팀 보기
+          </button>
+          <button
+            onClick={() => setListMode('filter')}
+            className={cn(
+              'px-3 py-1.5 font-pixel text-[11px] border-2 rounded-lg transition-all',
+              listMode === 'filter'
+                ? 'bg-primary text-primary-foreground border-primary-dark shadow-[2px_2px_0_hsl(var(--primary-dark))]'
+                : 'bg-card text-foreground border-border-dark hover:bg-muted'
+            )}
+          >
+            📍 지역/조건 검색
+          </button>
+        </div>
+      </div>
+
+      {/* Filters (only in filter mode) */}
+      {listMode === 'filter' && (
+        <CompactFilterBar
+          filters={filters}
+          onFiltersChange={setFilters}
+        />
+      )}
 
       {/* Team List */}
       <div className="px-4 pb-4">
-        <div className="flex items-center gap-2 mb-3">
-          <span className="text-base">🔍</span>
-          <h2 className="font-pixel text-[12px] text-foreground">팀 찾기</h2>
-          <span className="font-pixel text-[9px] text-muted-foreground">({filteredTeams.length}팀)</span>
-        </div>
+        {listMode === 'filter' && (
+          <p className="font-pixel text-[9px] text-muted-foreground mb-2">
+            검색 결과 {filteredTeams.length}팀
+          </p>
+        )}
 
         {loading ? (
           <div
-            className="bg-card border-4 border-border-dark p-8 text-center rounded-xl"
-            style={{ boxShadow: '4px 4px 0 hsl(var(--pixel-shadow))' }}
+            className="bg-card border-3 border-border-dark p-8 text-center rounded-xl"
+            style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}
           >
             <div className="text-4xl mb-3 animate-pulse">⚽</div>
             <p className="font-pixel text-[11px] text-muted-foreground">팀 목록을 불러오는 중...</p>
           </div>
-        ) : filteredTeams.length > 0 ? (
+        ) : displayedTeams.length > 0 ? (
           <div className="grid gap-3">
-            {filteredTeams.map((team) => (
+            {displayedTeams.map((team) => (
               <TeamListCard
                 key={team.id}
                 id={team.id}
@@ -345,8 +355,8 @@ const Index = () => {
           </div>
         ) : (
           <div
-            className="bg-card border-4 border-border-dark p-8 text-center rounded-xl"
-            style={{ boxShadow: '4px 4px 0 hsl(var(--pixel-shadow))' }}
+            className="bg-card border-3 border-border-dark p-8 text-center rounded-xl"
+            style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}
           >
             <div className="text-4xl mb-3">🔍</div>
             <p className="font-pixel text-[11px] text-muted-foreground">검색 결과가 없습니다</p>
