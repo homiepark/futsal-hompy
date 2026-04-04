@@ -96,7 +96,7 @@ export function BroadcastModal({
 
       {/* Modal Content */}
       <div 
-        className="relative w-full max-w-md bg-card border-4 border-border-dark animate-scale-in"
+        className="relative w-full max-w-md bg-white border-4 border-border-dark animate-scale-in"
         style={{ boxShadow: '6px 6px 0 hsl(var(--pixel-shadow))' }}
       >
         {/* Header */}
@@ -132,7 +132,7 @@ export function BroadcastModal({
             onChange={(e) => setContent(e.target.value)}
             placeholder="팀원들에게 전달할 메시지를 입력하세요..."
             rows={5}
-            className="w-full px-4 py-3 bg-background border-4 border-border-dark outline-none focus:border-accent resize-none font-body text-sm"
+            className="w-full px-4 py-3 bg-white text-gray-900 border-4 border-border-dark outline-none focus:border-accent resize-none font-body text-sm placeholder:text-gray-400"
             style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}
           />
         </div>

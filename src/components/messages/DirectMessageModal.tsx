@@ -142,7 +142,7 @@ export function DirectMessageModal({
       {/* Modal Content */}
       <div 
         className={cn(
-          "relative w-full max-w-md bg-card border-4 border-border-dark transition-all duration-300",
+          "relative w-full max-w-md bg-white border-4 border-border-dark transition-all duration-300",
           showEnvelope ? "opacity-0 scale-95" : "opacity-100 scale-100"
         )}
         style={{ boxShadow: '6px 6px 0 hsl(var(--pixel-shadow))' }}
@@ -209,7 +209,7 @@ export function DirectMessageModal({
             onChange={(e) => setContent(e.target.value)}
             placeholder="메시지를 입력하세요..."
             rows={6}
-            className="w-full px-4 py-3 bg-background border-4 border-border-dark outline-none focus:border-primary resize-none font-body text-sm"
+            className="w-full px-4 py-3 bg-white text-gray-900 border-4 border-border-dark outline-none focus:border-primary resize-none font-body text-sm placeholder:text-gray-400"
             style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}
           />
         </div>
