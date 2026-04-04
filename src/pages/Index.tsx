@@ -3,14 +3,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Settings, Mail, Plus } from 'lucide-react';
 import { SimpleHeader } from '@/components/findteam/SimpleHeader';
 import { TeamListCard } from '@/components/findteam/TeamListCard';
-import { NeighborhoodNews } from '@/components/home/NeighborhoodNews';
-import { LiveMatchBanner } from '@/components/home/LiveMatchBanner';
-import { HotTeamsRanking } from '@/components/home/HotTeamsRanking';
-import { RecentActivityFeed } from '@/components/home/RecentActivityFeed';
-
+import { MyTeamNews } from '@/components/home/MyTeamNews';
+import { FavoriteTeams } from '@/components/home/FavoriteTeams';
 import { CompactFilterBar } from '@/components/home/CompactFilterBar';
 import { GuestAuthPrompt } from '@/components/home/GuestAuthPrompt';
-import { PixelProfileIcon } from '@/components/ui/PixelProfileIcon';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -64,14 +60,12 @@ const Index = () => {
   const [loading, setLoading] = useState(true);
   const [unreadCount, setUnreadCount] = useState(0);
   const [filters, setFilters] = useState<FilterState>(initialFilterState);
-  const [listView, setListView] = useState<'all' | 'favorites'>('all');
   const [favorites, setFavorites] = useState<Set<string>>(() => {
     try {
       const saved = localStorage.getItem('team-favorites');
       return saved ? new Set(JSON.parse(saved)) : new Set();
     } catch { return new Set(); }
   });
-  const [userRegions, setUserRegions] = useState<PreferredRegion[]>([]);
 
   // Fetch unread message count
   useEffect(() => {
@@ -98,11 +92,7 @@ const Index = () => {
   // Fetch user profile for smart filter (multi-region)
   useEffect(() => {
     const fetchUserProfile = async () => {
-      if (!user) {
-        setUserRegions([]);
-        return;
-      }
-
+      if (!user) return;
       try {
         const { data: profile, error } = await supabase
           .from('profiles')
@@ -114,17 +104,12 @@ const Index = () => {
 
         const savedRegions = profile?.preferred_regions as unknown as PreferredRegion[] | null;
         if (savedRegions && Array.isArray(savedRegions) && savedRegions.length > 0) {
-          setUserRegions(savedRegions);
-          setFilters(prev => ({
-            ...prev,
-            selectedRegions: savedRegions,
-          }));
+          setFilters(prev => ({ ...prev, selectedRegions: savedRegions }));
         }
       } catch (error) {
         console.error('Error fetching user profile:', error);
       }
     };
-
     fetchUserProfile();
   }, [user]);
 
@@ -140,7 +125,6 @@ const Index = () => {
 
         if (error) throw error;
 
-        // Fetch member counts
         const { data: membersData } = await supabase
           .from('team_members')
           .select('team_id');
@@ -165,7 +149,6 @@ const Index = () => {
         setLoading(false);
       }
     };
-
     fetchTeams();
   }, [favorites]);
 
@@ -188,53 +171,41 @@ const Index = () => {
   // Real-time filtering with multi-region support
   const filteredTeams = useMemo(() => {
     return teams.filter(team => {
-      // Team name search
-      if (filters.teamName && !team.name.toLowerCase().includes(filters.teamName.toLowerCase())) {
-        return false;
-      }
-      
-      // Gender filter
-      if (filters.genders.length > 0 && team.gender && !filters.genders.includes(team.gender)) {
-        return false;
-      }
-      
-      // Multi-region filter
+      if (filters.teamName && !team.name.toLowerCase().includes(filters.teamName.toLowerCase())) return false;
+      if (filters.genders.length > 0 && team.gender && !filters.genders.includes(team.gender)) return false;
       if (filters.selectedRegions && filters.selectedRegions.length > 0) {
         const matchesAnyRegion = filters.selectedRegions.some(
           r => team.region === r.region && team.district === r.district
         );
         if (!matchesAnyRegion) return false;
       }
-      
-      // Level filter
-      if (filters.levels.length > 0 && !filters.levels.includes(team.level)) {
-        return false;
-      }
-      
-      // Days filter
+      if (filters.levels.length > 0 && !filters.levels.includes(team.level)) return false;
       if (filters.days.length > 0 && team.training_days) {
         const hasMatchingDay = filters.days.some(day => team.training_days?.includes(day));
         if (!hasMatchingDay) return false;
       }
-      
-      // Time slot filter
       if (filters.timeSlot && team.training_start_time) {
         const teamTimeSlot = getTimeSlot(team.training_start_time);
         if (teamTimeSlot !== filters.timeSlot) return false;
       }
-      
       return true;
     });
   }, [teams, filters]);
 
-  const displayedTeams = listView === 'favorites' 
-    ? filteredTeams.filter(t => t.isFavorited) 
-    : filteredTeams;
-
-  const favoriteCount = filteredTeams.filter(t => t.isFavorited).length;
+  // Favorite teams for carousel
+  const favoriteTeams = useMemo(() => {
+    return teams.filter(t => t.isFavorited).map(t => ({
+      id: t.id,
+      emblem: t.emblem,
+      name: t.name,
+      region: formatRegion(t),
+      level: t.level,
+      photoUrl: t.photo_url || undefined,
+    }));
+  }, [teams]);
 
   // Helper functions
-  const formatTrainingTime = (team: Team): string => {
+  function formatTrainingTime(team: Team): string {
     if (team.training_days && team.training_days.length > 0) {
       const daysStr = team.training_days.join(', ');
       if (team.training_start_time && team.training_end_time) {
@@ -243,42 +214,30 @@ const Index = () => {
       return daysStr;
     }
     return team.training_time || '미정';
-  };
+  }
 
-  const formatRegion = (team: Team): string => {
+  function formatRegion(team: Team): string {
     if (team.region && team.district) {
       return `${team.region} ${team.district}`;
     }
     return team.region || '미정';
-  };
+  }
 
   return (
-    <div 
+    <div
       className="min-h-screen bg-background"
       style={{
         backgroundImage: `
           linear-gradient(to bottom, transparent 0%, hsl(var(--background)) 100%),
-          repeating-linear-gradient(
-            0deg,
-            hsl(var(--field-green) / 0.08) 0px,
-            hsl(var(--field-green) / 0.08) 4px,
-            transparent 4px,
-            transparent 8px
-          ),
-          repeating-linear-gradient(
-            90deg,
-            hsl(var(--field-green) / 0.05) 0px,
-            hsl(var(--field-green) / 0.05) 4px,
-            transparent 4px,
-            transparent 8px
-          )
+          repeating-linear-gradient(0deg, hsl(var(--field-green) / 0.08) 0px, hsl(var(--field-green) / 0.08) 4px, transparent 4px, transparent 8px),
+          repeating-linear-gradient(90deg, hsl(var(--field-green) / 0.05) 0px, hsl(var(--field-green) / 0.05) 4px, transparent 4px, transparent 8px)
         `,
       }}
     >
       {/* Top Banner */}
       <div className="w-full relative">
         <div className="absolute top-3 right-3 z-10 flex items-center gap-2">
-          <Link 
+          <Link
             to="/messages"
             className="relative w-11 h-11 bg-card/95 backdrop-blur-sm border-3 border-border-dark flex items-center justify-center shadow-[3px_3px_0_hsl(var(--pixel-shadow))] hover:bg-card transition-colors"
           >
@@ -296,8 +255,8 @@ const Index = () => {
             <Settings size={22} className="text-foreground" />
           </Link>
         </div>
-        <img 
-          src={topBanner} 
+        <img
+          src={topBanner}
           alt="우리의풋살 배너"
           className="w-full h-auto object-cover border-b-4 border-border-dark"
         />
@@ -308,128 +267,68 @@ const Index = () => {
         <SimpleHeader />
       </div>
 
-      {/* Live Match Banner - engaging first content */}
-      <LiveMatchBanner />
-
-      {/* Hot Teams Ranking */}
-      <HotTeamsRanking />
-
-      {/* Section 2: Neighborhood News Feed */}
-      {/* For logged-in users: show if they have regions set */}
-      {user && userRegions.length > 0 && (
-        <NeighborhoodNews userRegions={userRegions} userId={user.id} />
-      )}
-
-      {/* For logged-in users without regions: show guide */}
-      {user && userRegions.length === 0 && (
-        <div className="px-4 py-3">
-          <div 
-            className="bg-card border-4 border-border-dark p-4 text-center"
-            style={{ boxShadow: '4px 4px 0 hsl(var(--pixel-shadow))' }}
-          >
-            <div className="text-3xl mb-2">📍</div>
-            <p className="font-pixel text-[11px] text-foreground mb-1">
-              활동 지역을 설정하면 동네 소식을 볼 수 있어요!
-            </p>
-            <button
-              onClick={() => navigate('/profile')}
-              className={cn(
-                'mt-2 px-4 py-2 font-pixel text-[11px]',
-                'bg-primary text-primary-foreground',
-                'border-3 border-primary-dark',
-                'shadow-[3px_3px_0_hsl(var(--primary-dark))]',
-                'hover:brightness-110 active:translate-x-0.5 active:translate-y-0.5'
-              )}
-            >
-              ⚙️ 활동 지역 설정하기
-            </button>
-          </div>
-        </div>
-      )}
-      
-      {/* For guests: show auth prompt */}
-      {!user && (
-        <GuestAuthPrompt />
-      )}
-
-      {/* Create Team CTA */}
-      <div className="px-4 py-2">
+      {/* Create Team CTA - compact, right under banner */}
+      <div className="px-4 pt-3 pb-1">
         <button
           onClick={() => navigate('/create-team')}
           className={cn(
             'w-full flex items-center justify-center gap-2',
             'bg-accent text-accent-foreground',
-            'border-4 border-accent-dark',
-            'font-pixel text-[11px] uppercase tracking-wider',
-            'px-4 py-3',
+            'border-3 border-accent-dark rounded-xl',
+            'font-pixel text-[11px]',
+            'px-4 py-2.5',
             'transition-all duration-100',
             'hover:brightness-110',
             'active:translate-x-0.5 active:translate-y-0.5'
           )}
           style={{
-            boxShadow: `
-              4px 4px 0 hsl(var(--accent-dark)),
-              inset -2px -2px 0 hsl(var(--accent-dark) / 0.4),
-              inset 2px 2px 0 hsl(0 0% 100% / 0.25)
-            `,
+            boxShadow: '3px 3px 0 hsl(var(--accent-dark))',
           }}
         >
-          <Plus size={16} strokeWidth={3} />
-          <span>🏆 팀 만들기</span>
+          <Plus size={14} strokeWidth={3} />
+          <span>🏆 새 팀 만들기</span>
         </button>
       </div>
 
-      {/* Section 3: Compact Team Discovery */}
-      <CompactFilterBar 
+      {/* My Team News - for logged-in users */}
+      {user && (
+        <MyTeamNews userId={user.id} />
+      )}
+
+      {/* Guest Auth Prompt */}
+      {!user && (
+        <GuestAuthPrompt />
+      )}
+
+      {/* Favorite Teams Carousel */}
+      <FavoriteTeams teams={favoriteTeams} />
+
+      {/* Team Discovery Section */}
+      <CompactFilterBar
         filters={filters}
         onFiltersChange={setFilters}
       />
 
       {/* Team List */}
       <div className="px-4 pb-4">
-        {/* List View Toggle */}
-        <div className="flex items-center gap-2 mb-4">
-          <button
-            onClick={() => setListView('all')}
-            className={cn(
-              'flex items-center gap-2 px-4 py-2 font-pixel text-[11px] border-4 transition-all',
-              listView === 'all'
-                ? 'bg-primary text-primary-foreground border-primary-dark shadow-[4px_4px_0_hsl(var(--primary-dark))]'
-                : 'bg-card text-foreground border-border-dark shadow-[4px_4px_0_hsl(var(--pixel-shadow))] hover:bg-muted'
-            )}
-          >
-            <span>⚽</span>
-            <span className="font-bold">전체</span>
-            <span className="text-[8px] opacity-80">({filteredTeams.length})</span>
-          </button>
-          <button
-            onClick={() => setListView('favorites')}
-            className={cn(
-              'flex items-center gap-2 px-4 py-2 font-pixel text-[11px] border-4 transition-all',
-              listView === 'favorites'
-                ? 'bg-accent text-accent-foreground border-accent-dark shadow-[4px_4px_0_hsl(var(--accent-dark))]'
-                : 'bg-card text-foreground border-border-dark shadow-[4px_4px_0_hsl(var(--pixel-shadow))] hover:bg-muted'
-            )}
-          >
-            <span>⭐</span>
-            <span className="font-bold">관심</span>
-            <span className="text-[8px] opacity-80">({favoriteCount})</span>
-          </button>
+        <div className="flex items-center gap-2 mb-3">
+          <span className="text-base">🔍</span>
+          <h2 className="font-pixel text-[12px] text-foreground">팀 찾기</h2>
+          <span className="font-pixel text-[9px] text-muted-foreground">({filteredTeams.length}팀)</span>
         </div>
 
-        {/* Loading State */}
         {loading ? (
-          <div 
-            className="bg-card border-4 border-border-dark p-8 text-center"
+          <div
+            className="bg-card border-4 border-border-dark p-8 text-center rounded-xl"
             style={{ boxShadow: '4px 4px 0 hsl(var(--pixel-shadow))' }}
           >
             <div className="text-4xl mb-3 animate-pulse">⚽</div>
             <p className="font-pixel text-[11px] text-muted-foreground">팀 목록을 불러오는 중...</p>
           </div>
-        ) : displayedTeams.length > 0 ? (
+        ) : filteredTeams.length > 0 ? (
           <div className="grid gap-3">
-            {displayedTeams.map((team) => (
-              <TeamListCard 
+            {filteredTeams.map((team) => (
+              <TeamListCard
                 key={team.id}
                 id={team.id}
                 emblem={team.emblem}
@@ -445,23 +344,16 @@ const Index = () => {
             ))}
           </div>
         ) : (
-          <div 
-            className="bg-card border-4 border-border-dark p-8 text-center"
+          <div
+            className="bg-card border-4 border-border-dark p-8 text-center rounded-xl"
             style={{ boxShadow: '4px 4px 0 hsl(var(--pixel-shadow))' }}
           >
             <div className="text-4xl mb-3">🔍</div>
-            <p className="font-pixel text-[11px] text-muted-foreground">
-              {listView === 'favorites' ? '관심 팀이 없습니다' : '검색 결과가 없습니다'}
-            </p>
-            <p className="font-pixel text-[11px] text-muted-foreground mt-2">
-              {listView === 'favorites' ? '팀 카드의 별 아이콘을 눌러 추가해보세요!' : '필터 조건을 변경해보세요'}
-            </p>
+            <p className="font-pixel text-[11px] text-muted-foreground">검색 결과가 없습니다</p>
+            <p className="font-pixel text-[11px] text-muted-foreground mt-2">필터 조건을 변경해보세요</p>
           </div>
         )}
       </div>
-
-      {/* Recent Activity Feed */}
-      <RecentActivityFeed />
 
       {/* Bottom Spacing */}
       <div className="h-20" />
