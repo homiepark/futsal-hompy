@@ -245,7 +245,8 @@ export function MyTeamNews({ userId }: MyTeamNewsProps) {
                 if (item.type === 'schedule') {
                   navigate('/schedule');
                 } else if (item.type === 'post') {
-                  navigate(`/archive?team=${item.teamId}`);
+                  const postId = item.id.replace('post-', '');
+                  navigate(`/archive?team=${item.teamId}&post=${postId}`);
                 } else {
                   navigate(`/team/${item.teamId}`);
                 }
