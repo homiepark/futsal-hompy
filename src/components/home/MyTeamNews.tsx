@@ -34,6 +34,7 @@ export function MyTeamNews({ userId }: MyTeamNewsProps) {
   const navigate = useNavigate();
   const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [hasTeam, setHasTeam] = useState(true);
 
   useEffect(() => {
     const fetchMyTeamNews = async () => {
@@ -45,6 +46,7 @@ export function MyTeamNews({ userId }: MyTeamNewsProps) {
           .eq('user_id', userId);
 
         if (!memberships || memberships.length === 0) {
+          setHasTeam(false);
           setLoading(false);
           return;
         }
@@ -204,9 +206,16 @@ export function MyTeamNews({ userId }: MyTeamNewsProps) {
             <span className="text-sm">✨</span>
             <h2 className="font-pixel text-[11px] text-foreground">우리팀 새 소식</h2>
           </div>
-          <p className="font-pixel text-[11px] text-muted-foreground text-center py-3">
-            아직 새 소식이 없어요. 팀에서 활동이 시작되면 여기에 표시됩니다!
-          </p>
+          {!hasTeam ? (
+            <div className="text-center py-3">
+              <p className="font-pixel text-[11px] text-muted-foreground">아직 가입한 팀이 없어요!</p>
+              <p className="font-pixel text-[11px] text-muted-foreground mt-1">팀에 가입하면 소식을 받을 수 있어요 ⚽</p>
+            </div>
+          ) : (
+            <p className="font-pixel text-[11px] text-muted-foreground text-center py-3">
+              아직 새 소식이 없어요. 팀에서 활동이 시작되면 여기에 표시됩니다!
+            </p>
+          )}
         </div>
       </div>
     );
@@ -243,10 +252,12 @@ export function MyTeamNews({ userId }: MyTeamNewsProps) {
               }}
               className="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-muted/50 transition-colors text-left"
             >
-              {/* Thumbnail: post=image, notice=📢, schedule=emoji */}
+              {/* Thumbnail: post=image/팀사진, notice=📢, schedule=emoji */}
               <div className="w-9 h-9 shrink-0 border-2 border-border-dark rounded overflow-hidden bg-muted flex items-center justify-center">
                 {item.type === 'post' && item.imageUrl ? (
                   <img src={item.imageUrl} alt="" className="w-full h-full object-cover" />
+                ) : item.type === 'post' && item.teamPhotoUrl ? (
+                  <img src={item.teamPhotoUrl} alt="" className="w-full h-full object-cover" />
                 ) : item.type === 'notice' ? (
                   <span className="text-lg">📢</span>
                 ) : item.type === 'schedule' ? (
