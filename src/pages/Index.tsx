@@ -335,9 +335,9 @@ const Index = () => {
             className="bg-card border-3 border-border-dark p-6 text-center rounded-xl"
             style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}
           >
-            <div className="text-3xl mb-2">📍</div>
-            <p className="font-pixel text-[11px] text-muted-foreground">지역이나 조건을 설정하면</p>
-            <p className="font-pixel text-[11px] text-muted-foreground">팀을 검색할 수 있어요!</p>
+            <div className="text-3xl mb-2">🔍</div>
+            <p className="font-pixel text-[11px] text-muted-foreground">팀 이름을 검색하거나</p>
+            <p className="font-pixel text-[11px] text-muted-foreground">지역/조건을 설정해보세요!</p>
           </div>
         ) : loading ? (
           <div
