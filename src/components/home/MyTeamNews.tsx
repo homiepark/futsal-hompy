@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { formatDistanceToNow } from 'date-fns';
@@ -10,6 +11,7 @@ interface NewsItem {
   teamId: string;
   teamName: string;
   teamEmblem: string;
+  teamPhotoUrl?: string;
   type: 'post' | 'notice' | 'schedule';
   title: string;
   subtitle?: string;
@@ -32,6 +34,7 @@ export function MyTeamNews({ userId }: MyTeamNewsProps) {
   const navigate = useNavigate();
   const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
     const fetchMyTeamNews = async () => {
@@ -39,7 +42,7 @@ export function MyTeamNews({ userId }: MyTeamNewsProps) {
         // 1. 내가 속한 팀 조회
         const { data: memberships } = await supabase
           .from('team_members')
-          .select('team_id, teams(id, name, emblem)')
+          .select('team_id, teams(id, name, emblem, photo_url)')
           .eq('user_id', userId);
 
         if (!memberships || memberships.length === 0) {
@@ -47,12 +50,16 @@ export function MyTeamNews({ userId }: MyTeamNewsProps) {
           return;
         }
 
-        const teamMap = new Map<string, { name: string; emblem: string }>();
+        const teamMap = new Map<string, { name: string; emblem: string; photoUrl?: string }>();
         const teamIds: string[] = [];
         memberships.forEach((m: any) => {
           if (m.teams) {
             teamIds.push(m.teams.id);
-            teamMap.set(m.teams.id, { name: m.teams.name, emblem: m.teams.emblem });
+            teamMap.set(m.teams.id, {
+              name: m.teams.name,
+              emblem: m.teams.emblem,
+              photoUrl: m.teams.photo_url || undefined,
+            });
           }
         });
 
@@ -80,6 +87,7 @@ export function MyTeamNews({ userId }: MyTeamNewsProps) {
               teamId: post.team_id,
               teamName: team.name,
               teamEmblem: team.emblem,
+              teamPhotoUrl: team.photoUrl,
               type: 'post',
               title: post.content ? post.content.slice(0, 40) + (post.content.length > 40 ? '...' : '') : '새 게시글',
               imageUrl: post.image_url || undefined,
@@ -107,6 +115,7 @@ export function MyTeamNews({ userId }: MyTeamNewsProps) {
               teamId: notice.team_id,
               teamName: team.name,
               teamEmblem: team.emblem,
+              teamPhotoUrl: team.photoUrl,
               type: 'notice',
               title: notice.content.slice(0, 40) + (notice.content.length > 40 ? '...' : ''),
               createdAt: notice.created_at,
@@ -138,6 +147,7 @@ export function MyTeamNews({ userId }: MyTeamNewsProps) {
               teamId: schedule.team_id,
               teamName: team.name,
               teamEmblem: team.emblem,
+              teamPhotoUrl: team.photoUrl,
               type: 'schedule',
               title: `${emoji} ${schedule.title}`,
               subtitle: `${schedule.date}${schedule.time_start ? ` ${schedule.time_start}` : ''}`,
@@ -147,7 +157,7 @@ export function MyTeamNews({ userId }: MyTeamNewsProps) {
           });
         }
 
-        // 시간순 정렬 (일정은 날짜 기준)
+        // 시간순 정렬
         items.sort((a, b) => {
           if (a.type === 'schedule' && b.type === 'schedule') {
             return (a.subtitle || '').localeCompare(b.subtitle || '');
@@ -166,17 +176,20 @@ export function MyTeamNews({ userId }: MyTeamNewsProps) {
     fetchMyTeamNews();
   }, [userId]);
 
+  const displayedItems = expanded ? newsItems : newsItems.slice(0, 5);
+  const hasMore = newsItems.length > 5 && !expanded;
+
   if (loading) {
     return (
-      <div className="px-4 py-3">
-        <div className="bg-card border-4 border-border-dark p-4" style={{ boxShadow: '4px 4px 0 hsl(var(--pixel-shadow))' }}>
-          <div className="flex items-center gap-2 mb-3">
-            <span className="text-base">✨</span>
-            <h2 className="font-pixel text-[12px] text-foreground">우리팀 새 소식</h2>
+      <div className="px-4 py-2">
+        <div className="bg-card border-3 border-border-dark rounded-xl p-3" style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-sm">✨</span>
+            <h2 className="font-pixel text-[11px] text-foreground">우리팀 새 소식</h2>
           </div>
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             {[1, 2, 3].map(i => (
-              <div key={i} className="h-14 bg-muted border-2 border-border-dark animate-pulse rounded-lg" />
+              <div key={i} className="h-10 bg-muted border border-border animate-pulse rounded" />
             ))}
           </div>
         </div>
@@ -186,39 +199,38 @@ export function MyTeamNews({ userId }: MyTeamNewsProps) {
 
   if (newsItems.length === 0) {
     return (
-      <div className="px-4 py-3">
-        <div className="bg-card border-4 border-border-dark p-4" style={{ boxShadow: '4px 4px 0 hsl(var(--pixel-shadow))' }}>
-          <div className="flex items-center gap-2 mb-3">
-            <span className="text-base">✨</span>
-            <h2 className="font-pixel text-[12px] text-foreground">우리팀 새 소식</h2>
+      <div className="px-4 py-2">
+        <div className="bg-card border-3 border-border-dark rounded-xl p-3" style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-sm">✨</span>
+            <h2 className="font-pixel text-[11px] text-foreground">우리팀 새 소식</h2>
           </div>
-          <div className="text-center py-4">
-            <p className="font-pixel text-[11px] text-muted-foreground">아직 새 소식이 없어요</p>
-            <p className="font-pixel text-[11px] text-muted-foreground mt-1">팀에서 활동이 시작되면 여기에 표시됩니다!</p>
-          </div>
+          <p className="font-pixel text-[11px] text-muted-foreground text-center py-3">
+            아직 새 소식이 없어요. 팀에서 활동이 시작되면 여기에 표시됩니다!
+          </p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="px-4 py-3">
+    <div className="px-4 py-2">
       <div
-        className="bg-card border-4 border-border-dark overflow-hidden rounded-xl"
-        style={{ boxShadow: '4px 4px 0 hsl(var(--pixel-shadow))' }}
+        className="bg-card border-3 border-border-dark overflow-hidden rounded-xl"
+        style={{ boxShadow: '3px 3px 0 hsl(var(--pixel-shadow))' }}
       >
         {/* Header */}
-        <div className="bg-gradient-to-r from-primary to-primary/80 border-b-3 border-primary-dark px-3 py-2.5 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-base">✨</span>
-            <h2 className="font-pixel text-[12px] text-primary-foreground">우리팀 새 소식</h2>
+        <div className="bg-gradient-to-r from-primary to-primary/80 border-b-2 border-primary-dark px-3 py-2 flex items-center justify-between">
+          <div className="flex items-center gap-1.5">
+            <span className="text-sm">✨</span>
+            <h2 className="font-pixel text-[11px] text-primary-foreground">우리팀 새 소식</h2>
           </div>
           <span className="font-pixel text-[9px] text-primary-foreground/70">{newsItems.length}건</span>
         </div>
 
         {/* News List */}
         <div className="divide-y divide-border">
-          {newsItems.map((item) => (
+          {displayedItems.map((item) => (
             <button
               key={item.id}
               onClick={() => {
@@ -228,41 +240,49 @@ export function MyTeamNews({ userId }: MyTeamNewsProps) {
                   navigate(`/team/${item.teamId}`);
                 }
               }}
-              className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-muted/50 transition-colors text-left"
+              className="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-muted/50 transition-colors text-left"
             >
-              {/* Team Emblem */}
-              <span className="text-xl shrink-0">{item.teamEmblem}</span>
+              {/* Team Photo or Emblem */}
+              <div className="w-8 h-8 shrink-0 border-2 border-border-dark rounded overflow-hidden bg-muted flex items-center justify-center">
+                {item.teamPhotoUrl ? (
+                  <img src={item.teamPhotoUrl} alt={item.teamName} className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-base">{item.teamEmblem}</span>
+                )}
+              </div>
 
               {/* Content */}
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-1.5 mb-0.5">
+                <div className="flex items-center gap-1.5">
                   <span className={cn(
-                    "font-pixel text-[9px] px-1.5 py-0.5 rounded border shrink-0",
+                    "font-pixel text-[9px] px-1 py-0.5 rounded border shrink-0",
                     typeConfig[item.type].bg
                   )}>
                     {typeConfig[item.type].label}
                   </span>
-                  <span className="font-pixel text-[10px] text-muted-foreground truncate">{item.teamName}</span>
+                  <span className="font-pixel text-[9px] text-muted-foreground truncate">{item.teamName}</span>
                 </div>
-                <p className="font-body text-xs text-foreground truncate">{item.title}</p>
-                {item.subtitle && (
-                  <p className="font-pixel text-[10px] text-muted-foreground mt-0.5">{item.subtitle}</p>
-                )}
+                <p className="font-body text-xs text-foreground truncate mt-0.5">{item.title}</p>
               </div>
 
-              {/* Time / Image */}
-              {item.imageUrl ? (
-                <div className="w-11 h-11 shrink-0 border-2 border-border-dark rounded overflow-hidden bg-muted">
-                  <img src={item.imageUrl} alt="" className="w-full h-full object-cover" />
-                </div>
-              ) : (
-                <span className="font-pixel text-[9px] text-muted-foreground shrink-0 whitespace-nowrap">
-                  {item.type === 'schedule' ? '' : item.timeAgo}
-                </span>
-              )}
+              {/* Time */}
+              <span className="font-pixel text-[9px] text-muted-foreground shrink-0 whitespace-nowrap">
+                {item.type === 'schedule' ? (item.subtitle || '') : item.timeAgo}
+              </span>
             </button>
           ))}
         </div>
+
+        {/* Show More Button */}
+        {hasMore && (
+          <button
+            onClick={() => setExpanded(true)}
+            className="w-full flex items-center justify-center gap-1 py-2 border-t border-border text-muted-foreground hover:bg-muted/50 transition-colors"
+          >
+            <span className="font-pixel text-[10px]">더보기 ({newsItems.length - 5}건)</span>
+            <ChevronDown size={12} />
+          </button>
+        )}
       </div>
     </div>
   );
