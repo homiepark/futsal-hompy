@@ -610,14 +610,23 @@ export function TimelinePost({
         <button
           className="text-muted-foreground hover:text-primary transition-colors ml-auto p-1.5"
           onClick={() => {
-            const postUrl = `${window.location.origin}/archive?post=${id}`;
-            const postImage = allImages[0] || videoUrl || undefined;
-            shareToKakao({
-              title: `${author}의 게시글`,
-              imageUrl: postImage,
-              linkUrl: postUrl,
-              buttonTitle: '게시글 보기',
-            });
+            const doShare = () => {
+              const postUrl = `${window.location.origin}/archive?post=${id}`;
+              const postImage = allImages[0] || videoUrl || undefined;
+              shareToKakao({
+                title: `${author}의 게시글`,
+                imageUrl: postImage,
+                linkUrl: postUrl,
+                buttonTitle: '게시글 보기',
+              });
+            };
+            if (visibility === 'members' || !visibility) {
+              if (confirm('이 게시글은 팀원만 볼 수 있어요.\n그래도 공유할까요?')) {
+                doShare();
+              }
+            } else {
+              doShare();
+            }
           }}
         >
           <Share2 size={20} />

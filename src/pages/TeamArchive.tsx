@@ -239,6 +239,50 @@ export default function TeamArchive() {
 
   const currentTeam = myTeams.find(t => t.id === selectedTeam);
 
+  // 공유 링크로 접근했는데 비로그인인 경우
+  const isSharedAccess = !!postParam;
+  const isNotLoggedIn = !user;
+  const isNotTeamMember = user && myTeams.length === 0;
+
+  if (isSharedAccess && (isNotLoggedIn || isNotTeamMember) && !loading) {
+    return (
+      <div className="pb-20 max-w-lg mx-auto">
+        <div className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b-3 border-border-dark">
+          <div className="px-3 py-2 flex items-center gap-2">
+            <PixelBackButton onClick={() => navigate('/')} />
+            <h1 className="font-pixel text-[10px] text-foreground">팀 스토리</h1>
+          </div>
+        </div>
+        <div className="px-4 py-12 text-center">
+          <div className="text-5xl mb-4">🔒</div>
+          {isNotLoggedIn ? (
+            <>
+              <p className="font-pixel text-[12px] text-foreground mb-2">이 게시글을 보려면 로그인이 필요합니다</p>
+              <p className="font-pixel text-[11px] text-muted-foreground mb-6">회원가입 후 팀에 가입하면 게시글을 볼 수 있어요!</p>
+              <div className="flex gap-2 justify-center">
+                <button
+                  onClick={() => navigate('/auth')}
+                  className="px-6 py-2.5 bg-primary text-primary-foreground border-3 border-primary-dark rounded-lg font-pixel text-[11px] hover:brightness-110"
+                  style={{ boxShadow: '2px 2px 0 hsl(var(--primary-dark))' }}
+                >회원가입 / 로그인</button>
+              </div>
+            </>
+          ) : (
+            <>
+              <p className="font-pixel text-[12px] text-foreground mb-2">팀원만 볼 수 있는 게시글입니다</p>
+              <p className="font-pixel text-[11px] text-muted-foreground mb-6">팀에 가입하면 게시글을 볼 수 있어요!</p>
+              <button
+                onClick={() => navigate('/')}
+                className="px-6 py-2.5 bg-primary text-primary-foreground border-3 border-primary-dark rounded-lg font-pixel text-[11px] hover:brightness-110"
+                style={{ boxShadow: '2px 2px 0 hsl(var(--primary-dark))' }}
+              >팀 찾기</button>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="pb-20 max-w-lg mx-auto">
       {/* Sticky Header with Back Button */}
