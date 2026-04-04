@@ -18,7 +18,7 @@ interface FolderManageModalProps {
   onSave: (folders: Folder[]) => void;
 }
 
-const emojiOptions = ['📁', '⚽', '🏆', '🎯', '📸', '🎬', '🏃', '💪', '🔥', '⭐', '🎉', '📝', '🥅', '👕', '🏅', '📋'];
+const emojiPresets = ['📁', '⚽', '🏆', '🎯', '📸', '🎬', '🏃', '💪', '🔥', '⭐', '🎉', '📝', '🥅', '👕', '🏅', '📋'];
 
 export function FolderManageModal({ isOpen, onClose, folders, onSave }: FolderManageModalProps) {
   useBodyScrollLock(isOpen);
@@ -26,6 +26,7 @@ export function FolderManageModal({ isOpen, onClose, folders, onSave }: FolderMa
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState('');
   const [emojiPickerId, setEmojiPickerId] = useState<string | null>(null);
+  const [emojiInputMode, setEmojiInputMode] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -227,19 +228,43 @@ export function FolderManageModal({ isOpen, onClose, folders, onSave }: FolderMa
 
                 {/* Emoji Picker */}
                 {emojiPickerId === folder.id && (
-                  <div className="mt-1 p-2.5 bg-card border-2 border-primary rounded grid grid-cols-8 gap-1.5"
+                  <div className="mt-1 p-2.5 bg-card border-2 border-primary rounded"
                     style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
                   >
-                    {emojiOptions.map((emoji) => (
-                      <button key={emoji} onClick={() => handleEmojiSelect(folder.id, emoji)}
-                        className={cn(
-                          'w-9 h-9 flex items-center justify-center text-lg rounded transition-colors',
-                          folder.emoji === emoji ? 'bg-primary/20 border-2 border-primary' : 'hover:bg-muted active:scale-95'
-                        )}
-                      >
-                        {emoji}
-                      </button>
-                    ))}
+                    <div className="grid grid-cols-8 gap-1.5">
+                      {emojiPresets.map((emoji) => (
+                        <button key={emoji} onClick={() => handleEmojiSelect(folder.id, emoji)}
+                          className={cn(
+                            'w-9 h-9 flex items-center justify-center text-lg rounded transition-colors',
+                            folder.emoji === emoji ? 'bg-primary/20 border-2 border-primary' : 'hover:bg-muted active:scale-95'
+                          )}
+                        >
+                          {emoji}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="mt-2 pt-2 border-t border-border">
+                      <p className="font-pixel text-[9px] text-muted-foreground mb-1.5">직접 입력 (이모지 키보드 사용)</p>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          className="w-12 h-10 text-center text-xl bg-input border-2 border-border-dark rounded focus:outline-none focus:border-primary"
+                          placeholder="😀"
+                          maxLength={2}
+                          onInput={(e) => {
+                            const val = (e.target as HTMLInputElement).value;
+                            // Extract the last emoji character entered
+                            const emojiMatch = val.match(/\p{Emoji_Presentation}|\p{Extended_Pictographic}/gu);
+                            if (emojiMatch && emojiMatch.length > 0) {
+                              const picked = emojiMatch[emojiMatch.length - 1];
+                              handleEmojiSelect(folder.id, picked);
+                              (e.target as HTMLInputElement).value = '';
+                            }
+                          }}
+                        />
+                        <span className="font-pixel text-[9px] text-muted-foreground">← 터치하여 이모지 입력</span>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
