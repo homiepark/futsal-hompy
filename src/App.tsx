@@ -30,6 +30,24 @@ const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const Messages = lazy(() => import("./pages/Messages"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
+// 주요 페이지 프리로드: 앱 초기 로드 후 유휴 시간에 미리 다운로드
+const preloadPages = () => {
+  import("./pages/TeamHome");
+  import("./pages/Schedule");
+  import("./pages/Messages");
+  import("./pages/Matchmaking");
+  import("./pages/TeamArchive");
+  import("./pages/MyProfile");
+};
+
+if (typeof window !== 'undefined') {
+  if ('requestIdleCallback' in window) {
+    (window as any).requestIdleCallback(preloadPages);
+  } else {
+    setTimeout(preloadPages, 2000);
+  }
+}
+
 // Loading fallback
 const PageLoading = () => (
   <div className="min-h-screen flex items-center justify-center">
