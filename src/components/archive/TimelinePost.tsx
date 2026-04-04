@@ -606,7 +606,24 @@ export function TimelinePost({
           <span className="font-pixel text-[10px]">{displayComments}</span>
           {showComments ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
         </button>
-        <button className="text-muted-foreground hover:text-primary transition-colors ml-auto p-1.5">
+        <button
+          className="text-muted-foreground hover:text-primary transition-colors ml-auto p-1.5"
+          onClick={async () => {
+            const shareUrl = `${window.location.origin}/api/og?type=post&id=${id}`;
+            if (navigator.share) {
+              try {
+                await navigator.share({
+                  title: `📸 ${author}의 게시글`,
+                  text: displayContent ? displayContent.slice(0, 60) : '팀 스토리',
+                  url: shareUrl,
+                });
+              } catch {}
+            } else {
+              await navigator.clipboard.writeText(shareUrl);
+              toast.success('링크가 복사되었습니다!');
+            }
+          }}
+        >
           <Share2 size={20} />
         </button>
       </div>
