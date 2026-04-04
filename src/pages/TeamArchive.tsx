@@ -176,7 +176,7 @@ export default function TeamArchive() {
           activityDate: (post as any).activity_date || undefined,
           authorUserId: post.author_user_id || undefined,
           authorAvatarUrl: profileMap.get(post.author_user_id)?.avatarUrl || undefined,
-          visibility: (post as any).visibility || 'members',
+          visibility: (post as any).visibility || undefined,
         }));
 
         setPosts(mappedPosts);
