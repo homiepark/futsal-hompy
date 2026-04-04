@@ -113,7 +113,7 @@ export function CompactFilterBar({ filters, onFiltersChange }: CompactFilterBarP
               placeholder="팀 이름 검색..."
               value={filters.teamName}
               onChange={(e) => onFiltersChange({ ...filters, teamName: e.target.value })}
-              className="w-full pl-9 pr-3 py-2.5 font-pixel text-[10px] bg-input border-3 border-border-dark focus:border-primary outline-none"
+              className="w-full pl-9 pr-3 py-2.5 text-base font-pixel bg-input border-3 border-border-dark focus:border-primary outline-none"
               style={{ boxShadow: '2px 2px 0 hsl(var(--pixel-shadow))' }}
             />
           </div>
