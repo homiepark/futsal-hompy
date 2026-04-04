@@ -15,6 +15,7 @@ interface NewsItem {
   title: string;
   subtitle?: string;
   imageUrl?: string;
+  eventEmoji?: string;
   createdAt: string;
   timeAgo: string;
 }
@@ -149,6 +150,7 @@ export function MyTeamNews({ userId }: MyTeamNewsProps) {
               type: 'schedule',
               title: `${emoji} ${schedule.title}`,
               subtitle: `${schedule.date}${schedule.time_start ? ` ${schedule.time_start}` : ''}`,
+              eventEmoji: emoji,
               createdAt: schedule.created_at,
               timeAgo: schedule.date,
             });
@@ -241,10 +243,14 @@ export function MyTeamNews({ userId }: MyTeamNewsProps) {
               }}
               className="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-muted/50 transition-colors text-left"
             >
-              {/* Team Photo or Emblem */}
-              <div className="w-8 h-8 shrink-0 border-2 border-border-dark rounded overflow-hidden bg-muted flex items-center justify-center">
-                {item.teamPhotoUrl ? (
-                  <img src={item.teamPhotoUrl} alt={item.teamName} className="w-full h-full object-cover" />
+              {/* Thumbnail: post=image, notice=📢, schedule=emoji */}
+              <div className="w-9 h-9 shrink-0 border-2 border-border-dark rounded overflow-hidden bg-muted flex items-center justify-center">
+                {item.type === 'post' && item.imageUrl ? (
+                  <img src={item.imageUrl} alt="" className="w-full h-full object-cover" />
+                ) : item.type === 'notice' ? (
+                  <span className="text-lg">📢</span>
+                ) : item.type === 'schedule' ? (
+                  <span className="text-lg">{item.eventEmoji || '📅'}</span>
                 ) : (
                   <span className="text-base">{item.teamEmblem}</span>
                 )}
