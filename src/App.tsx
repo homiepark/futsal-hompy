@@ -68,7 +68,16 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
   }
 }
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5,      // 5분간 데이터 신선 유지 (재요청 안 함)
+      gcTime: 1000 * 60 * 30,         // 30분간 캐시 보관
+      refetchOnWindowFocus: false,     // 탭 전환 시 자동 재요청 방지
+      retry: 1,                        // 실패 시 1회만 재시도
+    },
+  },
+});
 
 const AppContent = () => (
   <BrowserRouter>
